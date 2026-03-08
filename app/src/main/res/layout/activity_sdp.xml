@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F8F9FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/_16sdp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AppDimens Examples"
+            android:textSize="@dimen/_22sdp"
+            android:textStyle="bold"
+            android:textColor="#212529"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:layout_marginBottom="@dimen/_24sdp"/>
+
+        <!-- SDP EXAMPLES -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:padding="@dimen/_16sdp"
+            android:layout_marginBottom="@dimen/_24sdp"
+            android:elevation="@dimen/_4sdp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SDP (Smallest Width)"
+                android:textSize="@dimen/_16sdp"
+                android:textStyle="bold"
+                android:textColor="#1976D2"
+                android:layout_marginBottom="@dimen/_6sdp"/>
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scales seamlessly across screen sizes based on smallest width."
+                android:textSize="@dimen/_12sdp"
+                android:textColor="#6C757D"
+                android:layout_marginBottom="@dimen/_16sdp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <View
+                    android:layout_width="@dimen/_50sdp"
+                    android:layout_height="@dimen/_50sdp"
+                    android:background="#42A5F5"/>
+
+                <View
+                    android:layout_width="@dimen/_75sdp"
+                    android:layout_height="@dimen/_75sdp"
+                    android:layout_marginStart="@dimen/_16sdp"
+                    android:background="#1E88E5"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- WDP EXAMPLES -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:padding="@dimen/_16wdp"
+            android:layout_marginBottom="@dimen/_24sdp"
+            android:elevation="@dimen/_4wdp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WDP (Screen Width)"
+                android:textSize="@dimen/_16sdp"
+                android:textStyle="bold"
+                android:textColor="#388E3C"
+                android:layout_marginBottom="@dimen/_6wdp"/>
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scales horizontally based specifically on display width."
+                android:textSize="@dimen/_12sdp"
+                android:textColor="#6C757D"
+                android:layout_marginBottom="@dimen/_16wdp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <View
+                    android:layout_width="@dimen/_50wdp"
+                    android:layout_height="@dimen/_50wdp"
+                    android:background="#66BB6A"/>
+
+                <View
+                    android:layout_width="@dimen/_75wdp"
+                    android:layout_height="@dimen/_75wdp"
+                    android:layout_marginStart="@dimen/_16wdp"
+                    android:background="#43A047"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- HDP EXAMPLES -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:padding="@dimen/_16hdp"
+            android:layout_marginBottom="@dimen/_24sdp"
+            android:elevation="@dimen/_4hdp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HDP (Screen Height)"
+                android:textSize="@dimen/_16sdp"
+                android:textStyle="bold"
+                android:textColor="#D32F2F"
+                android:layout_marginBottom="@dimen/_6hdp"/>
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scales vertically based specifically on display height."
+                android:textSize="@dimen/_12sdp"
+                android:textColor="#6C757D"
+                android:layout_marginBottom="@dimen/_16hdp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <View
+                    android:layout_width="@dimen/_50hdp"
+                    android:layout_height="@dimen/_50hdp"
+                    android:background="#EF5350"/>
+
+                <View
+                    android:layout_width="@dimen/_75hdp"
+                    android:layout_height="@dimen/_75hdp"
+                    android:layout_marginStart="@dimen/_16hdp"
+                    android:background="#E53935"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
