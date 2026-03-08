@@ -15,6 +15,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AppDimens"
+rootProject.name = "AppDimens Dynamic"
 include(":app")
 include(":library")

@@ -9,6 +9,9 @@ plugins {
 }
 
 val isJitPack = System.getenv("JITPACK") == "true"
+        || System.getenv("jitpack") == "true"
+        || System.getenv("CI") == "true"
+        || System.getenv("ci") == "true"
 
 mavenPublishing {
     coordinates("io.github.bodenberg", "appdimens-dynamic", "3.0.0")
