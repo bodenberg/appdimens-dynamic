@@ -136,7 +136,7 @@ object DimenCache {
      * Hit-rate analysis: typical app has 100-300 distinct dimension configurations;
      * 4096 slots gives <10% fill ratio under normal usage — near-zero collision rate.
      */
-    private const val CACHE_SIZE = 4096
+    private const val CACHE_SIZE = 8192
     private const val CACHE_MASK = CACHE_SIZE - 1
 
     // ─────────────────────────────────────────────────────────────────────────
