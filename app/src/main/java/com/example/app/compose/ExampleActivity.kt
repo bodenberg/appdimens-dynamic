@@ -52,6 +52,7 @@ import com.appdimens.dynamic.compose.sdpScreen
 // EN DimenScaled builder for complex conditional dimensions
 // PT Builder DimenScaled para dimensões condicionais complexas
 import com.appdimens.dynamic.compose.scaledDp
+import com.appdimens.dynamic.compose.sdpa
 
 /**
  * EN An activity that demonstrates all AppDimens SDP features in Jetpack Compose.
@@ -113,6 +114,13 @@ fun SdpDemoScreen() {
                     description = "60.sdp → adapts proportionally to the screen's smallest width qualifier.",
                     boxSize = 60.sdp,
                     boxColor = Color(0xFF42A5F5)
+                )
+
+                ExampleCard(
+                    title = ".sdpa (Smallest Width aspect ratio enable)",
+                    description = "60.sdpa → adapts proportionally to the screen's smallest width qualifier. Aspect ratio is enabled.",
+                    boxSize = 60.sdpa,
+                    boxColor = Color(0xFF12D5B5)
                 )
 
                 // EN .hdp — scales based on screen height (hDP)
