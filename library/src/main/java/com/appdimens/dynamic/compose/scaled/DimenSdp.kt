@@ -29,16 +29,13 @@ import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.remember
-import com.appdimens.dynamic.common.AppDimensCache
-import com.appdimens.dynamic.common.fastLn
+import com.appdimens.dynamic.core.DimenCache
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
-import kotlin.math.abs
-import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.min
 
@@ -86,6 +83,15 @@ val Int.sdpi: Dp get() = this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, ignoreM
 @get:Composable
 val Int.sdpia: Dp get() = this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
+@get:Composable
+val Int.sdpPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH)
+@get:Composable
+val Int.sdpaPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+@get:Composable
+val Int.sdpiPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
+@get:Composable
+val Int.sdpiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**, but
@@ -108,6 +114,15 @@ val Int.sdpPhi: Dp get() = this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, Inver
 /** ia variant explicitly with both */
 @get:Composable
 val Int.sdpPhia: Dp get() = this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+
+@get:Composable
+val Int.sdpPxPh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_PH)
+@get:Composable
+val Int.sdpPxaPh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_PH, applyAspectRatio = true)
+@get:Composable
+val Int.sdpPxiPh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_PH, ignoreMultiWindows = true)
+@get:Composable
+val Int.sdpPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -132,6 +147,15 @@ val Int.sdpLhi: Dp get() = this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, Inver
 @get:Composable
 val Int.sdpLhia: Dp get() = this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
+@get:Composable
+val Int.sdpPxLh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_LH)
+@get:Composable
+val Int.sdpPxaLh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_LH, applyAspectRatio = true)
+@get:Composable
+val Int.sdpPxiLh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_LH, ignoreMultiWindows = true)
+@get:Composable
+val Int.sdpPxiaLh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**, but
@@ -154,6 +178,15 @@ val Int.sdpPwi: Dp get() = this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, Inver
 /** ia variant explicitly with both */
 @get:Composable
 val Int.sdpPwia: Dp get() = this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+
+@get:Composable
+val Int.sdpPxPw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_PW)
+@get:Composable
+val Int.sdpPxaPw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_PW, applyAspectRatio = true)
+@get:Composable
+val Int.sdpPxiPw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_PW, ignoreMultiWindows = true)
+@get:Composable
+val Int.sdpPwiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -178,6 +211,15 @@ val Int.sdpLwi: Dp get() = this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, Inver
 @get:Composable
 val Int.sdpLwia: Dp get() = this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
+@get:Composable
+val Int.sdpPxLw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_LW)
+@get:Composable
+val Int.sdpPxaLw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_LW, applyAspectRatio = true)
+@get:Composable
+val Int.sdpPxiLw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_LW, ignoreMultiWindows = true)
+@get:Composable
+val Int.sdpPxiaLw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on the **Screen Height (hDP)**.
@@ -198,6 +240,15 @@ val Int.hdpi: Dp get() = this.toDynamicScaledDp(DpQualifier.HEIGHT, ignoreMultiW
 /** ia variant explicitly with both */
 @get:Composable
 val Int.hdpia: Dp get() = this.toDynamicScaledDp(DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
+
+@get:Composable
+val Int.hdpPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT)
+@get:Composable
+val Int.hdpaPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, applyAspectRatio = true)
+@get:Composable
+val Int.hdpiPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, ignoreMultiWindows = true)
+@get:Composable
+val Int.hdpiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -222,6 +273,15 @@ val Int.hdpLwi: Dp get() = this.toDynamicScaledDp(DpQualifier.HEIGHT, Inverter.P
 @get:Composable
 val Int.hdpLwia: Dp get() = this.toDynamicScaledDp(DpQualifier.HEIGHT, Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
+@get:Composable
+val Int.hdpPxLw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, Inverter.PH_TO_LW)
+@get:Composable
+val Int.hdpPxaLw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, Inverter.PH_TO_LW, applyAspectRatio = true)
+@get:Composable
+val Int.hdpPxiLw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, Inverter.PH_TO_LW, ignoreMultiWindows = true)
+@get:Composable
+val Int.hdpPxiaLw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on the **Screen Height (hDP)**, but
@@ -245,6 +305,15 @@ val Int.hdpPwi: Dp get() = this.toDynamicScaledDp(DpQualifier.HEIGHT, Inverter.L
 @get:Composable
 val Int.hdpPwia: Dp get() = this.toDynamicScaledDp(DpQualifier.HEIGHT, Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
+@get:Composable
+val Int.hdpPxPw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, Inverter.LH_TO_PW)
+@get:Composable
+val Int.hdpPxaPw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, Inverter.LH_TO_PW, applyAspectRatio = true)
+@get:Composable
+val Int.hdpPxiPw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, Inverter.LH_TO_PW, ignoreMultiWindows = true)
+@get:Composable
+val Int.hdpPxiaPw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on the **Screen Width (wDP)**.
@@ -265,6 +334,15 @@ val Int.wdpi: Dp get() = this.toDynamicScaledDp(DpQualifier.WIDTH, ignoreMultiWi
 /** ia variant explicitly with both */
 @get:Composable
 val Int.wdpia: Dp get() = this.toDynamicScaledDp(DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
+
+@get:Composable
+val Int.wdpPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH)
+@get:Composable
+val Int.wdpaPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, applyAspectRatio = true)
+@get:Composable
+val Int.wdpiPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, ignoreMultiWindows = true)
+@get:Composable
+val Int.wdpiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -289,6 +367,15 @@ val Int.wdpLhi: Dp get() = this.toDynamicScaledDp(DpQualifier.WIDTH, Inverter.PW
 @get:Composable
 val Int.wdpLhia: Dp get() = this.toDynamicScaledDp(DpQualifier.WIDTH, Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
+@get:Composable
+val Int.wdpPxLh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, Inverter.PW_TO_LH)
+@get:Composable
+val Int.wdpPxaLh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, Inverter.PW_TO_LH, applyAspectRatio = true)
+@get:Composable
+val Int.wdpPxiLh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, Inverter.PW_TO_LH, ignoreMultiWindows = true)
+@get:Composable
+val Int.wdpPxiaLh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on the **Screen Width (wDP)**, but
@@ -311,6 +398,15 @@ val Int.wdpPhi: Dp get() = this.toDynamicScaledDp(DpQualifier.WIDTH, Inverter.LW
 /** ia variant explicitly with both */
 @get:Composable
 val Int.wdpPhia: Dp get() = this.toDynamicScaledDp(DpQualifier.WIDTH, Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+
+@get:Composable
+val Int.wdpPxPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, Inverter.LW_TO_PH)
+@get:Composable
+val Int.wdpPxaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, Inverter.LW_TO_PH, applyAspectRatio = true)
+@get:Composable
+val Int.wdpPxiPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, Inverter.LW_TO_PH, ignoreMultiWindows = true)
+@get:Composable
+val Int.wdpPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 
 // EN Dynamic scaling functions (Resource-based).
@@ -362,7 +458,7 @@ private fun findResourceIdByName(resourceName: String): Int {
  * @return The Dp value loaded from the resource or the base Dp value.
  */
 @Composable
-fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
+fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null, enableCache: Boolean = true): Dp {
     // EN Validation requirement (limits usage to avoid creating thousands of dimens files).
     // PT Requisito de validação (limita o uso para evitar a criação de milhares de arquivos dimens).
     require(this in -300..600) { "Value must be between -300 and 600 to use the dynamic scaling dimension logic. Current value:: $this" }
@@ -388,22 +484,26 @@ fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.
         configuration.screenLayout,
         aspectRatio
     ) {
-        val cacheKey = AppDimensCache.buildKey(
-            baseValue            = this,
+        val context = DimenCache.CacheContext(
             screenWidthDp        = configuration.screenWidthDp,
             screenHeightDp       = configuration.screenHeightDp,
             smallestScreenWidthDp = configuration.smallestScreenWidthDp,
-            calcType             = AppDimensCache.CalcType.SCALED,
+            isLandscape          = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows   = ignoreMultiWindows
+        )
+
+        val cacheKey = DimenCache.buildKey(
+            baseValue            = this,
+            context              = context,
+            calcType             = DimenCache.CalcType.SCALED,
             qualifier            = qualifier,
             inverter             = inverter,
-            isLandscape          = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows   = ignoreMultiWindows,
             applyAspectRatio     = applyAspectRatio,
-            valueType            = AppDimensCache.ValueType.DP,
+            valueType            = DimenCache.ValueType.DP,
             customSensitivityK   = customSensitivityK
         )
 
-        val scaledFloat = AppDimensCache.getOrPut(cacheKey) {
+        if (!enableCache) {
             val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
             val isPortrait  = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
@@ -439,7 +539,54 @@ fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.
                 }
                 if (applyAspectRatio) {
                     val difference    = screenDimension - 300f
-                    val logAr         = AppDimensCache.currentLogNormalizedAr
+                    val logAr         = DimenCache.currentLogNormalizedAr
+                    val adjustment    = (customSensitivityK ?: (0.08f / 30f)) * logAr
+                    1.0f + difference * ((0.10f / 30f) + adjustment)
+                } else {
+                    screenDimension / 300f
+                }
+            }
+
+            return@remember (this.toFloat() * factor).dp
+        }
+
+        val scaledFloat = DimenCache.getOrPut(cacheKey) {
+            val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+            val isPortrait  = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+            var actualQualifier = qualifier
+
+            when (inverter) {
+                Inverter.PH_TO_LW -> if (isLandscape && qualifier == DpQualifier.HEIGHT) actualQualifier = DpQualifier.WIDTH
+                Inverter.PW_TO_LH -> if (isLandscape && qualifier == DpQualifier.WIDTH)  actualQualifier = DpQualifier.HEIGHT
+                Inverter.LH_TO_PW -> if (isPortrait  && qualifier == DpQualifier.HEIGHT) actualQualifier = DpQualifier.WIDTH
+                Inverter.LW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.WIDTH)  actualQualifier = DpQualifier.HEIGHT
+                Inverter.SW_TO_LH -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
+                Inverter.SW_TO_LW -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
+                Inverter.SW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
+                Inverter.SW_TO_PW -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
+                Inverter.DEFAULT  -> {}
+            }
+
+            var isMultiWindow = false
+            if (ignoreMultiWindows) {
+                val smallestWidthDp = configuration.smallestScreenWidthDp.toFloat()
+                val isLayoutSplit = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
+                val isSmallDiff   = (smallestWidthDp - currentScreenWidthDp) < (smallestWidthDp * 0.1f)
+                isMultiWindow = isLayoutSplit && !isSmallDiff
+            }
+
+            val factor: Float = if (ignoreMultiWindows && isMultiWindow) {
+                1.00f
+            } else {
+                val screenDimension = when (actualQualifier) {
+                    DpQualifier.HEIGHT      -> configuration.screenHeightDp.toFloat()
+                    DpQualifier.WIDTH       -> configuration.screenWidthDp.toFloat()
+                    else                    -> configuration.smallestScreenWidthDp.toFloat()
+                }
+                if (applyAspectRatio) {
+                    val difference    = screenDimension - 300f
+                    val logAr         = DimenCache.currentLogNormalizedAr
                     val adjustment    = (customSensitivityK ?: (0.08f / 30f)) * logAr
                     1.0f + difference * ((0.10f / 30f) + adjustment)
                 } else {
@@ -452,4 +599,15 @@ fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.
 
         scaledFloat.dp
     }
+}
+
+/**
+ * EN Converts an Int (base Dp) to a dynamically scaled Float (in pixels).
+ * PT Converte um Int (base Dp) para um Float (em pixels) escalado dinamicamente.
+ */
+@Composable
+fun Int.toDynamicScaledPx(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null, enableCache: Boolean = true): Float {
+    val density = LocalDensity.current
+    val dpValue = this.toDynamicScaledDp(qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enableCache)
+    return density.run { dpValue.toPx() }
 }

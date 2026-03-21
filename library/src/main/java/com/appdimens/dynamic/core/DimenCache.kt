@@ -33,13 +33,14 @@
  *
  * Licensed under the Apache License, Version 2.0
  */
-package com.appdimens.dynamic.common
+package com.appdimens.dynamic.core
 
 import android.content.res.Configuration
+import com.appdimens.dynamic.common.DpQualifier
+import com.appdimens.dynamic.common.Inverter
 import java.util.concurrent.atomic.AtomicReferenceArray
 import kotlin.math.max
 import kotlin.math.min
-import com.appdimens.dynamic.common.fastLn
 
 /**
  * EN
@@ -63,7 +64,7 @@ import com.appdimens.dynamic.common.fastLn
  * PT
  * Cache global, lock-free e compartilhado para todos os cálculos de dimensão do AppDimens.
  */
-object AppDimensCache {
+object DimenCache {
 
     // ─────────────────────────────────────────────────────────────────────────
     // CONFIGURATION & PERSISTENT STATE
@@ -75,20 +76,28 @@ object AppDimensCache {
      */
     enum class CalcType {
         AUTO, DIAGONAL, FILL, FIT, FLUID, INTERPOLATED, LOGARITHMIC,
-        PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITS
+        PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES
     }
+
+    /**
+     * EN Master switch for the cache system. If disabled, all calls will recompute.
+     * PT Chave mestre para o sistema de cache. Se desativado, todos os cálculos são refeitos.
+     */
+    @Volatile
+    @JvmStatic
+    var isEnabled: Boolean = true
 
     /**
      * EN Cached aspect ratio values to avoid recomputing on every dimension call.
      * Updated automatically via [invalidateOnConfigChange].
      */
     @Volatile
+    @JvmField
     var currentNormalizedAr: Float = 1.0f
-        private set
 
     @Volatile
+    @JvmField
     var currentLogNormalizedAr: Float = 0f
-        private set
 
     /**
      * EN The smallest width (dp) used when the cache was last populated.
@@ -99,8 +108,8 @@ object AppDimensCache {
      * Se mudar (ex: configurações do Android), o cache é invalidado.
      */
     @Volatile
+    @JvmField
     var currentSmallestWidthDp: Int = 0
-        private set
 
     /**
      * Number of slots in the primary (Tier-1) fast cache.
@@ -145,6 +154,18 @@ object AppDimensCache {
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
+     * EN Context containing screen metrics and flags for cache key building.
+     * PT Contexto contendo métricas de tela e flags para construção da chave de cache.
+     */
+    data class CacheContext(
+        val screenWidthDp: Int,
+        val screenHeightDp: Int,
+        val smallestScreenWidthDp: Int,
+        val isLandscape: Boolean,
+        val ignoreMultiWindows: Boolean
+    )
+
+    /**
      * EN Dimension type discriminator for the cache key.
      * PT Discriminador de tipo de dimensão para a chave de cache.
      */
@@ -177,29 +198,26 @@ object AppDimensCache {
      * [ 8- 0]  sensitivityK fingerprint  9 bits  (float bits ushr 23 & 0x1FF)
      * ```
      */
+    @JvmStatic
     fun buildKey(
         baseValue: Int,
-        screenWidthDp: Int,
-        screenHeightDp: Int,
-        smallestScreenWidthDp: Int,
+        context: CacheContext,
         calcType: CalcType,
         qualifier: DpQualifier,
         inverter: Inverter,
-        isLandscape: Boolean,
-        ignoreMultiWindows: Boolean,
         applyAspectRatio: Boolean,
         valueType: ValueType,
         customSensitivityK: Float? = null
     ): Long {
         val bv = (baseValue + 300).coerceIn(0, 1023).toLong()
-        val sw = (screenWidthDp / 2).coerceIn(0, 1023).toLong()
-        val sh = (screenHeightDp / 2).coerceIn(0, 1023).toLong()
-        val ssw = smallestScreenWidthDp.coerceIn(0, 1023).toLong()
+        val sw = (context.screenWidthDp / 2).coerceIn(0, 1023).toLong()
+        val sh = (context.screenHeightDp / 2).coerceIn(0, 1023).toLong()
+        val ssw = context.smallestScreenWidthDp.coerceIn(0, 1023).toLong()
         val ct = calcType.ordinal.toLong()
         val q = qualifier.ordinal.toLong()
         val inv = inverter.ordinal.toLong()
-        val land = if (isLandscape) 1L else 0L
-        val imw = if (ignoreMultiWindows) 1L else 0L
+        val land = if (context.isLandscape) 1L else 0L
+        val imw = if (context.ignoreMultiWindows) 1L else 0L
         val ar = if (applyAspectRatio) 1L else 0L
         val fs = if (valueType == ValueType.SP_WITH_SCALE) 1L else 0L
         val dp = if (valueType == ValueType.DP) 1L else 0L
@@ -241,7 +259,10 @@ object AppDimensCache {
      * Lê do cache ou calcula (e armazena) um novo valor.
      * Lock-free: nenhum mutex é usado.
      */
+    @JvmStatic
     fun getOrPut(key: Long, compute: () -> Float): Float {
+        if (!isEnabled) return compute()
+
         val index = (key xor (key ushr 32)).toInt() and CACHE_MASK
 
         // FAST PATH — atomic read, no lock
@@ -264,7 +285,9 @@ object AppDimensCache {
      *
      * PT Lê um valor cacheado sem calcular um fallback. Retorna `null` se não encontrado.
      */
+    @JvmStatic
     fun peek(key: Long): Float? {
+        if (!isEnabled) return null
         val index = (key xor (key ushr 32)).toInt() and CACHE_MASK
         val entry = store.get(index)
         return if (entry != null && entry.key == key) entry.value else null
@@ -296,6 +319,7 @@ object AppDimensCache {
      * @param old  Previous [Configuration] (null on first call → full clear)
      * @param new  New [Configuration]
      */
+    @JvmStatic
     fun invalidateOnConfigChange(old: Configuration?, new: Configuration) {
         if (old == null) {
             updateAspectRatio(new)
@@ -304,8 +328,13 @@ object AppDimensCache {
             return
         }
 
-        val physicalChange = old.screenWidthDp != new.screenWidthDp ||
-                old.screenHeightDp != new.screenHeightDp ||
+        val oldMin = min(old.screenWidthDp, old.screenHeightDp)
+        val oldMax = max(old.screenWidthDp, old.screenHeightDp)
+        val newMin = min(new.screenWidthDp, new.screenHeightDp)
+        val newMax = max(new.screenWidthDp, new.screenHeightDp)
+
+        val physicalChange = oldMin != newMin ||
+                oldMax != newMax ||
                 old.smallestScreenWidthDp != new.smallestScreenWidthDp ||
                 old.densityDpi != new.densityDpi
 
@@ -332,9 +361,17 @@ object AppDimensCache {
     }
 
     /**
+     * EN Clears all cache slots. Java-compatible alias.
+     * PT Limpa todos os slots do cache. Alias compatível com Java.
+     */
+    @JvmStatic
+    fun clear() = clearAll()
+
+    /**
      * EN Clears all cache entries. Thread-safe (each slot is cleared atomically).
      * PT Limpa todas as entradas do cache. Thread-safe.
      */
+    @JvmStatic
     fun clearAll() {
         for (i in 0 until CACHE_SIZE) {
             store.set(i, null)
@@ -349,6 +386,7 @@ object AppDimensCache {
      * EN Returns a snapshot of current cache usage statistics.
      * PT Retorna um snapshot com métricas do cache atual.
      */
+    @JvmStatic
     fun stats(): CacheStats {
         var populated = 0
         for (i in 0 until CACHE_SIZE) {
@@ -375,6 +413,6 @@ object AppDimensCache {
         val fillRatio: Float
     ) {
         override fun toString(): String =
-            "AppDimensCache: $populated/$capacity slots used (${(fillRatio * 100).toInt()}% fill)"
+            "DimenCache: $populated/$capacity slots used (${(fillRatio * 100).toInt()}% fill)"
     }
 }

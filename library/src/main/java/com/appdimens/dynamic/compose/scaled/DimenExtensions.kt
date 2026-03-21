@@ -33,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
@@ -74,6 +75,25 @@ fun Int.sdpRotate(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQu
 }
 
 /**
+ * EN Pixel (Float) variant of [sdpRotate].
+ * PT Variante em Pixel (Float) de [sdpRotate].
+ */
+@Composable
+fun Int.sdpRotatePx(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
  * EN
  * Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**.
  * Returns the original value **auto-scaled** using the specified qualifier if the condition is not met.
@@ -102,6 +122,25 @@ fun Dp.sdpRotate(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQua
 }
 
 /**
+ * EN Pixel (Float) variant of [sdpRotate].
+ * PT Variante em Pixel (Float) de [sdpRotate].
+ */
+@Composable
+fun Dp.sdpRotatePx(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
  * EN
  * Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**.
  * Returns the original raw Dp value if the condition is not met.
@@ -126,6 +165,26 @@ fun Dp.sdpRotatePlain(rotationValue: Int, finalQualifierResolver: DpQualifier = 
         rotationValue.toDynamicScaledDp(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+/**
+ * EN Pixel (Float) variant of [sdpRotatePlain].
+ * PT Variante em Pixel (Float) de [sdpRotatePlain].
+ */
+@Composable
+fun Dp.sdpRotatePlainPx(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@sdpRotatePlainPx.toPx() }
     }
 }
 
@@ -160,6 +219,25 @@ fun Int.hdpRotate(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQu
 }
 
 /**
+ * EN Pixel (Float) variant of [hdpRotate].
+ * PT Variante em Pixel (Float) de [hdpRotate].
+ */
+@Composable
+fun Int.hdpRotatePx(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Height (hDP)**.
  * Returns the original value **auto-scaled** using the specified qualifier if the condition is not met.
@@ -188,6 +266,25 @@ fun Dp.hdpRotate(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQua
 }
 
 /**
+ * EN Pixel (Float) variant of [hdpRotate].
+ * PT Variante em Pixel (Float) de [hdpRotate].
+ */
+@Composable
+fun Dp.hdpRotatePx(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Height (hDP)**.
  * Returns the original raw Dp value if the condition is not met.
@@ -212,6 +309,26 @@ fun Dp.hdpRotatePlain(rotationValue: Int, finalQualifierResolver: DpQualifier = 
         rotationValue.toDynamicScaledDp(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+/**
+ * EN Pixel (Float) variant of [hdpRotatePlain].
+ * PT Variante em Pixel (Float) de [hdpRotatePlain].
+ */
+@Composable
+fun Dp.hdpRotatePlainPx(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@hdpRotatePlainPx.toPx() }
     }
 }
 
@@ -246,6 +363,25 @@ fun Int.wdpRotate(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQu
 }
 
 /**
+ * EN Pixel (Float) variant of [wdpRotate].
+ * PT Variante em Pixel (Float) de [wdpRotate].
+ */
+@Composable
+fun Int.wdpRotatePx(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Width (wDP)**.
  * Returns the original value **auto-scaled** using the specified qualifier if the condition is not met.
@@ -274,6 +410,25 @@ fun Dp.wdpRotate(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQua
 }
 
 /**
+ * EN Pixel (Float) variant of [wdpRotate].
+ * PT Variante em Pixel (Float) de [wdpRotate].
+ */
+@Composable
+fun Dp.wdpRotatePx(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Width (wDP)**.
  * Returns the original raw Dp value if the condition is not met.
@@ -298,6 +453,26 @@ fun Dp.wdpRotatePlain(rotationValue: Int, finalQualifierResolver: DpQualifier = 
         rotationValue.toDynamicScaledDp(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+/**
+ * EN Pixel (Float) variant of [wdpRotatePlain].
+ * PT Variante em Pixel (Float) de [wdpRotatePlain].
+ */
+@Composable
+fun Dp.wdpRotatePlainPx(rotationValue: Int, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@wdpRotatePlainPx.toPx() }
     }
 }
 
@@ -345,6 +520,28 @@ fun Int.sdpMode(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: 
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [sdpMode].
+ * PT Variante em Pixel (Float) de [sdpMode].
+ */
+@Composable
+fun Int.sdpModePx(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**.
@@ -374,6 +571,27 @@ fun Dp.sdpMode(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: D
 }
 
 /**
+ * EN Pixel (Float) variant of [sdpMode].
+ * PT Variante em Pixel (Float) de [sdpMode].
+ */
+@Composable
+fun Dp.sdpModePx(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
  * EN
  * Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**.
  * Returns the original raw Dp value if the condition is not met.
@@ -398,6 +616,28 @@ fun Dp.sdpModePlain(modeValue: Int, uiModeType: UiModeType, finalQualifierResolv
         modeValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+/**
+ * EN Pixel (Float) variant of [sdpModePlain].
+ * PT Variante em Pixel (Float) de [sdpModePlain].
+ */
+@Composable
+fun Dp.sdpModePlainPx(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val density = LocalDensity.current
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@sdpModePlainPx.toPx() }
     }
 }
 
@@ -434,6 +674,28 @@ fun Int.hdpMode(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: 
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [hdpMode].
+ * PT Variante em Pixel (Float) de [hdpMode].
+ */
+@Composable
+fun Int.hdpModePx(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Height (hDP)**.
@@ -464,6 +726,27 @@ fun Dp.hdpMode(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: D
 }
 
 /**
+ * EN Pixel (Float) variant of [hdpMode].
+ * PT Variante em Pixel (Float) de [hdpMode].
+ */
+@Composable
+fun Dp.hdpModePx(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Height (hDP)**.
  * Returns the original raw Dp value if the condition is not met.
@@ -489,6 +772,28 @@ fun Dp.hdpModePlain(modeValue: Int, uiModeType: UiModeType, finalQualifierResolv
         modeValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+/**
+ * EN Pixel (Float) variant of [hdpModePlain].
+ * PT Variante em Pixel (Float) de [hdpModePlain].
+ */
+@Composable
+fun Dp.hdpModePlainPx(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val density = LocalDensity.current
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@hdpModePlainPx.toPx() }
     }
 }
 
@@ -525,6 +830,28 @@ fun Int.wdpMode(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: 
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [wdpMode].
+ * PT Variante em Pixel (Float) de [wdpMode].
+ */
+@Composable
+fun Int.wdpModePx(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Width (wDP)**.
@@ -555,6 +882,27 @@ fun Dp.wdpMode(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: D
 }
 
 /**
+ * EN Pixel (Float) variant of [wdpMode].
+ * PT Variante em Pixel (Float) de [wdpMode].
+ */
+@Composable
+fun Dp.wdpModePx(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Width (wDP)**.
  * Returns the original raw Dp value if the condition is not met.
@@ -580,6 +928,28 @@ fun Dp.wdpModePlain(modeValue: Int, uiModeType: UiModeType, finalQualifierResolv
         modeValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+/**
+ * EN Pixel (Float) variant of [wdpModePlain].
+ * PT Variante em Pixel (Float) de [wdpModePlain].
+ */
+@Composable
+fun Dp.wdpModePlainPx(modeValue: Int, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val density = LocalDensity.current
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@wdpModePlainPx.toPx() }
     }
 }
 
@@ -613,6 +983,22 @@ fun Int.sdpQualifier(qualifiedValue: Int, qualifierType: DpQualifier, qualifierV
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [sdpQualifier].
+ * PT Variante em Pixel (Float) de [sdpQualifier].
+ */
+@Composable
+fun Int.sdpQualifierPx(qualifiedValue: Int, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (qualifierMatch) {
+        qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**.
@@ -636,6 +1022,22 @@ fun Dp.sdpQualifier(qualifiedValue: Int, qualifierType: DpQualifier, qualifierVa
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [sdpQualifier].
+ * PT Variante em Pixel (Float) de [sdpQualifier].
+ */
+@Composable
+fun Dp.sdpQualifierPx(qualifiedValue: Int, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (qualifierMatch) {
+        qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**.
@@ -656,6 +1058,23 @@ fun Dp.sdpQualifierPlain(qualifiedValue: Int, qualifierType: DpQualifier, qualif
         qualifiedValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [sdpQualifierPlain].
+ * PT Variante em Pixel (Float) de [sdpQualifierPlain].
+ */
+@Composable
+fun Dp.sdpQualifierPlainPx(qualifiedValue: Int, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (qualifierMatch) {
+        qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@sdpQualifierPlainPx.toPx() }
     }
 }
 
@@ -686,6 +1105,22 @@ fun Int.hdpQualifier(qualifiedValue: Int, qualifierType: DpQualifier, qualifierV
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [hdpQualifier].
+ * PT Variante em Pixel (Float) de [hdpQualifier].
+ */
+@Composable
+fun Int.hdpQualifierPx(qualifiedValue: Int, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (qualifierMatch) {
+        qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Height (hDP)**.
@@ -709,6 +1144,22 @@ fun Dp.hdpQualifier(qualifiedValue: Int, qualifierType: DpQualifier, qualifierVa
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [hdpQualifier].
+ * PT Variante em Pixel (Float) de [hdpQualifier].
+ */
+@Composable
+fun Dp.hdpQualifierPx(qualifiedValue: Int, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (qualifierMatch) {
+        qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Height (hDP)**.
@@ -729,6 +1180,23 @@ fun Dp.hdpQualifierPlain(qualifiedValue: Int, qualifierType: DpQualifier, qualif
         qualifiedValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [hdpQualifierPlain].
+ * PT Variante em Pixel (Float) de [hdpQualifierPlain].
+ */
+@Composable
+fun Dp.hdpQualifierPlainPx(qualifiedValue: Int, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (qualifierMatch) {
+        qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@hdpQualifierPlainPx.toPx() }
     }
 }
 
@@ -759,6 +1227,22 @@ fun Int.wdpQualifier(qualifiedValue: Int, qualifierType: DpQualifier, qualifierV
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [wdpQualifier].
+ * PT Variante em Pixel (Float) de [wdpQualifier].
+ */
+@Composable
+fun Int.wdpQualifierPx(qualifiedValue: Int, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (qualifierMatch) {
+        qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Width (wDP)**.
@@ -782,6 +1266,22 @@ fun Dp.wdpQualifier(qualifiedValue: Int, qualifierType: DpQualifier, qualifierVa
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [wdpQualifier].
+ * PT Variante em Pixel (Float) de [wdpQualifier].
+ */
+@Composable
+fun Dp.wdpQualifierPx(qualifiedValue: Int, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (qualifierMatch) {
+        qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Width (wDP)**.
@@ -802,6 +1302,23 @@ fun Dp.wdpQualifierPlain(qualifiedValue: Int, qualifierType: DpQualifier, qualif
         qualifiedValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [wdpQualifierPlain].
+ * PT Variante em Pixel (Float) de [wdpQualifierPlain].
+ */
+@Composable
+fun Dp.wdpQualifierPlainPx(qualifiedValue: Int, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (qualifierMatch) {
+        qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@wdpQualifierPlainPx.toPx() }
     }
 }
 
@@ -844,6 +1361,31 @@ fun Int.sdpScreen(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQua
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [sdpScreen].
+ * PT Variante em Pixel (Float) de [sdpScreen].
+ */
+@Composable
+fun Int.sdpScreenPx(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (uiModeMatch && qualifierMatch) {
+        screenValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**.
@@ -878,6 +1420,31 @@ fun Dp.sdpScreen(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQual
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [sdpScreen].
+ * PT Variante em Pixel (Float) de [sdpScreen].
+ */
+@Composable
+fun Dp.sdpScreenPx(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (uiModeMatch && qualifierMatch) {
+        screenValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**.
@@ -909,6 +1476,32 @@ fun Dp.sdpScreenPlain(screenValue: Int, uiModeType: UiModeType, qualifierType: D
         screenValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [sdpScreenPlain].
+ * PT Variante em Pixel (Float) de [sdpScreenPlain].
+ */
+@Composable
+fun Dp.sdpScreenPlainPx(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val activity = context.findActivity()
+    val density = LocalDensity.current
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (uiModeMatch && qualifierMatch) {
+        screenValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@sdpScreenPlainPx.toPx() }
     }
 }
 
@@ -948,6 +1541,31 @@ fun Int.hdpScreen(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQua
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [hdpScreen].
+ * PT Variante em Pixel (Float) de [hdpScreen].
+ */
+@Composable
+fun Int.hdpScreenPx(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (uiModeMatch && qualifierMatch) {
+        screenValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Height (hDP)**.
@@ -982,6 +1600,31 @@ fun Dp.hdpScreen(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQual
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [hdpScreen].
+ * PT Variante em Pixel (Float) de [hdpScreen].
+ */
+@Composable
+fun Dp.hdpScreenPx(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (uiModeMatch && qualifierMatch) {
+        screenValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Height (hDP)**.
@@ -1013,6 +1656,32 @@ fun Dp.hdpScreenPlain(screenValue: Int, uiModeType: UiModeType, qualifierType: D
         screenValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [hdpScreenPlain].
+ * PT Variante em Pixel (Float) de [hdpScreenPlain].
+ */
+@Composable
+fun Dp.hdpScreenPlainPx(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val activity = context.findActivity()
+    val density = LocalDensity.current
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (uiModeMatch && qualifierMatch) {
+        screenValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@hdpScreenPlainPx.toPx() }
     }
 }
 
@@ -1052,6 +1721,31 @@ fun Int.wdpScreen(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQua
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [wdpScreen].
+ * PT Variante em Pixel (Float) de [wdpScreen].
+ */
+@Composable
+fun Int.wdpScreenPx(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (uiModeMatch && qualifierMatch) {
+        screenValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledPx(DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Width (wDP)**.
@@ -1086,6 +1780,31 @@ fun Dp.wdpScreen(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQual
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [wdpScreen].
+ * PT Variante em Pixel (Float) de [wdpScreen].
+ */
+@Composable
+fun Dp.wdpScreenPx(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val activity = context.findActivity()
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (uiModeMatch && qualifierMatch) {
+        screenValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.value.toInt().toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
 /**
  * EN
  * Extension for Dp with dynamic scaling based on **Screen Width (wDP)**.
@@ -1117,5 +1836,31 @@ fun Dp.wdpScreenPlain(screenValue: Int, uiModeType: UiModeType, qualifierType: D
         screenValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
         this
+    }
+}
+
+@SuppressLint("ConfigurationScreenWidthHeight")
+/**
+ * EN Pixel (Float) variant of [wdpScreenPlain].
+ * PT Variante em Pixel (Float) de [wdpScreenPlain].
+ */
+@Composable
+fun Dp.wdpScreenPlainPx(screenValue: Int, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Int, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val activity = context.findActivity()
+    val density = LocalDensity.current
+    val windowLayoutInfo = remember(activity) {
+        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+    }?.collectAsState(initial = null)
+    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
+    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
+    return if (uiModeMatch && qualifierMatch) {
+        screenValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        density.run { this@wdpScreenPlainPx.toPx() }
     }
 }

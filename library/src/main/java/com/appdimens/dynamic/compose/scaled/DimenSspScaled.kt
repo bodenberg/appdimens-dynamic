@@ -122,9 +122,18 @@ class ScaledSp private constructor(
     private val sortedCustomEntries: List<CustomSpEntry> = emptyList(),
     private val ignoreMultiWindows: Boolean = false,
     private val applyAspectRatio: Boolean = false,
-    private val customSensitivityK: Float? = null
+    private val customSensitivityK: Float? = null,
+    private val isCacheEnabled: Boolean = true
 ) {
-    constructor(initialBaseValue: Int) : this(initialBaseValue, true, emptyList(), false, false, null)
+    constructor(initialBaseValue: Int) : this(initialBaseValue, true, emptyList(), false, false, null, true)
+
+    /**
+     * EN Enable or disable the cache for this specific calculation chain.
+     * PT Habilita ou desabilita o cache para esta cadeia de cálculo específica.
+     */
+    fun setEnableCache(enable: Boolean = true): ScaledSp {
+        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enable)
+    }
 
     /**
      * EN Allow ignoring the constraint scaling based on multi-window resizing properties.
@@ -136,10 +145,10 @@ class ScaledSp private constructor(
      * PT Permite aplicar o redimensionamento baseado na proporção da tela.
      */
     fun aspectRatio(enable: Boolean = true, sensitivityK: Float? = null): ScaledSp {
-        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK)
+        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK, isCacheEnabled)
     }
     fun ignoreMultiWindows(ignore: Boolean = true): ScaledSp {
-        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignore)
+        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     private fun reorderEntries(newEntry: CustomSpEntry): List<CustomSpEntry> {
@@ -176,7 +185,7 @@ class ScaledSp private constructor(
             inverter = inverter,
             fontScale = fontScale
         )
-        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -200,7 +209,7 @@ class ScaledSp private constructor(
             inverter = inverter,
             fontScale = fontScale
         )
-        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -225,7 +234,7 @@ class ScaledSp private constructor(
             inverter = inverter,
             fontScale = fontScale
         )
-        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -316,7 +325,73 @@ class ScaledSp private constructor(
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
         val finalFontScale = foundEntry?.fontScale ?: defaultFontScale
 
-        return valueToUse.toDynamicScaledSp(finalQualifier, finalFontScale, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        return valueToUse.toDynamicScaledSp(finalQualifier, finalFontScale, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+    }
+
+    @SuppressLint("ConfigurationScreenWidthHeight")
+    @Composable
+    private fun resolvePx(qualifier: DpQualifier): Float {
+        val context = LocalContext.current
+        val configuration = LocalConfiguration.current
+
+        val activity = context.findActivityScaledSp()
+        val windowLayoutInfo = remember(activity) {
+            activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+        }?.collectAsState(initial = null)
+
+        val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+            ?.filterIsInstance<FoldingFeature>()
+            ?.firstOrNull()
+
+        val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+        val currentScreenWidthDp = configuration.screenWidthDp.toFloat()
+        val currentScreenHeightDp = configuration.screenHeightDp.toFloat()
+        val aspectRatio = if (currentScreenWidthDp > 0 && currentScreenHeightDp > 0) {
+            kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
+        } else 1f
+
+        val foundEntry = remember(
+            currentUiModeType,
+            configuration.orientation,
+            configuration.screenWidthDp,
+            configuration.screenHeightDp,
+            configuration.smallestScreenWidthDp,
+            aspectRatio,
+            ignoreMultiWindows,
+            sortedCustomEntries
+        ) {
+            sortedCustomEntries.firstOrNull { entry ->
+                val qualifierEntry = entry.dpQualifierEntry
+                val uiModeMatch = entry.uiModeType == null || entry.uiModeType == currentUiModeType
+
+                val orientationMatch = when (entry.orientation) {
+                    Orientation.LANDSCAPE -> isLandscape
+                    Orientation.PORTRAIT -> isPortrait
+                    else -> true
+                }
+
+                if (qualifierEntry != null) {
+                    val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value
+                    if (entry.priority == 1 && uiModeMatch && qualifierMatch && orientationMatch) return@firstOrNull true
+                    if (entry.priority == 3 && qualifierMatch && orientationMatch) return@firstOrNull true
+                    return@firstOrNull false
+                } else {
+                    if (entry.priority == 2 && uiModeMatch && orientationMatch) return@firstOrNull true
+                    if (entry.priority == 4 && orientationMatch) return@firstOrNull true
+                    return@firstOrNull false
+                }
+            }
+        }
+
+        val valueToUse = foundEntry?.customValue ?: initialBaseValue
+        val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
+        val finalFontScale = foundEntry?.fontScale ?: defaultFontScale
+
+        return valueToUse.toDynamicScaledPx(finalQualifier, finalFontScale, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     @SuppressLint("ConfigurationScreenWidthHeight")
@@ -381,7 +456,72 @@ class ScaledSp private constructor(
         val valueToUse = foundEntry?.customValue ?: initialBaseValue
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return valueToUse.toDynamicScaledSp(finalQualifier, fontScale = false, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        return valueToUse.toDynamicScaledSp(finalQualifier, fontScale = false, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+    }
+
+    @SuppressLint("ConfigurationScreenWidthHeight")
+    @Composable
+    private fun resolveNoFontScalePx(qualifier: DpQualifier): Float {
+        val context = LocalContext.current
+        val configuration = LocalConfiguration.current
+
+        val activity = context.findActivityScaledSp()
+        val windowLayoutInfo = remember(activity) {
+            activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
+        }?.collectAsState(initial = null)
+
+        val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+            ?.filterIsInstance<FoldingFeature>()
+            ?.firstOrNull()
+
+        val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+        val currentScreenWidthDp = configuration.screenWidthDp.toFloat()
+        val currentScreenHeightDp = configuration.screenHeightDp.toFloat()
+        val aspectRatio = if (currentScreenWidthDp > 0 && currentScreenHeightDp > 0) {
+            kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
+        } else 1f
+
+        val foundEntry = remember(
+            currentUiModeType,
+            configuration.orientation,
+            configuration.screenWidthDp,
+            configuration.screenHeightDp,
+            configuration.smallestScreenWidthDp,
+            aspectRatio,
+            ignoreMultiWindows,
+            sortedCustomEntries
+        ) {
+            sortedCustomEntries.firstOrNull { entry ->
+                val qualifierEntry = entry.dpQualifierEntry
+                val uiModeMatch = entry.uiModeType == null || entry.uiModeType == currentUiModeType
+
+                val orientationMatch = when (entry.orientation) {
+                    Orientation.LANDSCAPE -> isLandscape
+                    Orientation.PORTRAIT -> isPortrait
+                    else -> true
+                }
+
+                if (qualifierEntry != null) {
+                    val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value
+                    if (entry.priority == 1 && uiModeMatch && qualifierMatch && orientationMatch) return@firstOrNull true
+                    if (entry.priority == 3 && qualifierMatch && orientationMatch) return@firstOrNull true
+                    return@firstOrNull false
+                } else {
+                    if (entry.priority == 2 && uiModeMatch && orientationMatch) return@firstOrNull true
+                    if (entry.priority == 4 && orientationMatch) return@firstOrNull true
+                    return@firstOrNull false
+                }
+            }
+        }
+
+        val valueToUse = foundEntry?.customValue ?: initialBaseValue
+        val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
+
+        return valueToUse.toDynamicScaledPx(finalQualifier, fontScale = false, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -407,9 +547,7 @@ class ScaledSp private constructor(
 
     /**
      * EN The final TextUnit (Sp) value resolved using Smallest Width (WITHOUT FONT SCALE).
-     * The fontScale flag in each entry is ignored; scale is always stripped.
      * PT O valor final TextUnit (Sp) resolvido usando Smallest Width (SEM ESCALA DE FONTE).
-     * A flag fontScale de cada entrada é ignorada; a escala é sempre removida.
      */
     @get:Composable
     val sem: TextUnit get() = resolveNoFontScale(DpQualifier.SMALL_WIDTH)
@@ -427,4 +565,46 @@ class ScaledSp private constructor(
      */
     @get:Composable
     val wem: TextUnit get() = resolveNoFontScale(DpQualifier.WIDTH)
+
+    /**
+     * EN The final Pixel (Float) value resolved using Smallest Width (WITH font scale).
+     * PT O valor final em Pixels (Float) resolvido usando Smallest Width (COM escala de fonte).
+     */
+    @get:Composable
+    val sspPx: Float get() = resolvePx(DpQualifier.SMALL_WIDTH)
+
+    /**
+     * EN The final Pixel (Float) value resolved using Screen Height (WITH font scale).
+     * PT O valor final em Pixels (Float) resolvido usando Altura da Tela (COM escala de fonte).
+     */
+    @get:Composable
+    val hspPx: Float get() = resolvePx(DpQualifier.HEIGHT)
+
+    /**
+     * EN The final Pixel (Float) value resolved using Screen Width (WITH font scale).
+     * PT O valor final em Pixels (Float) resolvido usando Largura da Tela (COM escala de fonte).
+     */
+    @get:Composable
+    val wspPx: Float get() = resolvePx(DpQualifier.WIDTH)
+
+    /**
+     * EN The final Pixel (Float) value resolved using Smallest Width (WITHOUT FONT SCALE).
+     * PT O valor final em Pixels (Float) resolvido usando Smallest Width (SEM ESCALA DE FONTE).
+     */
+    @get:Composable
+    val semPx: Float get() = resolveNoFontScalePx(DpQualifier.SMALL_WIDTH)
+
+    /**
+     * EN The final Pixel (Float) value resolved using Screen Height (WITHOUT FONT SCALE).
+     * PT O valor final em Pixels (Float) resolvido usando Altura da Tela (SEM ESCALA DE FONTE).
+     */
+    @get:Composable
+    val hemPx: Float get() = resolveNoFontScalePx(DpQualifier.HEIGHT)
+
+    /**
+     * EN The final Pixel (Float) value resolved using Screen Width (WITHOUT FONT SCALE).
+     * PT O valor final em Pixels (Float) resolvido usando Largura da Tela (SEM ESCALA DE FONTE).
+     */
+    @get:Composable
+    val wemPx: Float get() = resolveNoFontScalePx(DpQualifier.WIDTH)
 }

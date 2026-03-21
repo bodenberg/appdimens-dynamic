@@ -127,12 +127,21 @@ class DimenScaled private constructor(
     private val sortedCustomEntries: List<CustomDpEntry> = emptyList(),
     private val ignoreMultiWindows: Boolean = false,
     private val applyAspectRatio: Boolean = false,
-    private val customSensitivityK: Float? = null
+    private val customSensitivityK: Float? = null,
+    private val isCacheEnabled: Boolean = true
 ) {
 
     // EN Main constructor to start the chain.
     // PT Construtor principal para iniciar a cadeia.
-    constructor(initialBaseDp: Dp) : this(initialBaseDp, emptyList(), false, false, null)
+    constructor(initialBaseDp: Dp) : this(initialBaseDp, emptyList(), false, false, null, true)
+
+    /**
+     * EN Enable or disable the cache for this specific calculation chain.
+     * PT Habilita ou desabilita o cache para esta cadeia de cálculo específica.
+     */
+    fun setEnableCache(enable: Boolean = true): DimenScaled {
+        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enable)
+    }
 
     /**
      * EN Allow ignoring the constraint scaling based on multi-window resizing properties.
@@ -144,10 +153,10 @@ class DimenScaled private constructor(
      * PT Permite aplicar o redimensionamento baseado na proporção da tela.
      */
     fun aspectRatio(enable: Boolean = true, sensitivityK: Float? = null): DimenScaled {
-        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK)
+        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK, isCacheEnabled)
     }
     fun ignoreMultiWindows(ignore: Boolean = true): DimenScaled {
-        return DimenScaled(initialBaseDp, sortedCustomEntries, ignore)
+        return DimenScaled(initialBaseDp, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -198,7 +207,7 @@ class DimenScaled private constructor(
             priority = 1,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -228,7 +237,7 @@ class DimenScaled private constructor(
             priority = 1,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -252,7 +261,7 @@ class DimenScaled private constructor(
             priority = 2,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -278,7 +287,7 @@ class DimenScaled private constructor(
             priority = 2,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -303,7 +312,7 @@ class DimenScaled private constructor(
             priority = 3,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -329,7 +338,7 @@ class DimenScaled private constructor(
             priority = 3,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -352,7 +361,7 @@ class DimenScaled private constructor(
             priority = 4,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -475,35 +484,114 @@ class DimenScaled private constructor(
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
         val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicScaledDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-        //return dpToUse.toDynamicScaledDp(qualifier, foundEntry?.inverter)
+        return baseIntDp.toDynamicScaledDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+    }
+
+    @SuppressLint("ConfigurationScreenWidthHeight")
+    @Composable
+    private fun resolvePx(qualifier: DpQualifier): Float {
+        val context = LocalContext.current
+        val configuration = LocalConfiguration.current
+
+        val activity = context.findActivity()
+        val windowLayoutInfo = remember(activity) {
+            activity?.let {
+                WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it)
+            }
+        }?.collectAsState(initial = null)
+
+        val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+            ?.filterIsInstance<FoldingFeature>()
+            ?.firstOrNull()
+
+        val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+        val currentScreenWidthDp = configuration.screenWidthDp.toFloat()
+        val currentScreenHeightDp = configuration.screenHeightDp.toFloat()
+        val aspectRatio = if (currentScreenWidthDp > 0 && currentScreenHeightDp > 0) {
+            kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
+        } else 1f
+
+        val foundEntry = remember(
+            currentUiModeType,
+            configuration.orientation,
+            configuration.screenWidthDp,
+            configuration.screenHeightDp,
+            configuration.smallestScreenWidthDp,
+            aspectRatio,
+            ignoreMultiWindows,
+            sortedCustomEntries
+        ) {
+            sortedCustomEntries.firstOrNull { entry ->
+                val qualifierEntry = entry.dpQualifierEntry
+                val uiModeMatch = entry.uiModeType == null || entry.uiModeType == currentUiModeType
+                val orientationMatch = when (entry.orientation) {
+                    Orientation.LANDSCAPE -> isLandscape
+                    Orientation.PORTRAIT -> isPortrait
+                    else -> true
+                }
+
+                if (qualifierEntry != null) {
+                    val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value
+                    if (entry.priority == 1 && uiModeMatch && qualifierMatch && orientationMatch) return@firstOrNull true
+                    if (entry.priority == 3 && qualifierMatch && orientationMatch) return@firstOrNull true
+                    false
+                } else {
+                    if (entry.priority == 2 && uiModeMatch && orientationMatch) return@firstOrNull true
+                    if (entry.priority == 4 && orientationMatch) return@firstOrNull true
+                    false
+                }
+            }
+        }
+
+        val dpToUse: Dp = foundEntry?.customValue ?: initialBaseDp
+        val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
+        val baseIntDp = dpToUse.value.toInt()
+        return baseIntDp.toDynamicScaledPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
-     * EN
-     * The final Dp value that is resolved in Compose.
-     *
-     * PT
-     * O valor final Dp que é resolvido no Compose.
+     * EN The final Dp value resolved in Compose (Smallest Width).
+     * PT O valor final Dp resolvido no Compose (Smallest Width).
      */
     @get:Composable
     val sdp: Dp get() = resolve(DpQualifier.SMALL_WIDTH)
+
     /**
-     * EN
-     * The final Dp value that is resolved in Compose.
-     *
-     * PT
-     * O valor final Dp que é resolvido no Compose.
+     * EN The final Dp value resolved in Compose (Screen Height).
+     * PT O valor final Dp resolvido no Compose (Altura da Tela).
      */
     @get:Composable
     val hdp: Dp get() = resolve(DpQualifier.HEIGHT)
+
     /**
-     * EN
-     * The final Dp value that is resolved in Compose.
-     *
-     * PT
-     * O valor final Dp que é resolvido no Compose.
+     * EN The final Dp value resolved in Compose (Screen Width).
+     * PT O valor final Dp resolvido no Compose (Largura da Tela).
      */
     @get:Composable
     val wdp: Dp get() = resolve(DpQualifier.WIDTH)
+
+    /**
+     * EN The final Pixel (Float) value resolved in Compose (Smallest Width).
+     * PT O valor final em Pixels (Float) resolvido no Compose (Smallest Width).
+     */
+    @get:Composable
+    val sdpPx: Float get() = resolvePx(DpQualifier.SMALL_WIDTH)
+
+    /**
+     * EN The final Pixel (Float) value resolved in Compose (Screen Height).
+     * PT O valor final em Pixels (Float) resolvido no Compose (Altura da Tela).
+     */
+    @get:Composable
+    val hdpPx: Float get() = resolvePx(DpQualifier.HEIGHT)
+
+    /**
+     * EN The final Pixel (Float) value resolved in Compose (Screen Width).
+     * PT O valor final em Pixels (Float) resolvido no Compose (Largura da Tela).
+     */
+    @get:Composable
+    val wdpPx: Float get() = resolvePx(DpQualifier.WIDTH)
 }

@@ -24,6 +24,7 @@
  */
 package com.appdimens.dynamic.compose
 
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.util.TypedValue
 import androidx.compose.runtime.Composable
@@ -31,7 +32,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.appdimens.dynamic.common.DpQualifier
+import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.UnitType
+import com.appdimens.dynamic.core.DimenCache
 import kotlin.math.PI
 
 /**
@@ -69,21 +73,25 @@ object DimenPhysicalUnits {
      */
     fun toMm(mm: Float, resources: Resources): Float {
         val configuration = resources.configuration
-        val cacheKey = AppDimensCache.buildKey(
-            baseValue = mm.toInt(),
-            screenWidthDp = configuration.screenWidthDp,
-            screenHeightDp = configuration.screenHeightDp,
+        val context = DimenCache.CacheContext(
+            screenWidthDp        = configuration.screenWidthDp,
+            screenHeightDp       = configuration.screenHeightDp,
             smallestScreenWidthDp = configuration.smallestScreenWidthDp,
-            calcType = AppDimensCache.CalcType.UNITS,
-            qualifier = DpQualifier.SMALL_WIDTH, // Default for non-scaled
-            inverter = Inverter.DEFAULT,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = false,
-            applyAspectRatio = false,
-            valueType = AppDimensCache.ValueType.DP,
-            customSensitivityK = mm // Pass raw float as fingerprint hint
+            isLandscape          = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows   = false
         )
-        return AppDimensCache.getOrPut(cacheKey) {
+
+        val cacheKey = DimenCache.buildKey(
+            baseValue            = mm.toInt(),
+            context              = context,
+            calcType             = DimenCache.CalcType.UNITIES,
+            qualifier            = DpQualifier.SMALL_WIDTH, // Default for non-scaled
+            inverter             = Inverter.DEFAULT,
+            applyAspectRatio     = false,
+            valueType            = DimenCache.ValueType.DP,
+            customSensitivityK   = mm // Pass raw float as fingerprint hint
+        )
+        return DimenCache.getOrPut(cacheKey) {
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, mm, resources.displayMetrics) / resources.displayMetrics.density
         }
     }

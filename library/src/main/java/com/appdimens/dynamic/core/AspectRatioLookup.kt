@@ -7,7 +7,7 @@
  *
  * Licensed under the Apache License, Version 2.0.
  */
-package com.appdimens.dynamic.common
+package com.appdimens.dynamic.core
 
 import kotlin.math.ln
 
