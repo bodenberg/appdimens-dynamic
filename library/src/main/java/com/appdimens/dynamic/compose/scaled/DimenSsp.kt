@@ -779,6 +779,8 @@ fun Int.toDynamicScaledSp(
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val density = LocalDensity.current
 
+    val androidContext = LocalContext.current
+
     return remember(
         this,
         qualifier,
@@ -792,9 +794,10 @@ fun Int.toDynamicScaledSp(
         configuration.screenHeightDp,
         configuration.smallestScreenWidthDp,
         configuration.screenLayout,
-        density.fontScale
+        density.fontScale,
+        androidContext
     ) {
-        val context = DimenCache.CacheContext(
+        val cacheContext = DimenCache.CacheContext(
             screenWidthDp        = configuration.screenWidthDp,
             screenHeightDp       = configuration.screenHeightDp,
             smallestScreenWidthDp = configuration.smallestScreenWidthDp,
@@ -804,7 +807,7 @@ fun Int.toDynamicScaledSp(
 
         val cacheKey = DimenCache.buildKey(
             baseValue             = this,
-            context               = context,
+            context               = cacheContext,
             calcType              = DimenCache.CalcType.SCALED,
             qualifier             = qualifier,
             inverter              = inverter,
@@ -866,8 +869,7 @@ fun Int.toDynamicScaledSp(
             }
         }
 
-        val context = LocalContext.current
-        val scaledValue = DimenCache.getOrPut(cacheKey, context) {
+        val scaledValue = DimenCache.getOrPut(cacheKey, androidContext) {
             val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
             var actualQualifier = qualifier

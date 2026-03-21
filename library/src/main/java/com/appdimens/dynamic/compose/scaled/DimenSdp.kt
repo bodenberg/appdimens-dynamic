@@ -470,6 +470,8 @@ fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.
         max(currentScreenWidthDp, currentScreenHeightDp) / min(currentScreenWidthDp, currentScreenHeightDp)
     } else 1f
 
+    val androidContext = LocalContext.current
+
     return remember(
         this,
         qualifier,
@@ -482,9 +484,10 @@ fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.
         configuration.screenHeightDp,
         configuration.smallestScreenWidthDp,
         configuration.screenLayout,
-        aspectRatio
+        aspectRatio,
+        androidContext
     ) {
-        val context = DimenCache.CacheContext(
+        val cacheContext = DimenCache.CacheContext(
             screenWidthDp        = configuration.screenWidthDp,
             screenHeightDp       = configuration.screenHeightDp,
             smallestScreenWidthDp = configuration.smallestScreenWidthDp,
@@ -494,7 +497,7 @@ fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.
 
         val cacheKey = DimenCache.buildKey(
             baseValue            = this,
-            context              = context,
+            context              = cacheContext,
             calcType             = DimenCache.CalcType.SCALED,
             qualifier            = qualifier,
             inverter             = inverter,
@@ -550,8 +553,7 @@ fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.
             return@remember (this.toFloat() * factor).dp
         }
 
-        val context = LocalContext.current
-        val scaledFloat = DimenCache.getOrPut(cacheKey, context) {
+        val scaledFloat = DimenCache.getOrPut(cacheKey, androidContext) {
             val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
             val isPortrait  = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
