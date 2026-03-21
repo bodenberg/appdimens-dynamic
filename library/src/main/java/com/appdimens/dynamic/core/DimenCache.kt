@@ -35,9 +35,17 @@
  */
 package com.appdimens.dynamic.core
 
+import android.content.Context
 import android.content.res.Configuration
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.preferencesDataStore
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.firstOrNull
+import java.nio.ByteBuffer
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReferenceArray
 import kotlin.math.max
 import kotlin.math.min
@@ -69,6 +77,15 @@ object DimenCache {
     // ─────────────────────────────────────────────────────────────────────────
     // CONFIGURATION & PERSISTENT STATE
     // ─────────────────────────────────────────────────────────────────────────
+
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "dimen_cache_prefs")
+    private val KEY_SW_DP = intPreferencesKey("smallest_width_dp")
+    private val KEY_CACHE_DATA = byteArrayPreferencesKey("cache_mirror")
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val isInitializing = AtomicBoolean(false)
+    private val isInitialized = AtomicBoolean(false)
+    private var saveJob: Job? = null
 
     /**
      * EN Calculation types based on the library's package structure.
@@ -115,11 +132,11 @@ object DimenCache {
      * Number of slots in the primary (Tier-1) fast cache.
      * Must be a power of 2 so that `key and MASK` is a fast modulo.
      *
-     * 2048 slots @ ~56 bytes per entry ≈ ~112 KB peak.
+     * 4096 slots @ ~56 bytes per entry ≈ ~224 KB peak.
      * Hit-rate analysis: typical app has 100-300 distinct dimension configurations;
-     * 2048 slots gives <15% fill ratio under normal usage — near-zero collision rate.
+     * 4096 slots gives <10% fill ratio under normal usage — near-zero collision rate.
      */
-    private const val CACHE_SIZE = 2048
+    private const val CACHE_SIZE = 4096
     private const val CACHE_MASK = CACHE_SIZE - 1
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -244,6 +261,82 @@ object DimenCache {
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
+     * EN Initializes the persistent DataStore and loads saved entries.
+     * This is idempotent and safe to call multiple times.
+     *
+     * PT Inicializa o DataStore persistente e carrega as entradas salvas.
+     */
+    @JvmStatic
+    fun init(context: Context) {
+        if (isInitialized.get() || isInitializing.getAndSet(true)) return
+
+        val appContext = context.applicationContext
+        val currentSw = appContext.resources.configuration.smallestScreenWidthDp
+
+        scope.launch {
+            try {
+                val prefs = appContext.dataStore.data.firstOrNull()
+                val savedSw = prefs?.get(KEY_SW_DP) ?: 0
+                val rawData = prefs?.get(KEY_CACHE_DATA)
+
+                if (savedSw != currentSw || rawData == null) {
+                    // Invalidate if SW changed or no data
+                    if (savedSw != 0 && savedSw != currentSw) {
+                        clearAll()
+                        appContext.dataStore.edit { it.clear() }
+                    }
+                } else {
+                    // Load into memory
+                    loadFromByteArray(rawData)
+                }
+                
+                currentSmallestWidthDp = currentSw
+            } catch (e: Exception) {
+                // Fallback to empty cache on error
+            } finally {
+                isInitialized.set(true)
+                isInitializing.set(false)
+            }
+        }
+    }
+
+    private fun loadFromByteArray(data: ByteArray) {
+        if (data.size < CACHE_SIZE * 12) return
+        val buffer = ByteBuffer.wrap(data)
+        for (i in 0 until CACHE_SIZE) {
+            val key = buffer.long
+            val value = buffer.float
+            if (key != 0L) {
+                store.set(i, Entry(key, value))
+            }
+        }
+    }
+
+    private fun saveToPersistence(context: Context) {
+        // Debounced save
+        saveJob?.cancel()
+        saveJob = scope.launch {
+            delay(500) // Wait for layout pass to settle
+            val appContext = context.applicationContext
+            val buffer = ByteBuffer.allocate(CACHE_SIZE * 12)
+            for (i in 0 until CACHE_SIZE) {
+                val entry = store.get(i)
+                if (entry != null) {
+                    buffer.putLong(entry.key)
+                    buffer.putFloat(entry.value)
+                } else {
+                    buffer.putLong(0L)
+                    buffer.putFloat(0f)
+                }
+            }
+            appContext.dataStore.edit { prefs ->
+                prefs[KEY_SW_DP] = currentSmallestWidthDp
+                prefs[KEY_CACHE_DATA] = buffer.array()
+            }
+        }
+    }
+
+    /**
      * EN
      * Reads from the cache or computes (and stores) a new value.
      *
@@ -260,8 +353,11 @@ object DimenCache {
      * Lock-free: nenhum mutex é usado.
      */
     @JvmStatic
-    fun getOrPut(key: Long, compute: () -> Float): Float {
+    fun getOrPut(key: Long, context: Context? = null, compute: () -> Float): Float {
         if (!isEnabled) return compute()
+
+        // Auto-init if context provided
+        context?.let { init(it) }
 
         val index = (key xor (key ushr 32)).toInt() and CACHE_MASK
 
@@ -276,8 +372,18 @@ object DimenCache {
 
         // LOCK-FREE WRITE — atomic set; last writer wins (always correct)
         store.set(index, Entry(key, computed))
+
+        // Trigger async save
+        context?.let { saveToPersistence(it) }
+
         return computed
     }
+
+    /**
+     * Backward compatibility for non-context calls
+     */
+    @JvmStatic
+    fun getOrPut(key: Long, compute: () -> Float): Float = getOrPut(key, null, compute)
 
     /**
      * EN Reads a cached value without computing a fallback.

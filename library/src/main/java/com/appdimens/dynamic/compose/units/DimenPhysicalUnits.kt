@@ -28,6 +28,7 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.util.TypedValue
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
@@ -71,9 +72,9 @@ object DimenPhysicalUnits {
      * @param resources The resources to get the display metrics.
      * @return The value in Dp.
      */
-    fun toMm(mm: Float, resources: Resources): Float {
+    fun toMm(mm: Float, resources: Resources, context: android.content.Context? = null): Float {
         val configuration = resources.configuration
-        val context = DimenCache.CacheContext(
+        val cacheContext = DimenCache.CacheContext(
             screenWidthDp        = configuration.screenWidthDp,
             screenHeightDp       = configuration.screenHeightDp,
             smallestScreenWidthDp = configuration.smallestScreenWidthDp,
@@ -83,7 +84,7 @@ object DimenPhysicalUnits {
 
         val cacheKey = DimenCache.buildKey(
             baseValue            = mm.toInt(),
-            context              = context,
+            context              = cacheContext,
             calcType             = DimenCache.CalcType.UNITIES,
             qualifier            = DpQualifier.SMALL_WIDTH, // Default for non-scaled
             inverter             = Inverter.DEFAULT,
@@ -91,7 +92,7 @@ object DimenPhysicalUnits {
             valueType            = DimenCache.ValueType.DP,
             customSensitivityK   = mm // Pass raw float as fingerprint hint
         )
-        return DimenCache.getOrPut(cacheKey) {
+        return DimenCache.getOrPut(cacheKey, context) {
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, mm, resources.displayMetrics) / resources.displayMetrics.density
         }
     }
@@ -265,8 +266,9 @@ object DimenPhysicalUnits {
     @get:Composable
     val Float.mm: Float
         get() {
+            val context = LocalContext.current
             val resources = LocalResources.current
-            return with(LocalDensity.current) { toMm(this@mm, resources) }
+            return with(LocalDensity.current) { toMm(this@mm, resources, context) }
         }
 
     /**
@@ -277,8 +279,9 @@ object DimenPhysicalUnits {
     @get:Composable
     val Int.mm: Float
         get() {
+            val context = LocalContext.current
             val resources = LocalResources.current
-            return with(LocalDensity.current) { toMm(this@mm.toFloat(), resources) }
+            return with(LocalDensity.current) { toMm(this@mm.toFloat(), resources, context) }
         }
 
     /**

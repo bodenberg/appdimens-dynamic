@@ -631,7 +631,7 @@ fun Int.toDynamicScaledSpPx(
     )
 
     val scaledSp = if (enableCache) {
-        DimenCache.getOrPut(cacheKey) {
+        DimenCache.getOrPut(cacheKey, context) {
             calculateScaledSp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
         }
     } else {
@@ -741,7 +741,7 @@ fun Int.toDynamicScaledSp(
     )
 
     return if (enableCache) {
-        DimenCache.getOrPut(cacheKey) {
+        DimenCache.getOrPut(cacheKey, context) {
             calculateScaledSp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
         }
     } else {

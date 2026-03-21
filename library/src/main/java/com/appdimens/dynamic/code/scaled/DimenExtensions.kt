@@ -533,7 +533,7 @@ fun Int.toDynamicScaledPx(
     )
 
     val scaledDp = if (enableCache) {
-        DimenCache.getOrPut(cacheKey) {
+        DimenCache.getOrPut(cacheKey, context) {
             calculateScaledDp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
         }
     } else {
@@ -641,7 +641,7 @@ fun Int.toDynamicScaledDp(
     )
 
     return if (enableCache) {
-        DimenCache.getOrPut(cacheKey) {
+        DimenCache.getOrPut(cacheKey, context) {
             calculateScaledDp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
         }
     } else {

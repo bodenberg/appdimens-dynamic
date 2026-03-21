@@ -550,7 +550,8 @@ fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.
             return@remember (this.toFloat() * factor).dp
         }
 
-        val scaledFloat = DimenCache.getOrPut(cacheKey) {
+        val context = LocalContext.current
+        val scaledFloat = DimenCache.getOrPut(cacheKey, context) {
             val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
             val isPortrait  = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
