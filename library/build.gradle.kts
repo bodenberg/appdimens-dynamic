@@ -24,8 +24,8 @@ mavenPublishing {
     )
 
     pom {
-        name.set("AppDimens: Absolute precision dp, sp, px")
-        description.set("Absolute precision in the use of dimensions independent of resolution (Density-independent Pixels, Scale-independent Pixels, Pixels).")
+        name.set("AppDimens Dynamic: Absolute precision dp, sp, px")
+        description.set("Absolute precision in the use of dimensions independent of resolution (dimens, dimension, dimensions, dp, sp, dimen, responsive, adaptative, text unit, font scale, font size, resize, textunit, mm, cm, inch, device, physical, android, dpi, sdpi, auto, hdpi, ldpi, mdpi, precision).")
         url.set("https://github.com/bodenberg/appdimens-dynamic")
 
         licenses {
@@ -181,11 +181,14 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.runtime)
 
+    implementation(libs.androidx.window)
+
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.core)
+    implementation(libs.androidx.datastore.preferences)
 
     //dokkaPlugin(libs.android.documentation.plugin)
     testImplementation(libs.junit)
