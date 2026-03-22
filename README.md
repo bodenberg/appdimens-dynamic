@@ -10,7 +10,7 @@
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.0.0-beta")
+    implementation("io.github.bodenberg:appdimens-dynamic:3.0.0-beta1")
 }
 ```
 
