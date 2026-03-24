@@ -29,16 +29,14 @@ import android.content.res.Configuration
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
-import android.annotation.SuppressLint
-import android.content.res.Resources
 import android.util.TypedValue
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.core.DimenCache
-import kotlin.math.max
-import kotlin.math.min
 
 // EN Rotation facilitator extensions for non-Compose (Views).
 // PT Extensões facilitadoras para rotação em não-Compose (Views).
+
+private const val BASE_RATIO_STEP = 300f
 
 /**
  * EN
@@ -507,23 +505,19 @@ fun Int.toDynamicScaledPx(
     enableCache: Boolean = true
 ): Float {
     // EN Validation requirement (limits usage to avoid creating thousands of dimens files).
-    require(this in -300..600) { "Value must be between -300 and 600. Current value: $this" }
+    require(this in -1023..1024) { "Value must be between -1023 and 1024. Current value: $this" }
 
     val resources = context.resources
     val configuration = resources.configuration
     val displayMetrics = resources.displayMetrics
     
-    val cacheContext = DimenCache.CacheContext(
-        screenWidthDp = configuration.screenWidthDp,
-        screenHeightDp = configuration.screenHeightDp,
-        smallestScreenWidthDp = configuration.smallestScreenWidthDp,
-        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-        ignoreMultiWindows = ignoreMultiWindows
-    )
-
     val cacheKey = DimenCache.buildKey(
         baseValue = this,
-        context = cacheContext,
+        screenWidthDp = configuration.screenWidthDp,
+        screenHeightDp = configuration.screenHeightDp,
+        smallestWidthDp = configuration.smallestScreenWidthDp,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
         calcType = DimenCache.CalcType.SCALED,
         qualifier = qualifier,
         inverter = inverter,
@@ -573,35 +567,25 @@ private fun calculateScaledDp(
         Inverter.DEFAULT  -> {}
     }
 
-    var isMultiWindow = false
-    if (ignoreMultiWindows) {
+    val isMultiWindow = if (ignoreMultiWindows) {
         val smallestWidthDp = configuration.smallestScreenWidthDp.toFloat()
         val currentScreenWidthDp = configuration.screenWidthDp.toFloat()
         // Simple heuristic for multi-window detection in non-Compose
         val isLayoutSplit = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
         val isSmallDiff = (smallestWidthDp - currentScreenWidthDp) < (smallestWidthDp * 0.1f)
-        isMultiWindow = isLayoutSplit && !isSmallDiff
-    }
+        isLayoutSplit && !isSmallDiff
+    } else false
 
-    val factor: Float = if (ignoreMultiWindows && isMultiWindow) {
-        1.00f
+    return if (isMultiWindow) {
+        baseValue.toFloat()
     } else {
         val screenDimension = when (actualQualifier) {
             DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
             DpQualifier.WIDTH -> configuration.screenWidthDp.toFloat()
             else -> configuration.smallestScreenWidthDp.toFloat()
         }
-        if (applyAspectRatio) {
-            val difference = screenDimension - 300f
-            val logAr = DimenCache.currentLogNormalizedAr
-            val adjustment = (customSensitivityK ?: (0.08f / 30f)) * logAr
-            1.0f + difference * ((0.10f / 30f) + adjustment)
-        } else {
-            screenDimension / 300f
-        }
+        DimenCache.calculateRawScaling(baseValue, screenDimension, applyAspectRatio, customSensitivityK)
     }
-
-    return baseValue.toFloat() * factor
 }
 
 /**
@@ -621,17 +605,13 @@ fun Int.toDynamicScaledDp(
     val resources = context.resources
     val configuration = resources.configuration
     
-    val cacheContext = DimenCache.CacheContext(
-        screenWidthDp = configuration.screenWidthDp,
-        screenHeightDp = configuration.screenHeightDp,
-        smallestScreenWidthDp = configuration.smallestScreenWidthDp,
-        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-        ignoreMultiWindows = ignoreMultiWindows
-    )
-
     val cacheKey = DimenCache.buildKey(
         baseValue = this,
-        context = cacheContext,
+        screenWidthDp = configuration.screenWidthDp,
+        screenHeightDp = configuration.screenHeightDp,
+        smallestWidthDp = configuration.smallestScreenWidthDp,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
         calcType = DimenCache.CalcType.SCALED,
         qualifier = qualifier,
         inverter = inverter,

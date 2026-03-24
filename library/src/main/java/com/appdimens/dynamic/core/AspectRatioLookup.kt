@@ -196,7 +196,19 @@ object AspectRatioLookup {
     )
 
     // ── Values: ln(key) = ln(ar / 1.78f) ─────────────────────────────────────────────────────
-    private val values: FloatArray = FloatArray(keys.size) { i -> ln(keys[i]) }
+    private val values: FloatArray = floatArrayOf(
+        -1.15233f, -1.087376f, -1.022763f, -0.947781f, -0.86441f, -0.799842f, -0.727532f, -0.659906f, -0.63847f, -0.576609f,
+        -0.576609f, -0.527802f, -0.481267f, -0.394228f, -0.353537f, -0.329755f, -0.3143f, -0.291422f, -0.269187f, -0.254505f,
+        -0.225897f, -0.211956f, -0.184524f, -0.171144f, -0.144795f, -0.106583f, -0.088066f, -0.069779f, -0.045939f, -0.028502f,
+        -0.011263f, 0.0f, 0.011138f, 0.038547f, 0.065226f, 0.080935f, 0.09631f, 0.116538f, 0.136365f, 0.14609f,
+        0.165345f, 0.188883f, 0.202696f, 0.21188f, 0.225381f, 0.238781f, 0.256269f, 0.269263f, 0.286306f, 0.298845f,
+        0.335686f, 0.339681f, 0.363392f, 0.378916f, 0.401725f, 0.416669f, 0.427683f, 0.442247f, 0.452985f, 0.488089f,
+        0.522003f, 0.554804f, 0.586564f, 0.617292f, 0.629355f, 0.647156f, 0.676154f, 0.693147f, 0.704334f, 0.731743f,
+        0.758373f, 0.784358f, 0.809685f, 0.834386f, 0.858492f, 0.87501f, 0.881989f, 0.904987f, 0.927468f, 0.949455f,
+        0.97093f, 0.991992f, 1.012619f, 1.032829f, 1.052638f, 1.072029f, 1.091084f, 1.109783f, 1.128139f, 1.146164f,
+        1.163838f, 1.181236f, 1.198337f, 1.21515f, 1.247923f, 1.263929f, 1.279683f, 1.295193f, 1.310466f, 1.325482f,
+        1.354907f, 1.369301f, 1.397457f, 1.502832f, 1.598134f, 1.620615f, 1.685157f, 1.725976f, 1.821286f, 1.855251f, 1.908297f
+    )
 
     init {
         // Runtime assertion: keys must be sorted (debug-only cost, stripped by R8 in release)
@@ -220,18 +232,19 @@ object AspectRatioLookup {
         while (low <= high) {
             val mid = (low + high) ushr 1
             val midVal = keys[mid]
+            
+            // Branchless sign check replacement for abs() where possible, 
+            // but Kotlin's abs is an intrinsic. We focus on the most common path.
             val diff = if (normalizedAr >= midVal) normalizedAr - midVal else midVal - normalizedAr
 
             if (diff <= TOLERANCE) return values[mid]
 
-            if (midVal < normalizedAr) low = mid + 1 else high = mid - 1
+            if (midVal < normalizedAr) {
+                low = mid + 1
+            } else {
+                high = mid - 1
+            }
         }
-
-        // Post-search: check boundary neighbours
-        if (high >= 0 && (if (normalizedAr >= keys[high]) normalizedAr - keys[high] else keys[high] - normalizedAr) <= TOLERANCE)
-            return values[high]
-        if (low < keys.size && (if (normalizedAr >= keys[low]) normalizedAr - keys[low] else keys[low] - normalizedAr) <= TOLERANCE)
-            return values[low]
 
         return null
     }

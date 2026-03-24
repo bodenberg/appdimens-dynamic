@@ -35,49 +35,15 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.TextUnit
-import androidx.window.layout.FoldingFeature
-import androidx.window.layout.WindowInfoTracker
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
+import com.appdimens.dynamic.compose.getCurrentUiModeType
 
 // EN Rotation facilitator extensions for Sp.
 // PT Extensões facilitadoras para rotação (Sp).
 
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)**.
- * Uses the base value by default, but when the device is in the specified [orientation],
- * it uses [rotationValue] scaled with the given [finalQualifierResolver].
- * Usage example: `30.sspRotate(45, DpQualifier.SMALL_WIDTH, Orientation.LANDSCAPE)`
- * → 30.ssp by default, 45 scaled by SMALL_WIDTH in landscape.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
- * Usa o valor base por padrão, mas quando o dispositivo está na [orientation] especificada,
- * usa [rotationValue] escalado com o [finalQualifierResolver] dado.
- * Exemplo de uso: `30.sspRotate(45, DpQualifier.SMALL_WIDTH, Orientation.LANDSCAPE)`
- * → 30.ssp por padrão, 45 escalado por SMALL_WIDTH no paisagem.
- */
-@Composable
-fun Int.sspRotate(
-    rotationValue: Int,
-    finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
-    orientation: Orientation = Orientation.LANDSCAPE,
-    fontScale: Boolean = true
-, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
-    val isTargetOrientation = when (orientation) {
-        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-        else -> false
-    }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledSp(finalQualifierResolver, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
-}
+// Removed duplicate Int.sspRotate (kept in DimenSsp.kt)
 
 /**
  * EN Pixel (Float) variant of [sspRotate].
@@ -227,38 +193,7 @@ fun TextUnit.sspRotatePlainPx(
     }
 }
 
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Screen Height (hDP)**.
- * Uses the base value by default, but when the device is in the specified [orientation],
- * it uses [rotationValue] scaled with the given [finalQualifierResolver].
- * Usage example: `30.hspRotate(45, DpQualifier.HEIGHT, Orientation.LANDSCAPE)`
- * → 30.hsp by default, 45 scaled by HEIGHT in landscape.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Altura da Tela (hDP)**.
- * Usa o valor base por padrão, mas quando o dispositivo está na [orientation] especificada,
- * usa [rotationValue] escalado com o [finalQualifierResolver] dado.
- */
-@Composable
-fun Int.hspRotate(
-    rotationValue: Int,
-    finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
-    orientation: Orientation = Orientation.LANDSCAPE,
-    fontScale: Boolean = true
-, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
-    val isTargetOrientation = when (orientation) {
-        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-        else -> false
-    }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledSp(finalQualifierResolver, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
-}
+// Removed duplicate Int.hspRotate (kept in DimenSsp.kt)
 
 /**
  * EN Pixel (Float) variant of [hspRotate].
@@ -408,38 +343,7 @@ fun TextUnit.hspRotatePlainPx(
     }
 }
 
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Screen Width (wDP)**.
- * Uses the base value by default, but when the device is in the specified [orientation],
- * it uses [rotationValue] scaled with the given [finalQualifierResolver].
- * Usage example: `30.wspRotate(45, DpQualifier.WIDTH, Orientation.LANDSCAPE)`
- * → 30.wsp by default, 45 scaled by WIDTH in landscape.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Largura da Tela (wDP)**.
- * Usa o valor base por padrão, mas quando o dispositivo está na [orientation] especificada,
- * usa [rotationValue] escalado com o [finalQualifierResolver] dado.
- */
-@Composable
-fun Int.wspRotate(
-    rotationValue: Int,
-    finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
-    orientation: Orientation = Orientation.LANDSCAPE,
-    fontScale: Boolean = true
-, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
-    val isTargetOrientation = when (orientation) {
-        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-        else -> false
-    }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledSp(finalQualifierResolver, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
-}
+// Removed duplicate Int.wspRotate (kept in DimenSsp.kt)
 
 /**
  * EN Pixel (Float) variant of [wspRotate].
@@ -589,52 +493,11 @@ fun TextUnit.wspRotatePlainPx(
     }
 }
 
-// EN Helps extract the activity from context wrapper (Sp version)
-// PT Ajuda a extrair a activity de um context wrapper (versão Sp)
-private tailrec fun android.content.Context.findActivitySp(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivitySp()
-    else -> null
-}
 
 // EN UiModeType facilitator extensions for Sp.
 // PT Extensões facilitadoras para UiModeType (Sp).
 
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)**.
- * Uses the base value by default, but when the device matches the specified [uiModeType],
- * it uses [modeValue] instead.
- * Usage example: `30.sspMode(50, UiModeType.TELEVISION)`
- * → 30.ssp by default, 50.ssp on television.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
- * Usa o valor base por padrão, mas quando o dispositivo corresponde ao [uiModeType] especificado,
- * usa [modeValue] no lugar.
- */
-@SuppressLint("ConfigurationScreenWidthHeight")
-@Composable
-fun Int.sspMode(
-    modeValue: Int,
-    uiModeType: UiModeType,
-    finalQualifierResolver: DpQualifier? = null,
-    fontScale: Boolean = true
-, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
-}
+// Removed duplicate Int.sspMode (kept in DimenSsp.kt)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
@@ -651,14 +514,7 @@ fun Int.sspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -684,14 +540,7 @@ fun TextUnit.sspMode(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -713,14 +562,7 @@ fun TextUnit.sspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -746,14 +588,7 @@ fun TextUnit.sspModePlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -771,15 +606,8 @@ fun TextUnit.sspModePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
     val density = LocalDensity.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -787,41 +615,7 @@ fun TextUnit.sspModePlainPx(
     }
 }
 
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Screen Height (hDP)**.
- * Uses the base value by default, but when the device matches the specified [uiModeType],
- * it uses [modeValue] instead.
- * Usage example: `30.hspMode(50, UiModeType.TELEVISION)`
- * → 30.hsp by default, 50.hsp on television.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Altura da Tela (hDP)**.
- * Usa o valor base por padrão, mas quando o dispositivo corresponde ao [uiModeType] especificado,
- * usa [modeValue] no lugar.
- */
-@SuppressLint("ConfigurationScreenWidthHeight")
-@Composable
-fun Int.hspMode(
-    modeValue: Int,
-    uiModeType: UiModeType,
-    finalQualifierResolver: DpQualifier? = null,
-    fontScale: Boolean = true
-, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
-}
+// Removed duplicate Int.hspMode (kept in DimenSsp.kt)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
@@ -838,14 +632,7 @@ fun Int.hspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -871,14 +658,7 @@ fun TextUnit.hspMode(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -900,14 +680,7 @@ fun TextUnit.hspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -933,14 +706,7 @@ fun TextUnit.hspModePlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -958,15 +724,8 @@ fun TextUnit.hspModePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
     val density = LocalDensity.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -974,41 +733,7 @@ fun TextUnit.hspModePlainPx(
     }
 }
 
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Screen Width (wDP)**.
- * Uses the base value by default, but when the device matches the specified [uiModeType],
- * it uses [modeValue] instead.
- * Usage example: `30.wspMode(50, UiModeType.TELEVISION)`
- * → 30.wsp by default, 50.wsp on television.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Largura da Tela (wDP)**.
- * Usa o valor base por padrão, mas quando o dispositivo corresponde ao [uiModeType] especificado,
- * usa [modeValue] no lugar.
- */
-@SuppressLint("ConfigurationScreenWidthHeight")
-@Composable
-fun Int.wspMode(
-    modeValue: Int,
-    uiModeType: UiModeType,
-    finalQualifierResolver: DpQualifier? = null,
-    fontScale: Boolean = true
-, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
-}
+// Removed duplicate Int.wspMode (kept in DimenSsp.kt)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
@@ -1025,14 +750,7 @@ fun Int.wspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -1058,14 +776,7 @@ fun TextUnit.wspMode(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -1087,14 +798,7 @@ fun TextUnit.wspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -1120,14 +824,7 @@ fun TextUnit.wspModePlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -1147,13 +844,7 @@ fun TextUnit.wspModePlainPx(
 ): Float {
     val context = LocalContext.current
     val density = LocalDensity.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -1671,13 +1362,7 @@ fun Int.sspScreen(
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -1706,13 +1391,7 @@ fun Int.sspScreenPx(
 ): Float {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -1746,13 +1425,7 @@ fun TextUnit.sspScreen(
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -1780,13 +1453,7 @@ fun TextUnit.sspScreenPx(
 ): Float {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -1820,13 +1487,7 @@ fun TextUnit.sspScreenPlain(
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -1855,13 +1516,7 @@ fun TextUnit.sspScreenPlainPx(
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -1894,13 +1549,7 @@ fun Int.hspScreen(
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -1929,13 +1578,7 @@ fun Int.hspScreenPx(
 ): Float {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -1969,13 +1612,7 @@ fun TextUnit.hspScreen(
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -2003,13 +1640,7 @@ fun TextUnit.hspScreenPx(
 ): Float {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -2043,13 +1674,7 @@ fun TextUnit.hspScreenPlain(
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -2078,13 +1703,7 @@ fun TextUnit.hspScreenPlainPx(
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -2117,13 +1736,7 @@ fun Int.wspScreen(
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -2152,13 +1765,7 @@ fun Int.wspScreenPx(
 ): Float {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -2192,13 +1799,7 @@ fun TextUnit.wspScreen(
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -2226,13 +1827,7 @@ fun TextUnit.wspScreenPx(
 ): Float {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -2266,13 +1861,7 @@ fun TextUnit.wspScreenPlain(
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {
@@ -2301,13 +1890,7 @@ fun TextUnit.wspScreenPlainPx(
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
-    val activity = context.findActivitySp()
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-        ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-    val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue
     return if (uiModeMatch && qualifierMatch) {

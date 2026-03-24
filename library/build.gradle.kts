@@ -14,7 +14,7 @@ val isJitPack = System.getenv("JITPACK") == "true"
         || System.getenv("ci") == "true"
 
 mavenPublishing {
-    coordinates("io.github.bodenberg", "appdimens-dynamic", "3.0.0-beta1")
+    coordinates("io.github.bodenberg", "appdimens-dynamic", "3.0.0")
 
     configure(
         AndroidSingleVariantLibrary(
@@ -138,6 +138,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
+    
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 
     buildTypes {
         release {
@@ -192,6 +196,8 @@ dependencies {
 
     //dokkaPlugin(libs.android.documentation.plugin)
     testImplementation(libs.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

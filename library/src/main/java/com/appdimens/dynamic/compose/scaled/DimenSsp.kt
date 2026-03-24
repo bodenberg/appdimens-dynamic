@@ -28,28 +28,183 @@ import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import com.appdimens.dynamic.core.DimenCache
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
+import com.appdimens.dynamic.common.Orientation
+import com.appdimens.dynamic.common.UiModeType
+import com.appdimens.dynamic.core.DimenCache
 
-// EN Composable extensions for quick dynamic text scaling (Sp) using the DP XML resources.
-// PT Extensões Composable para escalonamento dinâmico rápido de texto (Sp) usando os recursos XML de DP.
+// EN Rotation facilitator extensions for Compose.
+// PT Extensões facilitadoras para rotação em Compose.
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Smallest Width (swDP)**.
- * Reads the pre-calculated DP resource (e.g., `_16sdp`) and converts it to Sp, respecting
- * the user's font scale setting.
+ * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**.
+ * Uses the base value by default, but when the device is in the specified [orientation],
+ * it uses [rotationValue] scaled with the given [finalQualifierResolver].
+ */
+@Composable
+fun Int.sspRotate(
+    rotationValue: Int,
+    finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
+    orientation: Orientation = Orientation.LANDSCAPE,
+    fontScale: Boolean = true,
+    ignoreMultiWindows: Boolean = false,
+    applyAspectRatio: Boolean = false,
+    customSensitivityK: Float? = null
+): TextUnit {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledSp(finalQualifierResolver, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
+ * EN
+ * Extension for Int with dynamic scaling based on **Screen Height (hDP)**.
+ */
+@Composable
+fun Int.hspRotate(
+    rotationValue: Int,
+    finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
+    orientation: Orientation = Orientation.LANDSCAPE,
+    fontScale: Boolean = true,
+    ignoreMultiWindows: Boolean = false,
+    applyAspectRatio: Boolean = false,
+    customSensitivityK: Float? = null
+): TextUnit {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledSp(finalQualifierResolver, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
+ * EN
+ * Extension for Int with dynamic scaling based on **Screen Width (wDP)**.
+ */
+@Composable
+fun Int.wspRotate(
+    rotationValue: Int,
+    finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
+    orientation: Orientation = Orientation.LANDSCAPE,
+    fontScale: Boolean = true,
+    ignoreMultiWindows: Boolean = false,
+    applyAspectRatio: Boolean = false,
+    customSensitivityK: Float? = null
+): TextUnit {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) {
+        rotationValue.toDynamicScaledSp(finalQualifierResolver, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+// EN UiModeType facilitator extensions for Compose.
+// PT Extensões facilitadoras para UiModeType em Compose.
+
+/**
+ * EN
+ * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**.
+ * Uses the base value by default, but when the device matches the specified [uiModeType],
+ * it uses [modeValue] instead.
+ */
+@Composable
+fun Int.sspMode(
+    modeValue: Int,
+    uiModeType: UiModeType,
+    finalQualifierResolver: DpQualifier? = null,
+    fontScale: Boolean = true,
+    ignoreMultiWindows: Boolean = false,
+    applyAspectRatio: Boolean = false,
+    customSensitivityK: Float? = null
+): TextUnit {
+    val currentUiModeType = LocalUiModeType.current
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
+ * EN
+ * Extension for Int with dynamic scaling based on **Screen Height (hDP)**.
+ */
+@Composable
+fun Int.hspMode(
+    modeValue: Int,
+    uiModeType: UiModeType,
+    finalQualifierResolver: DpQualifier? = null,
+    fontScale: Boolean = true,
+    ignoreMultiWindows: Boolean = false,
+    applyAspectRatio: Boolean = false,
+    customSensitivityK: Float? = null
+): TextUnit {
+    val currentUiModeType = LocalUiModeType.current
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+/**
+ * EN
+ * Extension for Int with dynamic scaling based on **Screen Width (wDP)**.
+ */
+@Composable
+fun Int.wspMode(
+    modeValue: Int,
+    uiModeType: UiModeType,
+    finalQualifierResolver: DpQualifier? = null,
+    fontScale: Boolean = true,
+    ignoreMultiWindows: Boolean = false,
+    applyAspectRatio: Boolean = false,
+    customSensitivityK: Float? = null
+): TextUnit {
+    val currentUiModeType = LocalUiModeType.current
+    return if (currentUiModeType == uiModeType) {
+        modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    } else {
+        this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
+    }
+}
+
+// EN Standard Compose extensions for quick dynamic scaling.
+// PT Extensões Compose padrão para dimensionamento dinâmico rápido.
+
+/**
+ * EN
+ * Extension for Int with dynamic scaling based on the **Smallest Width (swDP)**.
  * Usage example: `16.ssp`.
  *
  * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
- * Lê o recurso DP pré-calculado (ex: `_16sdp`) e converte para Sp, respeitando
- * a configuração de escala de fonte do usuário.
+ * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
  * Exemplo de uso: `16.ssp`.
  */
 @get:Composable
@@ -67,22 +222,49 @@ val Int.sspia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, 
 @get:Composable
 val Int.sspPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = true)
 @get:Composable
-val Int.sspaPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
+val Int.sspPxa: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Int.sspiPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Int.sspPxi: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Int.sspiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Int.sspPxia: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)**, but
- * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.sspPh`.
+ * Extension for Int with dynamic scaling based on the **Smallest Width (swDP)**, but
+ * without respecting the system font scale.
+ * Usage example: `16.nem`.
  *
  * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Smallest Width (swDP)**, mas
- * na orientação retrato atua como **Altura da Tela (hDP)**.
- * Exemplo de uso: `32.sspPh`.
+ * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**,
+ * mas sem respeitar a escala de fonte do sistema.
+ * Exemplo de uso: `16.nem`.
+ */
+@get:Composable
+val Int.nem: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false)
+/** a variant explicitly with applyAspectRatio */
+@get:Composable
+val Int.nema: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
+/** i variant explicitly with ignoreMultiWindows */
+@get:Composable
+val Int.nemi: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
+/** ia variant explicitly with both */
+@get:Composable
+val Int.nemia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+
+@get:Composable
+val Int.nemPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false)
+@get:Composable
+val Int.nemPxa: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
+@get:Composable
+val Int.nemPxi: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
+@get:Composable
+val Int.nemPxia: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+
+/**
+ * EN
+ * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
+ * in portrait orientation it acts as **Screen Height (hDP)**.
+ * Usage example: `32.sspPh`.
  */
 @get:Composable
 val Int.sspPh: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
@@ -107,14 +289,9 @@ val Int.sspPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH,
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)**, but
+ * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in landscape orientation it acts as **Screen Height (hDP)**.
  * Usage example: `32.sspLh`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Smallest Width (swDP)**, mas
- * na orientação paisagem atua como **Altura da Tela (hDP)**.
- * Exemplo de uso: `32.sspLh`.
  */
 @get:Composable
 val Int.sspLh: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
@@ -139,14 +316,9 @@ val Int.sspPxiaLh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH,
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)**, but
+ * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in portrait orientation it acts as **Screen Width (wDP)**.
  * Usage example: `32.sspPw`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Smallest Width (swDP)**, mas
- * na orientação retrato atua como **Largura da Tela (wDP)**.
- * Exemplo de uso: `32.sspPw`.
  */
 @get:Composable
 val Int.sspPw: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
@@ -167,18 +339,13 @@ val Int.sspPxaPw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, 
 @get:Composable
 val Int.sspPxiPw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
 @get:Composable
-val Int.sspPwiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Int.sspPxiaPw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)**, but
+ * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in landscape orientation it acts as **Screen Width (wDP)**.
  * Usage example: `32.sspLw`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Smallest Width (swDP)**, mas
- * na orientação paisagem atua como **Largura da Tela (wDP)**.
- * Exemplo de uso: `32.sspLw`.
  */
 @get:Composable
 val Int.sspLw: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
@@ -203,12 +370,8 @@ val Int.sspPxiaLw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH,
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Height (hDP)**.
+ * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**.
  * Usage example: `32.hsp`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Altura da Tela (hDP)**.
- * Exemplo de uso: `32.hsp`.
  */
 @get:Composable
 val Int.hsp: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = true)
@@ -225,22 +388,44 @@ val Int.hspia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontS
 @get:Composable
 val Int.hspPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = true)
 @get:Composable
-val Int.hspaPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
+val Int.hspPxa: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Int.hspiPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
+val Int.hspPxi: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Int.hspiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Int.hspPxia: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Height (hDP)**, but
+ * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
+ * without respecting the system font scale.
+ * Usage example: `32.hem`.
+ */
+@get:Composable
+val Int.hem: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false)
+/** a variant explicitly with applyAspectRatio */
+@get:Composable
+val Int.hema: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
+/** i variant explicitly with ignoreMultiWindows */
+@get:Composable
+val Int.hemi: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
+/** ia variant explicitly with both */
+@get:Composable
+val Int.hemia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+
+@get:Composable
+val Int.hemPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false)
+@get:Composable
+val Int.hemPxa: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
+@get:Composable
+val Int.hemPxi: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
+@get:Composable
+val Int.hemPxia: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+
+/**
+ * EN
+ * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
  * in landscape orientation it acts as **Screen Width (wDP)**.
  * Usage example: `32.hspLw`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Altura da Tela (hDP)**, mas
- * na orientação paisagem atua como **Largura da Tela (wDP)**.
- * Exemplo de uso: `32.hspLw`.
  */
 @get:Composable
 val Int.hspLw: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
@@ -265,14 +450,9 @@ val Int.hspPxiaLw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, font
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Height (hDP)**, but
+ * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
  * in portrait orientation it acts as **Screen Width (wDP)**.
  * Usage example: `32.hspPw`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Altura da Tela (hDP)**, mas
- * na orientação retrato atua como **Largura da Tela (wDP)**.
- * Exemplo de uso: `32.hspPw`.
  */
 @get:Composable
 val Int.hspPw: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
@@ -297,12 +477,8 @@ val Int.hspPxiaPw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, font
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Width (wDP)**.
+ * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**.
  * Usage example: `100.wsp`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Largura da Tela (wDP)**.
- * Exemplo de uso: `100.wsp`.
  */
 @get:Composable
 val Int.wsp: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = true)
@@ -319,22 +495,44 @@ val Int.wspia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontSc
 @get:Composable
 val Int.wspPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = true)
 @get:Composable
-val Int.wspaPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
+val Int.wspPxa: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Int.wspiPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Int.wspPxi: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Int.wspiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Int.wspPxia: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Width (wDP)**, but
+ * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
+ * without respecting the system font scale.
+ * Usage example: `100.wem`.
+ */
+@get:Composable
+val Int.wem: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false)
+/** a variant explicitly with applyAspectRatio */
+@get:Composable
+val Int.wema: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
+/** i variant explicitly with ignoreMultiWindows */
+@get:Composable
+val Int.wemi: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
+/** ia variant explicitly with both */
+@get:Composable
+val Int.wemia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+
+@get:Composable
+val Int.wemPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false)
+@get:Composable
+val Int.wemPxa: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
+@get:Composable
+val Int.wemPxi: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
+@get:Composable
+val Int.wemPxia: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+
+/**
+ * EN
+ * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * in landscape orientation it acts as **Screen Height (hDP)**.
  * Usage example: `100.wspLh`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Largura da Tela (wDP)**, mas
- * na orientação paisagem atua como **Altura da Tela (hDP)**.
- * Exemplo de uso: `100.wspLh`.
  */
 @get:Composable
 val Int.wspLh: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
@@ -359,14 +557,9 @@ val Int.wspPxiaLh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontS
 
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Width (wDP)**, but
+ * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * in portrait orientation it acts as **Screen Height (hDP)**.
  * Usage example: `100.wspPh`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Largura da Tela (wDP)**, mas
- * na orientação retrato atua como **Altura da Tela (hDP)**.
- * Exemplo de uso: `100.wspPh`.
  */
 @get:Composable
 val Int.wspPh: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
@@ -389,329 +582,12 @@ val Int.wspPxiPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontSc
 @get:Composable
 val Int.wspPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
-// EN WITHOUT FONT SCALE variants (sem escala de fonte)
-// PT Variantes SEM ESCALA DE FONTE
-
 /**
  * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)** (WITHOUT FONT SCALE).
- * Usage example: `16.sem`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Smallest Width (swDP)** (SEM ESCALA DE FONTE).
- * Exemplo de uso: `16.sem`.
- */
-@get:Composable
-val Int.sei: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false)
-/** a variant explicitly with applyAspectRatio */
-@get:Composable
-val Int.seia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
-/** i variant explicitly with ignoreMultiWindows */
-@get:Composable
-val Int.seii: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
-/** ia variant explicitly with both */
-@get:Composable
-val Int.seiia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
-
-@get:Composable
-val Int.seiPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false)
-@get:Composable
-val Int.seiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
-@get:Composable
-val Int.seiiPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
-@get:Composable
-val Int.seiiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
-
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)** (WITHOUT FONT SCALE), but
- * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.semPh`.
- *
- * PT
- * Extensão para TextUnit (Sp) (SEM ESCALA DE FONTE) com dimensionamento baseado na **Smallest Width**, mas
- * na orientação retrato atua como Altura da Tela.
- * Exemplo de uso: `32.semPh`.
- */
-@get:Composable
-val Int.semPh: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PH)
-/** a variant explicitly with applyAspectRatio */
-@get:Composable
-val Int.semPha: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
-/** i variant explicitly with ignoreMultiWindows */
-@get:Composable
-val Int.semPhi: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
-/** ia variant explicitly with both */
-@get:Composable
-val Int.semPhia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
-
-@get:Composable
-val Int.semPxPh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PH)
-@get:Composable
-val Int.semPxaPh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
-@get:Composable
-val Int.semPxiPh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
-@get:Composable
-val Int.semPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
-
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)** (WITHOUT FONT SCALE), but
- * in landscape orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.semLh`.
- *
- * PT
- * Extensão para TextUnit (Sp) (SEM ESCALA DE FONTE) com dimensionamento baseado na **Smallest Width**, mas
- * na orientação paisagem atua como Altura da Tela.
- * Exemplo de uso: `32.semLh`.
- */
-@get:Composable
-val Int.semLh: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LH)
-/** a variant explicitly with applyAspectRatio */
-@get:Composable
-val Int.semLha: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
-/** i variant explicitly with ignoreMultiWindows */
-@get:Composable
-val Int.semLhi: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
-/** ia variant explicitly with both */
-@get:Composable
-val Int.semLhia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
-
-@get:Composable
-val Int.semPxLh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LH)
-@get:Composable
-val Int.semPxaLh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
-@get:Composable
-val Int.semPxiLh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
-@get:Composable
-val Int.semPxiaLh: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
-
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)** (WITHOUT FONT SCALE), but
- * in portrait orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.semPw`.
- *
- * PT
- * Extensão para TextUnit (Sp) (SEM ESCALA DE FONTE) com dimensionamento baseado na **Smallest Width**, mas
- * na orientação retrato atua como Largura da Tela.
- * Exemplo de uso: `32.semPw`.
- */
-@get:Composable
-val Int.semPw: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PW)
-/** a variant explicitly with applyAspectRatio */
-@get:Composable
-val Int.semPwa: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
-/** i variant explicitly with ignoreMultiWindows */
-@get:Composable
-val Int.semPwi: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
-/** ia variant explicitly with both */
-@get:Composable
-val Int.semPwia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
-
-@get:Composable
-val Int.semPxPw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PW)
-@get:Composable
-val Int.semPxaPw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
-@get:Composable
-val Int.semPxiPw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
-@get:Composable
-val Int.semPwiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
-
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)** (WITHOUT FONT SCALE), but
- * in landscape orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.semLw`.
- *
- * PT
- * Extensão para TextUnit (Sp) (SEM ESCALA DE FONTE) com dimensionamento baseado na **Smallest Width**, mas
- * na orientação paisagem atua como Largura da Tela.
- * Exemplo de uso: `32.semLw`.
- */
-@get:Composable
-val Int.semLw: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LW)
-/** a variant explicitly with applyAspectRatio */
-@get:Composable
-val Int.semLwa: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
-/** i variant explicitly with ignoreMultiWindows */
-@get:Composable
-val Int.semLwi: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
-/** ia variant explicitly with both */
-@get:Composable
-val Int.semLwia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
-
-@get:Composable
-val Int.semPxLw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LW)
-@get:Composable
-val Int.semPxaLw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
-@get:Composable
-val Int.semPxiLw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
-@get:Composable
-val Int.semPxiaLw: Float get() = this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale = false, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
-
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Height (hDP)** (WITHOUT FONT SCALE).
- * Usage example: `32.hem`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Altura da Tela (hDP)** (SEM ESCALA DE FONTE).
- * Exemplo de uso: `32.hem`.
- */
-@get:Composable
-val Int.hei: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false)
-/** a variant explicitly with applyAspectRatio */
-@get:Composable
-val Int.heia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
-/** i variant explicitly with ignoreMultiWindows */
-@get:Composable
-val Int.heii: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
-/** ia variant explicitly with both */
-@get:Composable
-val Int.heiia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
-
-@get:Composable
-val Int.heiPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false)
-@get:Composable
-val Int.heiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
-@get:Composable
-val Int.heiiPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
-@get:Composable
-val Int.heiiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
-
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Height (hDP)** (WITHOUT FONT SCALE), but
- * in landscape orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.hemLw`.
- *
- * PT
- * Extensão para TextUnit (Sp) (SEM ESCALA DE FONTE) baseado na Altura, mas na paisagem atua como Largura.
- * Exemplo de uso: `32.hemLw`.
- */
-@get:Composable
-val Int.hemLw: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.PH_TO_LW)
-/** a variant explicitly with applyAspectRatio */
-@get:Composable
-val Int.hemLwa: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
-/** i variant explicitly with ignoreMultiWindows */
-@get:Composable
-val Int.hemLwi: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
-/** ia variant explicitly with both */
-@get:Composable
-val Int.hemLwia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
-
-@get:Composable
-val Int.hemPxLw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.PH_TO_LW)
-@get:Composable
-val Int.hemPxaLw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
-@get:Composable
-val Int.hemPxiLw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
-@get:Composable
-val Int.hemPxiaLw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
-
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Height (hDP)** (WITHOUT FONT SCALE), but
- * in portrait orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.hemPw`.
- *
- * PT
- * Extensão para TextUnit (Sp) (SEM ESCALA DE FONTE) baseado na Altura, mas no retrato atua como Largura.
- * Exemplo de uso: `32.hemPw`.
- */
-@get:Composable
-val Int.hemPw: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.LH_TO_PW)
-/** a variant explicitly with applyAspectRatio */
-@get:Composable
-val Int.hemPwa: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
-/** i variant explicitly with ignoreMultiWindows */
-@get:Composable
-val Int.hemPwi: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
-/** ia variant explicitly with both */
-@get:Composable
-val Int.hemPwia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
-
-@get:Composable
-val Int.hemPxPw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.LH_TO_PW)
-@get:Composable
-val Int.hemPxaPw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
-@get:Composable
-val Int.hemPxiPw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
-@get:Composable
-val Int.hemPxiaPw: Float get() = this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale = false, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
-
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Width (wDP)** (WITHOUT FONT SCALE).
- * Usage example: `100.wem`.
- *
- * PT
- * Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Largura da Tela (wDP)** (SEM ESCALA DE FONTE).
- * Exemplo de uso: `100.wem`.
- */
-@get:Composable
-val Int.wei: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false)
-/** a variant explicitly with applyAspectRatio */
-@get:Composable
-val Int.weia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
-/** i variant explicitly with ignoreMultiWindows */
-@get:Composable
-val Int.weii: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
-/** ia variant explicitly with both */
-@get:Composable
-val Int.weiia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
-
-@get:Composable
-val Int.weiPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false)
-@get:Composable
-val Int.weiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
-@get:Composable
-val Int.weiiPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
-@get:Composable
-val Int.weiiaPx: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
-
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Width (wDP)** (WITHOUT FONT SCALE), but
- * in landscape orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wemLh`.
- *
- * PT
- * Extensão para TextUnit (Sp) (SEM ESCALA DE FONTE) baseado na Largura, mas na paisagem atua como Altura.
- * Exemplo de uso: `100.wemLh`.
- */
-@get:Composable
-val Int.wemLh: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.PW_TO_LH)
-/** a variant explicitly with applyAspectRatio */
-@get:Composable
-val Int.wemLha: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
-/** i variant explicitly with ignoreMultiWindows */
-@get:Composable
-val Int.wemLhi: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
-/** ia variant explicitly with both */
-@get:Composable
-val Int.wemLhia: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
-
-@get:Composable
-val Int.wemPxLh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.PW_TO_LH)
-@get:Composable
-val Int.wemPxaLh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
-@get:Composable
-val Int.wemPxiLh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
-@get:Composable
-val Int.wemPxiaLh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
-
-/**
- * EN
- * Extension for TextUnit (Sp) with dynamic scaling based on the **Screen Width (wDP)** (WITHOUT FONT SCALE), but
+ * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
+ * without respecting the system font scale, and
  * in portrait orientation it acts as **Screen Height (hDP)**.
  * Usage example: `100.wemPh`.
- *
- * PT
- * Extensão para TextUnit (Sp) (SEM ESCALA DE FONTE) baseado na Largura, mas no retrato atua como Altura.
- * Exemplo de uso: `100.wemPh`.
  */
 @get:Composable
 val Int.wemPh: TextUnit get() = this.toDynamicScaledSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
@@ -771,8 +647,8 @@ fun Int.toDynamicScaledSp(
     ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null,
     enableCache: Boolean = true
 ): TextUnit {
-    require(this in 1..600) {
-        "Value must be between 1 and 600 to use the dynamic scaling dimension logic. Current value: $this"
+    require(this in 1..1024) {
+        "Value must be between 1 and 1024 to use the dynamic scaling dimension logic. Current value: $this"
     }
 
     val configuration = LocalConfiguration.current
@@ -781,146 +657,79 @@ fun Int.toDynamicScaledSp(
 
     val androidContext = LocalContext.current
 
-    return remember(
-        this,
-        qualifier,
-        fontScale,
-        inverter,
-        ignoreMultiWindows,
-        applyAspectRatio,
-        customSensitivityK,
-        configuration.orientation,
-        configuration.screenWidthDp,
-        configuration.screenHeightDp,
-        configuration.smallestScreenWidthDp,
-        configuration.screenLayout,
-        density.fontScale,
-        androidContext
-    ) {
-        val cacheContext = DimenCache.CacheContext(
+    val scaledValue = if (enableCache) {
+        val cacheKey = DimenCache.buildKey(
+            baseValue            = this,
             screenWidthDp        = configuration.screenWidthDp,
             screenHeightDp       = configuration.screenHeightDp,
-            smallestScreenWidthDp = configuration.smallestScreenWidthDp,
+            smallestWidthDp      = configuration.smallestScreenWidthDp,
             isLandscape          = isLandscape,
-            ignoreMultiWindows   = ignoreMultiWindows
+            ignoreMultiWindows   = ignoreMultiWindows,
+            calcType             = DimenCache.CalcType.SCALED,
+            qualifier            = qualifier,
+            inverter             = inverter,
+            applyAspectRatio     = applyAspectRatio,
+            valueType            = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
+            customSensitivityK   = customSensitivityK
         )
-
-        val cacheKey = DimenCache.buildKey(
-            baseValue             = this,
-            context               = cacheContext,
-            calcType              = DimenCache.CalcType.SCALED,
-            qualifier             = qualifier,
-            inverter              = inverter,
-            applyAspectRatio      = applyAspectRatio,
-            valueType             = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE
-                                    else DimenCache.ValueType.SP_NO_SCALE,
-            customSensitivityK    = customSensitivityK
-        )
-
-        if (!enableCache) {
-            val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-            var actualQualifier = qualifier
-
-            when (inverter) {
-                Inverter.PH_TO_LW -> if (isLandscape && qualifier == DpQualifier.HEIGHT)      actualQualifier = DpQualifier.WIDTH
-                Inverter.PW_TO_LH -> if (isLandscape && qualifier == DpQualifier.WIDTH)       actualQualifier = DpQualifier.HEIGHT
-                Inverter.LH_TO_PW -> if (isPortrait  && qualifier == DpQualifier.HEIGHT)      actualQualifier = DpQualifier.WIDTH
-                Inverter.LW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.WIDTH)       actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_LH -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_LW -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-                Inverter.SW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_PW -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-                Inverter.DEFAULT  -> {}
-            }
-
-            var isMultiWindow = false
-            if (ignoreMultiWindows) {
-                val smallestWidthDp = configuration.smallestScreenWidthDp.toFloat()
-                val currentWidthDp  = configuration.screenWidthDp.toFloat()
-                val isLayoutSplit   = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
-                val isSmallDiff     = (smallestWidthDp - currentWidthDp) < (smallestWidthDp * 0.1f)
-                isMultiWindow = isLayoutSplit && !isSmallDiff
-            }
-
-            val factor: Float = if (ignoreMultiWindows && isMultiWindow) {
-                1.00f
-            } else {
-                val screenDimension = when (actualQualifier) {
-                    DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
-                    DpQualifier.WIDTH  -> configuration.screenWidthDp.toFloat()
-                    else               -> configuration.smallestScreenWidthDp.toFloat()
-                }
-                if (applyAspectRatio) {
-                    val difference    = screenDimension - 300f
-                    val logAr         = DimenCache.currentLogNormalizedAr
-                    val adjustment    = (customSensitivityK ?: (0.08f / 30f)) * logAr
-                    1.0f + difference * ((0.10f / 30f) + adjustment)
-                } else {
-                    screenDimension / 300f
-                }
-            }
-
-            val rawResult = this * factor
-            return@remember if (fontScale) {
-                rawResult.sp
-            } else {
-                (rawResult / density.fontScale).sp
-            }
+        DimenCache.getOrPut(cacheKey, androidContext) {
+            calculateSspValue(this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
         }
+    } else {
+        calculateSspValue(this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
+    }
 
-        val scaledValue = DimenCache.getOrPut(cacheKey, androidContext) {
-            val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+    return if (fontScale) {
+        scaledValue.sp
+    } else {
+        (scaledValue / density.fontScale).sp
+    }
+}
 
-            var actualQualifier = qualifier
+private fun calculateSspValue(
+    baseValue: Int,
+    qualifier: DpQualifier,
+    inverter: Inverter,
+    ignoreMultiWindows: Boolean,
+    applyAspectRatio: Boolean,
+    customSensitivityK: Float?,
+    configuration: Configuration
+): Float {
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
-            when (inverter) {
-                Inverter.PH_TO_LW -> if (isLandscape && qualifier == DpQualifier.HEIGHT)      actualQualifier = DpQualifier.WIDTH
-                Inverter.PW_TO_LH -> if (isLandscape && qualifier == DpQualifier.WIDTH)       actualQualifier = DpQualifier.HEIGHT
-                Inverter.LH_TO_PW -> if (isPortrait  && qualifier == DpQualifier.HEIGHT)      actualQualifier = DpQualifier.WIDTH
-                Inverter.LW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.WIDTH)       actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_LH -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_LW -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-                Inverter.SW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_PW -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-                Inverter.DEFAULT  -> {}
-            }
+    var actualQualifier = qualifier
 
-            var isMultiWindow = false
-            if (ignoreMultiWindows) {
-                val smallestWidthDp = configuration.smallestScreenWidthDp.toFloat()
-                val currentWidthDp  = configuration.screenWidthDp.toFloat()
-                val isLayoutSplit   = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
-                val isSmallDiff     = (smallestWidthDp - currentWidthDp) < (smallestWidthDp * 0.1f)
-                isMultiWindow = isLayoutSplit && !isSmallDiff
-            }
+    when (inverter) {
+        Inverter.PH_TO_LW -> if (isLandscape && qualifier == DpQualifier.HEIGHT)      actualQualifier = DpQualifier.WIDTH
+        Inverter.PW_TO_LH -> if (isLandscape && qualifier == DpQualifier.WIDTH)       actualQualifier = DpQualifier.HEIGHT
+        Inverter.LH_TO_PW -> if (isPortrait  && qualifier == DpQualifier.HEIGHT)      actualQualifier = DpQualifier.WIDTH
+        Inverter.LW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.WIDTH)       actualQualifier = DpQualifier.HEIGHT
+        Inverter.SW_TO_LH -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
+        Inverter.SW_TO_LW -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
+        Inverter.SW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
+        Inverter.SW_TO_PW -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
+        Inverter.DEFAULT  -> {}
+    }
 
-            val factor: Float = if (ignoreMultiWindows && isMultiWindow) {
-                1.00f
-            } else {
-                val screenDimension = when (actualQualifier) {
-                    DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
-                    DpQualifier.WIDTH  -> configuration.screenWidthDp.toFloat()
-                    else               -> configuration.smallestScreenWidthDp.toFloat()
-                }
-                if (applyAspectRatio) {
-                    val difference    = screenDimension - 300f
-                    val logAr         = DimenCache.currentLogNormalizedAr
-                    val adjustment    = (customSensitivityK ?: (0.08f / 30f)) * logAr
-                    1.0f + difference * ((0.10f / 30f) + adjustment)
-                } else {
-                    screenDimension / 300f
-                }
-            }
+    var isMultiWindow = false
+    if (ignoreMultiWindows) {
+        val smallestWidthDp = configuration.smallestScreenWidthDp.toFloat()
+        val currentWidthDp  = configuration.screenWidthDp.toFloat()
+        val isLayoutSplit   = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
+        val isSmallDiff     = (smallestWidthDp - currentWidthDp) < (smallestWidthDp * 0.1f)
+        isMultiWindow = isLayoutSplit && !isSmallDiff
+    }
 
-            this * factor
+    return if (ignoreMultiWindows && isMultiWindow) {
+        baseValue.toFloat()
+    } else {
+        val screenDimension = when (actualQualifier) {
+            DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
+            DpQualifier.WIDTH  -> configuration.screenWidthDp.toFloat()
+            else               -> configuration.smallestScreenWidthDp.toFloat()
         }
-
-        if (fontScale) {
-            scaledValue.sp
-        } else {
-            (scaledValue / density.fontScale).sp
-        }
+        DimenCache.calculateRawScaling(baseValue, screenDimension, applyAspectRatio, customSensitivityK)
     }
 }
 

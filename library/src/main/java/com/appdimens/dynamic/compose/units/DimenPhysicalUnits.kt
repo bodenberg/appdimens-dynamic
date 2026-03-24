@@ -74,17 +74,13 @@ object DimenPhysicalUnits {
      */
     fun toMm(mm: Float, resources: Resources, context: android.content.Context? = null): Float {
         val configuration = resources.configuration
-        val cacheContext = DimenCache.CacheContext(
-            screenWidthDp        = configuration.screenWidthDp,
-            screenHeightDp       = configuration.screenHeightDp,
-            smallestScreenWidthDp = configuration.smallestScreenWidthDp,
-            isLandscape          = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows   = false
-        )
-
         val cacheKey = DimenCache.buildKey(
             baseValue            = mm.toInt(),
-            context              = cacheContext,
+            screenWidthDp        = configuration.screenWidthDp,
+            screenHeightDp       = configuration.screenHeightDp,
+            smallestWidthDp = configuration.smallestScreenWidthDp,
+            isLandscape          = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows   = false,
             calcType             = DimenCache.CalcType.UNITIES,
             qualifier            = DpQualifier.SMALL_WIDTH, // Default for non-scaled
             inverter             = Inverter.DEFAULT,

@@ -26,6 +26,7 @@ package com.appdimens.dynamic.compose
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
@@ -34,15 +35,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.window.layout.FoldingFeature
-import androidx.window.layout.WindowInfoTracker
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.DpQualifierEntry
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
+import com.appdimens.dynamic.compose.getCurrentUiModeType
+import com.appdimens.dynamic.core.DimenCache
 
 /**
  * EN
@@ -93,13 +95,7 @@ fun Dp.scaledDp(): DimenScaled = DimenScaled(this@scaledDp)
 @Composable
 fun Int.scaledDp(): DimenScaled = this.dp.scaledDp()
 
-// EN Helps extract the activity from context wrapper
-// PT Ajuda a extrair a activity de um context wrapper
-private tailrec fun android.content.Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}
+
 
 // EN Main class for conditional scaling.
 // PT Classe principal de dimensionamento condicional.
@@ -147,16 +143,16 @@ class DimenScaled private constructor(
      * EN Allow ignoring the constraint scaling based on multi-window resizing properties.
      * PT Permite ignorar o dimensionamento para os layouts de múltiplas janelas (divisão de tela).
      */
-    
+    fun ignoreMultiWindows(ignore: Boolean = true): DimenScaled {
+        return DimenScaled(initialBaseDp, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK, isCacheEnabled)
+    }
+
     /**
      * EN Allow applying aspect ratio based constraint scaling.
      * PT Permite aplicar o redimensionamento baseado na proporção da tela.
      */
     fun aspectRatio(enable: Boolean = true, sensitivityK: Float? = null): DimenScaled {
         return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK, isCacheEnabled)
-    }
-    fun ignoreMultiWindows(ignore: Boolean = true): DimenScaled {
-        return DimenScaled(initialBaseDp, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK, isCacheEnabled)
     }
 
     /**
@@ -410,18 +406,7 @@ class DimenScaled private constructor(
 
         // EN Extract FoldingFeature dynamically if context is an Activity
         // PT Extrai o FoldingFeature dinamicamente se o contexto for uma Activity
-        val activity = context.findActivity()
-        val windowLayoutInfo = remember(activity) {
-            activity?.let {
-                WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it)
-            }
-        }?.collectAsState(initial = null)
-        
-        val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-            ?.filterIsInstance<FoldingFeature>()
-            ?.firstOrNull()
-
-        val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+        val currentUiModeType = getCurrentUiModeType()
 
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -493,18 +478,7 @@ class DimenScaled private constructor(
         val context = LocalContext.current
         val configuration = LocalConfiguration.current
 
-        val activity = context.findActivity()
-        val windowLayoutInfo = remember(activity) {
-            activity?.let {
-                WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it)
-            }
-        }?.collectAsState(initial = null)
-
-        val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-            ?.filterIsInstance<FoldingFeature>()
-            ?.firstOrNull()
-
-        val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+        val currentUiModeType = getCurrentUiModeType()
 
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT

@@ -35,13 +35,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.TextUnit
-import androidx.window.layout.FoldingFeature
-import androidx.window.layout.WindowInfoTracker
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.DpQualifierEntry
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
+import com.appdimens.dynamic.compose.getCurrentUiModeType
 /**
  * EN
  * Represents a custom Sp entry with qualifiers and priority, for the Compose Sp builder.
@@ -92,13 +91,7 @@ fun TextUnit.scaledSp(): ScaledSp = ScaledSp(this.value.toInt())
 @Composable
 fun Int.scaledSp(): ScaledSp = ScaledSp(this)
 
-// EN Helps extract the activity from context wrapper (ScaledSp version)
-// PT Ajuda a extrair a activity de um context wrapper (versão ScaledSp)
-private tailrec fun android.content.Context.findActivityScaledSp(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivityScaledSp()
-    else -> null
-}
+
 
 /**
  * EN
@@ -268,16 +261,7 @@ class ScaledSp private constructor(
         val context = LocalContext.current
         val configuration = LocalConfiguration.current
 
-        val activity = context.findActivityScaledSp()
-        val windowLayoutInfo = remember(activity) {
-            activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-        }?.collectAsState(initial = null)
-
-        val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-            ?.filterIsInstance<FoldingFeature>()
-            ?.firstOrNull()
-
-        val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+        val currentUiModeType = getCurrentUiModeType()
 
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -334,16 +318,7 @@ class ScaledSp private constructor(
         val context = LocalContext.current
         val configuration = LocalConfiguration.current
 
-        val activity = context.findActivityScaledSp()
-        val windowLayoutInfo = remember(activity) {
-            activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-        }?.collectAsState(initial = null)
-
-        val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-            ?.filterIsInstance<FoldingFeature>()
-            ?.firstOrNull()
-
-        val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+        val currentUiModeType = getCurrentUiModeType()
 
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -400,16 +375,7 @@ class ScaledSp private constructor(
         val context = LocalContext.current
         val configuration = LocalConfiguration.current
 
-        val activity = context.findActivityScaledSp()
-        val windowLayoutInfo = remember(activity) {
-            activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-        }?.collectAsState(initial = null)
-
-        val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-            ?.filterIsInstance<FoldingFeature>()
-            ?.firstOrNull()
-
-        val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+        val currentUiModeType = getCurrentUiModeType()
 
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -465,16 +431,7 @@ class ScaledSp private constructor(
         val context = LocalContext.current
         val configuration = LocalConfiguration.current
 
-        val activity = context.findActivityScaledSp()
-        val windowLayoutInfo = remember(activity) {
-            activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-        }?.collectAsState(initial = null)
-
-        val foldingFeature = windowLayoutInfo?.value?.displayFeatures
-            ?.filterIsInstance<FoldingFeature>()
-            ?.firstOrNull()
-
-        val currentUiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+        val currentUiModeType = getCurrentUiModeType()
 
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT

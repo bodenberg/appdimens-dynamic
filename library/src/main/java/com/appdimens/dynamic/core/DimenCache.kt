@@ -17,13 +17,14 @@
  *  - Zero allocation in hot path: stores raw Float, caller boxes into Dp/TextUnit
  *
  * Bit Layout of the 64-bit Cache Key (Long):
- *  [63-54]  baseValue        — 10 bits → covers -300..600 (stored + 300, offset 0-900)
- *  [53-42]  screenWidthDp/2  — 12 bits → covers 0..8192dp
- *  [41-30]  screenHeightDp/2 — 12 bits → covers 0..8192dp
- *  [29-20]  smallestWidthDp  — 10 bits → covers 0..1023dp (sufficient for all devices)
- *  [19-17]  qualifier        —  3 bits → DpQualifier ordinal (0-7)
- *  [16-13]  inverter         —  4 bits → Inverter ordinal (0-9)
- *  [12]     orientation      —  1 bit  → 0=portrait, 1=landscape
+ *  [63-53]  baseValue        — 11 bits → covers -1023..1024 (stored + 1023, offset 0-2047)
+ *  [52-43]  screenWidthDp/2  — 10 bits → covers 0..2046dp
+ *  [42-33]  screenHeightDp/2 — 10 bits → covers 0..2046dp
+ *  [32-23]  smallestWidthDp  — 10 bits → covers 0..1023dp (sufficient for all devices)
+ *  [22-19]  CalcType         —  4 bits → Enum ordinal (0-15)
+ *  [18-17]  DpQualifier      —  2 bits → DpQualifier ordinal (0-3)
+ *  [16-13]  Inverter         —  4 bits → Inverter ordinal (0-15)
+ *  [12]     isLandscape      —  1 bit
  *  [11]     ignoreMultiWin   —  1 bit
  *  [10]     applyAspectRatio —  1 bit
  *  [ 9]     fontScale        —  1 bit  (sp only; irrelevant for Dp, always 0)
@@ -78,20 +79,22 @@ object DimenCache {
     // CONFIGURATION & PERSISTENT STATE
     // ─────────────────────────────────────────────────────────────────────────
 
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "dimen_cache_prefs")
-    private val KEY_SW_DP = intPreferencesKey("smallest_width_dp")
-    private val KEY_CACHE_DATA = byteArrayPreferencesKey("cache_mirror")
+    internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "dimen_cache_v2_prefs")
+    internal val KEY_SW_DP = intPreferencesKey("smallest_width_dp")
+    internal val KEY_CACHE_DATA = byteArrayPreferencesKey("cache_mirror")
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val isInitializing = AtomicBoolean(false)
-    private val isInitialized = AtomicBoolean(false)
-    private var saveJob: Job? = null
+    internal val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    internal val isInitializing = AtomicBoolean(false)
+    @PublishedApi
+    internal val isInitialized = AtomicBoolean(false)
+    internal var saveJob: Job? = null
 
     /**
      * EN Calculation types based on the library's package structure.
      * PT Tipos de cálculo baseados na estrutura de pacotes da biblioteca.
      */
-    enum class CalcType {
+    @PublishedApi
+    internal enum class CalcType {
         AUTO, DIAGONAL, FILL, FIT, FLUID, INTERPOLATED, LOGARITHMIC,
         PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES
     }
@@ -100,9 +103,10 @@ object DimenCache {
      * EN Master switch for the cache system. If disabled, all calls will recompute.
      * PT Chave mestre para o sistema de cache. Se desativado, todos os cálculos são refeitos.
      */
-    @Volatile
     @JvmStatic
-    var isEnabled: Boolean = true
+    @Volatile
+    @PublishedApi
+    internal var isEnabled: Boolean = true
 
     /**
      * EN Cached aspect ratio values to avoid recomputing on every dimension call.
@@ -110,11 +114,13 @@ object DimenCache {
      */
     @Volatile
     @JvmField
-    var currentNormalizedAr: Float = 1.0f
+    @PublishedApi
+    internal var currentNormalizedAr: Float = 1.0f
 
     @Volatile
     @JvmField
-    var currentLogNormalizedAr: Float = 0f
+    @PublishedApi
+    internal var currentLogNormalizedAr: Float = 0f
 
     /**
      * EN The smallest width (dp) used when the cache was last populated.
@@ -126,7 +132,8 @@ object DimenCache {
      */
     @Volatile
     @JvmField
-    var currentSmallestWidthDp: Int = 0
+    @PublishedApi
+    internal var currentSmallestWidthDp: Int = 0
 
     /**
      * Number of slots in the primary (Tier-1) fast cache.
@@ -136,8 +143,10 @@ object DimenCache {
      * Hit-rate analysis: typical app has 100-300 distinct dimension configurations;
      * 4096 slots gives <10% fill ratio under normal usage — near-zero collision rate.
      */
-    private const val CACHE_SIZE = 8192
-    private const val CACHE_MASK = CACHE_SIZE - 1
+    @PublishedApi
+    internal const val CACHE_SIZE = 8192
+    @PublishedApi
+    internal const val CACHE_MASK = CACHE_SIZE - 1
 
     // ─────────────────────────────────────────────────────────────────────────
     // CACHE ENTRY
@@ -154,7 +163,8 @@ object DimenCache {
      *           pixel conversion. Storing the raw Float avoids any boxing inside
      *           the cache itself.
      */
-    class Entry(
+    @PublishedApi
+    internal class Entry(
         @JvmField val key: Long,
         @JvmField val value: Float
     )
@@ -163,30 +173,47 @@ object DimenCache {
      * Atomic, lock-free backing array.
      * `null` = empty slot.
      */
+    @PublishedApi internal const val INV_BASE_RATIO = 0.0033333334f // 1f / 300f
+    @PublishedApi internal const val ADJUSTMENT_SCALE = 0.10f / 30f // 0.0033333334f
+    @PublishedApi internal const val SENSITIVITY_DEFAULT = 0.08f / 30f // 0.0026666667f
+
+    /**
+     * EN Unified high-performance scaling engine.
+     * Uses multiplication by pre-calculated reciprocals to avoid slow FP division.
+     */
+    @PublishedApi
+    internal fun calculateRawScaling(
+        baseValue: Int,
+        screenDimension: Float,
+        applyAspectRatio: Boolean,
+        customSensitivityK: Float?
+    ): Float {
+        val factor: Float = if (applyAspectRatio) {
+            val difference = screenDimension - 300f
+            val logAr = currentLogNormalizedAr
+            val adjustment = (customSensitivityK ?: SENSITIVITY_DEFAULT) * logAr
+            1.0f + difference * (ADJUSTMENT_SCALE + adjustment)
+        } else {
+            screenDimension * INV_BASE_RATIO
+        }
+
+        return baseValue.toFloat() * factor
+    }
+
     @JvmField
-    internal val store = AtomicReferenceArray<Entry?>(CACHE_SIZE)
+    @PublishedApi
+    internal var store = AtomicReferenceArray<Entry?>(CACHE_SIZE)
 
     // ─────────────────────────────────────────────────────────────────────────
     // KEY ENCODING — converts all call parameters into a single 64-bit Long
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * EN Context containing screen metrics and flags for cache key building.
-     * PT Contexto contendo métricas de tela e flags para construção da chave de cache.
-     */
-    data class CacheContext(
-        val screenWidthDp: Int,
-        val screenHeightDp: Int,
-        val smallestScreenWidthDp: Int,
-        val isLandscape: Boolean,
-        val ignoreMultiWindows: Boolean
-    )
-
-    /**
      * EN Dimension type discriminator for the cache key.
      * PT Discriminador de tipo de dimensão para a chave de cache.
      */
-    enum class ValueType {
+    @PublishedApi
+    internal enum class ValueType {
         /** Dp / pixel (non-text) dimension */
         DP,
         /** Sp / TextUnit with font scale */
@@ -200,25 +227,30 @@ object DimenCache {
      *
      * Optimized Bit layout (MSB → LSB):
      * ```
-     * [63-54]  baseValue + 300          10 bits  (-300..600 -> offset 0..900)
-     * [53-44]  screenWidthDp / 2        10 bits  (covers 0..2046dp)
-     * [43-34]  screenHeightDp / 2       10 bits  (covers 0..2046dp)
-     * [33-24]  smallestScreenWidthDp    10 bits  (covers 0..1023dp)
-     * [23-20]  CalcType ordinal          4 bits  (covers 0..15)
-     * [19-18]  DpQualifier ordinal       2 bits  (covers 0..3)
-     * [17-14]  Inverter ordinal          4 bits  (covers 0..15)
-     * [13]     isLandscape               1 bit
-     * [12]     ignoreMultiWindows        1 bit
-     * [11]     applyAspectRatio          1 bit
-     * [10]     fontScale flag            1 bit
-     * [ 9]     isDp                      1 bit
-     * [ 8- 0]  sensitivityK fingerprint  9 bits  (float bits ushr 23 & 0x1FF)
+     * [63-53]  baseValue + 1023         11 bits  (-1023..1024 -> offset 0..2047)
+     * [52-43]  screenWidthDp / 2        10 bits  (covers 0..2046dp)
+     * [42-33]  screenHeightDp / 2       10 bits  (covers 0..2046dp)
+     * [32-23]  smallestWidthDp         10 bits  (covers 0..1023dp)
+     * [22-19]  CalcType ordinal          4 bits  (covers 0..15)
+     * [18-17]  DpQualifier ordinal       2 bits  (covers 0..3)
+     * [16-13]  Inverter ordinal          4 bits  (covers 0..15)
+     * [12]     isLandscape               1 bit
+     * [11]     ignoreMultiWindows        1 bit
+     * [10]     applyAspectRatio          1 bit
+     * [ 9]     fontScale flag            1 bit
+     * [ 8]     isDp                      1 bit
+     * [ 7- 0]  sensitivityK fingerprint  8 bits  (float bits ushr 24 & 0xFF)
      * ```
      */
     @JvmStatic
-    fun buildKey(
+    @PublishedApi
+    internal fun buildKey(
         baseValue: Int,
-        context: CacheContext,
+        screenWidthDp: Int,
+        screenHeightDp: Int,
+        smallestWidthDp: Int,
+        isLandscape: Boolean,
+        ignoreMultiWindows: Boolean,
         calcType: CalcType,
         qualifier: DpQualifier,
         inverter: Inverter,
@@ -226,33 +258,33 @@ object DimenCache {
         valueType: ValueType,
         customSensitivityK: Float? = null
     ): Long {
-        val bv = (baseValue + 300).coerceIn(0, 1023).toLong()
-        val sw = (context.screenWidthDp / 2).coerceIn(0, 1023).toLong()
-        val sh = (context.screenHeightDp / 2).coerceIn(0, 1023).toLong()
-        val ssw = context.smallestScreenWidthDp.coerceIn(0, 1023).toLong()
+        val bv = (baseValue + 1023).coerceIn(0, 2047).toLong()
+        val sw = (screenWidthDp / 2).coerceIn(0, 1023).toLong()
+        val sh = (screenHeightDp / 2).coerceIn(0, 1023).toLong()
+        val ssw = smallestWidthDp.coerceIn(0, 1023).toLong()
         val ct = calcType.ordinal.toLong()
         val q = qualifier.ordinal.toLong()
         val inv = inverter.ordinal.toLong()
-        val land = if (context.isLandscape) 1L else 0L
-        val imw = if (context.ignoreMultiWindows) 1L else 0L
+        val land = if (isLandscape) 1L else 0L
+        val imw = if (ignoreMultiWindows) 1L else 0L
         val ar = if (applyAspectRatio) 1L else 0L
         val fs = if (valueType == ValueType.SP_WITH_SCALE) 1L else 0L
         val dp = if (valueType == ValueType.DP) 1L else 0L
-        // 9 bits fingerprint from Float (mantissa bits)
-        val sk = (customSensitivityK?.toRawBits()?.ushr(23)?.and(0x1FF)?.toLong() ?: 0x1FFL)
+        // 8 bits fingerprint from Float
+        val sk = (customSensitivityK?.toRawBits()?.ushr(24)?.and(0xFF)?.toLong() ?: 0xFFL)
 
-        return (bv shl 54) or
-                (sw shl 44) or
-                (sh shl 34) or
-                (ssw shl 24) or
-                (ct shl 20) or
-                (q shl 18) or
-                (inv shl 14) or
-                (land shl 13) or
-                (imw shl 12) or
-                (ar shl 11) or
-                (fs shl 10) or
-                (dp shl 9) or
+        return (bv shl 53) or
+                (sw shl 43) or
+                (sh shl 33) or
+                (ssw shl 23) or
+                (ct shl 19) or
+                (q shl 17) or
+                (inv shl 13) or
+                (land shl 12) or
+                (imw shl 11) or
+                (ar shl 10) or
+                (fs shl 9) or
+                (dp shl 8) or
                 sk
     }
 
@@ -267,7 +299,8 @@ object DimenCache {
      * PT Inicializa o DataStore persistente e carrega as entradas salvas.
      */
     @JvmStatic
-    fun init(context: Context) {
+    @PublishedApi
+    internal fun init(context: Context) {
         if (isInitialized.get() || isInitializing.getAndSet(true)) return
 
         val appContext = context.applicationContext
@@ -300,7 +333,7 @@ object DimenCache {
         }
     }
 
-    private fun loadFromByteArray(data: ByteArray) {
+    internal fun loadFromByteArray(data: ByteArray) {
         if (data.size < CACHE_SIZE * 12) return
         val buffer = ByteBuffer.wrap(data)
         for (i in 0 until CACHE_SIZE) {
@@ -312,7 +345,9 @@ object DimenCache {
         }
     }
 
-    private fun saveToPersistence(context: Context) {
+    @JvmStatic
+    @PublishedApi
+    internal fun saveToPersistence(context: Context) {
         // Debounced save
         saveJob?.cancel()
         saveJob = scope.launch {
@@ -336,6 +371,21 @@ object DimenCache {
         }
     }
 
+    internal fun serializeToByteArray(): ByteArray {
+        val buffer = ByteBuffer.allocate(CACHE_SIZE * 12)
+        for (i in 0 until CACHE_SIZE) {
+            val entry = store.get(i)
+            if (entry != null) {
+                buffer.putLong(entry.key)
+                buffer.putFloat(entry.value)
+            } else {
+                buffer.putLong(0L)
+                buffer.putFloat(0f)
+            }
+        }
+        return buffer.array()
+    }
+
     /**
      * EN
      * Reads from the cache or computes (and stores) a new value.
@@ -353,11 +403,13 @@ object DimenCache {
      * Lock-free: nenhum mutex é usado.
      */
     @JvmStatic
-    fun getOrPut(key: Long, context: Context? = null, compute: () -> Float): Float {
+    inline fun getOrPut(key: Long, context: Context? = null, crossinline compute: () -> Float): Float {
         if (!isEnabled) return compute()
 
-        // Auto-init if context provided
-        context?.let { init(it) }
+        // AUTO-INIT only if needed (Atomic check is fast)
+        if (context != null && !isInitialized.get()) {
+            init(context)
+        }
 
         val index = (key xor (key ushr 32)).toInt() and CACHE_MASK
 
@@ -383,7 +435,7 @@ object DimenCache {
      * Backward compatibility for non-context calls
      */
     @JvmStatic
-    fun getOrPut(key: Long, compute: () -> Float): Float = getOrPut(key, null, compute)
+    inline fun getOrPut(key: Long, crossinline compute: () -> Float): Float = getOrPut(key, null, compute)
 
     /**
      * EN Reads a cached value without computing a fallback.
