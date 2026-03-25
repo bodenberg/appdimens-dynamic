@@ -475,7 +475,7 @@ class ScaledSp private constructor(
         val valueToUse = foundEntry?.customValue ?: initialBaseValue
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return valueToUse.toDynamicScaledPx(finalQualifier, fontScale = false, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return valueToUse.toDynamicScaledPx(finalQualifier, fontScale = false, inverter = foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK, enableCache = isCacheEnabled)
     }
 
     /**

@@ -628,17 +628,17 @@ fun Int.toDynamicScaledSpPx(
         customSensitivityK = customSensitivityK
     )
 
-    val scaledSp = if (enableCache) {
+    return if (enableCache) {
         DimenCache.getOrPut(cacheKey, context) {
-            calculateScaledSp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+            val scaledSp = calculateScaledSp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+            val unit = if (fontScale) TypedValue.COMPLEX_UNIT_SP else TypedValue.COMPLEX_UNIT_DIP
+            TypedValue.applyDimension(unit, scaledSp, displayMetrics)
         }
     } else {
-        calculateScaledSp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val scaledSp = calculateScaledSp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val unit = if (fontScale) TypedValue.COMPLEX_UNIT_SP else TypedValue.COMPLEX_UNIT_DIP
+        TypedValue.applyDimension(unit, scaledSp, displayMetrics)
     }
-
-    // Convert SP to PX
-    val unit = if (fontScale) TypedValue.COMPLEX_UNIT_SP else TypedValue.COMPLEX_UNIT_DIP // COMPLEX_UNIT_DIP used for NO_SCALE SP because it's effectively DP
-    return TypedValue.applyDimension(unit, scaledSp, displayMetrics)
 }
 
 /**
@@ -681,12 +681,29 @@ private fun calculateScaledSp(
     return if (isMultiWindow) {
         baseValue.toFloat()
     } else {
-        val screenDimension = when (actualQualifier) {
-            DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
-            DpQualifier.WIDTH -> configuration.screenWidthDp.toFloat()
-            else -> configuration.smallestScreenWidthDp.toFloat()
+        // Qualifier logic
+        val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
+        if (isDefaultSw && customSensitivityK == null) {
+            // ULTRA FAST PATH: use pre-calculated global factor
+            DimenCache.calculateRawScaling(baseValue, applyAspectRatio, null)
+        } else {
+            // Need to determine specific screen dimension for other qualifiers
+            val screenDimension = when (actualQualifier) {
+                DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
+                DpQualifier.WIDTH -> configuration.screenWidthDp.toFloat()
+                else -> configuration.smallestScreenWidthDp.toFloat()
+            }
+            // Fallback to manual scaling if not using the primary global SW qualifier
+            val scale = screenDimension * DimenCache.INV_BASE_RATIO
+            if (applyAspectRatio) {
+                 val diff = screenDimension - 300f
+                 val adjustment = (customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT) * DimenCache.currentLogNormalizedAr
+                 val arFactor = 1.0f + diff * (DimenCache.ADJUSTMENT_SCALE + adjustment)
+                 baseValue.toFloat() * arFactor
+            } else {
+                 baseValue.toFloat() * scale
+            }
         }
-        DimenCache.calculateRawScaling(baseValue, screenDimension, applyAspectRatio, customSensitivityK)
     }
 }
 

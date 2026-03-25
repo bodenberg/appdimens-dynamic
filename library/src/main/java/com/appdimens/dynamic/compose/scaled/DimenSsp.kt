@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.remember
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
@@ -647,46 +648,45 @@ fun Int.toDynamicScaledSp(
     ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null,
     enableCache: Boolean = true
 ): TextUnit {
-    require(this in 1..1024) {
-        "Value must be between 1 and 1024 to use the dynamic scaling dimension logic. Current value: $this"
-    }
+    require(this in 1..1024) { "Value must be between 1 and 1024. Current: $this" }
 
     val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val androidContext = LocalContext.current
     val density = LocalDensity.current
 
-    val androidContext = LocalContext.current
-
-    val scaledValue = if (enableCache) {
+    return remember(
+        this, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
+        configuration.smallestScreenWidthDp, androidContext, density
+    ) {
         val cacheKey = DimenCache.buildKey(
-            baseValue            = this,
-            screenWidthDp        = configuration.screenWidthDp,
-            screenHeightDp       = configuration.screenHeightDp,
-            smallestWidthDp      = configuration.smallestScreenWidthDp,
-            isLandscape          = isLandscape,
-            ignoreMultiWindows   = ignoreMultiWindows,
-            calcType             = DimenCache.CalcType.SCALED,
-            qualifier            = qualifier,
-            inverter             = inverter,
-            applyAspectRatio     = applyAspectRatio,
-            valueType            = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
-            customSensitivityK   = customSensitivityK
+            baseValue = this,
+            screenWidthDp = configuration.screenWidthDp,
+            screenHeightDp = configuration.screenHeightDp,
+            smallestWidthDp = configuration.smallestScreenWidthDp,
+            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows = ignoreMultiWindows,
+            calcType = DimenCache.CalcType.SCALED,
+            qualifier = qualifier,
+            inverter = inverter,
+            applyAspectRatio = applyAspectRatio,
+            valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
+            customSensitivityK = customSensitivityK
         )
-        DimenCache.getOrPut(cacheKey, androidContext) {
-            calculateSspValue(this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
-        }
-    } else {
-        calculateSspValue(this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
-    }
 
-    return if (fontScale) {
-        scaledValue.sp
-    } else {
-        (scaledValue / density.fontScale).sp
+        if (!enableCache) {
+            val scaledValue = calculateSspValueCompose(this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
+            return@remember if (fontScale) scaledValue.sp else (scaledValue / density.fontScale).sp
+        }
+
+        val scaledVal = DimenCache.getOrPut(cacheKey, androidContext) {
+            calculateSspValueCompose(this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
+        }
+        if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
     }
 }
 
-private fun calculateSspValue(
+private fun calculateSspValueCompose(
     baseValue: Int,
     qualifier: DpQualifier,
     inverter: Inverter,
@@ -699,7 +699,6 @@ private fun calculateSspValue(
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     var actualQualifier = qualifier
-
     when (inverter) {
         Inverter.PH_TO_LW -> if (isLandscape && qualifier == DpQualifier.HEIGHT)      actualQualifier = DpQualifier.WIDTH
         Inverter.PW_TO_LH -> if (isLandscape && qualifier == DpQualifier.WIDTH)       actualQualifier = DpQualifier.HEIGHT
@@ -712,24 +711,35 @@ private fun calculateSspValue(
         Inverter.DEFAULT  -> {}
     }
 
-    var isMultiWindow = false
-    if (ignoreMultiWindows) {
-        val smallestWidthDp = configuration.smallestScreenWidthDp.toFloat()
-        val currentWidthDp  = configuration.screenWidthDp.toFloat()
-        val isLayoutSplit   = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
-        val isSmallDiff     = (smallestWidthDp - currentWidthDp) < (smallestWidthDp * 0.1f)
-        isMultiWindow = isLayoutSplit && !isSmallDiff
-    }
+    val isMultiWindow = if (ignoreMultiWindows) {
+        val swDp = configuration.smallestScreenWidthDp.toFloat()
+        val cwDp = configuration.screenWidthDp.toFloat()
+        val isLayoutSplit = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
+        val isSmallDiff = (swDp - cwDp) < (swDp * 0.1f)
+        isLayoutSplit && !isSmallDiff
+    } else false
 
-    return if (ignoreMultiWindows && isMultiWindow) {
+    return if (isMultiWindow) {
         baseValue.toFloat()
     } else {
-        val screenDimension = when (actualQualifier) {
-            DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
-            DpQualifier.WIDTH  -> configuration.screenWidthDp.toFloat()
-            else               -> configuration.smallestScreenWidthDp.toFloat()
+        val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
+        if (isDefaultSw && customSensitivityK == null) {
+            DimenCache.calculateRawScaling(baseValue, applyAspectRatio, null)
+        } else {
+            val screenDim = when (actualQualifier) {
+                DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
+                DpQualifier.WIDTH  -> configuration.screenWidthDp.toFloat()
+                else               -> configuration.smallestScreenWidthDp.toFloat()
+            }
+            val scale = screenDim * 0.0033333334f
+            if (applyAspectRatio) {
+                val diff = screenDim - 300f
+                val adj = (customSensitivityK ?: 0.0026666667f) * DimenCache.currentLogNormalizedAr
+                baseValue.toFloat() * (1.0f + diff * (0.0033333334f + adj))
+            } else {
+                baseValue.toFloat() * scale
+            }
         }
-        DimenCache.calculateRawScaling(baseValue, screenDimension, applyAspectRatio, customSensitivityK)
     }
 }
 
@@ -747,7 +757,40 @@ fun Int.toDynamicScaledPx(
     customSensitivityK: Float? = null,
     enableCache: Boolean = true
 ): Float {
+    val configuration = LocalConfiguration.current
+    val androidContext = LocalContext.current
     val density = LocalDensity.current
-    val spValue = this.toDynamicScaledSp(qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enableCache)
-    return density.run { spValue.toPx() }
+
+    return remember(
+        this, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
+        configuration.smallestScreenWidthDp, androidContext, density
+    ) {
+        val cacheKey = DimenCache.buildKey(
+            baseValue = this,
+            screenWidthDp = configuration.screenWidthDp,
+            screenHeightDp = configuration.screenHeightDp,
+            smallestWidthDp = configuration.smallestScreenWidthDp,
+            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows = ignoreMultiWindows,
+            calcType = DimenCache.CalcType.SCALED,
+            qualifier = qualifier,
+            inverter = inverter,
+            applyAspectRatio = applyAspectRatio,
+            valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
+            customSensitivityK = customSensitivityK
+        )
+
+        if (!enableCache) {
+            val scaledVal = calculateSspValueCompose(this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
+            val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
+            return@remember density.run { spValue.toPx() }
+        }
+
+        DimenCache.getOrPut(cacheKey, androidContext) {
+            val scaledVal = calculateSspValueCompose(this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
+            val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
+            density.run { spValue.toPx() }
+        }
+    }
 }

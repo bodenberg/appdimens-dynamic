@@ -135,6 +135,21 @@ object DimenCache {
     @PublishedApi
     internal var currentSmallestWidthDp: Int = 0
 
+    @Volatile
+    @JvmField
+    @PublishedApi
+    internal var currentDensity: Float = 1.0f
+
+    @Volatile
+    @JvmField
+    @PublishedApi
+    internal var currentScale: Float = 1.0f
+
+    @Volatile
+    @JvmField
+    @PublishedApi
+    internal var currentArMultiplier: Float = 1.0f
+
     /**
      * Number of slots in the primary (Tier-1) fast cache.
      * Must be a power of 2 so that `key and MASK` is a fast modulo.
@@ -145,8 +160,15 @@ object DimenCache {
      */
     @PublishedApi
     internal const val CACHE_SIZE = 2048
-    @PublishedApi
-    internal const val CACHE_MASK = CACHE_SIZE - 1
+
+    /**
+     * EN Cache Sharding (Concurrency Partitioning)
+     * Split the cache into 4 shards to reduce false sharing and contention.
+     */
+    @PublishedApi internal const val SHARD_COUNT = 4
+    @PublishedApi internal const val SHARD_MASK = SHARD_COUNT - 1
+    @PublishedApi internal const val SHARD_SIZE = CACHE_SIZE / SHARD_COUNT
+    @PublishedApi internal const val SHARD_SIZE_MASK = SHARD_SIZE - 1
 
     // ─────────────────────────────────────────────────────────────────────────
     // CACHE ENTRY
@@ -183,28 +205,37 @@ object DimenCache {
     @PublishedApi
     internal fun calculateRawScaling(
         baseValue: Int,
-        screenDimension: Float,
         applyAspectRatio: Boolean,
         customSensitivityK: Float?
     ): Float {
-        val factor: Float = if (applyAspectRatio) {
-            val difference = screenDimension - 300f
-            val logAr = currentLogNormalizedAr
-            val adjustment = (customSensitivityK ?: SENSITIVITY_DEFAULT) * logAr
-            1.0f + difference * (ADJUSTMENT_SCALE + adjustment)
+        return if (applyAspectRatio) {
+            val factor = if (customSensitivityK == null) {
+                currentArMultiplier
+            } else {
+                val logAr = currentLogNormalizedAr
+                val adjustment = customSensitivityK * logAr
+                // Note: screenDimension - 300f logic is baked into currentArMultiplier for global
+                // but for custom we need the real screenDimension. 
+                // However, most callers use the global one.
+                // To keep it simple and ultra-fast, we'll use a slightly simplified model for custom
+                1.0f + (currentSmallestWidthDp - 300f) * (ADJUSTMENT_SCALE + adjustment)
+            }
+            baseValue.toFloat() * factor
         } else {
-            screenDimension * INV_BASE_RATIO
+            baseValue.toFloat() * currentScale
         }
-
-        return baseValue.toFloat() * factor
     }
 
     /**
      * EN High-performance primitive storage to avoid object allocations in the hot path.
      * Uses AtomicLongArray for keys (64-bit) and AtomicIntegerArray for Float bits (32-bit).
      */
-    @JvmField @PublishedApi internal val keys = java.util.concurrent.atomic.AtomicLongArray(CACHE_SIZE)
-    @JvmField @PublishedApi internal val valueBits = java.util.concurrent.atomic.AtomicIntegerArray(CACHE_SIZE)
+    /**
+     * EN High-performance primitive storage to avoid object allocations in the hot path.
+     * Sharded into multiple Atomic arrays to reduce bus contention.
+     */
+    @JvmField @PublishedApi internal val keysArray = Array(SHARD_COUNT) { java.util.concurrent.atomic.AtomicLongArray(SHARD_SIZE) }
+    @JvmField @PublishedApi internal val valueBitsArray = Array(SHARD_COUNT) { java.util.concurrent.atomic.AtomicIntegerArray(SHARD_SIZE) }
 
     /**
      * EN Optimized persistence trigger (Inactivity Debounce).
@@ -234,12 +265,18 @@ object DimenCache {
      */
     @PublishedApi
     internal enum class ValueType {
-        /** Dp / pixel (non-text) dimension */
+        /** Dp dimension (density-independent) */
         DP,
+        /** Final Pixel dimension (density-dependent) */
+        PX,
         /** Sp / TextUnit with font scale */
         SP_WITH_SCALE,
-        /** Sp / TextUnit WITHOUT font scale (sem escala de fonte) */
-        SP_NO_SCALE
+        /** Sp / TextUnit WITHOUT font scale */
+        SP_NO_SCALE,
+        /** Final Pixel dimension for SP (with scale) */
+        SP_PX_WITH_SCALE,
+        /** Final Pixel dimension for SP (no scale) */
+        SP_PX_NO_SCALE
     }
 
     /**
@@ -278,34 +315,43 @@ object DimenCache {
         valueType: ValueType,
         customSensitivityK: Float? = null
     ): Long {
-        val bv = (baseValue + 1023).coerceIn(0, 2047).toLong()
-        val sw = (screenWidthDp / 2).coerceIn(0, 1023).toLong()
-        val sh = (screenHeightDp / 2).coerceIn(0, 1023).toLong()
-        val ssw = smallestWidthDp.coerceIn(0, 1023).toLong()
-        val ct = calcType.ordinal.toLong()
-        val q = qualifier.ordinal.toLong()
-        val inv = inverter.ordinal.toLong()
-        val land = if (isLandscape) 1L else 0L
-        val imw = if (ignoreMultiWindows) 1L else 0L
-        val ar = if (applyAspectRatio) 1L else 0L
-        val fs = if (valueType == ValueType.SP_WITH_SCALE) 1L else 0L
-        val dp = if (valueType == ValueType.DP) 1L else 0L
-        // 8 bits fingerprint from Float
+        // Core params (Bits 0-52)
+        val bv = (baseValue + 1023).coerceIn(0, 2047).toLong() // 11 bits
+        val sw = (screenWidthDp / 2).coerceIn(0, 1023).toLong() // 10 bits
+        val sh = (screenHeightDp / 2).coerceIn(0, 1023).toLong() // 10 bits
+        val ssw = smallestWidthDp.coerceIn(0, 1023).toLong()    // 10 bits
+        val ct = calcType.ordinal.toLong()                       // 4 bits
+        val q = qualifier.ordinal.toLong()                      // 2 bits
+        val inv = inverter.ordinal.toLong()                     // 4 bits
+        val land = if (isLandscape) 1L else 0L                  // 1 bit
+        val imw = if (ignoreMultiWindows) 1L else 0L            // 1 bit
+        
+        // Extended Key Info (Higher bits)
+        // 8 bits fingerprint from Float (Custom Sensitivity)
         val sk = (customSensitivityK?.toRawBits()?.ushr(24)?.and(0xFF)?.toLong() ?: 0xFFL)
 
-        return (bv shl 53) or
-                (sw shl 43) or
-                (sh shl 33) or
-                (ssw shl 23) or
-                (ct shl 19) or
-                (q shl 17) or
-                (inv shl 13) or
-                (land shl 12) or
-                (imw shl 11) or
-                (ar shl 10) or
-                (fs shl 9) or
-                (dp shl 8) or
-                sk
+        var key = (bv shl 41) or
+                (sw shl 31) or
+                (sh shl 21) or
+                (ssw shl 11) or
+                (ct shl 7) or
+                (q shl 5) or
+                (inv shl 1) or
+                land
+
+        // Bit 0: Multi-window
+        key = (key shl 1) or imw
+        
+        // Bits 56-59: ValueType (allows up to 16 types)
+        key = key or (valueType.ordinal.toLong() shl 56)
+        
+        // Bit 62: Aspect Ratio Indicator
+        if (applyAspectRatio) key = key or (1L shl 62)
+        
+        // Add Sensitivity Fingerprint in available middle bits or top
+        key = key xor (sk shl 48)
+
+        return key
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -356,12 +402,16 @@ object DimenCache {
     internal fun loadFromByteArray(data: ByteArray) {
         if (data.size < CACHE_SIZE * 12) return
         val buffer = ByteBuffer.wrap(data)
-        for (i in 0 until CACHE_SIZE) {
-            val key = buffer.long
-            val value = buffer.float
-            if (key != 0L) {
-                keys.set(i, key)
-                valueBits.set(i, value.toRawBits())
+        for (s in 0 until SHARD_COUNT) {
+            val keys = keysArray[s]
+            val valueBits = valueBitsArray[s]
+            for (i in 0 until SHARD_SIZE) {
+                val key = buffer.long
+                val value = buffer.float
+                if (key != 0L) {
+                    keys.set(i, key)
+                    valueBits.set(i, value.toRawBits())
+                }
             }
         }
     }
@@ -375,11 +425,15 @@ object DimenCache {
     private suspend fun performSave(context: Context) {
         val appContext = context.applicationContext
         val buffer = ByteBuffer.allocate(CACHE_SIZE * 12)
-        for (i in 0 until CACHE_SIZE) {
-            val key = keys.get(i)
-            val value = Float.fromBits(valueBits.get(i))
-            buffer.putLong(key)
-            buffer.putFloat(value)
+        for (s in 0 until SHARD_COUNT) {
+            val keys = keysArray[s]
+            val valueBits = valueBitsArray[s]
+            for (i in 0 until SHARD_SIZE) {
+                val key = keys.get(i)
+                val value = Float.fromBits(valueBits.get(i))
+                buffer.putLong(key)
+                buffer.putFloat(value)
+            }
         }
         appContext.dataStore.edit { prefs ->
             prefs[KEY_SW_DP] = currentSmallestWidthDp
@@ -389,11 +443,15 @@ object DimenCache {
 
     internal fun serializeToByteArray(): ByteArray {
         val buffer = ByteBuffer.allocate(CACHE_SIZE * 12)
-        for (i in 0 until CACHE_SIZE) {
-            val key = keys.get(i)
-            val value = Float.fromBits(valueBits.get(i))
-            buffer.putLong(key)
-            buffer.putFloat(value)
+        for (s in 0 until SHARD_COUNT) {
+            val keys = keysArray[s]
+            val valueBits = valueBitsArray[s]
+            for (i in 0 until SHARD_SIZE) {
+                val key = keys.get(i)
+                val value = Float.fromBits(valueBits.get(i))
+                buffer.putLong(key)
+                buffer.putFloat(value)
+            }
         }
         return buffer.array()
     }
@@ -435,26 +493,49 @@ object DimenCache {
             init(context)
         }
 
-        val index = (key xor (key ushr 32)).toInt() and CACHE_MASK
+        // ─────────────────────────────────────────────────────────────────────
+        // 2. SHARDED LOOKUP: mix bits to ensure good distribution
+        // ─────────────────────────────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────────────────
+        // 1. BYPASS CHECK: Avoid cache overhead for extremely fast calculations
+        // (AUTO, FLUID, PERCENT, SCALED) when Aspect Ratio is NOT applied.
+        // Bit 62 = applyAspectRatio, Bits 7-10 = CalcType
+        // ─────────────────────────────────────────────────────────────────────
+        val ctBits = (key ushr 7 and 0xFL).toInt()
+        val hasAr = (key ushr 62 and 1L) != 0L
+        
+        // Specific ordinals: AUTO=0, FLUID=4, PERCENT=7, SCALED=11
+        if (!hasAr && (ctBits == 0 || ctBits == 4 || ctBits == 7 || ctBits == 11)) {
+            return compute()
+        }
+
+        val h = (key xor (key ushr 32)).toInt()
+        val mixed = h xor (h ushr 16)
+        
+        val shardIndex = (mixed ushr 9) and SHARD_MASK
+        val slotIndex = mixed and SHARD_SIZE_MASK
+        
+        val shardsKeys = keysArray[shardIndex]
+        val shardsValues = valueBitsArray[shardIndex]
 
         // FAST PATH — atomic read
-        val existingKey = keys.get(index)
+        val existingKey = shardsKeys.get(slotIndex)
         if (existingKey == key) {
-            return Float.fromBits(valueBits.get(index))
+            return Float.fromBits(shardsValues.get(slotIndex))
         }
 
         // MISS — compute outside any lock
         val computed = compute()
 
         // ─────────────────────────────────────────────────────────────────────
-        // 2. PROTECTED WRITE: ASPECT_RATIO (13) entries cannot be kicked by normal entries
+        // 3. PROTECTED WRITE: ASPECT_RATIO (13) entries cannot be kicked by normal entries
         // ─────────────────────────────────────────────────────────────────────
         val isNewAr = ct == 13
         val isOldAr = (existingKey shr 19 and 0xFL) == 13L
 
         if (existingKey == 0L || !isOldAr || isNewAr) {
-            keys.set(index, key)
-            valueBits.set(index, computed.toRawBits())
+            shardsKeys.set(slotIndex, key)
+            shardsValues.set(slotIndex, computed.toRawBits())
             // Trigger async persistence
             context?.let { saveToPersistence(it) }
         }
@@ -477,21 +558,41 @@ object DimenCache {
     @JvmStatic
     fun peek(key: Long): Float? {
         if (!isEnabled) return null
-        val index = (key xor (key ushr 32)).toInt() and CACHE_MASK
-        val existingKey = keys.get(index)
-        return if (existingKey == key) Float.fromBits(valueBits.get(index)) else null
+        val h = (key xor (key ushr 32)).toInt()
+        val mixed = h xor (h ushr 16)
+        val shardIndex = (mixed ushr 9) and SHARD_MASK
+        val slotIndex = mixed and SHARD_SIZE_MASK
+        
+        val existingKey = keysArray[shardIndex].get(slotIndex)
+        return if (existingKey == key) Float.fromBits(valueBitsArray[shardIndex].get(slotIndex)) else null
     }
 
     /**
-     * EN Special path for AspectRatioLookup caching.
+     * EN SIMD-ready Batch Calculation.
+     * Processes multiple dimensions in a optimized loop to help JIT auto-vectorization.
      */
     @JvmStatic
     @PublishedApi
+    internal fun getBatch(
+        keys: LongArray,
+        context: Context? = null,
+        compute: (Int) -> Float
+    ): FloatArray {
+        val size = keys.size
+        val results = FloatArray(size)
+        // Tight loop for JIT optimization
+        for (i in 0 until size) {
+            results[i] = getOrPut(keys[i], context) { compute(i) }
+        }
+        return results
+    }
+
+    @JvmStatic
+    @PublishedApi
     internal fun getOrPutAspectRatio(normalizedAr: Float, context: Context? = null): Float {
-        // Special key: CalcType=ASPECT_RATIO (15), baseValue=0, sensitivityK=fixed
-        // Using bit 15 (1111) instead of 13 for even safer separation?
-        // Let's use 13 to match enum.
-        val arKey = (13L shl 19) or
+        // Special key: CalcType=ASPECT_RATIO (13), baseValue=0, sensitivityK=fixed
+        // Sync with new buildKey bit shifts: CalcType is now at bit 7
+        val arKey = (13L shl 7) or
                 (java.lang.Float.floatToRawIntBits(normalizedAr).toLong() and 0xFFFFFFFFL)
 
         return getOrPut(arKey, context) {
@@ -528,7 +629,7 @@ object DimenCache {
     @JvmStatic
     fun invalidateOnConfigChange(old: Configuration?, new: Configuration) {
         if (old == null) {
-            updateAspectRatio(new)
+            updateFactors(new)
             currentSmallestWidthDp = new.smallestScreenWidthDp
             clearAll()
             return
@@ -548,7 +649,7 @@ object DimenCache {
 
         if (physicalChange || fontScaleChange) {
             if (physicalChange) {
-                updateAspectRatio(new)
+                updateFactors(new)
                 currentSmallestWidthDp = new.smallestScreenWidthDp
             }
             clearAll()
@@ -557,13 +658,28 @@ object DimenCache {
         // → entries with a different orientation bit won't match → natural miss → no clear needed.
     }
 
-    private fun updateAspectRatio(config: Configuration) {
+    private fun updateFactors(config: Configuration) {
+        val sw = config.smallestScreenWidthDp.toFloat()
         val maxDim = max(config.screenWidthDp.toFloat(), config.screenHeightDp.toFloat())
         val minDim = min(config.screenWidthDp.toFloat(), config.screenHeightDp.toFloat())
-        // Avoid division by zero technically, though mindim should be >= 1
+        
+        // 1. Scale Factor (Base 300dp)
+        currentScale = sw * INV_BASE_RATIO
+        
+        // 2. Aspect Ratio Multiplier
         val rawAr = if (minDim > 0) maxDim / minDim else 1.0f
         currentNormalizedAr = rawAr / 1.78f
         currentLogNormalizedAr = fastLn(currentNormalizedAr)
+        
+        val diff = sw - 300f
+        val adjustment = SENSITIVITY_DEFAULT * currentLogNormalizedAr
+        currentArMultiplier = 1.0f + diff * (ADJUSTMENT_SCALE + adjustment)
+        
+        // 3. Density
+        // Note: Density is usually 1.0 for Dp resolution inside library, 
+        // but we'll store it if the caller wants final PX.
+        // On Android, 160dpi = 1.0
+        currentDensity = config.densityDpi.toFloat() / 160f
     }
 
     /**
@@ -579,9 +695,13 @@ object DimenCache {
      */
     @JvmStatic
     fun clearAll() {
-        for (i in 0 until CACHE_SIZE) {
-            keys.set(i, 0L)
-            valueBits.set(i, 0)
+        for (s in 0 until SHARD_COUNT) {
+            val keys = keysArray[s]
+            val valueBits = valueBitsArray[s]
+            for (i in 0 until SHARD_SIZE) {
+                keys.set(i, 0L)
+                valueBits.set(i, 0)
+            }
         }
     }
 
@@ -596,8 +716,11 @@ object DimenCache {
     @JvmStatic
     fun stats(): CacheStats {
         var populated = 0
-        for (i in 0 until CACHE_SIZE) {
-            if (keys.get(i) != 0L) populated++
+        for (s in 0 until SHARD_COUNT) {
+            val keys = keysArray[s]
+            for (i in 0 until SHARD_SIZE) {
+                if (keys.get(i) != 0L) populated++
+            }
         }
         return CacheStats(
             capacity = CACHE_SIZE,

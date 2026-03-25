@@ -463,136 +463,96 @@ private fun findResourceIdByName(resourceName: String): Int {
  */
 @Composable
 fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null, enableCache: Boolean = true): Dp {
-    // EN Validation requirement (limits usage to avoid creating thousands of dimens files).
-    // PT Requisito de validação (limita o uso para evitar a criação de milhares de arquivos dimens).
-    require(this in -1023..1024) { "Value must be between -1023 and 1024 to use the dynamic scaling dimension logic. Current value:: $this" }
+    require(this in -1023..1024) { "Value must be between -1023 and 1024. Current: $this" }
 
     val configuration = LocalConfiguration.current
-    val currentScreenWidthDp = configuration.screenWidthDp.toFloat()
-    val currentScreenHeightDp = configuration.screenHeightDp.toFloat()
-    val aspectRatio = if (currentScreenWidthDp > 0 && currentScreenHeightDp > 0) {
-        max(currentScreenWidthDp, currentScreenHeightDp) / min(currentScreenWidthDp, currentScreenHeightDp)
-    } else 1f
-
     val androidContext = LocalContext.current
 
     return remember(
-        this,
-        qualifier,
-        inverter,
-        ignoreMultiWindows,
-        applyAspectRatio,
-        customSensitivityK,
-        configuration.orientation,
-        configuration.screenWidthDp,
-        configuration.screenHeightDp,
-        configuration.smallestScreenWidthDp,
-        configuration.screenLayout,
-        aspectRatio,
-        androidContext
+        this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
+        configuration.smallestScreenWidthDp, androidContext
     ) {
         val cacheKey = DimenCache.buildKey(
-            baseValue            = this,
-            screenWidthDp        = configuration.screenWidthDp,
-            screenHeightDp       = configuration.screenHeightDp,
+            baseValue = this,
+            screenWidthDp = configuration.screenWidthDp,
+            screenHeightDp = configuration.screenHeightDp,
             smallestWidthDp = configuration.smallestScreenWidthDp,
-            isLandscape          = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows   = ignoreMultiWindows,
-            calcType             = DimenCache.CalcType.SCALED,
-            qualifier            = qualifier,
-            inverter             = inverter,
-            applyAspectRatio     = applyAspectRatio,
-            valueType            = DimenCache.ValueType.DP,
-            customSensitivityK   = customSensitivityK
+            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows = ignoreMultiWindows,
+            calcType = DimenCache.CalcType.SCALED,
+            qualifier = qualifier,
+            inverter = inverter,
+            applyAspectRatio = applyAspectRatio,
+            valueType = DimenCache.ValueType.DP,
+            customSensitivityK = customSensitivityK
         )
 
         if (!enableCache) {
-            val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-            val isPortrait  = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-            var actualQualifier = qualifier
-
-            when (inverter) {
-                Inverter.PH_TO_LW -> if (isLandscape && qualifier == DpQualifier.HEIGHT) actualQualifier = DpQualifier.WIDTH
-                Inverter.PW_TO_LH -> if (isLandscape && qualifier == DpQualifier.WIDTH)  actualQualifier = DpQualifier.HEIGHT
-                Inverter.LH_TO_PW -> if (isPortrait  && qualifier == DpQualifier.HEIGHT) actualQualifier = DpQualifier.WIDTH
-                Inverter.LW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.WIDTH)  actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_LH -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_LW -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-                Inverter.SW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_PW -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-                Inverter.DEFAULT  -> {}
-            }
-
-            var isMultiWindow = false
-            if (ignoreMultiWindows) {
-                val smallestWidthDp = configuration.smallestScreenWidthDp.toFloat()
-                val isLayoutSplit = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
-                val isSmallDiff   = (smallestWidthDp - currentScreenWidthDp) < (smallestWidthDp * 0.1f)
-                isMultiWindow = isLayoutSplit && !isSmallDiff
-            }
-
-            val factor: Float = if (ignoreMultiWindows && isMultiWindow) {
-                1.00f
-            } else {
-                val screenDimension = when (actualQualifier) {
-                    DpQualifier.HEIGHT      -> configuration.screenHeightDp.toFloat()
-                    DpQualifier.WIDTH       -> configuration.screenWidthDp.toFloat()
-                    else                    -> configuration.smallestScreenWidthDp.toFloat()
-                }
-                if (applyAspectRatio) {
-                    val difference    = screenDimension - BASE_RATIO_STEP
-                    val logAr         = DimenCache.currentLogNormalizedAr
-                    val adjustment    = (customSensitivityK ?: SENSITIVITY_DEFAULT) * logAr
-                    1.0f + difference * (ADJUSTMENT_SCALE + adjustment)
-                } else {
-                    screenDimension / BASE_RATIO_STEP
-                }
-            }
-
-            return@remember (this.toFloat() * factor).dp
+             return@remember calculateScaledDpCompose(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK).dp
         }
 
-        val scaledFloat = DimenCache.getOrPut(cacheKey, androidContext) {
-            val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-            val isPortrait  = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        DimenCache.getOrPut(cacheKey, androidContext) {
+            calculateScaledDpCompose(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        }.dp
+    }
+}
 
-            var actualQualifier = qualifier
+/** Internal helper for Compose scaling logic to avoid duplication */
+private fun calculateScaledDpCompose(
+    baseValue: Int,
+    configuration: Configuration,
+    qualifier: DpQualifier,
+    inverter: Inverter,
+    ignoreMultiWindows: Boolean,
+    applyAspectRatio: Boolean,
+    customSensitivityK: Float?
+): Float {
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
-            when (inverter) {
-                Inverter.PH_TO_LW -> if (isLandscape && qualifier == DpQualifier.HEIGHT) actualQualifier = DpQualifier.WIDTH
-                Inverter.PW_TO_LH -> if (isLandscape && qualifier == DpQualifier.WIDTH)  actualQualifier = DpQualifier.HEIGHT
-                Inverter.LH_TO_PW -> if (isPortrait  && qualifier == DpQualifier.HEIGHT) actualQualifier = DpQualifier.WIDTH
-                Inverter.LW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.WIDTH)  actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_LH -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_LW -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-                Inverter.SW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-                Inverter.SW_TO_PW -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-                Inverter.DEFAULT  -> {}
+    var actualQualifier = qualifier
+    when (inverter) {
+        Inverter.PH_TO_LW -> if (isLandscape && qualifier == DpQualifier.HEIGHT) actualQualifier = DpQualifier.WIDTH
+        Inverter.PW_TO_LH -> if (isLandscape && qualifier == DpQualifier.WIDTH)  actualQualifier = DpQualifier.HEIGHT
+        Inverter.LH_TO_PW -> if (isPortrait  && qualifier == DpQualifier.HEIGHT) actualQualifier = DpQualifier.WIDTH
+        Inverter.LW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.WIDTH)  actualQualifier = DpQualifier.HEIGHT
+        Inverter.SW_TO_LH -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
+        Inverter.SW_TO_LW -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
+        Inverter.SW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
+        Inverter.SW_TO_PW -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
+        Inverter.DEFAULT  -> {}
+    }
+
+    val isMultiWindow = if (ignoreMultiWindows) {
+        val swDp = configuration.smallestScreenWidthDp.toFloat()
+        val cwDp = configuration.screenWidthDp.toFloat()
+        val isLayoutSplit = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
+        val isSmallDiff = (swDp - cwDp) < (swDp * 0.1f)
+        isLayoutSplit && !isSmallDiff
+    } else false
+
+    return if (isMultiWindow) {
+        baseValue.toFloat()
+    } else {
+        val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
+        if (isDefaultSw && customSensitivityK == null) {
+            DimenCache.calculateRawScaling(baseValue, applyAspectRatio, null)
+        } else {
+            val screenDim = when (actualQualifier) {
+                DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
+                DpQualifier.WIDTH -> configuration.screenWidthDp.toFloat()
+                else -> configuration.smallestScreenWidthDp.toFloat()
             }
-
-            var isMultiWindow = false
-            if (ignoreMultiWindows) {
-                val smallestWidthDp = configuration.smallestScreenWidthDp.toFloat()
-                val isLayoutSplit = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
-                val isSmallDiff   = (smallestWidthDp - currentScreenWidthDp) < (smallestWidthDp * 0.1f)
-                isMultiWindow = isLayoutSplit && !isSmallDiff
-            }
-
-            val screenDimension = when (actualQualifier) {
-                DpQualifier.HEIGHT      -> configuration.screenHeightDp.toFloat()
-                DpQualifier.WIDTH       -> configuration.screenWidthDp.toFloat()
-                else                    -> configuration.smallestScreenWidthDp.toFloat()
-            }
-
-            if (ignoreMultiWindows && isMultiWindow) {
-                this@toDynamicScaledDp.toFloat()
+            val scale = screenDim * (1.0f / 300f)
+            if (applyAspectRatio) {
+                val diff = screenDim - 300f
+                val adj = (customSensitivityK ?: 0.0026666667f) * DimenCache.currentLogNormalizedAr
+                baseValue.toFloat() * (1.0f + diff * (0.0033333334f + adj))
             } else {
-                DimenCache.calculateRawScaling(this@toDynamicScaledDp, screenDimension, applyAspectRatio, customSensitivityK)
+                baseValue.toFloat() * scale
             }
         }
-
-        scaledFloat.dp
     }
 }
 
@@ -602,7 +562,38 @@ fun Int.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.
  */
 @Composable
 fun Int.toDynamicScaledPx(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null, enableCache: Boolean = true): Float {
+    val configuration = LocalConfiguration.current
+    val androidContext = LocalContext.current
     val density = LocalDensity.current
-    val dpValue = this.toDynamicScaledDp(qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enableCache)
-    return density.run { dpValue.toPx() }
+
+    return remember(
+        this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
+        configuration.smallestScreenWidthDp, androidContext, density
+    ) {
+        val cacheKey = DimenCache.buildKey(
+            baseValue = this,
+            screenWidthDp = configuration.screenWidthDp,
+            screenHeightDp = configuration.screenHeightDp,
+            smallestWidthDp = configuration.smallestScreenWidthDp,
+            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows = ignoreMultiWindows,
+            calcType = DimenCache.CalcType.SCALED,
+            qualifier = qualifier,
+            inverter = inverter,
+            applyAspectRatio = applyAspectRatio,
+            valueType = DimenCache.ValueType.PX,
+            customSensitivityK = customSensitivityK
+        )
+
+        if (!enableCache) {
+            val scaledDp = calculateScaledDpCompose(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+            return@remember density.run { scaledDp.dp.toPx() }
+        }
+
+        DimenCache.getOrPut(cacheKey, androidContext) {
+            val scaledDp = calculateScaledDpCompose(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+            density.run { scaledDp.dp.toPx() }
+        }
+    }
 }

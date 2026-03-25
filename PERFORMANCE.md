@@ -1,103 +1,79 @@
 # Technical Performance Report: AppDimens Dynamic
 
-This report provides a deep technical analysis of the AppDimens Dynamic library performance, following the **DimenCache** optimizations.
+This report provides a deep technical analysis of the AppDimens Dynamic library performance, following the **"Zero-Math"** architecture refactoring and **"Fast Bypass"** optimization.
 
 ---
 
 ## 1. Architectural Overview
 
-The v5.0 engine introduces a **Lock-Free Primitive Storage** architecture, replacing object-based cache slots with atomic primitive arrays to eliminate GC pressure and reduce memory overhead.
+The library features a **Lock-Free Sharded Cache** architecture with an intelligent **Fast Bypass Layer**. 
+- **Zero-Math Model**: All scaling factors (`scaleFactor`, `arMultiplier`) are pre-calculated during configuration changes.
+- **Fast Bypass**: For ultra-simple calculation types (AUTO, FLUID, PERCENT, SCALED), the system bypasses the sharded cache lookup when Aspect Ratio is inactive, as raw math remains the fastest path for these operations.
 
 ```mermaid
 graph TD
     A[UI / Code Call] --> B{Cache Enabled?}
-    B -- Yes --> C{Fast Bypass?}
-    C -- Yes (AUTO/SCALED) --> D[Direct Calculation]
+    B -- Yes --> C{Bypass-eligible & No-AR?}
+    C -- Yes --> D[Direct Calculation]
     C -- No --> E[Hash Key Calculation]
-    E --> F[AtomicLongArray Keys]
+    E --> F[Sharded Primitive Arrays]
     F --> G{Key Match?}
-    G -- Hit --> H[AtomicIntegerArray ValueBits]
-    G -- Miss --> I[Compute & Write back]
-    H --> J[Return Float.fromBits]
-    I --> J
-    D --> J
+    G -- Hit --> H[Return Pre-calculated PX/SP]
+    G -- Miss --> I[Compute Once & Write back]
+    I --> H
+    D --> H
 ```
-
-### Key Optimizations:
-- **Zero-Allocation Hot Path**: The cache now stores `Long` (keys) and `Float bits` (values) directly in `AtomicLongArray` and `AtomicIntegerArray`. No `Entry` objects are created.
-- **Fast Bypass Logic**: Simple scaling types (AUTO, SCALED, FLUID) now bypass the cache entirely when Aspect Ratio is inactive, as raw math is faster than a hash-map lookup (~3ns vs ~6ns).
-- **Inactivity Debounce**: Persistence triggers are now aggregated via `Flow` with a 500ms debounce, ensuring that massive UI layout passes only trigger a single disk write.
 
 ---
 
 ## 2. Professional Benchmarks
 
 ### A. Hardware Metrics (Xiaomi 11T Pro - SD888)
-Measurements captured in a stabilized performance state (Post-Warmup).
+Measurements captured on physical hardware in a stabilized state.
 
-| Operation Type | v2.* (Object) | v3.* (Primitive) | Gain (%) |
-| :--- | :--- | :--- | :--- |
-| **Math-Only Scaled** | 3 ns | 3 ns | 0% |
-| **Cache Hit (L1)** | 15 ns | **6 ns** | **+60%** 🚀 |
-| - *Cache Hit (Single - No AR)* | 15 ns | 6 ns | +60% |
-| - *Cache Hit (Single - With AR)* | --- | 45 ns | --- |
-| **Batch (100 Cache Hits)** | 1.459 ns | **597 ns** | **+59%** 🚀 |
-| - *Batch Cache (100 - No AR)* | 1.459 ns | 597 ns | +59% |
-| - *Batch Cache (100 - With AR)* | --- | 4.714 ns | --- |
-| - *Batch Cache (100 - Mixed 50/50)* | --- | 2.595 ns | --- |
-| **Persistence Load (100 entries)** | 0.57 ms | **0.95 ms** | --- |
-
-### B. JVM (Local Development)
-| Operation Type | v3.* Result | Status |
+| Operation Type | Result | Status |
 | :--- | :--- | :--- |
-| **Raw Math (Single)** | 3 ns | Optimal |
-| **Cache Hit (Single)** | 4 ns | Optimal |
-| - *Cache Hit (Single - No AR)* | 4 ns | Optimal |
-| - *Cache Hit (Single - With AR)* | 4 ns | Optimal |
-| **Batch Cache (100)** | 98 ns | Optimal |
-| - *Batch Cache (100 - No AR)* | 98 ns | Optimal |
-| - *Batch Cache (100 - With AR)* | 199 ns | Optimal |
-| - *Batch Cache (100 - Mixed 50/50)* | 197 ns | Optimal |
+| **Raw Math (No AR)** | 3 ns | Optimal |
+| **Raw Math (With AR)** | 51 ns | Standard |
+| **Cache Hit (Single)** | **~60 ns** | **Stable** |
+| - *Bypass Check (No AR/AUTO)* | 75 ns | Constant |
+| - *Cache Hit (With AR)* | 62 ns | **Zero-Math** 🚀 |
+| **Batch Resolution (100 items)** | **~6.2 μs** | **Predictable** |
+| - *Batch Bypassed (100 Items)* | 6,203 ns | Balanced |
+| - *Batch Cached (100 Items - AR)* | 6,188 ns | Constant |
+| **Persistence Load (100 entries)** | **0.96 ms** | **Fast** |
+
+### B. JVM (Local Development - High-End Desktop)
+| Operation Type | Result | Status |
+| :--- | :--- | :--- |
+| **Raw Math (Single)** | 6 ns | Optimal |
+| **Raw Math (With AR)** | 7 ns | Optimal |
+| **Cache Hit (Single)** | **10 ns** | **Ultra-Fast** |
+| - *Bypass Check (No AR/AUTO)* | 10 ns | Constant |
+| - *Cache Hit (With AR)* | 10 ns | **Zero-Math** 🚀 |
+| **Batch Resolution (100 items)** | **~1.1 μs** | **Extreme** |
+| - *Batch Bypassed (100 Items)* | 1,103 ns | Constant |
+| - *Batch Cached (100 Items - AR)* | 1,032 ns | Constant |
 
 ---
 
-## 3. Real-World UI Performance
+## 3. Real-World UI Performance (Jetpack Compose)
 
-In a real Jetpack Compose environment, the "Context-aware" resolution cost (which includes resolving `LocalContext`, `LocalConfiguration`, and the `DimenCache` instance) was measured.
-
-```mermaid
-pie title Resolution Cost Composition (Total ~65μs)
-    "Context/Provider Resolution" : 85
-    "Library Logic & Math" : 10
-    "Cache Lookup" : 5
-```
+Stress test executed via `BenchmarkActivity` on physical hardware (SD888). This measures the total cost of resolution including `LocalContext`, `LocalDensity`, and library logic.
 
 | Metric | Result | Impact |
 | :--- | :--- | :--- |
-| **App-Level Resolution Latency** | **~65.6 μs** | Insignificant overhead for 120 FPS |
-| **Peak UI Load (1000 items)** | **0% Jank** | Smooth 120 FPS scrolling |
+| **End-to-End Resolution Latency** | **~3.4 μs** | **Near-Zero** for 120 FPS |
+| **Peak UI Load (1000 items)** | **Smooth** | 0% Jank Detected |
 
 ---
 
-## 4. Latency vs. Count Visualization
+## 4. Technical Note on Bypass Logic
 
-```mermaid
-xychart-beta
-    title "Latency Scaling (Nanoseconds)"
-    x-axis [1, 10, 50, 100]
-    y-axis "Latency (ns)" 0 --> 1000
-    line [3, 30, 150, 300] (Math Only)
-    line [6, 60, 300, 600] (Cache Hit v3.*)
-    line [15, 150, 750, 1500] (Cache Hit v2.*)
-```
+The library features an active **"Fast Bypass"** layer for the following calculation types: **AUTO, FLUID, PERCENT, and SCALED**. 
+- These types are characterized by extremely fast raw math (typically 2-3 multiplications).
+- On mobile hardware (SD888/ART), a sharded cache lookup (involving atomic reads and hashing) can take ~60ns.
+- **Decision**: To minimize total CPU cycles, the library dynamically avoids the cache for these types when Aspect Ratio is disabled. For all other types, or when Aspect Ratio is active, the "Zero-Math" cached path is used to prevent complex re-calculation.
 
 ---
-
-## 5. Technical Note on Bypass Logic
-The library now automatically detects **"Cheaper-than-Cache"** operations.
-- When `AspectRatio` is **OFF**, simple scaling math takes ~3ns.
-- A hash-map lookup (key generation + atomic read) takes ~6ns.
-- **Decision**: The library bypasses the cache for these types to provide the absolute minimum latency possible in the hot path.
-
----
-*Report Generated: 2026-03-24 · Certified by AppDimens Performance Lab · Snapdragon 888 Physical Hardware*
+*Report Generated: 2026-03-25 · Certified by AppDimens Performance Lab · Snapdragon 888 Physical Hardware*

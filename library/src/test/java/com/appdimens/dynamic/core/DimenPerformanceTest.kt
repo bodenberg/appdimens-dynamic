@@ -3,6 +3,8 @@ package com.appdimens.dynamic.core
 import org.junit.Before
 import org.junit.Test
 import kotlin.system.measureNanoTime
+import com.appdimens.dynamic.common.DpQualifier
+import com.appdimens.dynamic.common.Inverter
 
 class DimenPerformanceTest {
 
@@ -10,10 +12,13 @@ class DimenPerformanceTest {
     private val batchSize = 100
     private val batchIterations = 10000
     
-    // Keys without AR (bit 10 = 0)
-    private val batchKeysNoAr = LongArray(batchSize) { (10 + it).toLong() and 0xFFFFFBFFL }
-    // Keys with AR (bit 10 = 1)
-    private val batchKeysAr = LongArray(batchSize) { (10 + it).toLong() or 0x400L }
+    // Keys using actual library buildKey logic
+    private val batchKeysNoAr = LongArray(batchSize) { 
+        DimenCache.buildKey(10 + it, 360, 640, 360, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.PX)
+    }
+    private val batchKeysAr = LongArray(batchSize) { 
+        DimenCache.buildKey(10 + it, 360, 640, 360, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.PX)
+    }
     
     private val batchValues = FloatArray(batchSize) { (10 + it) * 1.5f }
     private val rawValues = FloatArray(iterations) { (10 + (it % batchSize)).toFloat() }
@@ -195,6 +200,18 @@ class DimenPerformanceTest {
             }
         }
 
+        // 6d. getBatch Resolution
+        val batchD1 = runWithMin(trials = 5, warmup = 10000) { count ->
+            measureNanoTime {
+                var localSum = 0f
+                repeat(batchIterations) {
+                    val res = DimenCache.getBatch(batchKeysNoAr) { 0f }
+                    for (v in res) localSum += v
+                }
+                checksum += localSum
+            }
+        }
+
         // 7. Persistence Load
         val serializedData = DimenCache.serializeToByteArray()
         val timeD = runWithMin(trials = 10, warmup = 10) { 
@@ -213,6 +230,7 @@ class DimenPerformanceTest {
         println("raw_batch_cache_no_ar: ${batchC1 / batchIterations}")
         println("raw_batch_cache_ar: ${batchC2 / batchIterations}")
         println("raw_batch_cache_mixed: ${batchC3 / batchIterations}")
+        println("raw_get_batch: ${batchD1 / batchIterations}")
         println("raw_persistence_load: ${timeD}")
         println("checksum_validation: $checksum") 
         println("--- PERFORMANCE_REPORT_END ---")

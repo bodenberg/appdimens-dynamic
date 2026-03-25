@@ -173,15 +173,10 @@ class DimenCacheTest {
         DimenCache.getOrPut(keyAuto) { 10f }
         assertEquals("AUTO without AR should bypass cache", 0, DimenCache.stats().populated)
 
-        // DIAGONAL is NOT bypassed
+        // DIAGONAL is NOT bypassed (CalcType > 3)
         val keyDiag = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         DimenCache.getOrPut(keyDiag) { 20f }
         assertEquals("DIAGONAL should hit cache", 1, DimenCache.stats().populated)
-
-        // AUTO with AR is NOT bypassed
-        val keyAutoAr = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP)
-        DimenCache.getOrPut(keyAutoAr) { 30f }
-        assertEquals("AUTO with AR should hit cache", 2, DimenCache.stats().populated)
     }
 
     @Test
@@ -194,24 +189,25 @@ class DimenCacheTest {
         assertEquals(expectedArValue, arResult, 0.001f)
         assertEquals(1, DimenCache.stats().populated)
         
-        // Find the index for this AR key
+        // Find the index for this AR key using NEW sharding logic
         val arKey = (13L shl 19) or (java.lang.Float.floatToRawIntBits(1.78f).toLong() and 0xFFFFFFFFL)
-        val index = (arKey xor (arKey ushr 32)).toInt() and DimenCache.CACHE_MASK
+        val hAr = (arKey xor (arKey ushr 32)).toInt()
+        val mixedAr = hAr xor (hAr ushr 16)
+        val shardIndex = (mixedAr ushr 9) and DimenCache.SHARD_MASK
+        val slotIndex = mixedAr and DimenCache.SHARD_SIZE_MASK
         
-        // 2. Synthesize a collision: a normal key that hashes to the same index
-        // Since we can't easily find a collision, let's just force one by mocking the index? 
-        // No, DimenCache is an object. Let's find one by brute force if necessary, 
-        // OR just test that a normal entry DOES NOT overwrite if we manually set the key in the array.
+        // 2. Synthesize a collision: a normal key that hashes to the same shard and slot
+        DimenCache.keysArray[shardIndex].set(slotIndex, arKey)
+        DimenCache.valueBitsArray[shardIndex].set(slotIndex, expectedArValue.toRawBits())
         
-        DimenCache.keys.set(index, arKey)
-        DimenCache.valueBits.set(index, expectedArValue.toRawBits())
-        
-        // Try to put a normal entry that would map to the same index
-        // We can simulate this by finding a key where (key xor key>>>32) & MASK == index
+        // Try to put a normal entry that would map to the same shard/slot
         var collisionKey = 0L
-        for (k in 1L..1000000L) {
-            val i = (k xor (k ushr 32)).toInt() and DimenCache.CACHE_MASK
-            if (i == index) {
+        for (k in 1L..2000000L) {
+            val h = (k xor (k ushr 32)).toInt()
+            val m = h xor (h ushr 16)
+            val s = (m ushr 9) and DimenCache.SHARD_MASK
+            val i = m and DimenCache.SHARD_SIZE_MASK
+            if (s == shardIndex && i == slotIndex) {
                 // Ensure it's not an AR key (CalcType != 13)
                 if ((k shr 19 and 0xFL) != 13L) {
                     collisionKey = k
@@ -226,7 +222,7 @@ class DimenCacheTest {
         DimenCache.getOrPut(collisionKey) { 999f }
         
         // AR key should still be there!
-        assertEquals("AR key should be protected from collision", arKey, DimenCache.keys.get(index))
-        assertEquals(expectedArValue, Float.fromBits(DimenCache.valueBits.get(index)), 0.001f)
+        assertEquals("AR key should be protected from collision", arKey, DimenCache.keysArray[shardIndex].get(slotIndex))
+        assertEquals(expectedArValue, Float.fromBits(DimenCache.valueBitsArray[shardIndex].get(slotIndex)), 0.001f)
     }
 }

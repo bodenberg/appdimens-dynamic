@@ -6,6 +6,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import com.appdimens.dynamic.common.DpQualifier
+import com.appdimens.dynamic.common.Inverter
 import kotlin.system.measureNanoTime
 
 @RunWith(AndroidJUnit4::class)
@@ -16,10 +18,13 @@ class DimenAndroidPerformanceTest {
     private val batchSize = 100
     private val batchIterations = 1000
     
-    // Keys without AR (bit 10 = 0)
-    private val batchKeysNoAr = LongArray(batchSize) { (10 + it).toLong() and 0xFFFFFBFFL }
-    // Keys with AR (bit 10 = 1)
-    private val batchKeysAr = LongArray(batchSize) { (10 + it).toLong() or 0x400L }
+    // Keys using actual library buildKey logic
+    private val batchKeysNoAr = LongArray(batchSize) { 
+        DimenCache.buildKey(10 + it, 360, 640, 360, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.PX)
+    }
+    private val batchKeysAr = LongArray(batchSize) { 
+        DimenCache.buildKey(10 + it, 360, 640, 360, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.PX)
+    }
     
     private val batchValues = FloatArray(batchSize) { (10 + it) * 2.0f }
     private val rawValues = FloatArray(iterations) { (10 + (it % batchSize)).toFloat() }
