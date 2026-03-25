@@ -39,6 +39,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".compose.BenchmarkActivity"
+            android:exported="true"
+            android:theme="@style/Theme"
+            android:label="AppDimens Benchmark" />
+
     </application>
 
 </manifest>

@@ -266,4 +266,4 @@ object AspectRatioLookup {
  */
 @Suppress("NOTHING_TO_INLINE")
 inline fun fastLn(normalizedAr: Float): Float =
-    AspectRatioLookup.lookup(normalizedAr) ?: ln(normalizedAr)
+    AspectRatioLookup.lookup(normalizedAr) ?: DimenCache.getOrPutAspectRatio(normalizedAr)

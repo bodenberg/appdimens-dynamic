@@ -25,17 +25,12 @@
 package com.appdimens.dynamic.compose
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.appdimens.dynamic.common.DpQualifier
@@ -43,8 +38,7 @@ import com.appdimens.dynamic.common.DpQualifierEntry
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
-import com.appdimens.dynamic.compose.getCurrentUiModeType
-import com.appdimens.dynamic.core.DimenCache
+import com.appdimens.dynamic.core.getCurrentUiModeType
 
 /**
  * EN

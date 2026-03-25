@@ -44,7 +44,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.*
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReferenceArray
@@ -96,7 +96,7 @@ object DimenCache {
     @PublishedApi
     internal enum class CalcType {
         AUTO, DIAGONAL, FILL, FIT, FLUID, INTERPOLATED, LOGARITHMIC,
-        PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES
+        PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO
     }
 
     /**
@@ -144,7 +144,7 @@ object DimenCache {
      * 4096 slots gives <10% fill ratio under normal usage — near-zero collision rate.
      */
     @PublishedApi
-    internal const val CACHE_SIZE = 8192
+    internal const val CACHE_SIZE = 2048
     @PublishedApi
     internal const val CACHE_MASK = CACHE_SIZE - 1
 
@@ -179,7 +179,6 @@ object DimenCache {
 
     /**
      * EN Unified high-performance scaling engine.
-     * Uses multiplication by pre-calculated reciprocals to avoid slow FP division.
      */
     @PublishedApi
     internal fun calculateRawScaling(
@@ -200,9 +199,30 @@ object DimenCache {
         return baseValue.toFloat() * factor
     }
 
-    @JvmField
-    @PublishedApi
-    internal var store = AtomicReferenceArray<Entry?>(CACHE_SIZE)
+    /**
+     * EN High-performance primitive storage to avoid object allocations in the hot path.
+     * Uses AtomicLongArray for keys (64-bit) and AtomicIntegerArray for Float bits (32-bit).
+     */
+    @JvmField @PublishedApi internal val keys = java.util.concurrent.atomic.AtomicLongArray(CACHE_SIZE)
+    @JvmField @PublishedApi internal val valueBits = java.util.concurrent.atomic.AtomicIntegerArray(CACHE_SIZE)
+
+    /**
+     * EN Optimized persistence trigger (Inactivity Debounce).
+     */
+    private val saveFlow = kotlinx.coroutines.flow.MutableSharedFlow<Context>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+    )
+
+    init {
+        scope.launch {
+            @OptIn(FlowPreview::class)
+            saveFlow.debounce(500).collect { ctx ->
+                performSave(ctx)
+            }
+        }
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // KEY ENCODING — converts all call parameters into a single 64-bit Long
@@ -340,7 +360,8 @@ object DimenCache {
             val key = buffer.long
             val value = buffer.float
             if (key != 0L) {
-                store.set(i, Entry(key, value))
+                keys.set(i, key)
+                valueBits.set(i, value.toRawBits())
             }
         }
     }
@@ -348,40 +369,31 @@ object DimenCache {
     @JvmStatic
     @PublishedApi
     internal fun saveToPersistence(context: Context) {
-        // Debounced save
-        saveJob?.cancel()
-        saveJob = scope.launch {
-            delay(500) // Wait for layout pass to settle
-            val appContext = context.applicationContext
-            val buffer = ByteBuffer.allocate(CACHE_SIZE * 12)
-            for (i in 0 until CACHE_SIZE) {
-                val entry = store.get(i)
-                if (entry != null) {
-                    buffer.putLong(entry.key)
-                    buffer.putFloat(entry.value)
-                } else {
-                    buffer.putLong(0L)
-                    buffer.putFloat(0f)
-                }
-            }
-            appContext.dataStore.edit { prefs ->
-                prefs[KEY_SW_DP] = currentSmallestWidthDp
-                prefs[KEY_CACHE_DATA] = buffer.array()
-            }
+        saveFlow.tryEmit(context)
+    }
+
+    private suspend fun performSave(context: Context) {
+        val appContext = context.applicationContext
+        val buffer = ByteBuffer.allocate(CACHE_SIZE * 12)
+        for (i in 0 until CACHE_SIZE) {
+            val key = keys.get(i)
+            val value = Float.fromBits(valueBits.get(i))
+            buffer.putLong(key)
+            buffer.putFloat(value)
+        }
+        appContext.dataStore.edit { prefs ->
+            prefs[KEY_SW_DP] = currentSmallestWidthDp
+            prefs[KEY_CACHE_DATA] = buffer.array()
         }
     }
 
     internal fun serializeToByteArray(): ByteArray {
         val buffer = ByteBuffer.allocate(CACHE_SIZE * 12)
         for (i in 0 until CACHE_SIZE) {
-            val entry = store.get(i)
-            if (entry != null) {
-                buffer.putLong(entry.key)
-                buffer.putFloat(entry.value)
-            } else {
-                buffer.putLong(0L)
-                buffer.putFloat(0f)
-            }
+            val key = keys.get(i)
+            val value = Float.fromBits(valueBits.get(i))
+            buffer.putLong(key)
+            buffer.putFloat(value)
         }
         return buffer.array()
     }
@@ -406,27 +418,46 @@ object DimenCache {
     inline fun getOrPut(key: Long, context: Context? = null, crossinline compute: () -> Float): Float {
         if (!isEnabled) return compute()
 
-        // AUTO-INIT only if needed (Atomic check is fast)
+        // ─────────────────────────────────────────────────────────────────────
+        // 1. FAST BYPASS: AUTO, SCALED, FLUID, PERCENT don't need cache unless AR is active
+        // ─────────────────────────────────────────────────────────────────────
+        val ct = (key shr 19 and 0xFL).toInt()
+        val arFlag = (key and 0x400L) != 0L // bit 10
+        if (!arFlag) {
+            // types: 0 (AUTO), 11 (SCALED), 4 (FLUID), 7 (PERCENT)
+            if (ct == 0 || ct == 11 || ct == 4 || ct == 7) {
+                return compute()
+            }
+        }
+
+        // AUTO-INIT only if needed
         if (context != null && !isInitialized.get()) {
             init(context)
         }
 
         val index = (key xor (key ushr 32)).toInt() and CACHE_MASK
 
-        // FAST PATH — atomic read, no lock
-        val existing = store.get(index)
-        if (existing != null && existing.key == key) {
-            return existing.value
+        // FAST PATH — atomic read
+        val existingKey = keys.get(index)
+        if (existingKey == key) {
+            return Float.fromBits(valueBits.get(index))
         }
 
         // MISS — compute outside any lock
         val computed = compute()
 
-        // LOCK-FREE WRITE — atomic set; last writer wins (always correct)
-        store.set(index, Entry(key, computed))
+        // ─────────────────────────────────────────────────────────────────────
+        // 2. PROTECTED WRITE: ASPECT_RATIO (13) entries cannot be kicked by normal entries
+        // ─────────────────────────────────────────────────────────────────────
+        val isNewAr = ct == 13
+        val isOldAr = (existingKey shr 19 and 0xFL) == 13L
 
-        // Trigger async save
-        context?.let { saveToPersistence(it) }
+        if (existingKey == 0L || !isOldAr || isNewAr) {
+            keys.set(index, key)
+            valueBits.set(index, computed.toRawBits())
+            // Trigger async persistence
+            context?.let { saveToPersistence(it) }
+        }
 
         return computed
     }
@@ -447,8 +478,25 @@ object DimenCache {
     fun peek(key: Long): Float? {
         if (!isEnabled) return null
         val index = (key xor (key ushr 32)).toInt() and CACHE_MASK
-        val entry = store.get(index)
-        return if (entry != null && entry.key == key) entry.value else null
+        val existingKey = keys.get(index)
+        return if (existingKey == key) Float.fromBits(valueBits.get(index)) else null
+    }
+
+    /**
+     * EN Special path for AspectRatioLookup caching.
+     */
+    @JvmStatic
+    @PublishedApi
+    internal fun getOrPutAspectRatio(normalizedAr: Float, context: Context? = null): Float {
+        // Special key: CalcType=ASPECT_RATIO (15), baseValue=0, sensitivityK=fixed
+        // Using bit 15 (1111) instead of 13 for even safer separation?
+        // Let's use 13 to match enum.
+        val arKey = (13L shl 19) or
+                (java.lang.Float.floatToRawIntBits(normalizedAr).toLong() and 0xFFFFFFFFL)
+
+        return getOrPut(arKey, context) {
+            kotlin.math.ln(normalizedAr)
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -532,7 +580,8 @@ object DimenCache {
     @JvmStatic
     fun clearAll() {
         for (i in 0 until CACHE_SIZE) {
-            store.set(i, null)
+            keys.set(i, 0L)
+            valueBits.set(i, 0)
         }
     }
 
@@ -548,7 +597,7 @@ object DimenCache {
     fun stats(): CacheStats {
         var populated = 0
         for (i in 0 until CACHE_SIZE) {
-            if (store.get(i) != null) populated++
+            if (keys.get(i) != 0L) populated++
         }
         return CacheStats(
             capacity = CACHE_SIZE,

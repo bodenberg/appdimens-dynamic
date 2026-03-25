@@ -5,7 +5,7 @@
  *
  * Library: AppDimens
  */
-package com.appdimens.dynamic.compose
+package com.appdimens.dynamic.core
 
 import android.app.Activity
 import android.content.Context

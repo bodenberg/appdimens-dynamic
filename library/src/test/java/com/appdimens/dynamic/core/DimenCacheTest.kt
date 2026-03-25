@@ -162,4 +162,71 @@ class DimenCacheTest {
 
         assertNotEquals("Keys for different orientations should differ", keyPortrait, keyLandscape)
     }
+
+    @Test
+    fun testCacheBypass() {
+        DimenCache.clearAll()
+        DimenCache.isEnabled = true
+        
+        // AUTO is bypassed when AR=false
+        val keyAuto = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        DimenCache.getOrPut(keyAuto) { 10f }
+        assertEquals("AUTO without AR should bypass cache", 0, DimenCache.stats().populated)
+
+        // DIAGONAL is NOT bypassed
+        val keyDiag = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        DimenCache.getOrPut(keyDiag) { 20f }
+        assertEquals("DIAGONAL should hit cache", 1, DimenCache.stats().populated)
+
+        // AUTO with AR is NOT bypassed
+        val keyAutoAr = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP)
+        DimenCache.getOrPut(keyAutoAr) { 30f }
+        assertEquals("AUTO with AR should hit cache", 2, DimenCache.stats().populated)
+    }
+
+    @Test
+    fun testAspectRatioProtection() {
+        DimenCache.clearAll()
+        
+        // 1. Put an AR entry
+        val expectedArValue = kotlin.math.ln(1.78f)
+        val arResult = DimenCache.getOrPutAspectRatio(1.78f)
+        assertEquals(expectedArValue, arResult, 0.001f)
+        assertEquals(1, DimenCache.stats().populated)
+        
+        // Find the index for this AR key
+        val arKey = (13L shl 19) or (java.lang.Float.floatToRawIntBits(1.78f).toLong() and 0xFFFFFFFFL)
+        val index = (arKey xor (arKey ushr 32)).toInt() and DimenCache.CACHE_MASK
+        
+        // 2. Synthesize a collision: a normal key that hashes to the same index
+        // Since we can't easily find a collision, let's just force one by mocking the index? 
+        // No, DimenCache is an object. Let's find one by brute force if necessary, 
+        // OR just test that a normal entry DOES NOT overwrite if we manually set the key in the array.
+        
+        DimenCache.keys.set(index, arKey)
+        DimenCache.valueBits.set(index, expectedArValue.toRawBits())
+        
+        // Try to put a normal entry that would map to the same index
+        // We can simulate this by finding a key where (key xor key>>>32) & MASK == index
+        var collisionKey = 0L
+        for (k in 1L..1000000L) {
+            val i = (k xor (k ushr 32)).toInt() and DimenCache.CACHE_MASK
+            if (i == index) {
+                // Ensure it's not an AR key (CalcType != 13)
+                if ((k shr 19 and 0xFL) != 13L) {
+                    collisionKey = k
+                    break
+                }
+            }
+        }
+        
+        assertNotEquals(0L, collisionKey)
+        
+        // Attempt to store the colliding normal key
+        DimenCache.getOrPut(collisionKey) { 999f }
+        
+        // AR key should still be there!
+        assertEquals("AR key should be protected from collision", arKey, DimenCache.keys.get(index))
+        assertEquals(expectedArValue, Float.fromBits(DimenCache.valueBits.get(index)), 0.001f)
+    }
 }

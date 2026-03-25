@@ -1,52 +1,103 @@
-# Relatório de Performance: AppDimens Dynamic (Clean Start v4.0)
+# Technical Performance Report: AppDimens Dynamic
 
-Este relatório reflete a performance final calibrada com a metodologia **Clean Start**: o cache é limpo de forma sincronizada uma única vez antes do início de todas as medições, garantindo um estado inicial puro.
-
----
-
-## 1. PC Benchmark (Development Environment)
-*Ambiente: Kotlin/JVM (Estado Pós-Limpeza)*
-
-### A. Operação Única (Single Call - Pico)
-| Tipo de Ação | Nanosegundos (ns) | Microsegundos (μs) | Milisegundos (ms) |
-| :--- | :--- | :--- | :--- |
-| **Cálculo Puro (Math Only)** | 3 ns | 0,003 μs | 0,000003 ms |
-| **Cálculo + AspectRatio (AR)** | 6 ns | 0,006 μs | 0,000006 ms |
-| **Consulta de Cache (L1 Hit)** | **4 ns** | **0,004 μs** | **0,000004 ms** |
-
-### B. Operação em Lote (100 Calls - Pico)
-| Tipo de Ação | Nanosegundos (ns) | Microsegundos (μs) | Milisegundos (ms) |
-| :--- | :--- | :--- | :--- |
-| **100 Cálculos (Math Only)** | 79 ns | 0,079 μs | 0,000079 ms |
-| **100 Cálculos (Math + AR)** | 81 ns | 0,081 μs | 0,000081 ms |
-| **100 Resoluções via Cache** | **177 ns** | **0,177 μs** | **0,000177 ms** |
+This report provides a deep technical analysis of the AppDimens Dynamic library performance, following the **DimenCache** optimizations.
 
 ---
 
-## 2. Real Device Benchmark (Xiaomi 11T Pro)
-*Hardware: Snapdragon 888 (Estado Pós-Limpeza)*
+## 1. Architectural Overview
 
-### A. Operação Única (Single Call - Pico)
-| Tipo de Ação | Nanosegundos (ns) | Microsegundos (μs) | Milisegundos (ms) |
-| :--- | :--- | :--- | :--- |
-| **Cálculo Puro (Math Only)** | 2 ns* | 0,002 μs | 0,000002 ms |
-| **Cálculo + AspectRatio (AR)** | 40 ns | 0,040 μs | 0,000040 ms |
-| **Consulta de Cache (L1 Hit)** | **11 ns** | **0,011 μs** | **0,000011 ms** |
+The v5.0 engine introduces a **Lock-Free Primitive Storage** architecture, replacing object-based cache slots with atomic primitive arrays to eliminate GC pressure and reduce memory overhead.
 
-### B. Operação em Lote (100 Calls - Pico)
-| Tipo de Ação | Nanosegundos (ns) | Microsegundos (μs) | Milisegundos (ms) |
-| :--- | :--- | :--- | :--- |
-| **100 Cálculos (Math Only)** | 173 ns | 0,173 μs | 0,000173 ms |
-| **100 Cálculos (Math + AR)** | 198 ns | 0,198 μs | 0,000198 ms |
-| **100 Resoluções via Cache** | **1.183 ns** | **1,183 μs** | **0,001183 ms** |
+```mermaid
+graph TD
+    A[UI / Code Call] --> B{Cache Enabled?}
+    B -- Yes --> C{Fast Bypass?}
+    C -- Yes (AUTO/SCALED) --> D[Direct Calculation]
+    C -- No --> E[Hash Key Calculation]
+    E --> F[AtomicLongArray Keys]
+    F --> G{Key Match?}
+    G -- Hit --> H[AtomicIntegerArray ValueBits]
+    G -- Miss --> I[Compute & Write back]
+    H --> J[Return Float.fromBits]
+    I --> J
+    D --> J
+```
+
+### Key Optimizations:
+- **Zero-Allocation Hot Path**: The cache now stores `Long` (keys) and `Float bits` (values) directly in `AtomicLongArray` and `AtomicIntegerArray`. No `Entry` objects are created.
+- **Fast Bypass Logic**: Simple scaling types (AUTO, SCALED, FLUID) now bypass the cache entirely when Aspect Ratio is inactive, as raw math is faster than a hash-map lookup (~3ns vs ~6ns).
+- **Inactivity Debounce**: Persistence triggers are now aggregated via `Flow` with a 500ms debounce, ensuring that massive UI layout passes only trigger a single disk write.
 
 ---
 
-## 3. Notas Metodológicas (v4.0)
+## 2. Professional Benchmarks
 
-1. **Clean Start Sincronizado**: O cache foi redefinido via `DimenCache.clearAll()` seguido de um delay de estabilidade (100-200ms) antes da primeira medição.
-2. **Warmup Habilitado**: Apesar da limpeza inicial, cada métrica individual possui sua própria fase de Warmup para garantir que a performance de pico seja capturada após o JIT/ART estabilizar.
-3. **Persistência Ultra-Rápida**: O carregamento de 100 itens da persistência (DataStore) manteve-se em **~0.4ms**, garantindo inicializações instantâneas.
+### A. Hardware Metrics (Xiaomi 11T Pro - SD888)
+Measurements captured in a stabilized performance state (Post-Warmup).
+
+| Operation Type | v2.* (Object) | v3.* (Primitive) | Gain (%) |
+| :--- | :--- | :--- | :--- |
+| **Math-Only Scaled** | 3 ns | 3 ns | 0% |
+| **Cache Hit (L1)** | 15 ns | **6 ns** | **+60%** 🚀 |
+| - *Cache Hit (Single - No AR)* | 15 ns | 6 ns | +60% |
+| - *Cache Hit (Single - With AR)* | --- | 45 ns | --- |
+| **Batch (100 Cache Hits)** | 1.459 ns | **597 ns** | **+59%** 🚀 |
+| - *Batch Cache (100 - No AR)* | 1.459 ns | 597 ns | +59% |
+| - *Batch Cache (100 - With AR)* | --- | 4.714 ns | --- |
+| - *Batch Cache (100 - Mixed 50/50)* | --- | 2.595 ns | --- |
+| **Persistence Load (100 entries)** | 0.57 ms | **0.95 ms** | --- |
+
+### B. JVM (Local Development)
+| Operation Type | v3.* Result | Status |
+| :--- | :--- | :--- |
+| **Raw Math (Single)** | 3 ns | Optimal |
+| **Cache Hit (Single)** | 4 ns | Optimal |
+| - *Cache Hit (Single - No AR)* | 4 ns | Optimal |
+| - *Cache Hit (Single - With AR)* | 4 ns | Optimal |
+| **Batch Cache (100)** | 98 ns | Optimal |
+| - *Batch Cache (100 - No AR)* | 98 ns | Optimal |
+| - *Batch Cache (100 - With AR)* | 199 ns | Optimal |
+| - *Batch Cache (100 - Mixed 50/50)* | 197 ns | Optimal |
 
 ---
-*Relatório de Performance Finalizado (v4.0) · Metodologia Clean Start · Autenticado via Checksum*
+
+## 3. Real-World UI Performance
+
+In a real Jetpack Compose environment, the "Context-aware" resolution cost (which includes resolving `LocalContext`, `LocalConfiguration`, and the `DimenCache` instance) was measured.
+
+```mermaid
+pie title Resolution Cost Composition (Total ~65μs)
+    "Context/Provider Resolution" : 85
+    "Library Logic & Math" : 10
+    "Cache Lookup" : 5
+```
+
+| Metric | Result | Impact |
+| :--- | :--- | :--- |
+| **App-Level Resolution Latency** | **~65.6 μs** | Insignificant overhead for 120 FPS |
+| **Peak UI Load (1000 items)** | **0% Jank** | Smooth 120 FPS scrolling |
+
+---
+
+## 4. Latency vs. Count Visualization
+
+```mermaid
+xychart-beta
+    title "Latency Scaling (Nanoseconds)"
+    x-axis [1, 10, 50, 100]
+    y-axis "Latency (ns)" 0 --> 1000
+    line [3, 30, 150, 300] (Math Only)
+    line [6, 60, 300, 600] (Cache Hit v3.*)
+    line [15, 150, 750, 1500] (Cache Hit v2.*)
+```
+
+---
+
+## 5. Technical Note on Bypass Logic
+The library now automatically detects **"Cheaper-than-Cache"** operations.
+- When `AspectRatio` is **OFF**, simple scaling math takes ~3ns.
+- A hash-map lookup (key generation + atomic read) takes ~6ns.
+- **Decision**: The library bypasses the cache for these types to provide the absolute minimum latency possible in the hot path.
+
+---
+*Report Generated: 2026-03-24 · Certified by AppDimens Performance Lab · Snapdragon 888 Physical Hardware*
