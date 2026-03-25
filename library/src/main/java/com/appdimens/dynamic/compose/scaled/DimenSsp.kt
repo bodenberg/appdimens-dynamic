@@ -679,10 +679,10 @@ fun Int.toDynamicScaledSp(
             return@remember if (fontScale) scaledValue.sp else (scaledValue / density.fontScale).sp
         }
 
-        val scaledVal = DimenCache.getOrPut(cacheKey, androidContext) {
-            calculateSspValueCompose(this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
-        }
-        if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
+        DimenCache.getOrPut(cacheKey, androidContext) {
+            val raw = calculateSspValueCompose(this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
+            if (fontScale) raw else (raw / density.fontScale)
+        }.sp
     }
 }
 

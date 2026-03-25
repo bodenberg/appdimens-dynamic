@@ -168,15 +168,39 @@ class DimenCacheTest {
         DimenCache.clearAll()
         DimenCache.isEnabled = true
         
-        // AUTO is bypassed when AR=false
+        // AUTO (0) and SCALED (11) are bypassed when Aspect Ratio is inactive (key >= 0)
         val keyAuto = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         DimenCache.getOrPut(keyAuto) { 10f }
-        assertEquals("AUTO without AR should bypass cache", 0, DimenCache.stats().populated)
+        assertEquals("AUTO should bypass cache when AR is false", 0, DimenCache.stats().populated)
 
-        // DIAGONAL is NOT bypassed (CalcType > 3)
+        val keyScaled = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        DimenCache.getOrPut(keyScaled) { 110f }
+        assertEquals("SCALED should bypass cache when AR is false", 0, DimenCache.stats().populated)
+
+        // DIAGONAL (1) should still hit cache
         val keyDiag = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         DimenCache.getOrPut(keyDiag) { 20f }
         assertEquals("DIAGONAL should hit cache", 1, DimenCache.stats().populated)
+
+        // AUTO with AR (key < 0) should hit cache
+        val keyAutoAr = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP)
+        DimenCache.getOrPut(keyAutoAr) { 15f }
+        assertEquals("AUTO with AR should hit cache", 2, DimenCache.stats().populated)
+    }
+
+    @Test
+    fun testReadyToUseValues() {
+        DimenCache.clearAll()
+        // Use DIAGONAL because it is NOT bypassed
+        val key = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        
+        val computedValue = 15.5f
+        val result1 = DimenCache.getOrPut(key) { computedValue }
+        assertEquals(computedValue, result1)
+        
+        // Second call should be a hit and return exactly the same value
+        val result2 = DimenCache.getOrPut(key) { 999f } // Dummy compute
+        assertEquals("Retrieved value must be identical to stored value", computedValue, result2)
     }
 
     @Test
@@ -189,8 +213,8 @@ class DimenCacheTest {
         assertEquals(expectedArValue, arResult, 0.001f)
         assertEquals(1, DimenCache.stats().populated)
         
-        // Find the index for this AR key using NEW sharding logic
-        val arKey = (13L shl 19) or (java.lang.Float.floatToRawIntBits(1.78f).toLong() and 0xFFFFFFFFL)
+        // Match buildKey layout: CalcType (13) is at bit 18
+        val arKey = (13L shl 18) or (java.lang.Float.floatToRawIntBits(1.78f).toLong() and 0xFFFFFFFFL)
         val hAr = (arKey xor (arKey ushr 32)).toInt()
         val mixedAr = hAr xor (hAr ushr 16)
         val shardIndex = (mixedAr ushr 9) and DimenCache.SHARD_MASK
@@ -209,7 +233,7 @@ class DimenCacheTest {
             val i = m and DimenCache.SHARD_SIZE_MASK
             if (s == shardIndex && i == slotIndex) {
                 // Ensure it's not an AR key (CalcType != 13)
-                if ((k shr 19 and 0xFL) != 13L) {
+                if ((k ushr 18 and 0xFL) != 13L) {
                     collisionKey = k
                     break
                 }

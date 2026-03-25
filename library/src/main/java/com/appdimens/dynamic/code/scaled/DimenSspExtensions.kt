@@ -743,7 +743,8 @@ fun Int.toDynamicScaledSp(
 
     return if (enableCache) {
         DimenCache.getOrPut(cacheKey, context) {
-            calculateScaledSp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+            val raw = calculateScaledSp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+            if (fontScale) raw else (raw / (resources.displayMetrics.scaledDensity / resources.displayMetrics.density))
         }
     } else {
         calculateScaledSp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)

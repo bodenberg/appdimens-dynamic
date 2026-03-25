@@ -79,7 +79,7 @@ object DimenCache {
     // CONFIGURATION & PERSISTENT STATE
     // ─────────────────────────────────────────────────────────────────────────
 
-    internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "dimen_cache_v2_prefs")
+    internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "dimens_cache_prefs")
     internal val KEY_SW_DP = intPreferencesKey("smallest_width_dp")
     internal val KEY_CACHE_DATA = byteArrayPreferencesKey("cache_mirror")
 
@@ -315,43 +315,44 @@ object DimenCache {
         valueType: ValueType,
         customSensitivityK: Float? = null
     ): Long {
-        // Core params (Bits 0-52)
-        val bv = (baseValue + 1023).coerceIn(0, 2047).toLong() // 11 bits
-        val sw = (screenWidthDp / 2).coerceIn(0, 1023).toLong() // 10 bits
-        val sh = (screenHeightDp / 2).coerceIn(0, 1023).toLong() // 10 bits
-        val ssw = smallestWidthDp.coerceIn(0, 1023).toLong()    // 10 bits
-        val ct = calcType.ordinal.toLong()                       // 4 bits
-        val q = qualifier.ordinal.toLong()                      // 2 bits
-        val inv = inverter.ordinal.toLong()                     // 4 bits
-        val land = if (isLandscape) 1L else 0L                  // 1 bit
-        val imw = if (ignoreMultiWindows) 1L else 0L            // 1 bit
-        
-        // Extended Key Info (Higher bits)
-        // 8 bits fingerprint from Float (Custom Sensitivity)
+        // [63] applyAspectRatio
+        // [62-52] baseValue (11 bits, offset 1023)
+        // [51-42] sw/2 (10)
+        // [41-32] sh/2 (10)
+        // [31-22] ssw (10)
+        // [21-18] CalcType (4)
+        // [17-15] ValueType (3 bits, supports 8 types)
+        // [14-7]  sensitivityK (8 bits fingerprint)
+        // [6-5]   DpQualifier (2)
+        // [4-2]   Inverter (3 bits, supports 8 types)
+        // [1]     isLandscape (1)
+        // [0]     ignoreMultiWindows (1)
+
+        val ar = if (applyAspectRatio) 1L else 0L
+        val bv = (baseValue + 1023).coerceIn(0, 2047).toLong()
+        val sw = (screenWidthDp / 2).coerceIn(0, 1023).toLong()
+        val sh = (screenHeightDp / 2).coerceIn(0, 1023).toLong()
+        val ssw = smallestWidthDp.coerceIn(0, 1023).toLong()
+        val ct = calcType.ordinal.toLong() and 0xFL
+        val vt = valueType.ordinal.toLong() and 0x7L
         val sk = (customSensitivityK?.toRawBits()?.ushr(24)?.and(0xFF)?.toLong() ?: 0xFFL)
+        val q = qualifier.ordinal.toLong() and 0x3L
+        val inv = inverter.ordinal.toLong() and 0x7L
+        val land = if (isLandscape) 1L else 0L
+        val imw = if (ignoreMultiWindows) 1L else 0L
 
-        var key = (bv shl 41) or
-                (sw shl 31) or
-                (sh shl 21) or
-                (ssw shl 11) or
-                (ct shl 7) or
+        return (ar shl 63) or
+                (bv shl 52) or
+                (sw shl 42) or
+                (sh shl 32) or
+                (ssw shl 22) or
+                (ct shl 18) or
+                (vt shl 15) or
+                (sk shl 7) or
                 (q shl 5) or
-                (inv shl 1) or
-                land
-
-        // Bit 0: Multi-window
-        key = (key shl 1) or imw
-        
-        // Bits 56-59: ValueType (allows up to 16 types)
-        key = key or (valueType.ordinal.toLong() shl 56)
-        
-        // Bit 62: Aspect Ratio Indicator
-        if (applyAspectRatio) key = key or (1L shl 62)
-        
-        // Add Sensitivity Fingerprint in available middle bits or top
-        key = key xor (sk shl 48)
-
-        return key
+                (inv shl 2) or
+                (land shl 1) or
+                imw
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -476,14 +477,12 @@ object DimenCache {
     inline fun getOrPut(key: Long, context: Context? = null, crossinline compute: () -> Float): Float {
         if (!isEnabled) return compute()
 
-        // ─────────────────────────────────────────────────────────────────────
-        // 1. FAST BYPASS: AUTO, SCALED, FLUID, PERCENT don't need cache unless AR is active
-        // ─────────────────────────────────────────────────────────────────────
-        val ct = (key shr 19 and 0xFL).toInt()
-        val arFlag = (key and 0x400L) != 0L // bit 10
-        if (!arFlag) {
-            // types: 0 (AUTO), 11 (SCALED), 4 (FLUID), 7 (PERCENT)
-            if (ct == 0 || ct == 11 || ct == 4 || ct == 7) {
+        // 0. FAST BYPASS
+        // If applyAspectRatio is inactive (bit 63 == 0) and it's a bypass-eligible type
+        // 0=AUTO, 4=FLUID, 7=PERCENT, 11=SCALED
+        if (key >= 0) {
+            val ct = (key ushr 18 and 0xFL).toInt()
+            if (ct == 0 || ct == 4 || ct == 7 || ct == 11) {
                 return compute()
             }
         }
@@ -494,21 +493,8 @@ object DimenCache {
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        // 2. SHARDED LOOKUP: mix bits to ensure good distribution
+        // 1. SHARDED LOOKUP: mix bits to ensure good distribution
         // ─────────────────────────────────────────────────────────────────────
-        // ─────────────────────────────────────────────────────────────────────
-        // 1. BYPASS CHECK: Avoid cache overhead for extremely fast calculations
-        // (AUTO, FLUID, PERCENT, SCALED) when Aspect Ratio is NOT applied.
-        // Bit 62 = applyAspectRatio, Bits 7-10 = CalcType
-        // ─────────────────────────────────────────────────────────────────────
-        val ctBits = (key ushr 7 and 0xFL).toInt()
-        val hasAr = (key ushr 62 and 1L) != 0L
-        
-        // Specific ordinals: AUTO=0, FLUID=4, PERCENT=7, SCALED=11
-        if (!hasAr && (ctBits == 0 || ctBits == 4 || ctBits == 7 || ctBits == 11)) {
-            return compute()
-        }
-
         val h = (key xor (key ushr 32)).toInt()
         val mixed = h xor (h ushr 16)
         
@@ -528,10 +514,13 @@ object DimenCache {
         val computed = compute()
 
         // ─────────────────────────────────────────────────────────────────────
-        // 3. PROTECTED WRITE: ASPECT_RATIO (13) entries cannot be kicked by normal entries
+        // 2. PROTECTED WRITE: ASPECT_RATIO (13) entries cannot be kicked by normal entries
         // ─────────────────────────────────────────────────────────────────────
+        val ct = (key ushr 18 and 0xFL).toInt()
+        val existingCt = (existingKey ushr 18 and 0xFL).toInt()
+        
         val isNewAr = ct == 13
-        val isOldAr = (existingKey shr 19 and 0xFL) == 13L
+        val isOldAr = existingKey != 0L && existingCt == 13
 
         if (existingKey == 0L || !isOldAr || isNewAr) {
             shardsKeys.set(slotIndex, key)
@@ -590,9 +579,10 @@ object DimenCache {
     @JvmStatic
     @PublishedApi
     internal fun getOrPutAspectRatio(normalizedAr: Float, context: Context? = null): Float {
-        // Special key: CalcType=ASPECT_RATIO (13), baseValue=0, sensitivityK=fixed
-        // Sync with new buildKey bit shifts: CalcType is now at bit 7
-        val arKey = (13L shl 7) or
+        // Special key: CalcType=ASPECT_RATIO (13)
+        // Manual key construction must match buildKey layout:
+        // CalcType (13) is at bit 18
+        val arKey = (13L shl 18) or
                 (java.lang.Float.floatToRawIntBits(normalizedAr).toLong() and 0xFFFFFFFFL)
 
         return getOrPut(arKey, context) {
