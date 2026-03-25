@@ -10,14 +10,14 @@
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.0.0-beta1")
+    implementation("io.github.bodenberg:appdimens-dynamic:3.0.0")
 }
 ```
 
 **Requirements:** Min SDK 24 · Compile SDK 36 · Kotlin & Java · Jetpack Compose
 
 > [!NOTE]
-> **Version 3.0.0-beta**
+> **Version 3.0.0**
 > This version implements scale-based calculations (the Android system standard). Support for other calculation methods will be implemented soon.
 
 ---
@@ -27,26 +27,6 @@ dependencies {
 ### 0. Initialization (Optional - For Persistence)
 
 To enable **DimenCache persistence** (avoiding recalculations after the first app launch), initialize the library in your `Application` class:
-
-```kotlin
-import android.app.Application
-import com.appdimens.dynamic.core.DimenCache
-
-class InitializeApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-
-        /*
-        * EN Initialize the AppDimens cache.
-        * Initializes the cache persistence setting to avoid recalculations when opening the app after the first launch.
-        *
-        * PT Inicializa o cache AppDimens.
-        * Inicializa a configuração de persistência do cache para evitar recalculações quando abrir o aplicativo após o primeiro lançamento.
-        */
-        DimenCache.init(this)
-    }
-}
-```
 
 ### 1. Jetpack Compose
 
