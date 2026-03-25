@@ -24,10 +24,6 @@ dependencies {
 
 ## 💻 Usage Examples
 
-### 0. Initialization (Optional - For Persistence)
-
-To enable **DimenCache persistence** (avoiding recalculations after the first app launch), initialize the library in your `Application` class:
-
 ### 1. Jetpack Compose
 
 **Basic — Auto-Scaling Extensions:**
