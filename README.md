@@ -303,7 +303,7 @@ AppDimens Dynamic calculates values at runtime using **mathematically refined cu
 AppDimens Dynamic is designed for maximum efficiency:
 
 - **Automatic Caching**: Once a dimension is calculated for a specific screen configuration, it is stored in `DimenCache` for instant reuse.
-- **Persistence**: Call `DimenCache.init(this)` to enable persistence via DataStore, avoiding recalculations across app launches.
+- **Persistence**: Avoiding recalculations across app launches.
 - **Compose Optimization**: Uses `LocalConfiguration.current` and `remember{}` internally to ensure no unnecessary recompositions.
 - **Zero Resource Lookups**: By eliminating `@dimen` XML file dependency, it avoids system resource resolution overhead.
 
