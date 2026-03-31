@@ -65,10 +65,10 @@ Stress test executed via `BenchmarkActivity` on physical hardware. This measures
 graph TD
     A[UI / Code Call] --> B{Cache Enabled?}
     B -- Yes --> C{Bypass-eligible & No-AR?}
-    C -- Yes --> D[Fast Math Return (~2ns)]
+    C -- Yes --> D["Fast Math Return (~2ns)"]
     C -- No --> E["Inlined Hash Lookup<br/>(Padded Shards)"]
     E --> F{Key Match?}
-    F -- Hit --> G[Return Float (~5-36ns)]
+    F -- Hit --> G["Return Float (~5-35ns)"]
     F -- Miss --> H[Compute Once & Write back]
     H --> G
     D --> G
