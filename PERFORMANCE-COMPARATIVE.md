@@ -178,7 +178,7 @@ All calls hit the pre-populated cache (no real calculation), so ~783 ns reflects
 
 ## 6. Platform Metrics
 
-### B. JVM (Desktop — HotSpot JVM 17)
+### B. JVM (Desktop — Intel i7 / HotSpot JVM 17)
 
 | Operation | Result | Status |
 | :--- | :---: | :--- |
