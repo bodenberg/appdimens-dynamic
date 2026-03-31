@@ -178,7 +178,7 @@ All calls hit the pre-populated cache (no real calculation), so ~783 ns reflects
 
 ## 6. Platform Metrics
 
-### B. JVM (Desktop — Intel i7 / HotSpot JVM 17)
+### B. JVM (Desktop — AMD Ryzen 3 / HotSpot JVM 17)
 
 | Operation | Result | Status |
 | :--- | :---: | :--- |
@@ -246,7 +246,7 @@ The `BenchmarkActivity` results reflect a **mixed** measurement: 3 bypass calls 
 
 ## 8. Benchmark Variability
 
-All numbers in this document were captured on a **Xiaomi 11T Pro (Snapdragon 888 SM8350, Android 14)** and a **high-end Intel i7 desktop JVM**. Real-world results will differ based on:
+All numbers in this document were captured on a **Xiaomi 11T Pro (Snapdragon 888 SM8350, Android 14)** and an **AMD Ryzen 3 desktop JVM**. Real-world results will differ based on:
 
 - **Device class**: budget Cortex-A55 cores (e.g. entry-level phones) can be 5–10× slower on atomic operations
 - **JIT stage**: cold start (un-compiled) is 3–10× slower than steady-state hot JIT
