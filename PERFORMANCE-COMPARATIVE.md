@@ -28,7 +28,7 @@ Executed via `./gradlew :library:testDebugUnitTest` · 1,000,000 iterations per 
 | **Batch (100 items, math)** | ~85 ns/batch | **79 ns/batch** | **-7%** |
 | **Batch (100 items, math+AR)** | — | **79 ns/batch** | — |
 | **Batch Cache (100 items, no AR)** | ~85 ns/batch | **85 ns/batch** | = |
-| **Batch Cache (100 items, with AR)** | 180–250 ns/batch | **242 ns/batch** | ✅ |
+| **Batch Cache (100 items, with AR)** | 250 ns/batch | **242 ns/batch** | ✅ |
 | **Public getBatch()** | — | **151 ns/batch** | — |
 | **Persistence Load** | 0.50–0.95 ms | **0.11 ms** | **-78%** ✅ |
 
