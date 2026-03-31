@@ -13,9 +13,6 @@ class DimenCacheTest {
         // Test min boundary
         val keyMin = DimenCache.buildKey(
             baseValue = -1023,
-            screenWidthDp = 360,
-            screenHeightDp = 640,
-            smallestWidthDp = 360,
             isLandscape = false,
             ignoreMultiWindows = false,
             calcType = DimenCache.CalcType.SCALED,
@@ -28,9 +25,6 @@ class DimenCacheTest {
         // Test zero
         val keyZero = DimenCache.buildKey(
             baseValue = 0,
-            screenWidthDp = 360,
-            screenHeightDp = 640,
-            smallestWidthDp = 360,
             isLandscape = false,
             ignoreMultiWindows = false,
             calcType = DimenCache.CalcType.SCALED,
@@ -43,9 +37,6 @@ class DimenCacheTest {
         // Test max boundary
         val keyMax = DimenCache.buildKey(
             baseValue = 1024,
-            screenWidthDp = 360,
-            screenHeightDp = 640,
-            smallestWidthDp = 360,
             isLandscape = false,
             ignoreMultiWindows = false,
             calcType = DimenCache.CalcType.SCALED,
@@ -66,9 +57,6 @@ class DimenCacheTest {
         for (i in -1023..1024) {
             val key = DimenCache.buildKey(
                 baseValue = i,
-                screenWidthDp = 360,
-                screenHeightDp = 640,
-                smallestWidthDp = 360,
                 isLandscape = false,
                 ignoreMultiWindows = false,
                 calcType = DimenCache.CalcType.SCALED,
@@ -86,9 +74,6 @@ class DimenCacheTest {
     fun testKeySensitivityK() {
         val key1 = DimenCache.buildKey(
             baseValue = 10,
-            screenWidthDp = 360,
-            screenHeightDp = 640,
-            smallestWidthDp = 360,
             isLandscape = false,
             ignoreMultiWindows = false,
             calcType = DimenCache.CalcType.SCALED,
@@ -100,9 +85,6 @@ class DimenCacheTest {
         )
         val key2 = DimenCache.buildKey(
             baseValue = 10,
-            screenWidthDp = 360,
-            screenHeightDp = 640,
-            smallestWidthDp = 360,
             isLandscape = false,
             ignoreMultiWindows = false,
             calcType = DimenCache.CalcType.SCALED,
@@ -114,9 +96,6 @@ class DimenCacheTest {
         )
         val keyNull = DimenCache.buildKey(
             baseValue = 10,
-            screenWidthDp = 360,
-            screenHeightDp = 640,
-            smallestWidthDp = 360,
             isLandscape = false,
             ignoreMultiWindows = false,
             calcType = DimenCache.CalcType.SCALED,
@@ -135,9 +114,6 @@ class DimenCacheTest {
     fun testKeyContextChanges() {
         val keyPortrait = DimenCache.buildKey(
             baseValue = 10,
-            screenWidthDp = 360,
-            screenHeightDp = 640,
-            smallestWidthDp = 360,
             isLandscape = false,
             ignoreMultiWindows = false,
             calcType = DimenCache.CalcType.SCALED,
@@ -148,9 +124,6 @@ class DimenCacheTest {
         )
         val keyLandscape = DimenCache.buildKey(
             baseValue = 10,
-            screenWidthDp = 640, // Swapped for landscape
-            screenHeightDp = 360,
-            smallestWidthDp = 360,
             isLandscape = true,
             ignoreMultiWindows = false,
             calcType = DimenCache.CalcType.SCALED,
@@ -169,21 +142,21 @@ class DimenCacheTest {
         DimenCache.isEnabled = true
         
         // AUTO (0) and SCALED (11) are bypassed when Aspect Ratio is inactive (key >= 0)
-        val keyAuto = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        val keyAuto = DimenCache.buildKey(10, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         DimenCache.getOrPut(keyAuto) { 10f }
         assertEquals("AUTO should bypass cache when AR is false", 0, DimenCache.stats().populated)
 
-        val keyScaled = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        val keyScaled = DimenCache.buildKey(10, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         DimenCache.getOrPut(keyScaled) { 110f }
         assertEquals("SCALED should bypass cache when AR is false", 0, DimenCache.stats().populated)
 
         // DIAGONAL (1) should still hit cache
-        val keyDiag = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        val keyDiag = DimenCache.buildKey(10, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         DimenCache.getOrPut(keyDiag) { 20f }
         assertEquals("DIAGONAL should hit cache", 1, DimenCache.stats().populated)
 
         // AUTO with AR (key < 0) should hit cache
-        val keyAutoAr = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP)
+        val keyAutoAr = DimenCache.buildKey(10, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP)
         DimenCache.getOrPut(keyAutoAr) { 15f }
         assertEquals("AUTO with AR should hit cache", 2, DimenCache.stats().populated)
     }
@@ -192,7 +165,7 @@ class DimenCacheTest {
     fun testReadyToUseValues() {
         DimenCache.clearAll()
         // Use DIAGONAL because it is NOT bypassed
-        val key = DimenCache.buildKey(10, 360, 640, 360, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        val key = DimenCache.buildKey(10, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         
         val computedValue = 15.5f
         val result1 = DimenCache.getOrPut(key) { computedValue }

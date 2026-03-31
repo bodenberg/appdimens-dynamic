@@ -661,9 +661,6 @@ fun Number.toDynamicScaledSp(
     ) {
         val cacheKey = DimenCache.buildKey(
             baseValue = this.toFloat(),
-            screenWidthDp = configuration.screenWidthDp,
-            screenHeightDp = configuration.screenHeightDp,
-            smallestWidthDp = configuration.smallestScreenWidthDp,
             isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
             ignoreMultiWindows = ignoreMultiWindows,
             calcType = DimenCache.CalcType.SCALED,
@@ -768,9 +765,6 @@ fun Number.toDynamicScaledPx(
     ) {
         val cacheKey = DimenCache.buildKey(
             baseValue = this.toFloat(),
-            screenWidthDp = configuration.screenWidthDp,
-            screenHeightDp = configuration.screenHeightDp,
-            smallestWidthDp = configuration.smallestScreenWidthDp,
             isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
             ignoreMultiWindows = ignoreMultiWindows,
             calcType = DimenCache.CalcType.SCALED,

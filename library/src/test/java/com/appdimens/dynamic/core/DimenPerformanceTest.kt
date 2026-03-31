@@ -14,10 +14,10 @@ class DimenPerformanceTest {
     
     // Keys using actual library buildKey logic
     private val batchKeysNoAr = LongArray(batchSize) { 
-        DimenCache.buildKey(10 + it, 360, 640, 360, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.PX)
+        DimenCache.buildKey(10 + it, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.PX)
     }
     private val batchKeysAr = LongArray(batchSize) { 
-        DimenCache.buildKey(10 + it, 360, 640, 360, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.PX)
+        DimenCache.buildKey(10 + it, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.PX)
     }
     
     private val batchValues = FloatArray(batchSize) { (10 + it) * 1.5f }

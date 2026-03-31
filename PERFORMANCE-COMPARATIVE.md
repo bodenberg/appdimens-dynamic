@@ -74,7 +74,7 @@ The batch API reduces overhead per item by ~7% on the JVM by exposing a continuo
 **Recommended usage:**
 ```kotlin
 val keys = LongArray(views.size) { i ->
-    DimenCache.buildKey(values[i].toFloat(), sw, sh, ssw, isLandscape,
+    DimenCache.buildKey(values[i].toFloat(), isLandscape,
         false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH,
         Inverter.DEFAULT, false, DimenCache.ValueType.PX)
 }

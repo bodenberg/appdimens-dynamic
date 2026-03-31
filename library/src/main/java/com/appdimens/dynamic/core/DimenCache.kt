@@ -87,7 +87,6 @@ object DimenCache {
     internal var isInitializedFast = false
     @PublishedApi
     internal val isInitialized = AtomicBoolean(false)
-    internal var saveJob: Job? = null
 
     /**
      * EN Calculation types based on the library's package structure.
@@ -248,16 +247,6 @@ object DimenCache {
         get() = Array(SHARD_COUNT) { shards[it].values }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // CACHE ENTRY (kept for API compatibility)
-    // ─────────────────────────────────────────────────────────────────────────
-
-    @PublishedApi
-    internal class Entry(
-        @JvmField val key: Long,
-        @JvmField val value: Float
-    )
-
-    // ─────────────────────────────────────────────────────────────────────────
     // MATH CONSTANTS
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -344,9 +333,6 @@ object DimenCache {
     @PublishedApi
     internal fun buildKey(
         baseValue: Float,
-        screenWidthDp: Int,
-        screenHeightDp: Int,
-        smallestWidthDp: Int,
         isLandscape: Boolean,
         ignoreMultiWindows: Boolean,
         calcType: CalcType,
@@ -382,9 +368,6 @@ object DimenCache {
     @PublishedApi
     internal fun buildKey(
         baseValue: Int,
-        screenWidthDp: Int,
-        screenHeightDp: Int,
-        smallestWidthDp: Int,
         isLandscape: Boolean,
         ignoreMultiWindows: Boolean,
         calcType: CalcType,
@@ -394,9 +377,8 @@ object DimenCache {
         valueType: ValueType,
         customSensitivityK: Float? = null
     ): Long = buildKey(
-        baseValue.toFloat(), screenWidthDp, screenHeightDp, smallestWidthDp,
-        isLandscape, ignoreMultiWindows, calcType, qualifier, inverter,
-        applyAspectRatio, valueType, customSensitivityK
+        baseValue.toFloat(), isLandscape, ignoreMultiWindows, calcType,
+        qualifier, inverter, applyAspectRatio, valueType, customSensitivityK
     )
 
     // ─────────────────────────────────────────────────────────────────────────

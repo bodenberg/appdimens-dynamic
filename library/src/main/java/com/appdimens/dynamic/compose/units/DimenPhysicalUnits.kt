@@ -76,9 +76,6 @@ object DimenPhysicalUnits {
         val configuration = resources.configuration
         val cacheKey = DimenCache.buildKey(
             baseValue            = mm,
-            screenWidthDp        = configuration.screenWidthDp,
-            screenHeightDp       = configuration.screenHeightDp,
-            smallestWidthDp = configuration.smallestScreenWidthDp,
             isLandscape          = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
             ignoreMultiWindows   = false,
             calcType             = DimenCache.CalcType.UNITIES,
