@@ -1,3 +1,9 @@
+/**
+ * @author Bodenberg
+ *
+ * EN Performance results activity — visual stress test and throughput metrics.
+ * PT Atividade de resultados de performance — teste de estresse visual e métricas de taxa de transferência.
+ */
 package com.example.app.compose
 
 import android.os.Bundle
@@ -23,6 +29,10 @@ import com.appdimens.dynamic.compose.wdp
 import kotlinx.coroutines.delay
 import kotlin.system.measureNanoTime
 
+/**
+ * EN Activity that runs automated and visual benchmarks for the AppDimens library.
+ * PT Atividade que executa benchmarks automatizados e visuais para a biblioteca AppDimens.
+ */
 class BenchmarkActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +42,10 @@ class BenchmarkActivity : ComponentActivity() {
     }
 }
 
+/**
+ * EN Main screen of the benchmark, coordinating the stress test and displaying the UI list.
+ * PT Tela principal do benchmark, coordenando o teste de estresse e exibindo a lista de UI.
+ */
 @Composable
 fun BenchmarkScreen() {
     var benchmarkResult by remember { mutableStateOf("Pending...") }
@@ -93,6 +107,12 @@ fun BenchmarkScreen() {
     }
 }
 
+/**
+ * EN A single list item used for visual stress testing, resolving multiple dimensions.
+ * PT Um único item da lista usado para teste de estresse visual, resolvendo múltiplas dimensões.
+ *
+ * @param id EN Item identifier. PT Identificador do item.
+ */
 @Composable
 fun BenchmarkItem(id: Int) {
     val density = LocalDensity.current

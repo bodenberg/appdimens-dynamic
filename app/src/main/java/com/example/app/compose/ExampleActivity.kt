@@ -20,9 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import android.content.Intent
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.appdimens.dynamic.common.DpQualifier
@@ -103,6 +105,52 @@ fun SdpDemoScreen() {
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
+
+                // EN Navigation to BenchmarkActivity
+                // PT Navegação para BenchmarkActivity
+                // EN Navigation to BenchmarkActivity
+                // PT Navegação para BenchmarkActivity
+                val context = LocalContext.current
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, BenchmarkActivity::class.java))
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.sdp),
+                    shape = RoundedCornerShape(12.sdp),
+                    contentPadding = PaddingValues(12.sdp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
+                ) {
+                    Icon(
+                        imageVector = androidx.compose.material.icons.Icons.Default.Speed,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.sdp)
+                    )
+                    Spacer(modifier = Modifier.width(12.sdp))
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            "Run Performance Benchmark",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "Executar Benchmark de Performance",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.8f)
+                        )
+                    }
+                    Icon(
+                        imageVector = androidx.compose.material.icons.Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.sdp)
+                    )
+                }
 
                 // ── 1. CORE EXTENSIONS (sdp / hdp / wdp) ───────────────────
                 SectionTitle("1. Core Extensions")

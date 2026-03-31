@@ -611,34 +611,33 @@ val Number.wemPxiPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fon
 @get:Composable
 val Number.wemPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
-// EN Dynamic scaling function for Sp (Resource-based, reuses DP XML resources).
-// PT Função de dimensionamento dinâmico para Sp (baseada em recursos, reutiliza os recursos XML de DP).
-
 /**
  * EN
- * Converts an Int (the base Sp value) into a dynamically scaled TextUnit (Sp).
- * This function reuses the existing DP XML resources (`_Nsdp`, `_Nhdp`, `_Nwdp`) as the
- * dimension values, then converts them to Sp. This means the scaling system is the same as
- * the DP system — the raw dp value from the resource is used directly as an sp number.
+ * Converts a [Number] (base value) into a dynamically scaled [TextUnit] (Sp) for Jetpack Compose.
  *
- * 1. Constructs the resource name based on the value and the qualifier (e.g., `_16sdp`).
- * 2. Loads the dimension value in dp from that resource.
- * 3. Converts it to Sp, optionally stripping the system font scale.
+ * Scaling logic:
+ * 1. Builds a 64-bit packed cache key.
+ * 2. If [fontScale] is `true`, the result respects the system font size setting.
+ * 3. If [fontScale] is `false` (e.g. via [.nem]), the system font scale is stripped.
+ * 4. Checks [DimenCache] if [enableCache] is `true`.
  *
  * PT
- * Converte um Int (o valor Sp base) em um TextUnit (Sp) escalado dinamicamente.
- * Esta função reutiliza os recursos XML de DP existentes (`_Nsdp`, `_Nhdp`, `_Nwdp`) como
- * valores de dimensão, convertendo-os para Sp. O sistema de escalonamento é o mesmo do DP —
- * o valor dp bruto do recurso é usado diretamente como número sp.
+ * Converte um [Number] (valor base) em um [TextUnit] (Sp) dinamicamente escalado para Compose.
  *
- * 1. Constrói o nome do recurso baseado no valor e no qualificador (ex: `_16sdp`).
- * 2. Carrega o valor de dimensão em dp daquele recurso.
- * 3. Converte para Sp, opcionalmente removendo a escala de fonte do sistema.
+ * Lógica de escalonamento:
+ * 1. Constrói uma chave de cache de 64 bits.
+ * 2. Se [fontScale] for `true`, o resultado respeita a configuração de tamanho de fonte do sistema.
+ * 3. Se [fontScale] for `false` (ex: via [.nem]), a escala de fonte do sistema é removida.
+ * 4. Consulta o [DimenCache] se [enableCache] for `true`.
  *
- * @param qualifier The screen qualifier used to determine the resource name (sdp, hdp, wdp).
- * @param fontScale Whether to respect the user's font scale setting.
- * @param inverter Inverter to swap qualifier when orientation changes.
- * @return The TextUnit (Sp) value loaded from the resource, or the base sp value as fallback.
+ * @param qualifier    Screen dimension qualifier.
+ * @param fontScale    Whether to respect the user's system font scale.
+ * @param inverter     Orientation-based dimension swap rule.
+ * @param ignoreMultiWindows If `true`, returns base value unscaled when in split-screen.
+ * @param applyAspectRatio   If `true`, applies the aspect-ratio multiplier.
+ * @param customSensitivityK Custom AR sensitivity constant.
+ * @param enableCache        If `false`, disables [DimenCache] for this call.
+ * @return Dynamically scaled [TextUnit] value.
  */
 @Composable
 fun Number.toDynamicScaledSp(
@@ -683,6 +682,10 @@ fun Number.toDynamicScaledSp(
     }
 }
 
+/**
+ * EN Internal logic to calculate the scaled SP value before density/font-scale adjustment.
+ * PT Lógica interna para calcular o valor SP escalado antes do ajuste de densidade/fonte.
+ */
 private fun calculateSspValueCompose(
     baseValue: Float,
     qualifier: DpQualifier,
@@ -741,8 +744,26 @@ private fun calculateSspValueCompose(
 }
 
 /**
- * EN Converts an Int (base Sp) to a dynamically scaled Float (in pixels).
- * PT Converte um Int (base Sp) para um Float (em pixels) escalado dinamicamente.
+ * EN
+ * Converts a [Number] (base value) into a dynamically scaled pixel [Float] for Compose.
+ *
+ * Similar to [toDynamicScaledSp], but the result is multiplied by density to return
+ * raw pixels. Often used for direct Canvas operations or custom Modifier logic.
+ *
+ * PT
+ * Converte um [Number] (valor base) em um [Float] em pixels dinamicamente escalado para Compose.
+ *
+ * Similar a [toDynamicScaledSp], mas o resultado é multiplicado pela densidade para retornar
+ * pixels brutos. Frequentemente usado para operações diretas de Canvas ou lógica de Modifier.
+ *
+ * @param qualifier    Screen dimension qualifier.
+ * @param fontScale    Whether to respect the user's system font scale.
+ * @param inverter     Orientation-based swap rule.
+ * @param ignoreMultiWindows If `true`, returns base value unscaled in pixels in split-screen.
+ * @param applyAspectRatio   If `true`, applies the aspect-ratio multiplier.
+ * @param customSensitivityK Custom AR sensitivity constant.
+ * @param enableCache        If `false`, disables [DimenCache] for this call.
+ * @return Dynamically scaled pixel value.
  */
 @Composable
 fun Number.toDynamicScaledPx(

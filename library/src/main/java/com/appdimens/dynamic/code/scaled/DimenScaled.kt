@@ -38,6 +38,10 @@ import com.appdimens.dynamic.core.DimenCache
  * EN
  * Represents a custom dimension entry with qualifiers and priority.
  * Used by the DimenScaled class to define specific values for screen conditions.
+ *
+ * PT
+ * Representa uma entrada de dimensão customizada com qualificadores e prioridade.
+ * Usada pela classe DimenScaled para definir valores específicos para condições de tela.
  */
 data class CustomDpEntry(
     val uiModeType: UiModeType? = null,
@@ -60,6 +64,7 @@ fun Float.scaledDp(): DimenScaled = DimenScaled(this)
 
 /**
  * EN Starts the build chain for the custom dimension DimenScaled from a base Int (Dp).
+ * PT Inicia a cadeia de construção para a dimensão customizada DimenScaled a partir de um Int (Dp) base.
  */
 fun Number.scaledDp(): DimenScaled = this.toFloat().scaledDp()
 
@@ -89,6 +94,7 @@ class DimenScaled private constructor(
 
     /**
      * EN Enable or disable the cache for this specific calculation chain.
+     * PT Ativa ou desativa o cache para esta cadeia de cálculo específica.
      */
     @JvmOverloads
     fun setEnableCache(enable: Boolean = true): DimenScaled {
@@ -97,14 +103,16 @@ class DimenScaled private constructor(
 
     /**
      * EN Allow applying aspect ratio based constraint scaling.
+     * PT Permite aplicar o escalonamento restrito baseado na proporção da tela (aspect ratio).
      */
     @JvmOverloads
-    fun aspectRatio(enable: Boolean = true, sensitivityK: Float? = null): DimenScaled {
-        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK, isCacheEnabled)
+    fun applyAspectRatio(apply: Boolean = true): DimenScaled {
+        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, apply, customSensitivityK, isCacheEnabled)
     }
 
     /**
      * EN Allow ignoring the constraint scaling based on multi-window resizing properties.
+     * PT Permite ignorar o escalonamento restrito baseado nas propriedades de redimensionamento de multi-janelas.
      */
     @JvmOverloads
     fun ignoreMultiWindows(ignore: Boolean = true): DimenScaled {
