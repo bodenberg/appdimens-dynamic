@@ -222,5 +222,41 @@ graph TD
 
 ---
 
+## 7. Simple Calculations Faster Than Cache
+
+For `CalcType` values of `AUTO`, `FLUID`, `PERCENT`, and `SCALED` **without Aspect Ratio** (`applyAspectRatio = false`), `DimenCache.getOrPut()` immediately returns `compute()` without touching the sharded arrays.
+
+> The scaling formula for these types reduces to: `baseValue × scale` (a single float multiply).
+> Measured cost on Snapdragon 888: **~2 ns** (multiply) vs **~5 ns** (hash + atomic lookup).
+> The cache adds overhead for these paths — bypassing it is ~2.5× faster.
+
+This is an intentional hot-path optimization, not a missing feature. The cache is most valuable when the computation is expensive (Aspect Ratio path: **~41 ns** on hardware), making the 5 ns lookup amortize well.
+
+| Path | Cost | Cache? |
+|:---|:---:|:---:|
+| SCALED without AR (most calls) | ~2 ns | ❌ Bypass |
+| SCALED with AR | ~41 ns → ~35 ns cached | ✅ Cache |
+| Other CalcTypes with AR | ~41 ns → ~35 ns cached | ✅ Cache |
+
+**Consequence for benchmarks**: calls via `DimenSdp.sdp()`, `.hdp()`, `.wdp()` (i.e., without AR) measure **raw math latency**, not cache lookup latency. Always use the `*a` variants (`.sdpa()`, `.hdpa()`, etc.) to specifically measure cache throughput.
+
+The `BenchmarkActivity` results reflect a **mixed** measurement: 3 bypass calls (~2 ns each) + 1 cache call (~35 ns), averaging ~11 ns with AR active.
+
+---
+
+## 8. Benchmark Variability
+
+All numbers in this document were captured on a **Xiaomi 11T Pro (Snapdragon 888 SM8350, Android 14)** and a **high-end Intel i7 desktop JVM**. Real-world results will differ based on:
+
+- **Device class**: budget Cortex-A55 cores (e.g. entry-level phones) can be 5–10× slower on atomic operations
+- **JIT stage**: cold start (un-compiled) is 3–10× slower than steady-state hot JIT
+- **ART PGO**: apps that ship pre-compiled `.prof` profiles skip cold JIT entirely — steady-state from frame 1
+- **Background load**: GC pressure, foreground/background scheduler tier, and CPU frequency governor all affect ns measurements
+- **Cache fill state**: first access after `clearAll()` (config change) is always a miss; subsequent accesses are hits
+
+> **Benchmarks vary with real usage** — use these figures as upper-bound reference points for architecture decisions, not as absolute production guarantees. Profile on your target device with your target workload.
+
+---
+
 *Report generated on: 2026-03-31 · AppDimens Dynamic Performance Lab · Snapdragon 888 (SM8350) · Physical Hardware*
 *Compiled with: Kotlin 2.x · JVM 17 · ART (Android 14) · Gradle 9.3.1*

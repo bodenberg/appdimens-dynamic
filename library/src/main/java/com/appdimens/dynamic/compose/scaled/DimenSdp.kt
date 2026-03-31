@@ -24,7 +24,6 @@
  */
 package com.appdimens.dynamic.compose
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
@@ -413,53 +412,44 @@ val Number.wdpPxiPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, Inv
 val Number.wdpPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 
-// EN Dynamic scaling functions (Resource-based).
-// PT Funções de dimensionamento dinâmico (baseadas em recursos).
+// EN Dynamic scaling functions (pure-math approach).
+// PT Funções de dimensionamento dinâmico (abordagem puramente matemática).
 
 /**
  * EN
- * Finds the dimension resource ID (`dimen`) by the constructed name.
- * The SuppressLint annotation is used because getIdentifier is discouraged,
- * but it is necessary for this type of dynamic logic based on naming convention.
+ * Converts a [Number] (base Dp value) into a dynamically scaled [Dp] for use in Jetpack Compose.
+ *
+ * The scaling logic:
+ * 1. Builds a 64-bit packed cache key from all dimension parameters.
+ * 2. **If [enableCache] is `false`**: computes directly via [calculateScaledDpCompose], bypassing
+ *    the shared cache (useful for testing or one-off dynamic values).
+ * 3. **If [enableCache] is `true`** (default): checks [DimenCache] first. On a hit, returns the
+ *    cached Float immediately. On a miss, calls [calculateScaledDpCompose] and stores the result.
+ * 4. The [remember] block ensures the value is only recomputed when one of the key configuration
+ *    parameters actually changes (configuration, orientation, qualifier, etc.).
+ *
+ * > ⚠️ **Bypass note**: when [applyAspectRatio] is `false` and [qualifier] is `SMALL_WIDTH`
+ * > with `DEFAULT` inverter, the cache is bypassed internally because a raw multiply (~2 ns)
+ * > is faster than the cache lookup (~5 ns). This is intentional and not a bug.
  *
  * PT
- * Encontra o ID de recurso de dimensão (`dimen`) pelo nome construído.
- * A anotação SuppressLint é usada porque getIdentifier é desencorajada,
- * mas é necessária para este tipo de lógica dinâmica baseada em convenção de nomenclatura.
+ * Converte um [Number] (valor Dp base) em um [Dp] dinamicamente escalado para uso no Jetpack Compose.
  *
- * @param resourceName The expected name of the resource, e.g., `_s16dp`.
- * @return The resource ID or 0 (or -1) if not found.
- */
-@SuppressLint("LocalContextResourcesRead", "DiscouragedApi")
-@Composable
-private fun findResourceIdByName(resourceName: String): Int {
-    val context = LocalContext.current
-    return context.resources.getIdentifier(
-        resourceName,
-        "dimen", // EN The resource type is 'dimen'. / PT O tipo de recurso é 'dimen'.
-        context.packageName
-    )
-}
-
-/**
- * EN
- * Converts an Int (the base Dp value) into a dynamically scaled Dp.
- * The logic tries to find a corresponding dimension resource in the 'res/values/' folder.
- * 1. Constructs the resource name based on the value (this) and the qualifier (qualifier).
- * 2. Tries to load the resource via dimensionResource.
- * 3. If the resource is found (e.g., in `values-sw600dp/dimens.xml`), that value is used.
- * 4. If the resource is not found, the original value is used as a Dp (the default Compose Int.dp).
+ * A lógica de escalonamento:
+ * 1. Constrói uma chave de cache de 64 bits a partir de todos os parâmetros da dimensão.
+ * 2. **Se [enableCache] for `false`**: calcula diretamente via [calculateScaledDpCompose].
+ * 3. **Se [enableCache] for `true`** (padrão): consulta o [DimenCache] primeiro. No acerto,
+ *    retorna o Float cacheado; no miss, calcula via [calculateScaledDpCompose] e armazena.
+ * 4. O bloco [remember] garante que o valor só seja recalculado quando um parâmetro de
+ *    configuração realmente muda.
  *
- * PT
- * Converte um Int (o valor base de Dp) em um Dp dinamicamente escalado.
- * A lógica tenta encontrar um recurso de dimensão correspondente na pasta 'res/values/'.
- * 1. Constrói o nome do recurso baseado no valor (this) e no qualificador (qualifier).
- * 2. Tenta carregar o recurso via dimensionResource.
- * 3. Se o recurso for encontrado (e.g., em `values-sw600dp/dimens.xml`), esse valor é usado.
- * 4. Se o recurso não for encontrado, o valor original é usado como Dp (o Int.dp padrão do Compose).
- *
- * @param qualifier The screen qualifier used to construct the resource name (s, h, w).
- * @return The Dp value loaded from the resource or the base Dp value.
+ * @param qualifier    Screen dimension qualifier: [DpQualifier.SMALL_WIDTH], [DpQualifier.HEIGHT], or [DpQualifier.WIDTH].
+ * @param inverter     Orientation-based dimension swap rule (default: [Inverter.DEFAULT]).
+ * @param ignoreMultiWindows If `true`, returns the base value unscaled when the app is in split-screen.
+ * @param applyAspectRatio   If `true`, applies aspect-ratio multiplier for more aggressive scaling.
+ * @param customSensitivityK Override for the AR sensitivity constant (null = library default).
+ * @param enableCache        If `false`, disables [DimenCache] for this call.
+ * @return Dynamically scaled [Dp] value.
  */
 @Composable
 fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null, enableCache: Boolean = true): Dp {
@@ -495,7 +485,45 @@ fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Invert
     }
 }
 
-/** Internal helper for Compose scaling logic to avoid duplication */
+/**
+ * EN
+ * Shared pure-math scaling kernel used by [toDynamicScaledDp] and [toDynamicScaledPx].
+ *
+ * Algorithm summary:
+ * 1. Applies [Inverter] rules to swap the effective [DpQualifier] based on orientation.
+ * 2. If [ignoreMultiWindows] is `true`, detects split-screen via layout flags; if active,
+ *    returns [baseValue] unchanged so the UI does not over-scale in a small window.
+ * 3. For the common path (`SMALL_WIDTH` + `DEFAULT` inverter + no custom sensitivity),
+ *    delegates to [DimenCache.calculateRawScaling] which reads the pre-computed factors
+ *    from [DimenCache.ScreenFactors] — one float multiply, zero extra allocations.
+ * 4. For other qualifiers or custom sensitivity, reads the screen dimension from
+ *    [Configuration] and performs the scaling formula inline.
+ *
+ * > **Performance**: Simple paths without Aspect Ratio complete in ~2 ns (single multiply).
+ * > Paths with Aspect Ratio require ~41 ns on Snapdragon 888 (includes ln() fallback).
+ * > Results are memoized by the surrounding [remember] block and [DimenCache].
+ *
+ * PT
+ * Núcleo de escalonamento puro compartilhado por [toDynamicScaledDp] e [toDynamicScaledPx].
+ *
+ * Resumo do algoritmo:
+ * 1. Aplica as regras de [Inverter] para trocar o [DpQualifier] efetivo conforme a orientação.
+ * 2. Se [ignoreMultiWindows] for `true`, detecta split-screen via flags de layout;
+ *    se ativo, retorna [baseValue] sem escalar.
+ * 3. Para o caminho comum (SMALL_WIDTH + DEFAULT + sem sensibilidade customizada),
+ *    delega para [DimenCache.calculateRawScaling] com os fatores pré-calculados.
+ * 4. Para outros qualificadores ou sensibilidade customizada, lê a dimensão da tela
+ *    do [Configuration] e executa a fórmula de escalonamento inline.
+ *
+ * @param baseValue          Raw Dp value to scale (e.g. `16f` for 16 dp).
+ * @param configuration      Current [Configuration] snapshot from [LocalConfiguration.current].
+ * @param qualifier          Original screen qualifier before inversion.
+ * @param inverter           Orientation-swap rule.
+ * @param ignoreMultiWindows Whether to suppress scaling in multi-window mode.
+ * @param applyAspectRatio   Whether to apply the AR multiplier.
+ * @param customSensitivityK Custom AR sensitivity constant, or `null` for the library default.
+ * @return Scaled Dp value as a raw [Float] (caller converts to [Dp] or pixels).
+ */
 private fun calculateScaledDpCompose(
     baseValue: Float,
     configuration: Configuration,
@@ -554,8 +582,27 @@ private fun calculateScaledDpCompose(
 }
 
 /**
- * EN Converts an Int (base Dp) to a dynamically scaled Float (in pixels).
- * PT Converte um Int (base Dp) para um Float (em pixels) escalado dinamicamente.
+ * EN
+ * Converts a [Number] (base Dp value) into a dynamically scaled pixel [Float] for Jetpack Compose.
+ *
+ * Same caching and bypass semantics as [toDynamicScaledDp], but the result is multiplied by
+ * the current display density ([LocalDensity]) so callers receive a ready-to-use pixel value.
+ * Useful when a raw pixel count is required (e.g. for `Canvas` drawing or `Modifier.offset`).
+ *
+ * PT
+ * Converte um [Number] (valor Dp base) em um [Float] em pixels dinamicamente escalado para Compose.
+ *
+ * Mesma semântica de cache e bypass de [toDynamicScaledDp], mas o resultado é multiplicado pela
+ * densidade do display atual ([LocalDensity]) para entregar um valor pronto em pixels.
+ * Útil quando um valor em pixels brutos é necessário (ex: desenho em `Canvas` ou `Modifier.offset`).
+ *
+ * @param qualifier    Screen dimension qualifier: [DpQualifier.SMALL_WIDTH], [DpQualifier.HEIGHT], or [DpQualifier.WIDTH].
+ * @param inverter     Orientation-based dimension swap rule (default: [Inverter.DEFAULT]).
+ * @param ignoreMultiWindows If `true`, returns base value in pixels unscaled when in split-screen.
+ * @param applyAspectRatio   If `true`, applies the aspect-ratio multiplier.
+ * @param customSensitivityK Override for the AR sensitivity constant (null = library default).
+ * @param enableCache        If `false`, disables [DimenCache] for this call.
+ * @return Dynamically scaled pixel value as [Float].
  */
 @Composable
 fun Number.toDynamicScaledPx(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null, enableCache: Boolean = true): Float {

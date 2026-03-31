@@ -69,18 +69,25 @@ fun BenchmarkScreen() {
                 val repeatCount = 10000
                 val totalNs = measureNanoTime {
                     repeat(repeatCount) {
-                        // Using public non-composable API for the stress test
-                        DimenSdp.sdp(context, 100)
-                        DimenSdp.hdp(context, 50)
-                        DimenSdp.wdp(context, 30)
-                        DimenSdp.sdpa(context, 40)
+                        // NOTE: sdp/hdp/wdp without AR hit the FAST BYPASS in DimenCache.getOrPut()
+                        // (CalcType.SCALED, bit 63 == 0 → bypasses cache entirely ~2 ns raw math).
+                        // sdpa (with AR) uses the real cache lookup path (~5–35 ns).
+                        // This benchmark therefore measures:
+                        //   3 × ~2ns (raw math bypass) + 1 × ~35ns (cache hit with AR)
+                        // NOT "4 × cache hit". The reported average will be dominated by
+                        // the AR path and will be significantly higher than 5 ns per call.
+                        DimenSdp.sdp(context, 100)   // bypass (~2 ns)
+                        DimenSdp.hdp(context, 50)    // bypass (~2 ns)
+                        DimenSdp.wdp(context, 30)    // bypass (~2 ns)
+                        DimenSdp.sdpa(context, 40)   // cache  (~35 ns on warm cache)
                     }
                 }
                 
                 // Total resolutions = repeatCount * 4
+                // Average is skewed by the 3 bypassed calls; use with caution.
                 val avg = totalNs / (repeatCount * 4)
-                benchmarkResult = "$avg ns per resolution (Avg of ${repeatCount * 4})"
-                println("--- UI_BENCHMARK_RESULT: $avg ns ---")
+                benchmarkResult = "$avg ns avg/resolution · sdp×3 bypass + sdpa×1 cached (${repeatCount*4} total)"
+                println("--- UI_BENCHMARK_RESULT: $avg ns (3×bypass + 1×AR-cache per iteration) ---")
             }
         }
     }

@@ -485,14 +485,38 @@ fun Number.wdpScreen(context: Context, screenValue: Number, uiModeType: UiModeTy
 
 /**
  * EN
- * Converts an Int (the base Dp value) into a dynamically scaled pixel value (Float).
+ * Converts a [Number] (base Dp value) into a dynamically scaled pixel [Float] for View-based (non-Compose) code.
+ *
+ * The scaling logic:
+ * 1. Builds a 64-bit packed cache key from all dimension parameters.
+ * 2. **If [enableCache] is `true`** (default): checks [DimenCache] first. On a hit, returns the
+ *    cached pixel value immediately. On a miss, calls [calculateScaledDp] and converts via
+ *    [android.util.TypedValue.applyDimension], then stores the result.
+ * 3. **If [enableCache] is `false`**: computes directly via [calculateScaledDp], bypassing cache.
+ *
+ * > ⚠️ **Bypass note**: when [applyAspectRatio] is `false` and [qualifier] is `SMALL_WIDTH`
+ * > with `DEFAULT` inverter, the [DimenCache.getOrPut] call internally bypasses the hash lookup
+ * > because a raw multiply (~2 ns) is faster than the cache access (~5 ns). Calls with these
+ * > parameters measure raw math performance, NOT cache throughput.
  *
  * PT
- * Converte um Int (o valor base de Dp) em um valor de pixel dinamicamente escalado (Float).
+ * Converte um [Number] (valor Dp base) em um [Float] em pixels dinamicamente escalado para código View-based.
  *
- * @param context The Android context to access configuration and density.
- * @param qualifier The screen qualifier used for scaling (sw, h, w).
- * @return The scaled pixel value.
+ * A lógica de escalonamento:
+ * 1. Constrói uma chave de cache de 64 bits a partir de todos os parâmetros da dimensão.
+ * 2. **Se [enableCache] for `true`** (padrão): consulta o [DimenCache] primeiro. No acerto,
+ *    retorna o valor em pixels cacheado; no miss, calcula via [calculateScaledDp] e armazena.
+ * 3. **Se [enableCache] for `false`**: calcula diretamente via [calculateScaledDp].
+ *
+ * @param context            Android [android.content.Context] for configuration and density access.
+ * @param qualifier          Screen dimension qualifier: [com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH],
+ *                           [com.appdimens.dynamic.common.DpQualifier.HEIGHT], or [com.appdimens.dynamic.common.DpQualifier.WIDTH].
+ * @param inverter           Orientation-based dimension swap rule (default: [Inverter.DEFAULT]).
+ * @param ignoreMultiWindows If `true`, returns the base value in pixels unscaled when in split-screen.
+ * @param applyAspectRatio   If `true`, applies the aspect-ratio multiplier.
+ * @param customSensitivityK Override for the AR sensitivity constant (null = library default).
+ * @param enableCache        If `false`, disables [DimenCache] for this call.
+ * @return Dynamically scaled pixel value as [Float].
  */
 @JvmOverloads
 fun Number.toDynamicScaledPx(
@@ -535,7 +559,53 @@ fun Number.toDynamicScaledPx(
 }
 
 /**
- * EN Internal logic to calculate the scaled DP value.
+ * EN
+ * Shared pure-math scaling kernel used by [toDynamicScaledPx] and [toDynamicScaledDp].
+ *
+ * Algorithm summary:
+ * 1. Applies [Inverter] rules to swap the effective [DpQualifier] based on screen orientation.
+ * 2. If [ignoreMultiWindows] is `true`, detects split-screen mode via layout flags; if active,
+ *    returns [baseValue] unchanged so the UI does not over-scale inside a small window.
+ * 3. For the common path (`SMALL_WIDTH` + `DEFAULT` inverter + no custom sensitivity),
+ *    delegates to [DimenCache.calculateRawScaling] which reads pre-computed factors from
+ *    [DimenCache.ScreenFactors] — a single float multiply, zero extra allocations.
+ * 4. For other qualifiers or a custom sensitivity constant, reads the screen dimension from
+ *    [android.content.res.Configuration] and performs the scaling formula inline.
+ *
+ * > **Performance**: Simple paths without Aspect Ratio complete in ~2 ns (single multiply).
+ * > Paths with Aspect Ratio require ~41 ns on Snapdragon 888 (includes ln() fallback).
+ * > Results are memoized by the [DimenCache] shared across code and compose packages.
+ *
+ * > **Note**: Both `code/` and `compose/` packages intentionally maintain separate copies of this
+ * > function because the `code/` variant operates on [android.content.res.Configuration] directly
+ * > (no Compose runtime), while `compose/` reads it from [androidx.compose.ui.platform.LocalConfiguration].
+ * > The math is identical; only the Context acquisition path differs.
+ *
+ * PT
+ * Núcleo de escalonamento puro compartilhado por [toDynamicScaledPx] e [toDynamicScaledDp].
+ *
+ * Resumo do algoritmo:
+ * 1. Aplica as regras de [Inverter] para trocar o [DpQualifier] efetivo conforme a orientação.
+ * 2. Se [ignoreMultiWindows] for `true`, detecta split-screen via flags de layout;
+ *    se ativo, retorna [baseValue] sem escalar.
+ * 3. Para o caminho comum (SMALL_WIDTH + DEFAULT + sem sensibilidade customizada),
+ *    delega para [DimenCache.calculateRawScaling] com os fatores pré-calculados.
+ * 4. Para outros qualificadores ou sensibilidade customizada, lê a dimensão da tela
+ *    da [android.content.res.Configuration] e executa a fórmula de escalonamento inline.
+ *
+ * > **Nota**: Os pacotes `code/` e `compose/` mantêm cópias separadas intencionalmente.
+ * > A versão `code/` opera sobre [android.content.res.Configuration] diretamente,
+ * > enquanto a versão `compose/` usa [androidx.compose.ui.platform.LocalConfiguration].
+ * > A matemática é idêntica; apenas a obtenção do contexto difere.
+ *
+ * @param baseValue          Raw Dp value to scale (e.g. `16f` for 16 dp).
+ * @param configuration      Current [android.content.res.Configuration] from the context.
+ * @param qualifier          Original screen qualifier before inversion.
+ * @param inverter           Orientation-swap rule.
+ * @param ignoreMultiWindows Whether to suppress scaling in multi-window mode.
+ * @param applyAspectRatio   Whether to apply the AR multiplier.
+ * @param customSensitivityK Custom AR sensitivity constant, or `null` for the library default.
+ * @return Scaled Dp value as a raw [Float].
  */
 private fun calculateScaledDp(
     baseValue: Float,
@@ -603,8 +673,31 @@ private fun calculateScaledDp(
 }
 
 /**
- * EN Converts an Int (base Dp) to a dynamically scaled Dp (as Float).
- * PT Converte um Int (base Dp) para um Dp escalado dinamicamente (como Float).
+ * EN
+ * Converts a [Number] (base Dp value) into a dynamically scaled Dp [Float] for View-based (non-Compose) code.
+ *
+ * Unlike [toDynamicScaledPx], the result is returned in Dp units — no density conversion is applied.
+ * This is useful for APIs that accept logical Dp values directly (e.g. `View.setPadding` with a
+ * custom Dp-aware layout engine).
+ *
+ * Same caching, validation, and bypass semantics as [toDynamicScaledPx].
+ *
+ * PT
+ * Converte um [Number] (valor Dp base) em um [Float] em Dp dinamicamente escalado para código View-based.
+ *
+ * Ao contrário de [toDynamicScaledPx], o resultado é retornado em unidades Dp — sem conversão de densidade.
+ * Útil para APIs que aceitam valores Dp lógicos diretamente.
+ *
+ * Mesma semântica de cache, validação e bypass de [toDynamicScaledPx].
+ *
+ * @param context            Android [android.content.Context] for configuration access.
+ * @param qualifier          Screen dimension qualifier.
+ * @param inverter           Orientation-based dimension swap rule (default: [Inverter.DEFAULT]).
+ * @param ignoreMultiWindows If `true`, returns the base Dp value unscaled when in split-screen.
+ * @param applyAspectRatio   If `true`, applies the aspect-ratio multiplier.
+ * @param customSensitivityK Override for the AR sensitivity constant (null = library default).
+ * @param enableCache        If `false`, disables [DimenCache] for this call.
+ * @return Dynamically scaled Dp value as [Float].
  */
 @JvmOverloads
 fun Number.toDynamicScaledDp(
