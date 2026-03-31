@@ -224,8 +224,3 @@ graph TD
 
 *Report generated on: 2026-03-31 · AppDimens Dynamic Performance Lab · Snapdragon 888 (SM8350) · Physical Hardware*
 *Compiled with: Kotlin 2.x · JVM 17 · ART (Android 14) · Gradle 9.3.1*
-
----
-
-*Relatório gerado em: 2026-03-31 · AppDimens Dynamic Performance Lab · Snapdragon 888 (SM8350) · Physical Hardware*
-*Compilado com: Kotlin 2.x · JVM 17 · ART (Android 14) · Gradle 9.3.1*
