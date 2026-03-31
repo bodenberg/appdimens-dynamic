@@ -38,5 +38,5 @@ package com.appdimens.dynamic.common
  */
 data class DpQualifierEntry(
     val type: DpQualifier,
-    val value: Int
+    val value: Number
 )

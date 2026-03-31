@@ -87,7 +87,7 @@ fun Dp.scaledDp(): DimenScaled = DimenScaled(this@scaledDp)
  * Exemplo de uso: `100.scaled().screen(...)`.
  */
 @Composable
-fun Int.scaledDp(): DimenScaled = this.dp.scaledDp()
+fun Number.scaledDp(): DimenScaled = this.toFloat().dp.scaledDp()
 
 
 
@@ -165,7 +165,7 @@ class DimenScaled private constructor(
     private fun reorderEntries(newEntry: CustomDpEntry): List<CustomDpEntry> {
         return (sortedCustomEntries + newEntry).sortedWith(
             compareBy<CustomDpEntry> { it.priority } // EN Priority 1 (most specific) first. / PT Prioridade 1 (mais específico) primeiro.
-                .thenByDescending { it.dpQualifierEntry?.value ?: 0 } // EN Higher value qualifier first. / PT Qualificador de valor maior primeiro.
+                .thenByDescending { it.dpQualifierEntry?.value?.toFloat() ?: 0f } // EN Higher value qualifier first. / PT Qualificador de valor maior primeiro.
         )
     }
 
@@ -182,7 +182,7 @@ class DimenScaled private constructor(
     fun screen(
         uiModeType: UiModeType,
         qualifierType: DpQualifier,
-        qualifierValue: Int,
+        qualifierValue: Number,
         orientation: Orientation? = Orientation.DEFAULT,
         customValue: Dp,
         finalQualifierResolver: DpQualifier? = null,
@@ -212,8 +212,8 @@ class DimenScaled private constructor(
     fun screen(
         uiModeType: UiModeType,
         qualifierType: DpQualifier,
-        qualifierValue: Int,
-        customValue: Int,
+        qualifierValue: Number,
+        customValue: Number,
         finalQualifierResolver: DpQualifier? = null,
         orientation: Orientation? = Orientation.DEFAULT,
         inverter: Inverter? = Inverter.DEFAULT
@@ -222,7 +222,7 @@ class DimenScaled private constructor(
             uiModeType = uiModeType,
             dpQualifierEntry = DpQualifierEntry(qualifierType, qualifierValue),
             orientation = orientation,
-            customValue = customValue.dp,
+            customValue = customValue.toFloat().dp,
             finalQualifierResolver = finalQualifierResolver,
             priority = 1,
             inverter = inverter
@@ -264,7 +264,7 @@ class DimenScaled private constructor(
      * Esta é uma sobrecarga que aceita um Int para `customValue`.
      */
     fun screen(type: UiModeType,
-               customValue: Int,
+               customValue: Number,
                finalQualifierResolver: DpQualifier? = null,
                orientation: Orientation? = Orientation.DEFAULT,
                inverter: Inverter? = Inverter.DEFAULT
@@ -272,7 +272,7 @@ class DimenScaled private constructor(
         val entry = CustomDpEntry(
             uiModeType = type,
             orientation = orientation,
-            customValue = customValue.dp,
+            customValue = customValue.toFloat().dp,
             finalQualifierResolver = finalQualifierResolver,
             priority = 2,
             inverter = inverter
@@ -316,14 +316,14 @@ class DimenScaled private constructor(
      */
     fun screen(type: DpQualifier,
                value: Int,
-               customValue: Int,
+               customValue: Number,
                finalQualifierResolver: DpQualifier? = null,
                orientation: Orientation? = Orientation.DEFAULT,
                inverter: Inverter? = Inverter.DEFAULT): DimenScaled {
         val entry = CustomDpEntry(
             dpQualifierEntry = DpQualifierEntry(type, value),
             orientation = orientation,
-            customValue = customValue.dp,
+            customValue = customValue.toFloat().dp,
             finalQualifierResolver = finalQualifierResolver,
             priority = 3,
             inverter = inverter
@@ -364,12 +364,12 @@ class DimenScaled private constructor(
      * Esta é uma sobrecarga que aceita um Int para `customValue`.
      */
     fun screen(orientation: Orientation = Orientation.DEFAULT,
-               customValue: Int,
+               customValue: Number,
                finalQualifierResolver: DpQualifier? = null,
                inverter: Inverter? = Inverter.DEFAULT): DimenScaled {
         val entry = CustomDpEntry(
             orientation = orientation,
-            customValue = customValue.dp,
+            customValue = customValue.toFloat().dp,
             finalQualifierResolver = finalQualifierResolver,
             priority = 4,
             inverter = inverter
@@ -436,7 +436,7 @@ class DimenScaled private constructor(
                 }
 
                 if (qualifierEntry != null) {
-                    val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value
+                    val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value.toFloat()
 
                     if (entry.priority == 1 && uiModeMatch && qualifierMatch && orientationMatch) return@firstOrNull true
                     if (entry.priority == 3 && qualifierMatch && orientationMatch) return@firstOrNull true
@@ -503,7 +503,7 @@ class DimenScaled private constructor(
                 }
 
                 if (qualifierEntry != null) {
-                    val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value
+                    val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value.toFloat()
                     if (entry.priority == 1 && uiModeMatch && qualifierMatch && orientationMatch) return@firstOrNull true
                     if (entry.priority == 3 && qualifierMatch && orientationMatch) return@firstOrNull true
                     false

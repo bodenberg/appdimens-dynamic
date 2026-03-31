@@ -42,7 +42,7 @@ data class CustomSpEntry(
     val uiModeType: UiModeType? = null,
     val dpQualifierEntry: DpQualifierEntry? = null,
     val orientation: Orientation = Orientation.DEFAULT,
-    val customValue: Int,
+    val customValue: Number,
     val finalQualifierResolver: DpQualifier? = null,
     val priority: Int,
     val inverter: Inverter = Inverter.DEFAULT,
@@ -60,7 +60,7 @@ fun Float.scaledSp(): ScaledSp = ScaledSp(this.toInt())
 /**
  * EN Starts the build chain for ScaledSp from a base Int (treated as sp).
  */
-fun Int.scaledSp(): ScaledSp = ScaledSp(this)
+fun Number.scaledSp(): ScaledSp = ScaledSp(this)
 
 /**
  * EN
@@ -75,7 +75,7 @@ fun Int.scaledSp(): ScaledSp = ScaledSp(this)
  * baseadas em qualificadores de tela (UiModeType, Largura, Altura, Smallest Width).
  */
 class ScaledSp private constructor(
-    private val initialBaseValue: Int,
+    private val initialBaseValue: Number,
     private val defaultFontScale: Boolean = true,
     private val sortedCustomEntries: List<CustomSpEntry> = emptyList(),
     private val ignoreMultiWindows: Boolean = false,
@@ -83,7 +83,7 @@ class ScaledSp private constructor(
     private val customSensitivityK: Float? = null,
     private val isCacheEnabled: Boolean = true
 ) {
-    constructor(initialBaseValue: Int) : this(initialBaseValue, true, emptyList(), false, false, null, true)
+    constructor(initialBaseValue: Number) : this(initialBaseValue, true, emptyList(), false, false, null, true)
 
     /**
      * EN Enable or disable the cache for this specific calculation chain.
@@ -112,7 +112,7 @@ class ScaledSp private constructor(
     private fun reorderEntries(newEntry: CustomSpEntry): List<CustomSpEntry> {
         return (sortedCustomEntries + newEntry).sortedWith(
             compareBy<CustomSpEntry> { it.priority }
-                .thenByDescending { it.dpQualifierEntry?.value ?: 0 }
+                .thenByDescending { it.dpQualifierEntry?.value?.toFloat() ?: 0f }
         )
     }
 
@@ -122,8 +122,8 @@ class ScaledSp private constructor(
     fun screen(
         uiModeType: UiModeType,
         qualifierType: DpQualifier,
-        qualifierValue: Int,
-        customValue: Int,
+        qualifierValue: Number,
+        customValue: Number,
         finalQualifierResolver: DpQualifier? = null,
         orientation: Orientation = Orientation.DEFAULT,
         inverter: Inverter = Inverter.DEFAULT,
@@ -145,7 +145,7 @@ class ScaledSp private constructor(
     @JvmOverloads
     fun screen(
         type: UiModeType,
-        customValue: Int,
+        customValue: Number,
         finalQualifierResolver: DpQualifier? = null,
         orientation: Orientation = Orientation.DEFAULT,
         inverter: Inverter = Inverter.DEFAULT,
@@ -167,7 +167,7 @@ class ScaledSp private constructor(
     fun screen(
         type: DpQualifier,
         value: Int,
-        customValue: Int,
+        customValue: Number,
         finalQualifierResolver: DpQualifier? = null,
         orientation: Orientation = Orientation.DEFAULT,
         inverter: Inverter = Inverter.DEFAULT,
@@ -188,7 +188,7 @@ class ScaledSp private constructor(
     @JvmOverloads
     fun screen(
         orientation: Orientation = Orientation.DEFAULT,
-        customValue: Int,
+        customValue: Number,
         finalQualifierResolver: DpQualifier? = null,
         inverter: Inverter = Inverter.DEFAULT,
         fontScale: Boolean = defaultFontScale
@@ -223,7 +223,7 @@ class ScaledSp private constructor(
             }
 
             if (qualifierEntry != null) {
-                val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value
+                val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value.toFloat()
                 if (entry.priority == 1 && uiModeMatch && qualifierMatch && orientationMatch) return@firstOrNull true
                 if (entry.priority == 3 && qualifierMatch && orientationMatch) return@firstOrNull true
                 false

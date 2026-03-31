@@ -130,7 +130,7 @@ public class ExampleActivity extends AppCompatActivity {
         DimenScaled scaled = DimenSdp.scaled(100)
             // EN Priority 1: TV with smallest width >= 600 → use 250
             // PT Prioridade 1: TV com menor largura >= 600 → usar 250
-            .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
+            .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, (Number)600, (Number)250)
             // EN Priority 2: Any TV → use 500
             // PT Prioridade 2: Qualquer TV → usar 500
             .screen(UiModeType.TELEVISION, 500)

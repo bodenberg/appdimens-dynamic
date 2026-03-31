@@ -61,7 +61,7 @@ fun Float.scaledDp(): DimenScaled = DimenScaled(this)
 /**
  * EN Starts the build chain for the custom dimension DimenScaled from a base Int (Dp).
  */
-fun Int.scaledDp(): DimenScaled = this.toFloat().scaledDp()
+fun Number.scaledDp(): DimenScaled = this.toFloat().scaledDp()
 
 /**
  * EN
@@ -114,7 +114,7 @@ class DimenScaled private constructor(
     private fun reorderEntries(newEntry: CustomDpEntry): List<CustomDpEntry> {
         return (sortedCustomEntries + newEntry).sortedWith(
             compareBy<CustomDpEntry> { it.priority }
-                .thenByDescending { it.dpQualifierEntry?.value ?: 0 }
+                .thenByDescending { it.dpQualifierEntry?.value?.toFloat() ?: 0f }
         )
     }
 
@@ -124,7 +124,7 @@ class DimenScaled private constructor(
     fun screen(
         uiModeType: UiModeType,
         qualifierType: DpQualifier,
-        qualifierValue: Int,
+        qualifierValue: Number,
         orientation: Orientation? = Orientation.DEFAULT,
         customValue: Float,
         finalQualifierResolver: DpQualifier? = null,
@@ -146,8 +146,8 @@ class DimenScaled private constructor(
     fun screen(
         uiModeType: UiModeType,
         qualifierType: DpQualifier,
-        qualifierValue: Int,
-        customValue: Int,
+        qualifierValue: Number,
+        customValue: Number,
         finalQualifierResolver: DpQualifier? = null,
         orientation: Orientation? = Orientation.DEFAULT,
         inverter: Inverter? = Inverter.DEFAULT
@@ -175,7 +175,7 @@ class DimenScaled private constructor(
     @JvmOverloads
     fun screen(
         type: UiModeType,
-        customValue: Int,
+        customValue: Number,
         finalQualifierResolver: DpQualifier? = null,
         orientation: Orientation? = Orientation.DEFAULT,
         inverter: Inverter? = Inverter.DEFAULT
@@ -205,7 +205,7 @@ class DimenScaled private constructor(
     fun screen(
         type: DpQualifier,
         value: Int,
-        customValue: Int,
+        customValue: Number,
         finalQualifierResolver: DpQualifier? = null,
         orientation: Orientation? = Orientation.DEFAULT,
         inverter: Inverter? = Inverter.DEFAULT
@@ -231,7 +231,7 @@ class DimenScaled private constructor(
     @JvmOverloads
     fun screen(
         orientation: Orientation = Orientation.DEFAULT,
-        customValue: Int,
+        customValue: Number,
         finalQualifierResolver: DpQualifier? = null,
         inverter: Inverter? = Inverter.DEFAULT
     ): DimenScaled = screen(orientation, customValue.toFloat(), finalQualifierResolver, inverter)
@@ -255,7 +255,7 @@ class DimenScaled private constructor(
             }
 
             if (qualifierEntry != null) {
-                val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value
+                val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value.toFloat()
                 if (entry.priority == 1 && uiModeMatch && qualifierMatch && orientationMatch) return@firstOrNull true
                 if (entry.priority == 3 && qualifierMatch && orientationMatch) return@firstOrNull true
                 false

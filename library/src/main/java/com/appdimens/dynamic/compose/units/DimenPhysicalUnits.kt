@@ -75,7 +75,7 @@ object DimenPhysicalUnits {
     fun toMm(mm: Float, resources: Resources, context: android.content.Context? = null): Float {
         val configuration = resources.configuration
         val cacheKey = DimenCache.buildKey(
-            baseValue            = mm.toInt(),
+            baseValue            = mm,
             screenWidthDp        = configuration.screenWidthDp,
             screenHeightDp       = configuration.screenHeightDp,
             smallestWidthDp = configuration.smallestScreenWidthDp,
@@ -119,7 +119,7 @@ object DimenPhysicalUnits {
      *
      * PT Extensão de Int para converter MM para CM.
      */
-    fun Int.mmToCm(): Float = convertMmToCm(this.toFloat())
+    fun Number.mmToCm(): Float = convertMmToCm(this.toFloat())
 
     /**
      * EN Float extension to convert MM to Inch.
@@ -133,7 +133,7 @@ object DimenPhysicalUnits {
      *
      * PT Extensão de Int para converter MM para Inch.
      */
-    fun Int.mmToInch(): Float = convertMmToInch(this.toFloat())
+    fun Number.mmToInch(): Float = convertMmToInch(this.toFloat())
 
     /**
      * EN Centimeters (CM)
@@ -176,7 +176,7 @@ object DimenPhysicalUnits {
      *
      * PT Extensão de Int para converter CM para MM.
      */
-    fun Int.cmToMm(): Float = convertCmToMm(this.toFloat())
+    fun Number.cmToMm(): Float = convertCmToMm(this.toFloat())
 
     /**
      * EN Float extension to convert CM to Inch.
@@ -190,7 +190,7 @@ object DimenPhysicalUnits {
      *
      * PT Extensão de Int para converter CM para Inch.
      */
-    fun Int.cmToInch(): Float = convertCmToInch(this.toFloat())
+    fun Number.cmToInch(): Float = convertCmToInch(this.toFloat())
 
     /**
      * EN Inches (INCH)
@@ -232,7 +232,7 @@ object DimenPhysicalUnits {
      *
      * PT Extensão de Int para converter Inch para CM.
      */
-    fun Int.inchToCm(): Float = convertInchToCm(this.toFloat())
+    fun Number.inchToCm(): Float = convertInchToCm(this.toFloat())
 
     /**
      * EN Float extension to convert Inch to MM.
@@ -246,7 +246,7 @@ object DimenPhysicalUnits {
      *
      * PT Extensão de Int para converter Inch para MM.
      */
-    fun Int.inchToMm(): Float = convertInchToMm(this.toFloat())
+    fun Number.inchToMm(): Float = convertInchToMm(this.toFloat())
 
     /**
      * EN Composable Extensions for Physical Units in PX.
@@ -365,7 +365,7 @@ object DimenPhysicalUnits {
      * PT Extensão de Int para calcular o Raio em Pixels (PX).
      */
     @Composable
-    fun Int.radius(type: UnitType): Float {
+    fun Number.radius(type: UnitType): Float {
         val resources = LocalResources.current
         return with(LocalDensity.current) { radius(this@radius.toFloat(), type, resources) }
     }
@@ -391,7 +391,7 @@ object DimenPhysicalUnits {
      *
      * PT Extensão de Int para ajustar a medida para Diâmetro ou Circunferência.
      */
-    fun Int.measureDiameter(isCircumference: Boolean): Float =
+    fun Number.measureDiameter(isCircumference: Boolean): Float =
         displayMeasureDiameter(this.toFloat(), isCircumference)
 
     /**
