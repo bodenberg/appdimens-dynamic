@@ -82,6 +82,9 @@ object DimenCache {
 
     internal val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     internal val isInitializing = AtomicBoolean(false)
+    /** Internal flag to avoid atomic reads in hot-path after first init. */
+    @PublishedApi
+    internal var isInitializedFast = false
     @PublishedApi
     internal val isInitialized = AtomicBoolean(false)
     internal var saveJob: Job? = null
@@ -427,6 +430,7 @@ object DimenCache {
                 // Fallback to empty cache on error
             } finally {
                 isInitialized.set(true)
+                isInitializedFast = true
                 isInitializing.set(false)
             }
         }
@@ -568,7 +572,7 @@ object DimenCache {
         // ─────────────────────────────────────────────────────────────────────
         // HOT PATH — fully inlined, zero method-call overhead, zero lambda alloc
         // ─────────────────────────────────────────────────────────────────────
-        if (context != null && !isInitialized.get()) init(context)
+        if (context != null && !isInitializedFast) init(context)
 
         val h     = (key xor (key ushr 32)).toInt()
         val mixed = h xor (h ushr 16)

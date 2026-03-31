@@ -24,7 +24,7 @@ Measurements captured on physical hardware in a stabilized state.
 | **Raw Math (No AR)** | **2 ns** | **Optimal** ⚡ |
 | **Raw Math (With AR)** | 41 ns | Standard |
 | **Cache Hit (Single - No AR)** | **5 ns** | **Fast** ⚡ |
-| **Cache Hit (Single - AR)** | 36 ns | **Zero-Math** 🚀 |
+| **Cache Hit (Single - AR)** | **35 ns** | **Zero-Math** 🚀 |
 | **Batch Resolution (100 items)** | **168 ns** | **Extreme** 🏎️ |
 | **Batch Cached (100 items - AR)** | **3,757 ns** | **Stable** ✅ |
 | **Persistence Load (100 entries)** | **0.74 ms** | **Fast** |

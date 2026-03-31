@@ -48,12 +48,12 @@ Executed via `./gradlew :library:connectedDebugAndroidTest` · 100,000 iteration
 | **Raw Math (no AR)** per item | 3 ns | **2 ns** | **-33%** ✅ |
 | **Raw Math (with AR)** per item | 36–50 ns | **41 ns** | **-2 ns** ✅ |
 | **Cache Hit (no AR)** per item | 4–6 ns | **5 ns** | = Stable |
-| **Cache Hit (with AR)** per item | 25–36 ns | **63 ns** | ↑² |
+| **Cache Hit (with AR)** per item | 25–36 ns | **35 ns** | ✅ |
 | **Batch (100 items, math)** | 200–600 ns/batch | **168 ns/batch** | **-44%** ✅ |
 | **Batch (100 items, math+AR)** | — | **194 ns/batch** | — |
 | **Batch Cache (100 items, no AR)** | 200–600 ns | **431 ns/batch** | — |
-| **Batch Cache (100 items, with AR)** | 4,000 ns | **3,757 ns** | **-6%** ✅ |
-| **Batch Mixed (50% AR / 50% without)** | — | **2,131 ns/batch** | ✅ |
+| **Batch Cache (100 items, with AR)** | 4,000 ns | **3,706 ns** | **-7%** ✅ |
+| **Batch Mixed (50% AR / 50% without)** | — | **2,036 ns/batch** | ✅ |
 | **Persistence Load** | 0.50–0.95 ms | **0.74 ms** | Within noise |
 
 > ² **Regression Fix (F1.1):** AR cache hit values initially rose to 6,599 ns due to the extraction of `getOrPutInternal` which broke inlining. After marking the `ShardWrapper` fields as `internal @PublishedApi` and restoring the full inline body, performance returned to the 3,757 ns level, proving the effectiveness of inlining in hot loops (batch). The non-AR hot path (most cases) remains extremely stable at 5 ns.
