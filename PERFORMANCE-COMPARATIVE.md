@@ -209,11 +209,11 @@ graph TD
     A[UI / Code Call] --> B{Cache Enabled?}
     B -- No --> Z[Compute Directly]
     B -- Yes --> C{Bypass-eligible & No-AR?}
-    C -- Yes --> D[Fast Math Direct Return]
+    C -- Yes --> D["Fast Math Direct Return (~2ns)"]
     C -- No --> E[getOrPutInternal]
     E --> F["Hash Key → ShardWrapper[i]<br/>(Isolated 128-byte padding)"]
     F --> G{Key Match?}
-    G -- Hit --> H[Return Float.fromBits]
+    G -- Hit --> H["Return Float.fromBits (~5-35ns)"]
     G -- Miss --> I[Compute Once & Write Back]
     I --> H
     D --> H
@@ -224,14 +224,6 @@ graph TD
 
 *Report generated on: 2026-03-31 · AppDimens Dynamic Performance Lab · Snapdragon 888 (SM8350) · Physical Hardware*
 *Compiled with: Kotlin 2.x · JVM 17 · ART (Android 14) · Gradle 9.3.1*
-er[i]<br/>(128-byte padding isolado)"]
-    F --> G{Key Match?}
-    G -- Hit --> H[Return Float.fromBits]
-    G -- Miss --> I[compute + Write back]
-    I --> H
-    D --> H
-    J["ScreenFactors<br/>(@Volatile padded)"] -.reads.-> E
-```
 
 ---
 
