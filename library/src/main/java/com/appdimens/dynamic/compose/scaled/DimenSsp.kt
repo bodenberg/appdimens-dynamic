@@ -645,8 +645,6 @@ fun Number.toDynamicScaledSp(
     inverter: Inverter = Inverter.DEFAULT,
     ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null
 ): TextUnit {
-    require(this in 1..1024) { "Value must be between 1 and 1024. Current: $this" }
-
     if (InternalComposeResources.density == null) {
         InternalComposeResources.configuration = LocalConfiguration.current
         InternalComposeResources.context = LocalContext.current
