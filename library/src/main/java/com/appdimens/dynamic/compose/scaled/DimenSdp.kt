@@ -43,6 +43,29 @@ private const val ADJUSTMENT_SCALE = 0.10f / 30f
 private const val SENSITIVITY_DEFAULT = 0.08f / 30f
 
 /**
+ * EN Internal cache to minimize Local*.current lookups in hot paths.
+ * PT Cache interno para minimizar lookups de Local*.current em caminhos críticos.
+ *
+ * @see [DimenCache.addResetListener] for how this is invalidated.
+ */
+internal object InternalComposeResources {
+    @JvmField @Volatile var configuration: android.content.res.Configuration? = null
+    @JvmField @Volatile var context: android.content.Context? = null
+    @JvmField @Volatile var density: androidx.compose.ui.unit.Density? = null
+
+    fun reset() {
+        configuration = null
+        context = null
+        density = null
+    }
+
+    init {
+        DimenCache.addResetListener { reset() }
+    }
+}
+
+
+/**
  * EN
  * Gets the actual value from the Configuration for the given DpQualifier.
  *
@@ -420,13 +443,11 @@ val Number.wdpPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, In
  * Converts a [Number] (base Dp value) into a dynamically scaled [Dp] for use in Jetpack Compose.
  *
  * The scaling logic:
- * 1. Builds a 64-bit packed cache key from all dimension parameters.
- * 2. **If [enableCache] is `false`**: computes directly via [calculateScaledDpCompose], bypassing
- *    the shared cache (useful for testing or one-off dynamic values).
- * 3. **If [enableCache] is `true`** (default): checks [DimenCache] first. On a hit, returns the
- *    cached Float immediately. On a miss, calls [calculateScaledDpCompose] and stores the result.
- * 4. The [remember] block ensures the value is only recomputed when one of the key configuration
- *    parameters actually changes (configuration, orientation, qualifier, etc.).
+ * 1. Checks [DimenCache] first. On a cache hit, returns the precomputed value;
+ *    otherwise, computes via [calculateScaledDpCompose] and stores it.
+ * 2. Uses the internal bypass mechanism in [DimenCache] for sub-nanosecond
+ *    latency on common width-scaling paths.
+ * 3. The [remember] block ensures recalculation only when configuration changes.
  *
  * > ⚠️ **Bypass note**: when [applyAspectRatio] is `false` and [qualifier] is `SMALL_WIDTH`
  * > with `DEFAULT` inverter, the cache is bypassed internally because a raw multiply (~2 ns)
@@ -436,11 +457,9 @@ val Number.wdpPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, In
  * Converte um [Number] (valor Dp base) em um [Dp] dinamicamente escalado para uso no Jetpack Compose.
  *
  * A lógica de escalonamento:
- * 1. Constrói uma chave de cache de 64 bits a partir de todos os parâmetros da dimensão.
- * 2. **Se [enableCache] for `false`**: calcula diretamente via [calculateScaledDpCompose].
- * 3. **Se [enableCache] for `true`** (padrão): consulta o [DimenCache] primeiro. No acerto,
- *    retorna o Float cacheado; no miss, calcula via [calculateScaledDpCompose] e armazena.
- * 4. O bloco [remember] garante que o valor só seja recalculado quando um parâmetro de
+ * 1. Consulta o [DimenCache] primeiro. No acerto, retorna o Float cacheado;
+ *    no miss, calcula via [calculateScaledDpCompose] e armazena.
+ * 2. O bloco [remember] garante que o valor só seja recalculado quando um parâmetro de
  *    configuração realmente muda.
  *
  * @param qualifier    Screen dimension qualifier: [DpQualifier.SMALL_WIDTH], [DpQualifier.HEIGHT], or [DpQualifier.WIDTH].
@@ -448,15 +467,18 @@ val Number.wdpPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, In
  * @param ignoreMultiWindows If `true`, returns the base value unscaled when the app is in split-screen.
  * @param applyAspectRatio   If `true`, applies aspect-ratio multiplier for more aggressive scaling.
  * @param customSensitivityK Override for the AR sensitivity constant (null = library default).
- * @param enableCache        If `false`, disables [DimenCache] for this call.
  * @return Dynamically scaled [Dp] value.
  */
 @Composable
-fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null, enableCache: Boolean = true): Dp {
+fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
     require(this.toFloat() in -1023f..1024f) { "Value must be between -1023 and 1024. Current: $this" }
 
-    val configuration = LocalConfiguration.current
-    val androidContext = LocalContext.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.context = LocalContext.current
+    }
+    val configuration = InternalComposeResources.configuration!!
+    val androidContext = InternalComposeResources.context!!
 
     return remember(
         this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
@@ -474,10 +496,6 @@ fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Invert
             valueType = DimenCache.ValueType.DP,
             customSensitivityK = customSensitivityK
         )
-
-        if (!enableCache) {
-             return@remember calculateScaledDpCompose(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK).dp
-        }
 
         DimenCache.getOrPut(cacheKey, androidContext) {
             calculateScaledDpCompose(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
@@ -585,9 +603,8 @@ private fun calculateScaledDpCompose(
  * EN
  * Converts a [Number] (base Dp value) into a dynamically scaled pixel [Float] for Jetpack Compose.
  *
- * Same caching and bypass semantics as [toDynamicScaledDp], but the result is multiplied by
- * the current display density ([LocalDensity]) so callers receive a ready-to-use pixel value.
- * Useful when a raw pixel count is required (e.g. for `Canvas` drawing or `Modifier.offset`).
+ * Same semantics as [toDynamicScaledDp], but the result is multiplied by
+ * the current display density ([LocalDensity]).
  *
  * PT
  * Converte um [Number] (valor Dp base) em um [Float] em pixels dinamicamente escalado para Compose.
@@ -601,14 +618,18 @@ private fun calculateScaledDpCompose(
  * @param ignoreMultiWindows If `true`, returns base value in pixels unscaled when in split-screen.
  * @param applyAspectRatio   If `true`, applies the aspect-ratio multiplier.
  * @param customSensitivityK Override for the AR sensitivity constant (null = library default).
- * @param enableCache        If `false`, disables [DimenCache] for this call.
  * @return Dynamically scaled pixel value as [Float].
  */
 @Composable
-fun Number.toDynamicScaledPx(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null, enableCache: Boolean = true): Float {
-    val configuration = LocalConfiguration.current
-    val androidContext = LocalContext.current
-    val density = LocalDensity.current
+fun Number.toDynamicScaledPx(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val configuration = InternalComposeResources.configuration!!
+    val androidContext = InternalComposeResources.context!!
+    val density = InternalComposeResources.density!!
 
     return remember(
         this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
@@ -626,11 +647,6 @@ fun Number.toDynamicScaledPx(qualifier: DpQualifier, inverter: Inverter = Invert
             valueType = DimenCache.ValueType.PX,
             customSensitivityK = customSensitivityK
         )
-
-        if (!enableCache) {
-            val scaledDp = calculateScaledDpCompose(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-            return@remember density.run { scaledDp.dp.toPx() }
-        }
 
         DimenCache.getOrPut(cacheKey, androidContext) {
             val scaledDp = calculateScaledDpCompose(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)

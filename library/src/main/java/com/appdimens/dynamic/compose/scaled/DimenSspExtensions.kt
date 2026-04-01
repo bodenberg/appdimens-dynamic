@@ -55,7 +55,10 @@ fun Number.sspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -88,7 +91,10 @@ fun TextUnit.sspRotate(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -115,7 +121,10 @@ fun TextUnit.sspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -148,7 +157,10 @@ fun TextUnit.sspRotatePlain(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -175,8 +187,12 @@ fun TextUnit.sspRotatePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val configuration = InternalComposeResources.configuration!!
+    val density = InternalComposeResources.density!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -205,7 +221,10 @@ fun Number.hspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -238,7 +257,10 @@ fun TextUnit.hspRotate(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -265,7 +287,10 @@ fun TextUnit.hspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -298,7 +323,10 @@ fun TextUnit.hspRotatePlain(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -325,8 +353,12 @@ fun TextUnit.hspRotatePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val configuration = InternalComposeResources.configuration!!
+    val density = InternalComposeResources.density!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -355,7 +387,10 @@ fun Number.wspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -388,7 +423,10 @@ fun TextUnit.wspRotate(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -415,7 +453,10 @@ fun TextUnit.wspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -448,7 +489,10 @@ fun TextUnit.wspRotatePlain(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -475,8 +519,12 @@ fun TextUnit.wspRotatePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val configuration = InternalComposeResources.configuration!!
+    val density = InternalComposeResources.density!!
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -602,7 +650,10 @@ fun TextUnit.sspModePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -720,7 +771,10 @@ fun TextUnit.hspModePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -838,8 +892,11 @@ fun TextUnit.wspModePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val density = LocalDensity.current
+    val context = InternalComposeResources.context ?: LocalContext.current.also { InternalComposeResources.context = it }
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -873,7 +930,10 @@ fun Number.sspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -898,7 +958,10 @@ fun Number.sspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -926,7 +989,10 @@ fun TextUnit.sspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -950,7 +1016,10 @@ fun TextUnit.sspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -978,7 +1047,10 @@ fun TextUnit.sspQualifierPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1002,8 +1074,12 @@ fun TextUnit.sspQualifierPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val configuration = InternalComposeResources.configuration!!
+    val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1032,7 +1108,10 @@ fun Number.hspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1057,7 +1136,10 @@ fun Number.hspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1085,7 +1167,10 @@ fun TextUnit.hspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1109,7 +1194,10 @@ fun TextUnit.hspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1137,7 +1225,10 @@ fun TextUnit.hspQualifierPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1161,8 +1252,12 @@ fun TextUnit.hspQualifierPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val configuration = InternalComposeResources.configuration!!
+    val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1191,7 +1286,10 @@ fun Number.wspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1216,7 +1314,10 @@ fun Number.wspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1244,7 +1345,10 @@ fun TextUnit.wspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1268,7 +1372,10 @@ fun TextUnit.wspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1296,7 +1403,10 @@ fun TextUnit.wspQualifierPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.configuration == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val configuration = InternalComposeResources.configuration!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1320,8 +1430,12 @@ fun TextUnit.wspQualifierPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val configuration = InternalComposeResources.configuration!!
+    val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
         qualifiedValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
@@ -1356,8 +1470,12 @@ fun Number.sspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1385,8 +1503,12 @@ fun Number.sspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1419,8 +1541,12 @@ fun TextUnit.sspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1447,8 +1573,12 @@ fun TextUnit.sspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1481,8 +1611,12 @@ fun TextUnit.sspScreenPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1509,9 +1643,14 @@ fun TextUnit.sspScreenPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
+    val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1543,8 +1682,12 @@ fun Number.hspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1572,8 +1715,12 @@ fun Number.hspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1606,8 +1753,12 @@ fun TextUnit.hspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1634,8 +1785,12 @@ fun TextUnit.hspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1668,8 +1823,12 @@ fun TextUnit.hspScreenPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1696,9 +1855,14 @@ fun TextUnit.hspScreenPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
+    val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1730,8 +1894,12 @@ fun Number.wspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1759,8 +1927,12 @@ fun Number.wspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1793,8 +1965,12 @@ fun TextUnit.wspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1821,8 +1997,12 @@ fun TextUnit.wspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1855,8 +2035,12 @@ fun TextUnit.wspScreenPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
+    if (InternalComposeResources.context == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1883,9 +2067,14 @@ fun TextUnit.wspScreenPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val context = InternalComposeResources.context!!
+    val configuration = InternalComposeResources.configuration!!
+    val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()

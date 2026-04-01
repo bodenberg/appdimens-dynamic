@@ -112,18 +112,10 @@ class ScaledSp private constructor(
     private val sortedCustomEntries: List<CustomSpEntry> = emptyList(),
     private val ignoreMultiWindows: Boolean = false,
     private val applyAspectRatio: Boolean = false,
-    private val customSensitivityK: Float? = null,
-    private val isCacheEnabled: Boolean = true
+    private val customSensitivityK: Float? = null
 ) {
-    constructor(initialBaseValue: Number) : this(initialBaseValue, true, emptyList(), false, false, null, true)
+    constructor(initialBaseValue: Number) : this(initialBaseValue, true, emptyList(), false, false, null)
 
-    /**
-     * EN Enable or disable the cache for this specific calculation chain.
-     * PT Habilita ou desabilita o cache para esta cadeia de cálculo específica.
-     */
-    fun setEnableCache(enable: Boolean = true): ScaledSp {
-        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enable)
-    }
 
     /**
      * EN Allow ignoring the constraint scaling based on multi-window resizing properties.
@@ -135,10 +127,10 @@ class ScaledSp private constructor(
      * PT Permite aplicar o redimensionamento baseado na proporção da tela.
      */
     fun aspectRatio(enable: Boolean = true, sensitivityK: Float? = null): ScaledSp {
-        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK)
     }
     fun ignoreMultiWindows(ignore: Boolean = true): ScaledSp {
-        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK)
     }
 
     private fun reorderEntries(newEntry: CustomSpEntry): List<CustomSpEntry> {
@@ -175,7 +167,7 @@ class ScaledSp private constructor(
             inverter = inverter,
             fontScale = fontScale
         )
-        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -199,7 +191,7 @@ class ScaledSp private constructor(
             inverter = inverter,
             fontScale = fontScale
         )
-        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -224,7 +216,7 @@ class ScaledSp private constructor(
             inverter = inverter,
             fontScale = fontScale
         )
-        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -306,7 +298,7 @@ class ScaledSp private constructor(
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
         val finalFontScale = foundEntry?.fontScale ?: defaultFontScale
 
-        return valueToUse.toDynamicScaledSp(finalQualifier, finalFontScale, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return valueToUse.toDynamicScaledSp(finalQualifier, finalFontScale, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @SuppressLint("ConfigurationScreenWidthHeight")
@@ -363,7 +355,7 @@ class ScaledSp private constructor(
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
         val finalFontScale = foundEntry?.fontScale ?: defaultFontScale
 
-        return valueToUse.toDynamicScaledPx(finalQualifier, finalFontScale, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return valueToUse.toDynamicScaledPx(finalQualifier, finalFontScale, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @SuppressLint("ConfigurationScreenWidthHeight")
@@ -419,7 +411,7 @@ class ScaledSp private constructor(
         val valueToUse = foundEntry?.customValue ?: initialBaseValue
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return valueToUse.toDynamicScaledSp(finalQualifier, fontScale = false, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return valueToUse.toDynamicScaledSp(finalQualifier, fontScale = false, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @SuppressLint("ConfigurationScreenWidthHeight")
@@ -475,7 +467,7 @@ class ScaledSp private constructor(
         val valueToUse = foundEntry?.customValue ?: initialBaseValue
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return valueToUse.toDynamicScaledPx(finalQualifier, fontScale = false, inverter = foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK, enableCache = isCacheEnabled)
+        return valueToUse.toDynamicScaledPx(finalQualifier, fontScale = false, inverter = foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     }
 
     /**

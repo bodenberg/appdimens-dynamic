@@ -396,9 +396,8 @@ object DimenSsp {
         inverter: Inverter = Inverter.DEFAULT,
         ignoreMultiWindows: Boolean = false,
         applyAspectRatio: Boolean = false,
-        customSensitivityK: Float? = null,
-        enableCache: Boolean = true
-    ): Float = value.toDynamicScaledSpPx(context, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enableCache)
+        customSensitivityK: Float? = null
+    ): Float = value.toDynamicScaledSpPx(context, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Generic scaling function for Java (SP value).
@@ -414,9 +413,8 @@ object DimenSsp {
         inverter: Inverter = Inverter.DEFAULT,
         ignoreMultiWindows: Boolean = false,
         applyAspectRatio: Boolean = false,
-        customSensitivityK: Float? = null,
-        enableCache: Boolean = true
-    ): Float = value.toDynamicScaledSp(context, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enableCache)
+        customSensitivityK: Float? = null
+    ): Float = value.toDynamicScaledSp(context, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Starts the build chain for the custom dimension ScaledSp from a base Int.

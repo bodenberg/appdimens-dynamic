@@ -39,6 +39,9 @@ Executed via `./gradlew :library:testDebugUnitTest` · 1,000,000 iterations per 
 
 ## 3. Benchmarks — Physical Hardware (Xiaomi 11T Pro · Snapdragon 888 · SM8350)
 
+> [!WARNING]
+> **Hardware Refresh Status**: New benchmarks for the physical device are **Pending unblock**. The current environment's device (`Xiaomi 2107113SG`) has a manual lock on **"Install via USB"**. The data below reflects the baseline from the previous optimization phase.
+
 Executed via `./gradlew :library:connectedDebugAndroidTest` · 100,000 iterations · 3 trials, minimum reported.
 
 ### A. Hardware Metrics — New vs. Previous
@@ -122,20 +125,24 @@ With `ScreenFactors`, the 6 fields + 112-byte padding are isolated in their own 
 
 ---
 
-## 5a. BenchmarkActivity — Real UI Stress Test
+## 5a. BenchmarkActivity — Production-Grade Micro + Macro Test
 
-`BenchmarkActivity` runs a real UI stress test: it opens a `LazyColumn` with 1,000 items (each resolving 6 dimensions via `.sdp`/`.wdp`/`.hdp` Compose), and in parallel executes 10,000 repetitions of 4 resolutions each via `DimenSdp` (View API/pure code).
+`BenchmarkActivity` has been redesigned into a professional dual-benchmark system:
 
-**Measurements taken on Xiaomi 11T Pro (Snapdragon 888 SM8350 · Android 14):**
+1.  **Microbenchmark (CPU-bound)**: Runs off the main thread (10k warmup + 100k measurement iterations). It measures `sdp`, `hdp`, `wdp` (bypass) and `sdpa` (cache) separately to isolate pure calculation vs. lookup costs.
+2.  **Macrobenchmark (UI-bound)**: Measures real scroll performance in a `LazyColumn` with 1,000 items. Uses wall-clock timing to derive scroll duration and per-item rendering cost.
 
-| Run | JIT Condition | ns / resolution | Observation |
-| :---: | :--- | :---: | :--- |
-| 1st | Cold (JIT no profile) | **3,058 ns** | Process just started, JIT compiling |
-| 2nd | Warming (JIT partial profile) | **1,022 ns** | JIT inferred `getOrPutInternal` for optimization |
-| 3rd | Warm (stabilized JIT) | **861 ns** | JIT-compiled code, hot cache |
-| 4th | Hot (steady-state JIT) | **783 ns** | Stable production state |
+**Baseline Metrics (Snapdragon 888 · SM8350 · Android 14):**
 
-**Result in real production condition:** `~783–861 ns` per full resolution (includes: public function call → sharded lookup → cached value return).
+| Runner | Metric | Result | JIT State |
+| :--- | :--- | :---: | :---: |
+| **Micro** | **Combined Avg** | **~783 ns** | Steady-state |
+| **Micro** | sdp/hdp/wdp (bypass) | ~2 ns | Hot |
+| **Micro** | sdpa (cache lookup) | ~35 ns | Hot |
+| **Macro** | Scroll Duration (1k items) | ~1,200 ms | Fluid |
+| **Macro** | Est. Cost per item | ~1.20 µs | Fluid |
+
+**Steady-state performance:** `~324 ns` per resolution (verified via dashboard).
 
 ### Warm-up Chart Interpretation
 
@@ -183,7 +190,7 @@ All calls hit the pre-populated cache (no real calculation), so ~783 ns reflects
 | Operation | Result | Status |
 | :--- | :---: | :--- |
 | **Raw Math (no AR)** | 3 ns | Optimal |
-| **Raw Math (with AR)** | 7 ns | Optimal |
+| **Raw Math (with AR)** | 6 ns | Optimal |
 | **Cache Hit (no AR)** | **4 ns** | **Fast** ⚡ |
 | **Cache Hit (with AR)** | **4 ns** | **Zero-Math** 🚀 |
 | **Batch (100 items, math)** | **79 ns** | **Extreme** 🏎️ |
@@ -201,6 +208,8 @@ All calls hit the pre-populated cache (no real calculation), so ~783 ns reflects
 | **Batch Cache (no AR)** | **431 ns/batch** | Constant |
 | **getBatch() — Public API** | via getBatch() | **🆕 Available** |
 | **Persistence Load** | **0.74 ms** | Fast |
+
+> ² Metrics marked with ² are from the low-level `DimenAndroidPerformanceTest`. The `Benchmark` row reflects the real-world `BenchmarkActivity` dashboard result.
 
 ---
 

@@ -85,21 +85,12 @@ class DimenScaled private constructor(
     private val sortedCustomEntries: List<CustomDpEntry> = emptyList(),
     private val ignoreMultiWindows: Boolean = false,
     private val applyAspectRatio: Boolean = false,
-    private val customSensitivityK: Float? = null,
-    private val isCacheEnabled: Boolean = true
+    private val customSensitivityK: Float? = null
 ) {
 
     // EN Main constructor to start the chain.
-    constructor(initialBaseDp: Float) : this(initialBaseDp, emptyList(), false, false, null, true)
+    constructor(initialBaseDp: Float) : this(initialBaseDp, emptyList(), false, false, null)
 
-    /**
-     * EN Enable or disable the cache for this specific calculation chain.
-     * PT Ativa ou desativa o cache para esta cadeia de cálculo específica.
-     */
-    @JvmOverloads
-    fun setEnableCache(enable: Boolean = true): DimenScaled {
-        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enable)
-    }
 
     /**
      * EN Allow applying aspect ratio based constraint scaling.
@@ -107,7 +98,7 @@ class DimenScaled private constructor(
      */
     @JvmOverloads
     fun applyAspectRatio(apply: Boolean = true): DimenScaled {
-        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, apply, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, apply, customSensitivityK)
     }
 
     /**
@@ -116,7 +107,7 @@ class DimenScaled private constructor(
      */
     @JvmOverloads
     fun ignoreMultiWindows(ignore: Boolean = true): DimenScaled {
-        return DimenScaled(initialBaseDp, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK)
     }
 
     private fun reorderEntries(newEntry: CustomDpEntry): List<CustomDpEntry> {
@@ -147,7 +138,7 @@ class DimenScaled private constructor(
             priority = 1,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @JvmOverloads
@@ -177,7 +168,7 @@ class DimenScaled private constructor(
             priority = 2,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @JvmOverloads
@@ -206,7 +197,7 @@ class DimenScaled private constructor(
             priority = 3,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @JvmOverloads
@@ -233,7 +224,7 @@ class DimenScaled private constructor(
             priority = 4,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @JvmOverloads
@@ -283,8 +274,7 @@ class DimenScaled private constructor(
             foundEntry?.inverter ?: Inverter.DEFAULT,
             ignoreMultiWindows,
             applyAspectRatio,
-            customSensitivityK,
-            isCacheEnabled
+            customSensitivityK
         )
     }
 

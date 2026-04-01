@@ -25,6 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import android.content.Intent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.appdimens.dynamic.common.DpQualifier
@@ -146,7 +150,7 @@ fun SdpDemoScreen() {
                         )
                     }
                     Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Default.ArrowForward,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
                         modifier = Modifier.size(16.sdp)
                     )

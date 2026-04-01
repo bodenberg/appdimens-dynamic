@@ -619,7 +619,7 @@ val Number.wemPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fo
  * 1. Builds a 64-bit packed cache key.
  * 2. If [fontScale] is `true`, the result respects the system font size setting.
  * 3. If [fontScale] is `false` (e.g. via [.nem]), the system font scale is stripped.
- * 4. Checks [DimenCache] if [enableCache] is `true`.
+ * 4. Checks [DimenCache] globally.
  *
  * PT
  * Converte um [Number] (valor base) em um [TextUnit] (Sp) dinamicamente escalado para Compose.
@@ -628,7 +628,7 @@ val Number.wemPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fo
  * 1. Constrói uma chave de cache de 64 bits.
  * 2. Se [fontScale] for `true`, o resultado respeita a configuração de tamanho de fonte do sistema.
  * 3. Se [fontScale] for `false` (ex: via [.nem]), a escala de fonte do sistema é removida.
- * 4. Consulta o [DimenCache] se [enableCache] for `true`.
+ * 4. Consulta o [DimenCache] globalmente.
  *
  * @param qualifier    Screen dimension qualifier.
  * @param fontScale    Whether to respect the user's system font scale.
@@ -636,7 +636,6 @@ val Number.wemPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, fo
  * @param ignoreMultiWindows If `true`, returns base value unscaled when in split-screen.
  * @param applyAspectRatio   If `true`, applies the aspect-ratio multiplier.
  * @param customSensitivityK Custom AR sensitivity constant.
- * @param enableCache        If `false`, disables [DimenCache] for this call.
  * @return Dynamically scaled [TextUnit] value.
  */
 @Composable
@@ -644,14 +643,18 @@ fun Number.toDynamicScaledSp(
     qualifier: DpQualifier,
     fontScale: Boolean,
     inverter: Inverter = Inverter.DEFAULT,
-    ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null,
-    enableCache: Boolean = true
+    ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null
 ): TextUnit {
     require(this in 1..1024) { "Value must be between 1 and 1024. Current: $this" }
 
-    val configuration = LocalConfiguration.current
-    val androidContext = LocalContext.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val configuration = InternalComposeResources.configuration!!
+    val androidContext = InternalComposeResources.context!!
+    val density = InternalComposeResources.density!!
 
     return remember(
         this, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
@@ -669,11 +672,6 @@ fun Number.toDynamicScaledSp(
             valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
             customSensitivityK = customSensitivityK
         )
-
-        if (!enableCache) {
-            val scaledValue = calculateSspValueCompose(this.toFloat(), qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
-            return@remember if (fontScale) scaledValue.sp else (scaledValue / density.fontScale).sp
-        }
 
         DimenCache.getOrPut(cacheKey, androidContext) {
             val raw = calculateSspValueCompose(this.toFloat(), qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
@@ -762,7 +760,6 @@ private fun calculateSspValueCompose(
  * @param ignoreMultiWindows If `true`, returns base value unscaled in pixels in split-screen.
  * @param applyAspectRatio   If `true`, applies the aspect-ratio multiplier.
  * @param customSensitivityK Custom AR sensitivity constant.
- * @param enableCache        If `false`, disables [DimenCache] for this call.
  * @return Dynamically scaled pixel value.
  */
 @Composable
@@ -772,12 +769,16 @@ fun Number.toDynamicScaledPx(
     inverter: Inverter = Inverter.DEFAULT,
     ignoreMultiWindows: Boolean = false,
     applyAspectRatio: Boolean = false,
-    customSensitivityK: Float? = null,
-    enableCache: Boolean = true
+    customSensitivityK: Float? = null
 ): Float {
-    val configuration = LocalConfiguration.current
-    val androidContext = LocalContext.current
-    val density = LocalDensity.current
+    if (InternalComposeResources.density == null) {
+        InternalComposeResources.configuration = LocalConfiguration.current
+        InternalComposeResources.context = LocalContext.current
+        InternalComposeResources.density = LocalDensity.current
+    }
+    val configuration = InternalComposeResources.configuration!!
+    val androidContext = InternalComposeResources.context!!
+    val density = InternalComposeResources.density!!
 
     return remember(
         this, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
@@ -795,12 +796,6 @@ fun Number.toDynamicScaledPx(
             valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
             customSensitivityK = customSensitivityK
         )
-
-        if (!enableCache) {
-            val scaledVal = calculateSspValueCompose(this.toFloat(), qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
-            val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
-            return@remember density.run { spValue.toPx() }
-        }
 
         DimenCache.getOrPut(cacheKey, androidContext) {
             val scaledVal = calculateSspValueCompose(this.toFloat(), qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)

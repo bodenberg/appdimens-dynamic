@@ -31,6 +31,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.appdimens.dynamic.common.DpQualifier
@@ -117,28 +118,20 @@ class DimenScaled private constructor(
     private val sortedCustomEntries: List<CustomDpEntry> = emptyList(),
     private val ignoreMultiWindows: Boolean = false,
     private val applyAspectRatio: Boolean = false,
-    private val customSensitivityK: Float? = null,
-    private val isCacheEnabled: Boolean = true
+    private val customSensitivityK: Float? = null
 ) {
 
     // EN Main constructor to start the chain.
     // PT Construtor principal para iniciar a cadeia.
-    constructor(initialBaseDp: Dp) : this(initialBaseDp, emptyList(), false, false, null, true)
+    constructor(initialBaseDp: Dp) : this(initialBaseDp, emptyList(), false, false, null)
 
-    /**
-     * EN Enable or disable the cache for this specific calculation chain.
-     * PT Habilita ou desabilita o cache para esta cadeia de cálculo específica.
-     */
-    fun setEnableCache(enable: Boolean = true): DimenScaled {
-        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enable)
-    }
 
     /**
      * EN Allow ignoring the constraint scaling based on multi-window resizing properties.
      * PT Permite ignorar o dimensionamento para os layouts de múltiplas janelas (divisão de tela).
      */
     fun ignoreMultiWindows(ignore: Boolean = true): DimenScaled {
-        return DimenScaled(initialBaseDp, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -146,7 +139,7 @@ class DimenScaled private constructor(
      * PT Permite aplicar o redimensionamento baseado na proporção da tela.
      */
     fun aspectRatio(enable: Boolean = true, sensitivityK: Float? = null): DimenScaled {
-        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK)
     }
 
     /**
@@ -197,7 +190,7 @@ class DimenScaled private constructor(
             priority = 1,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -227,7 +220,7 @@ class DimenScaled private constructor(
             priority = 1,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -251,7 +244,7 @@ class DimenScaled private constructor(
             priority = 2,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -277,7 +270,7 @@ class DimenScaled private constructor(
             priority = 2,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -302,7 +295,7 @@ class DimenScaled private constructor(
             priority = 3,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -328,7 +321,7 @@ class DimenScaled private constructor(
             priority = 3,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -351,7 +344,7 @@ class DimenScaled private constructor(
             priority = 4,
             inverter = inverter
         )
-        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return DimenScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**
@@ -395,8 +388,12 @@ class DimenScaled private constructor(
     @SuppressLint("ConfigurationScreenWidthHeight") // EN The annotation is necessary as we access screen metrics. / PT A anotação é necessária, pois acessamos métricas da tela.
     @Composable
     private fun resolve(qualifier: DpQualifier): Dp {
-        val context = LocalContext.current
-        val configuration = LocalConfiguration.current
+        if (InternalComposeResources.context == null) {
+            InternalComposeResources.context = LocalContext.current
+            InternalComposeResources.configuration = LocalConfiguration.current
+        }
+        val context = InternalComposeResources.context!!
+        val configuration = InternalComposeResources.configuration!!
 
         // EN Extract FoldingFeature dynamically if context is an Activity
         // PT Extrai o FoldingFeature dinamicamente se o contexto for uma Activity
@@ -463,14 +460,19 @@ class DimenScaled private constructor(
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
         val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicScaledDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return baseIntDp.toDynamicScaledDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolvePx(qualifier: DpQualifier): Float {
-        val context = LocalContext.current
-        val configuration = LocalConfiguration.current
+        if (InternalComposeResources.density == null) {
+            InternalComposeResources.context = LocalContext.current
+            InternalComposeResources.configuration = LocalConfiguration.current
+            InternalComposeResources.density = LocalDensity.current
+        }
+        val context = InternalComposeResources.context!!
+        val configuration = InternalComposeResources.configuration!!
 
         val currentUiModeType = getCurrentUiModeType()
 
@@ -518,7 +520,7 @@ class DimenScaled private constructor(
         val dpToUse: Dp = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
         val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicScaledPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return baseIntDp.toDynamicScaledPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**

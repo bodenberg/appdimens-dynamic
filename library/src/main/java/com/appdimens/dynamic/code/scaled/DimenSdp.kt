@@ -297,9 +297,8 @@ object DimenSdp {
         inverter: Inverter = Inverter.DEFAULT,
         ignoreMultiWindows: Boolean = false,
         applyAspectRatio: Boolean = false,
-        customSensitivityK: Float? = null,
-        enableCache: Boolean = true
-    ): Float = value.toDynamicScaledPx(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enableCache)
+        customSensitivityK: Float? = null
+    ): Float = value.toDynamicScaledPx(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Generic DP scaling function for Java.
@@ -314,9 +313,8 @@ object DimenSdp {
         inverter: Inverter = Inverter.DEFAULT,
         ignoreMultiWindows: Boolean = false,
         applyAspectRatio: Boolean = false,
-        customSensitivityK: Float? = null,
-        enableCache: Boolean = true
-    ): Float = value.toDynamicScaledDp(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enableCache)
+        customSensitivityK: Float? = null
+    ): Float = value.toDynamicScaledDp(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Starts the build chain for the custom dimension DimenScaled from a base Int.

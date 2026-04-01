@@ -80,25 +80,17 @@ class ScaledSp private constructor(
     private val sortedCustomEntries: List<CustomSpEntry> = emptyList(),
     private val ignoreMultiWindows: Boolean = false,
     private val applyAspectRatio: Boolean = false,
-    private val customSensitivityK: Float? = null,
-    private val isCacheEnabled: Boolean = true
+    private val customSensitivityK: Float? = null
 ) {
-    constructor(initialBaseValue: Number) : this(initialBaseValue, true, emptyList(), false, false, null, true)
+    constructor(initialBaseValue: Number) : this(initialBaseValue, true, emptyList(), false, false, null)
 
-    /**
-     * EN Enable or disable the cache for this specific calculation chain.
-     */
-    @JvmOverloads
-    fun setEnableCache(enable: Boolean = true): ScaledSp {
-        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignoreMultiWindows, applyAspectRatio, customSensitivityK, enable)
-    }
 
     /**
      * EN Allow applying aspect ratio based constraint scaling.
      */
     @JvmOverloads
     fun aspectRatio(enable: Boolean = true, sensitivityK: Float? = null): ScaledSp {
-        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK)
     }
 
     /**
@@ -106,7 +98,7 @@ class ScaledSp private constructor(
      */
     @JvmOverloads
     fun ignoreMultiWindows(ignore: Boolean = true): ScaledSp {
-        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK)
     }
 
     private fun reorderEntries(newEntry: CustomSpEntry): List<CustomSpEntry> {
@@ -139,7 +131,7 @@ class ScaledSp private constructor(
             inverter = inverter,
             fontScale = fontScale
         )
-        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @JvmOverloads
@@ -160,7 +152,7 @@ class ScaledSp private constructor(
             inverter = inverter,
             fontScale = fontScale
         )
-        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @JvmOverloads
@@ -182,7 +174,7 @@ class ScaledSp private constructor(
             inverter = inverter,
             fontScale = fontScale
         )
-        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @JvmOverloads
@@ -201,7 +193,7 @@ class ScaledSp private constructor(
             inverter = inverter,
             fontScale = fontScale
         )
-        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK, isCacheEnabled)
+        return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     // EN Resolution logic.
@@ -245,8 +237,7 @@ class ScaledSp private constructor(
             foundEntry?.inverter ?: Inverter.DEFAULT,
             ignoreMultiWindows,
             applyAspectRatio,
-            customSensitivityK,
-            isCacheEnabled
+            customSensitivityK
         )
     }
 

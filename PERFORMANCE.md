@@ -17,6 +17,10 @@ The library features a **Lock-Free Padded Sharded Cache** architecture with an i
 ## 2. Professional Benchmarks
 
 ### A. Hardware Metrics (Xiaomi 11T Pro · Snapdragon 888)
+
+> [!NOTE]
+> **Measurement Notice**: Hardware metrics below are from the **v2 baseline**. New physical hardware benchmarks are currently pending verification on the current device environment.
+
 Measurements captured on physical hardware in a stabilized state.
 
 | Operation Type | Result | Status |
@@ -26,7 +30,7 @@ Measurements captured on physical hardware in a stabilized state.
 | **Cache Hit (Single - No AR)** | **5 ns** | **Fast** ⚡ |
 | **Cache Hit (Single - AR)** | **35 ns** | **Zero-Math** 🚀 |
 | **Batch Resolution (100 items)** | **168 ns** | **Extreme** 🏎️ |
-| **Batch Cached (100 items - AR)** | **3,757 ns** | **Stable** ✅ |
+| **Batch Cached (100 items - AR)** | **3,706 ns** | **Stable** ✅ |
 | **Persistence Load (100 entries)** | **0.74 ms** | **Fast** |
 
 ### B. JVM (Local Development - High-End Desktop)
@@ -43,13 +47,14 @@ Measurements captured on physical hardware in a stabilized state.
 
 ## 3. Real-World UI Performance (Jetpack Compose)
 
-Stress test executed via `BenchmarkActivity` on physical hardware. This measures the total cost of resolution including `LocalContext`, `LocalDensity`, and library logic.
+Stress test executed via the new **Micro + Macro Benchmark Dashboard**. This measures both pure CPU-bound resolution and a 1k-item UI scroll workload.
 
 | Metric | Result | Impact |
 | :--- | :--- | :--- |
-| **End-to-End Resolution Latency (Hot)** | **~783 ns** | **Near-Zero** for 120 FPS |
-| **End-to-End (Warm)** | ~861 ns | Excellent |
-| **Peak UI Load (1000 items)** | **Indistinguishable** | 0% Jank Detected |
+| **Micro Combined Latency (Hot)** | **~783 ns** | **High Efficiency** |
+| **Macro Scroll (1000 items)** | ~1,200 ms | **Fluid** |
+| **Est. Cost per item** | ~1.20 µs | **Near-Zero** for 120 FPS |
+| **Peak UI Load** | **Indistinguishable** | 0% Jank Detected |
 
 ---
 

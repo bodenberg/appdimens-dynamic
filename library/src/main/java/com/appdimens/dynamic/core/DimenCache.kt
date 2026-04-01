@@ -71,6 +71,26 @@ import kotlin.math.min
  * Cache global, lock-free e compartilhado para todos os cálculos de dimensão do AppDimens.
  */
 object DimenCache {
+    private val resetListeners = java.util.concurrent.CopyOnWriteArrayList<() -> Unit>()
+
+    /**
+     * EN Registers a listener to be notified when the cache is cleared.
+     * PT Registra um listener para ser notificado quando o cache for limpo.
+     */
+    @JvmStatic
+    fun addResetListener(listener: () -> Unit) {
+        resetListeners.add(listener)
+    }
+
+    /**
+     * EN Removes a previously registered reset listener.
+     * PT Remove um listener de reset previamente registrado.
+     */
+    @JvmStatic
+    fun removeResetListener(listener: () -> Unit) {
+        resetListeners.remove(listener)
+    }
+
 
     // ─────────────────────────────────────────────────────────────────────────
     // CONFIGURATION & PERSISTENT STATE
@@ -795,6 +815,7 @@ object DimenCache {
                 i++
             }
         }
+        resetListeners.forEach { it() }
     }
 
     // ─────────────────────────────────────────────────────────────────────────

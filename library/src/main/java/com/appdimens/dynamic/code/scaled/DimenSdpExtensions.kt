@@ -515,7 +515,6 @@ fun Number.wdpScreen(context: Context, screenValue: Number, uiModeType: UiModeTy
  * @param ignoreMultiWindows If `true`, returns the base value in pixels unscaled when in split-screen.
  * @param applyAspectRatio   If `true`, applies the aspect-ratio multiplier.
  * @param customSensitivityK Override for the AR sensitivity constant (null = library default).
- * @param enableCache        If `false`, disables [DimenCache] for this call.
  * @return Dynamically scaled pixel value as [Float].
  */
 @JvmOverloads
@@ -525,8 +524,7 @@ fun Number.toDynamicScaledPx(
     inverter: Inverter = Inverter.DEFAULT,
     ignoreMultiWindows: Boolean = false,
     applyAspectRatio: Boolean = false,
-    customSensitivityK: Float? = null,
-    enableCache: Boolean = true
+    customSensitivityK: Float? = null
 ): Float {
     // EN Validation requirement (limits usage to avoid creating thousands of dimens files).
     require(this.toFloat() in -1023f..1024f) { "Value must be between -1023 and 1024. Current value: $this" }
@@ -547,12 +545,7 @@ fun Number.toDynamicScaledPx(
         customSensitivityK = customSensitivityK
     )
 
-    return if (enableCache) {
-        DimenCache.getOrPut(cacheKey, context) {
-            val scaledDp = calculateScaledDp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, scaledDp, displayMetrics)
-        }
-    } else {
+    return DimenCache.getOrPut(cacheKey, context) {
         val scaledDp = calculateScaledDp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
         TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, scaledDp, displayMetrics)
     }
@@ -696,7 +689,6 @@ private fun calculateScaledDp(
  * @param ignoreMultiWindows If `true`, returns the base Dp value unscaled when in split-screen.
  * @param applyAspectRatio   If `true`, applies the aspect-ratio multiplier.
  * @param customSensitivityK Override for the AR sensitivity constant (null = library default).
- * @param enableCache        If `false`, disables [DimenCache] for this call.
  * @return Dynamically scaled Dp value as [Float].
  */
 @JvmOverloads
@@ -706,8 +698,7 @@ fun Number.toDynamicScaledDp(
     inverter: Inverter = Inverter.DEFAULT,
     ignoreMultiWindows: Boolean = false,
     applyAspectRatio: Boolean = false,
-    customSensitivityK: Float? = null,
-    enableCache: Boolean = true
+    customSensitivityK: Float? = null
 ): Float {
     val resources = context.resources
     val configuration = resources.configuration
@@ -724,11 +715,7 @@ fun Number.toDynamicScaledDp(
         customSensitivityK = customSensitivityK
     )
 
-    return if (enableCache) {
-        DimenCache.getOrPut(cacheKey, context) {
-            calculateScaledDp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-        }
-    } else {
+    return DimenCache.getOrPut(cacheKey, context) {
         calculateScaledDp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 }

@@ -598,12 +598,11 @@ fun Number.wspScreen(context: Context, screenValue: Number, uiModeType: UiModeTy
 fun Number.toDynamicScaledSpPx(
     context: Context,
     qualifier: DpQualifier,
-    fontScale: Boolean,
+    fontScale: Boolean = true,
     inverter: Inverter = Inverter.DEFAULT,
     ignoreMultiWindows: Boolean = false,
     applyAspectRatio: Boolean = false,
-    customSensitivityK: Float? = null,
-    enableCache: Boolean = true
+    customSensitivityK: Float? = null
 ): Float {
     require(this in 1..1024) { "Value must be between 1 and 1024. Current value: $this" }
 
@@ -625,13 +624,7 @@ fun Number.toDynamicScaledSpPx(
         customSensitivityK = customSensitivityK
     )
 
-    return if (enableCache) {
-        DimenCache.getOrPut(cacheKey, context) {
-            val scaledSp = calculateScaledSp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-            val unit = if (fontScale) TypedValue.COMPLEX_UNIT_SP else TypedValue.COMPLEX_UNIT_DIP
-            TypedValue.applyDimension(unit, scaledSp, displayMetrics)
-        }
-    } else {
+    return DimenCache.getOrPut(cacheKey, context) {
         val scaledSp = calculateScaledSp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
         val unit = if (fontScale) TypedValue.COMPLEX_UNIT_SP else TypedValue.COMPLEX_UNIT_DIP
         TypedValue.applyDimension(unit, scaledSp, displayMetrics)
@@ -706,17 +699,25 @@ private fun calculateScaledSp(
 
 /**
  * EN Converts an Int (base Sp) to a dynamically scaled Sp value (as Float).
+ *
+ * @param context The Android context to access configuration and density.
+ * @param qualifier The screen qualifier used for scaling (sw, h, w).
+ * @param fontScale Whether to respect the system font scale.
+ * @param inverter The inverter logic to apply.
+ * @param ignoreMultiWindows Whether to ignore multi-window mode.
+ * @param applyAspectRatio If `true`, applies the aspect-ratio multiplier.
+ * @param customSensitivityK Override for the AR sensitivity constant (null = library default).
+ * @return The scaled Sp value as [Float].
  */
 @JvmOverloads
 fun Number.toDynamicScaledSp(
     context: Context,
     qualifier: DpQualifier,
-    fontScale: Boolean,
+    fontScale: Boolean = true,
     inverter: Inverter = Inverter.DEFAULT,
     ignoreMultiWindows: Boolean = false,
     applyAspectRatio: Boolean = false,
-    customSensitivityK: Float? = null,
-    enableCache: Boolean = true
+    customSensitivityK: Float? = null
 ): Float {
     val resources = context.resources
     val configuration = resources.configuration
@@ -735,12 +736,8 @@ fun Number.toDynamicScaledSp(
         customSensitivityK = customSensitivityK
     )
 
-    return if (enableCache) {
-        DimenCache.getOrPut(cacheKey, context) {
-            val raw = calculateScaledSp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-            if (fontScale) raw else (raw / (resources.displayMetrics.scaledDensity / resources.displayMetrics.density))
-        }
-    } else {
-        calculateScaledSp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    return DimenCache.getOrPut(cacheKey, context) {
+        val raw = calculateScaledSp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        if (fontScale) raw else (raw / (resources.displayMetrics.scaledDensity / resources.displayMetrics.density))
     }
 }
