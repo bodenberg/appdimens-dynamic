@@ -645,8 +645,6 @@ fun Number.toDynamicScaledSp(
     inverter: Inverter = Inverter.DEFAULT,
     ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null
 ): TextUnit {
-    require(this in 1..1024) { "Value must be between 1 and 1024. Current: $this" }
-
     if (InternalComposeResources.density == null) {
         InternalComposeResources.configuration = LocalConfiguration.current
         InternalComposeResources.context = LocalContext.current
@@ -656,19 +654,23 @@ fun Number.toDynamicScaledSp(
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
 
-    val cacheKey = DimenCache.buildKey(
-        baseValue = this.toFloat(),
-        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-        ignoreMultiWindows = ignoreMultiWindows,
-        calcType = DimenCache.CalcType.SCALED,
-        qualifier = qualifier,
-        inverter = inverter,
-        applyAspectRatio = applyAspectRatio,
-        valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
-        customSensitivityK = customSensitivityK
-    )
+    return remember(
+        this, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
+        configuration.smallestScreenWidthDp, androidContext, density
+    ) {
+        val cacheKey = DimenCache.buildKey(
+            baseValue = this.toFloat(),
+            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows = ignoreMultiWindows,
+            calcType = DimenCache.CalcType.SCALED,
+            qualifier = qualifier,
+            inverter = inverter,
+            applyAspectRatio = applyAspectRatio,
+            valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
+            customSensitivityK = customSensitivityK
+        )
 
-    return remember(cacheKey) {
         DimenCache.getOrPut(cacheKey, androidContext) {
             val raw = calculateSspValueCompose(this.toFloat(), qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
             if (fontScale) raw else (raw / density.fontScale)
@@ -776,19 +778,23 @@ fun Number.toDynamicScaledPx(
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
 
-    val cacheKey = DimenCache.buildKey(
-        baseValue = this.toFloat(),
-        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-        ignoreMultiWindows = ignoreMultiWindows,
-        calcType = DimenCache.CalcType.SCALED,
-        qualifier = qualifier,
-        inverter = inverter,
-        applyAspectRatio = applyAspectRatio,
-        valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
-        customSensitivityK = customSensitivityK
-    )
+    return remember(
+        this, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
+        configuration.smallestScreenWidthDp, androidContext, density
+    ) {
+        val cacheKey = DimenCache.buildKey(
+            baseValue = this.toFloat(),
+            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows = ignoreMultiWindows,
+            calcType = DimenCache.CalcType.SCALED,
+            qualifier = qualifier,
+            inverter = inverter,
+            applyAspectRatio = applyAspectRatio,
+            valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
+            customSensitivityK = customSensitivityK
+        )
 
-    return remember(cacheKey) {
         DimenCache.getOrPut(cacheKey, androidContext) {
             val scaledVal = calculateSspValueCompose(this.toFloat(), qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
             val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp

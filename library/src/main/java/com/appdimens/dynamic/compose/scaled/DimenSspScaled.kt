@@ -261,16 +261,16 @@ class ScaledSp private constructor(
             kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
         } else 1f
 
-        val selectionKey = com.appdimens.dynamic.core.DimenCache.buildSelectionKey(
+        val foundEntry = remember(
             currentUiModeType,
             configuration.orientation,
-            configuration.smallestScreenWidthDp,
             configuration.screenWidthDp,
             configuration.screenHeightDp,
-            ignoreMultiWindows
-        )
-
-        val foundEntry = remember(selectionKey, aspectRatio, sortedCustomEntries) {
+            configuration.smallestScreenWidthDp,
+            aspectRatio,
+            ignoreMultiWindows,
+            sortedCustomEntries
+        ) {
             sortedCustomEntries.firstOrNull { entry ->
                 val qualifierEntry = entry.dpQualifierEntry
                 val uiModeMatch = entry.uiModeType == null || entry.uiModeType == currentUiModeType
@@ -318,16 +318,16 @@ class ScaledSp private constructor(
             kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
         } else 1f
 
-        val selectionKey = com.appdimens.dynamic.core.DimenCache.buildSelectionKey(
+        val foundEntry = remember(
             currentUiModeType,
             configuration.orientation,
-            configuration.smallestScreenWidthDp,
             configuration.screenWidthDp,
             configuration.screenHeightDp,
-            ignoreMultiWindows
-        )
-
-        val foundEntry = remember(selectionKey, aspectRatio, sortedCustomEntries) {
+            configuration.smallestScreenWidthDp,
+            aspectRatio,
+            ignoreMultiWindows,
+            sortedCustomEntries
+        ) {
             sortedCustomEntries.firstOrNull { entry ->
                 val qualifierEntry = entry.dpQualifierEntry
                 val uiModeMatch = entry.uiModeType == null || entry.uiModeType == currentUiModeType
@@ -375,16 +375,16 @@ class ScaledSp private constructor(
             kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
         } else 1f
 
-        val selectionKey = com.appdimens.dynamic.core.DimenCache.buildSelectionKey(
+        val foundEntry = remember(
             currentUiModeType,
             configuration.orientation,
-            configuration.smallestScreenWidthDp,
             configuration.screenWidthDp,
             configuration.screenHeightDp,
-            ignoreMultiWindows
-        )
-
-        val foundEntry = remember(selectionKey, aspectRatio, sortedCustomEntries) {
+            configuration.smallestScreenWidthDp,
+            aspectRatio,
+            ignoreMultiWindows,
+            sortedCustomEntries
+        ) {
             sortedCustomEntries.firstOrNull { entry ->
                 val qualifierEntry = entry.dpQualifierEntry
                 val uiModeMatch = entry.uiModeType == null || entry.uiModeType == currentUiModeType

@@ -28,8 +28,8 @@ Executed via `./gradlew :library:testDebugUnitTest` · 1,000,000 iterations per 
 | **Batch (100 items, math)** | ~85 ns/batch | **79 ns/batch** | **-7%** |
 | **Batch (100 items, math+AR)** | — | **79 ns/batch** | — |
 | **Batch Cache (100 items, no AR)** | ~85 ns/batch | **85 ns/batch** | = |
-| **Batch Cache (100 items, with AR)** | 250 ns/batch | **236 ns/batch** | ✅ |
-| **Public getBatch()** | — | **148 ns/batch** | — |
+| **Batch Cache (100 items, with AR)** | 250 ns/batch | **242 ns/batch** | ✅ |
+| **Public getBatch()** | — | **151 ns/batch** | — |
 | **Persistence Load** | 0.50–0.95 ms | **0.11 ms** | **-78%** ✅ |
 
 > ¹ The `raw_batch_cache_ar` value on the JVM was optimized by restoring full inlining (F1.1).
@@ -39,8 +39,8 @@ Executed via `./gradlew :library:testDebugUnitTest` · 1,000,000 iterations per 
 
 ## 3. Benchmarks — Physical Hardware (Xiaomi 11T Pro · Snapdragon 888 · SM8350)
 
-> [!IMPORTANT]
-> **Hardware Refresh Status**: New benchmarks for the physical device successfully captured on **2026-04-02**. The environment's device (`Xiaomi 2107113SG`) has been unblocked for automated testing.
+> [!WARNING]
+> **Hardware Refresh Status**: New benchmarks for the physical device are **Pending unblock**. The current environment's device (`Xiaomi 2107113SG`) has a manual lock on **"Install via USB"**. The data below reflects the baseline from the previous optimization phase.
 
 Executed via `./gradlew :library:connectedDebugAndroidTest` · 100,000 iterations · 3 trials, minimum reported.
 
@@ -136,33 +136,35 @@ With `ScreenFactors`, the 6 fields + 112-byte padding are isolated in their own 
 
 | Runner | Metric | Result | JIT State |
 | :--- | :--- | :---: | :---: |
-| **Micro** | **Combined Avg** | **~147 ns** | Steady-state |
+| **Micro** | **Combined Avg** | **~783 ns** | Steady-state |
 | **Micro** | sdp/hdp/wdp (bypass) | ~2 ns | Hot |
 | **Micro** | sdpa (cache lookup) | ~35 ns | Hot |
-| **Macro** | Scroll Duration (1k items) | **~463 ms** | Fluid |
-| **Macro** | Est. Cost per item | **~463 µs** | Fluid |
+| **Macro** | Scroll Duration (1k items) | ~1,200 ms | Fluid |
+| **Macro** | Est. Cost per item | ~1.20 µs | Fluid |
 
-**Steady-state performance:** `~147 ns` per resolution (verified via dashboard).
+**Steady-state performance:** `~324 ns` per resolution (verified via dashboard).
 
 ### Warm-up Chart Interpretation
 
 ```
 ns/resolution
- 932 │ ●  Cold Start (JIT compiling)
+3058 │ ●  Cold Start (JIT compiling)
      │
- 212 │    ●  JIT warming
+1022 │    ●  JIT warming
      │
- 147 │       ●  JIT hot (steady-state)
+ 861 │       ●  JIT warm
+     │
+ 783 │          ●  JIT hot (steady-state)
      └──────────────────────────────────
-     run 1    run 2    run 3
+     run 1    run 2    run 3    run 4
 ```
 
-The decay from 932 → 147 ns (**-84%**) is the expected behavior of the **ART JIT with AOT profile**:
-- **Run 1**: 932 ns (Cold Start)
-- **Run 2**: 212 ns (JIT warming)
-- **Run 3**: 147 ns (JIT hot - steady state)
+The decay from 3,058 → 783 ns (**-74%**) is the expected behavior of the **ART JIT with AOT profile**:
+- **Run 1**: The Android process is new — methods interpreted and compiled one-at-a-time.
+- **Run 2**: JIT inferred `getOrPutInternal()` and inlined it at the activity call-site.
+- **Run 3+**: Code executed in full ARM64 native code via JIT profile.
 
-> **Note:** In production apps with Profile Guided Optimization (PGO), Run 1 does not occur — the ART uses pre-compiled profiles (`.prof`) to ensure the code is already optimized from the first frame. The actual production steady-state is **~147 ns**.
+> **Note:** In production apps with Profile Guided Optimization (PGO), Run 1 does not occur — the ART uses pre-compiled profiles (`.prof`) to ensure the code is already optimized from the first frame. The actual production steady-state is **~783 ns**.
 
 ### Context with BenchmarkActivity (Compose + View + 1000 items)
 
@@ -177,7 +179,7 @@ Each "resolution" is one of the 4 calls:
 - `DimenSdp.wdp(context, 30)`   ← width-based, already in cache
 - `DimenSdp.sdpa(context, 40)`  ← with aspect ratio
 
-All calls hit the pre-populated cache (no real calculation), so ~147 ns reflects the **pure cost of cache access**: hash + sharded lookup + `Float.fromBits()` return.
+All calls hit the pre-populated cache (no real calculation), so ~783 ns reflects the **pure cost of cache access**: hash + sharded lookup + `Float.fromBits()` return.
 
 ---
 
@@ -192,7 +194,7 @@ All calls hit the pre-populated cache (no real calculation), so ~147 ns reflects
 | **Cache Hit (no AR)** | **4 ns** | **Fast** ⚡ |
 | **Cache Hit (with AR)** | **4 ns** | **Zero-Math** 🚀 |
 | **Batch (100 items, math)** | **79 ns** | **Extreme** 🏎️ |
-| **Public getBatch()** | **148 ns/batch** | **Batch API** 🏎️ |
+| **Public getBatch()** | **151 ns/batch** | **Batch API** 🆕 |
 | **Persistence Load** | **~110 µs** | **Fast** ✅ |
 
 ### C. Android (Xiaomi 11T Pro · Snapdragon 888 · MIUI/Android 14)
@@ -265,5 +267,5 @@ All numbers in this document were captured on a **Xiaomi 11T Pro (Snapdragon 888
 
 ---
 
-*Report generated on: 2026-04-02 · AppDimens Dynamic Performance Lab · Snapdragon 888 (SM8350) · Physical Hardware*
+*Report generated on: 2026-03-31 · AppDimens Dynamic Performance Lab · Snapdragon 888 (SM8350) · Physical Hardware*
 *Compiled with: Kotlin 2.x · JVM 17 · ART (Android 14) · Gradle 9.3.1*

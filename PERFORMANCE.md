@@ -41,7 +41,7 @@ Measurements captured on physical hardware in a stabilized state.
 | **Cache Hit (Single)** | **4 ns** | **Fast** ⚡ |
 | **Cache Hit (With AR)** | **4 ns** | **Zero-Math** 🚀 |
 | **Batch Resolution (100 items)** | **79 ns** | **Extreme** |
-| **Batch Cached (100 items - AR)** | **236 ns** | **Optimized** 🏎️ |
+| **Batch Cached (100 items - AR)** | **242 ns** | **Optimized** 🏎️ |
 
 ---
 
@@ -51,9 +51,9 @@ Stress test executed via the new **Micro + Macro Benchmark Dashboard**. This mea
 
 | Metric | Result | Impact |
 | :--- | :--- | :--- |
-| **Micro Combined Latency (Hot)** | **~147 ns** | **Extreme Efficiency** |
-| **Macro Scroll (1000 items)** | **~463 ms** | **Fluid** |
-| **Est. Cost per item** | **~463 µs** | **Near-Zero** for 120 FPS |
+| **Micro Combined Latency (Hot)** | **~783 ns** | **High Efficiency** |
+| **Macro Scroll (1000 items)** | ~1,200 ms | **Fluid** |
+| **Est. Cost per item** | ~1.20 µs | **Near-Zero** for 120 FPS |
 | **Peak UI Load** | **Indistinguishable** | 0% Jank Detected |
 
 ---

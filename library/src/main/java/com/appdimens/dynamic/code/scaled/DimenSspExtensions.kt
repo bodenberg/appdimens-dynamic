@@ -604,8 +604,6 @@ fun Number.toDynamicScaledSpPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    require(this in 1..1024) { "Value must be between 1 and 1024. Current value: $this" }
-
     val resources = context.resources
     val configuration = resources.configuration
     val displayMetrics = resources.displayMetrics
