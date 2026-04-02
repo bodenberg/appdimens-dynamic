@@ -526,6 +526,9 @@ fun Number.toDynamicScaledPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
+    // EN Validation requirement (limits usage to avoid creating thousands of dimens files).
+    require(this.toFloat() in -1023f..1024f) { "Value must be between -1023 and 1024. Current value: $this" }
+
     val resources = context.resources
     val configuration = resources.configuration
     val displayMetrics = resources.displayMetrics

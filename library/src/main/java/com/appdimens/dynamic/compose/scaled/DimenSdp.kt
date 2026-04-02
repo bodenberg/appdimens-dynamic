@@ -471,6 +471,8 @@ val Number.wdpPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, In
  */
 @Composable
 fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
+    require(this.toFloat() in -1023f..1024f) { "Value must be between -1023 and 1024. Current: $this" }
+
     if (InternalComposeResources.context == null) {
         InternalComposeResources.configuration = LocalConfiguration.current
         InternalComposeResources.context = LocalContext.current
