@@ -140,7 +140,7 @@ With `ScreenFactors`, the 6 fields + 112-byte padding are isolated in their own 
 | **Micro** | sdp/hdp/wdp (bypass) | ~2 ns | Hot |
 | **Micro** | sdpa (cache lookup) | ~35 ns | Hot |
 | **Macro** | Scroll Duration (1k items) | **~463 ms** | Fluid |
-| **Macro** | Est. Cost per item | **~0.46 µs** | Fluid |
+| **Macro** | Est. Cost per item | **~463 µs** | Fluid |
 
 **Steady-state performance:** `~147 ns` per resolution (verified via dashboard).
 
@@ -148,19 +148,17 @@ With `ScreenFactors`, the 6 fields + 112-byte padding are isolated in their own 
 
 ```
 ns/resolution
-3058 │ ●  Cold Start (JIT compiling)
+ 932 │ ●  Cold Start (JIT compiling)
      │
-1022 │    ●  JIT warming
+ 212 │    ●  JIT warming
      │
- 861 │       ●  JIT warm
-     │
- 783 │          ●  JIT hot (steady-state)
+ 147 │       ●  JIT hot (steady-state)
      └──────────────────────────────────
-     run 1    run 2    run 3    run 4
+     run 1    run 2    run 3
 ```
 
-The decay from 3,058 → 783 ns (**-74%**) is the expected behavior of the **ART JIT with AOT profile**:
-- **Run 1**: 332 ns (Cold Start)
+The decay from 932 → 147 ns (**-84%**) is the expected behavior of the **ART JIT with AOT profile**:
+- **Run 1**: 932 ns (Cold Start)
 - **Run 2**: 212 ns (JIT warming)
 - **Run 3**: 147 ns (JIT hot - steady state)
 
@@ -179,7 +177,7 @@ Each "resolution" is one of the 4 calls:
 - `DimenSdp.wdp(context, 30)`   ← width-based, already in cache
 - `DimenSdp.sdpa(context, 40)`  ← with aspect ratio
 
-All calls hit the pre-populated cache (no real calculation), so ~783 ns reflects the **pure cost of cache access**: hash + sharded lookup + `Float.fromBits()` return.
+All calls hit the pre-populated cache (no real calculation), so ~147 ns reflects the **pure cost of cache access**: hash + sharded lookup + `Float.fromBits()` return.
 
 ---
 

@@ -52,8 +52,8 @@ Stress test executed via the new **Micro + Macro Benchmark Dashboard**. This mea
 | Metric | Result | Impact |
 | :--- | :--- | :--- |
 | **Micro Combined Latency (Hot)** | **~147 ns** | **Extreme Efficiency** |
-| **Macro Scroll (1000 items)** | ~1,200 ms | **Fluid** |
-| **Est. Cost per item** | ~1.10 µs | **Near-Zero** for 120 FPS |
+| **Macro Scroll (1000 items)** | **~463 ms** | **Fluid** |
+| **Est. Cost per item** | **~463 µs** | **Near-Zero** for 120 FPS |
 | **Peak UI Load** | **Indistinguishable** | 0% Jank Detected |
 
 ---
