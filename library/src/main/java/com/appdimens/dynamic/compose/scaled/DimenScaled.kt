@@ -410,22 +410,19 @@ class DimenScaled private constructor(
 
         // EN Tries to find the first custom entry that qualifies using remember cache.
         // PT Tenta encontrar a primeira entrada customizada usando cache do remember.
-        val foundEntry = remember(
+        val selectionKey = com.appdimens.dynamic.core.DimenCache.buildSelectionKey(
             currentUiModeType,
             configuration.orientation,
+            configuration.smallestScreenWidthDp,
             configuration.screenWidthDp,
             configuration.screenHeightDp,
-            configuration.smallestScreenWidthDp,
-            aspectRatio,
-            ignoreMultiWindows,
-            sortedCustomEntries
-        ) {
+            ignoreMultiWindows
+        )
+
+        val foundEntry = remember(selectionKey, aspectRatio, sortedCustomEntries) {
             sortedCustomEntries.firstOrNull { entry ->
                 val qualifierEntry = entry.dpQualifierEntry
                 val uiModeMatch = entry.uiModeType == null || entry.uiModeType == currentUiModeType
-                
-                // EN Checks if the entry orientation matches the actual screen orientation
-                // PT Verifica se a orientação da entrada bate com a orientação atual da tela
                 val orientationMatch = when (entry.orientation) {
                     Orientation.LANDSCAPE -> isLandscape
                     Orientation.PORTRAIT -> isPortrait
@@ -485,16 +482,16 @@ class DimenScaled private constructor(
             kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
         } else 1f
 
-        val foundEntry = remember(
+        val selectionKey = com.appdimens.dynamic.core.DimenCache.buildSelectionKey(
             currentUiModeType,
             configuration.orientation,
+            configuration.smallestScreenWidthDp,
             configuration.screenWidthDp,
             configuration.screenHeightDp,
-            configuration.smallestScreenWidthDp,
-            aspectRatio,
-            ignoreMultiWindows,
-            sortedCustomEntries
-        ) {
+            ignoreMultiWindows
+        )
+
+        val foundEntry = remember(selectionKey, aspectRatio, sortedCustomEntries) {
             sortedCustomEntries.firstOrNull { entry ->
                 val qualifierEntry = entry.dpQualifierEntry
                 val uiModeMatch = entry.uiModeType == null || entry.uiModeType == currentUiModeType

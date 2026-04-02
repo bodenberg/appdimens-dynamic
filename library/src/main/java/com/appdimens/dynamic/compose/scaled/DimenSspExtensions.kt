@@ -46,29 +46,16 @@ import com.appdimens.dynamic.core.getCurrentUiModeType
  * PT Variante em Pixel (Float) de [sspRotate].
  */
 @Composable
-fun Number.sspRotatePx(
-    rotationValue: Number,
-    finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
-    orientation: Orientation = Orientation.LANDSCAPE,
-    fontScale: Boolean = true,
-    ignoreMultiWindows: Boolean = false,
-    applyAspectRatio: Boolean = false,
-    customSensitivityK: Float? = null
-): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+fun Number.sspRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledPx(finalQualifierResolver, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val bv = if (isTargetOrientation) rotationValue else this
+    val qual = if (isTargetOrientation) finalQualifierResolver else DpQualifier.SMALL_WIDTH
+    return bv.toDynamicScaledPx(qual, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -85,26 +72,15 @@ fun Number.sspRotatePx(
  * escalado com o [finalQualifierResolver] dado.
  */
 @Composable
-fun TextUnit.sspRotate(
-    rotationValue: Number,
-    finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
-    orientation: Orientation = Orientation.LANDSCAPE,
-    fontScale: Boolean = true
-, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+fun TextUnit.sspRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledSp(finalQualifierResolver, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.value.toDynamicScaledSp(finalQualifierResolver, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val bv = if (isTargetOrientation) rotationValue else this.value
+    return bv.toDynamicScaledSp(finalQualifierResolver, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -549,21 +525,12 @@ fun TextUnit.wspRotatePlainPx(
  * PT Variante em Pixel (Float) de [sspMode].
  */
 @Composable
-fun Number.sspModePx(
-    modeValue: Number,
-    uiModeType: UiModeType,
-    finalQualifierResolver: DpQualifier? = null,
-    fontScale: Boolean = true,
-    ignoreMultiWindows: Boolean = false,
-    applyAspectRatio: Boolean = false,
-    customSensitivityK: Float? = null
-): Float {
+fun Number.sspModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.SMALL_WIDTH) else DpQualifier.SMALL_WIDTH
+    return bv.toDynamicScaledPx(qual, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -578,18 +545,12 @@ fun Number.sspModePx(
  * Quando o dispositivo corresponde ao [uiModeType] especificado, usa [modeValue] no lugar.
  */
 @Composable
-fun TextUnit.sspMode(
-    modeValue: Number,
-    uiModeType: UiModeType,
-    finalQualifierResolver: DpQualifier? = null,
-    fontScale: Boolean = true
-, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
+fun TextUnit.sspMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.value.toDynamicScaledSp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this.value
+    val qual = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
+    return bv.toDynamicScaledSp(qual, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -641,25 +602,12 @@ fun TextUnit.sspModePlain(
 }
 
 @Composable
-fun TextUnit.sspModePlainPx(
-    modeValue: Number,
-    uiModeType: UiModeType,
-    finalQualifierResolver: DpQualifier? = null,
-    fontScale: Boolean = true,
-    ignoreMultiWindows: Boolean = false,
-    applyAspectRatio: Boolean = false,
-    customSensitivityK: Float? = null
-): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
-    val density = InternalComposeResources.density!!
+fun TextUnit.sspModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        density.run { this@sspModePlainPx.toPx() }
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this.value
+    val qual = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
+    return bv.toDynamicScaledPx(qual, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 // Removed duplicate Int.hspMode (kept in DimenSsp.kt)
@@ -670,21 +618,12 @@ fun TextUnit.sspModePlainPx(
  * PT Variante em Pixel (Float) de [hspMode].
  */
 @Composable
-fun Number.hspModePx(
-    modeValue: Number,
-    uiModeType: UiModeType,
-    finalQualifierResolver: DpQualifier? = null,
-    fontScale: Boolean = true,
-    ignoreMultiWindows: Boolean = false,
-    applyAspectRatio: Boolean = false,
-    customSensitivityK: Float? = null
-): Float {
+fun Number.hspModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledPx(DpQualifier.HEIGHT, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.HEIGHT) else DpQualifier.HEIGHT
+    return bv.toDynamicScaledPx(qual, fontScale, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**

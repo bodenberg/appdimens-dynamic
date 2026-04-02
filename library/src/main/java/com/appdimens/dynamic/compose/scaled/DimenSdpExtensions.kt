@@ -56,20 +56,15 @@ import com.appdimens.dynamic.core.getCurrentUiModeType
  */
 @Composable
 fun Int.sdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledDp(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val bv = if (isTargetOrientation) rotationValue else this
+    val qual = if (isTargetOrientation) finalQualifierResolver else DpQualifier.SMALL_WIDTH
+    return bv.toDynamicScaledDp(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -78,20 +73,15 @@ fun Int.sdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = D
  */
 @Composable
 fun Int.sdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val bv = if (isTargetOrientation) rotationValue else this
+    val qual = if (isTargetOrientation) finalQualifierResolver else DpQualifier.SMALL_WIDTH
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -109,20 +99,15 @@ fun Int.sdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier =
  */
 @Composable
 fun Dp.sdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledDp(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.value.toDynamicScaledDp(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val bv = if (isTargetOrientation) rotationValue else this.value
+    val qual = if (isTargetOrientation) finalQualifierResolver else finalQualifierResolver
+    return bv.toDynamicScaledDp(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -131,20 +116,15 @@ fun Dp.sdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = Dp
  */
 @Composable
 fun Dp.sdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.value.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val bv = if (isTargetOrientation) rotationValue else this.value
+    val qual = if (isTargetOrientation) finalQualifierResolver else finalQualifierResolver
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -162,10 +142,7 @@ fun Dp.sdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = 
  */
 @Composable
 fun Dp.sdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -184,12 +161,8 @@ fun Dp.sdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifier
  */
 @Composable
 fun Dp.sdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    val configuration = InternalComposeResources.configuration!!
-    val density = InternalComposeResources.density!!
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -219,20 +192,15 @@ fun Dp.sdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualifi
  */
 @Composable
 fun Int.hdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledDp(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledDp(DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val bv = if (isTargetOrientation) rotationValue else this
+    val qual = if (isTargetOrientation) finalQualifierResolver else DpQualifier.HEIGHT
+    return bv.toDynamicScaledDp(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -241,20 +209,15 @@ fun Int.hdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = D
  */
 @Composable
 fun Int.hdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledPx(DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val bv = if (isTargetOrientation) rotationValue else this
+    val qual = if (isTargetOrientation) finalQualifierResolver else DpQualifier.HEIGHT
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -382,20 +345,15 @@ fun Dp.hdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualifi
  */
 @Composable
 fun Int.wdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledDp(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledDp(DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val bv = if (isTargetOrientation) rotationValue else this
+    val qual = if (isTargetOrientation) finalQualifierResolver else DpQualifier.WIDTH
+    return bv.toDynamicScaledDp(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -404,20 +362,15 @@ fun Int.wdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = D
  */
 @Composable
 fun Int.wdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    val configuration = InternalComposeResources.configuration!!
+    val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        rotationValue.toDynamicScaledPx(finalQualifierResolver, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledPx(DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val bv = if (isTargetOrientation) rotationValue else this
+    val qual = if (isTargetOrientation) finalQualifierResolver else DpQualifier.WIDTH
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -551,26 +504,20 @@ fun Dp.wdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualifi
 @Composable
 fun Int.sdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledDp(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.SMALL_WIDTH) else DpQualifier.SMALL_WIDTH
+    return bv.toDynamicScaledDp(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-/**
- * EN Pixel (Float) variant of [sdpMode].
- * PT Variante em Pixel (Float) de [sdpMode].
- */
 @Composable
 fun Int.sdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledPx(DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.SMALL_WIDTH) else DpQualifier.SMALL_WIDTH
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -587,11 +534,10 @@ fun Int.sdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResol
 @Composable
 fun Dp.sdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.value.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this.value
+    val qual = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
+    return bv.toDynamicScaledDp(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -601,11 +547,10 @@ fun Dp.sdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver
 @Composable
 fun Dp.sdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.value.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this.value
+    val qual = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -666,11 +611,10 @@ fun Dp.sdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifierR
 @Composable
 fun Int.hdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledDp(DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.HEIGHT) else DpQualifier.HEIGHT
+    return bv.toDynamicScaledDp(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
@@ -681,11 +625,10 @@ fun Int.hdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolve
 @Composable
 fun Int.hdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledPx(DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.HEIGHT) else DpQualifier.HEIGHT
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -703,11 +646,10 @@ fun Int.hdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResol
 @Composable
 fun Dp.hdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.value.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this.value
+    val qual = finalQualifierResolver ?: DpQualifier.HEIGHT
+    return bv.toDynamicScaledDp(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -717,11 +659,10 @@ fun Dp.hdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver
 @Composable
 fun Dp.hdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.value.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this.value
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.HEIGHT) else DpQualifier.HEIGHT
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -735,7 +676,6 @@ fun Dp.hdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolv
  * Retorna o valor original de Dp bruto se a condição não for atendida.
  * Quando o dispositivo corresponde ao [uiModeType] especificado, usa [modeValue] no lugar.
  */
-@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.hdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
     val currentUiModeType = getCurrentUiModeType()
@@ -752,16 +692,11 @@ fun Dp.hdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierRes
  */
 @Composable
 fun Dp.hdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
-    val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        density.run { this@hdpModePlainPx.toPx() }
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this.value
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.HEIGHT) else DpQualifier.HEIGHT
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -783,26 +718,19 @@ fun Dp.hdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifierR
 @Composable
 fun Int.wdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledDp(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledDp(DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.WIDTH) else DpQualifier.WIDTH
+    return bv.toDynamicScaledDp(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
-@SuppressLint("ConfigurationScreenWidthHeight")
-/**
- * EN Pixel (Float) variant of [wdpMode].
- * PT Variante em Pixel (Float) de [wdpMode].
- */
 @Composable
 fun Int.wdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.toDynamicScaledPx(DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.WIDTH) else DpQualifier.WIDTH
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**
@@ -834,11 +762,10 @@ fun Dp.wdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver
 @Composable
 fun Dp.wdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) {
-        modeValue.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    } else {
-        this.value.toDynamicScaledPx(finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
-    }
+    val isMatch = currentUiModeType == uiModeType
+    val bv = if (isMatch) modeValue else this.value
+    val qual = if (isMatch) (finalQualifierResolver ?: DpQualifier.WIDTH) else DpQualifier.WIDTH
+    return bv.toDynamicScaledPx(qual, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
 }
 
 /**

@@ -478,23 +478,19 @@ fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Invert
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
 
-    return remember(
-        this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
-        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
-        configuration.smallestScreenWidthDp, androidContext
-    ) {
-        val cacheKey = DimenCache.buildKey(
-            baseValue = this.toFloat(),
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = qualifier,
-            inverter = inverter,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
+    val cacheKey = DimenCache.buildKey(
+        baseValue = this.toFloat(),
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = qualifier,
+        inverter = inverter,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
 
+    return remember(cacheKey) {
         DimenCache.getOrPut(cacheKey, androidContext) {
             calculateScaledDpCompose(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
         }.dp
@@ -629,23 +625,19 @@ fun Number.toDynamicScaledPx(qualifier: DpQualifier, inverter: Inverter = Invert
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
 
-    return remember(
-        this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
-        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
-        configuration.smallestScreenWidthDp, androidContext, density
-    ) {
-        val cacheKey = DimenCache.buildKey(
-            baseValue = this.toFloat(),
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = qualifier,
-            inverter = inverter,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
+    val cacheKey = DimenCache.buildKey(
+        baseValue = this.toFloat(),
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = qualifier,
+        inverter = inverter,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
 
+    return remember(cacheKey) {
         DimenCache.getOrPut(cacheKey, androidContext) {
             val scaledDp = calculateScaledDpCompose(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
             density.run { scaledDp.dp.toPx() }

@@ -49,6 +49,7 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
+import com.appdimens.dynamic.common.UiModeType
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.nio.ByteBuffer
@@ -124,7 +125,7 @@ object DimenCache {
     @PublishedApi
     internal enum class CalcType {
         AUTO, DIAGONAL, FILL, FIT, FLUID, INTERPOLATED, LOGARITHMIC,
-        PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO
+        PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO, DENSITY
     }
 
     /**
@@ -409,6 +410,29 @@ object DimenCache {
         baseValue.toFloat(), isLandscape, ignoreMultiWindows, calcType,
         qualifier, inverter, applyAspectRatio, valueType, customSensitivityK
     )
+
+    /**
+     * Packs selection parameters into a single 64-bit Long key for remember() blocks.
+     */
+    @JvmStatic
+    @PublishedApi
+    internal fun buildSelectionKey(
+        uiMode: UiModeType,
+        orientation: Int,
+        sw: Int,
+        w: Int,
+        h: Int,
+        ignoreMultiWindows: Boolean
+    ): Long {
+        val um = uiMode.ordinal.toLong() and 0x7L
+        val o = orientation.toLong() and 0x3L
+        val s = sw.toLong() and 0x3FFFL // 14 bits
+        val width = w.toLong() and 0x3FFFL // 14 bits
+        val height = h.toLong() and 0x3FFFL // 14 bits
+        val imw = if (ignoreMultiWindows) 1L else 0L
+
+        return (um shl 43) or (o shl 41) or (s shl 27) or (width shl 13) or (height shl 1) or imw
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // INIT / PERSISTENCE
