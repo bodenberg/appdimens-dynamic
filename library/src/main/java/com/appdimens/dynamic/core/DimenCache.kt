@@ -124,7 +124,7 @@ object DimenCache {
     @PublishedApi
     internal enum class CalcType {
         AUTO, DIAGONAL, FILL, FIT, FLUID, INTERPOLATED, LOGARITHMIC,
-        PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO
+        PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO, DENSITY
     }
 
     /**
@@ -580,7 +580,7 @@ object DimenCache {
         // 0. FAST BYPASS — intentional design decision.
         //
         // When Aspect Ratio is NOT active (bit 63 == 0) and the CalcType is one of the
-        // "simple multiplier" types (AUTO=0, FLUID=4, PERCENT=7, SCALED=11), the scaling
+        // "simple multiplier" types (AUTO=0, FLUID=4, PERCENT=7, SCALED=11, DENSITY=14), the scaling
         // formula reduces to a single float multiply: `baseValue * scale`.
         //
         // Measured cost on Snapdragon 888:
@@ -592,13 +592,13 @@ object DimenCache {
         // hot-path optimization.  The cache is only beneficial when the computation
         // is expensive (e.g. AR path with ln(), ≈41 ns), making the 5 ns lookup cheap.
         //
-        // ⚠️  Consequence for benchmarks: calls to SCALED / AUTO / FLUID / PERCENT
+        // ⚠️  Consequence for benchmarks: calls to SCALED / AUTO / FLUID / PERCENT / DENSITY
         //     without AR will NEVER hit the cache.  BenchmarkActivity results for
         //     these variants reflect pure math cost (~2 ns), NOT cache retrieval cost.
         //     Do not use these variants to measure cache throughput.
         if (key >= 0) {
             val ct = (key ushr 18 and 0xFL).toInt()
-            if (ct == 0 || ct == 4 || ct == 7 || ct == 11) return compute()
+            if (ct == 0 || ct == 4 || ct == 7 || ct == 11 || ct == 14) return compute()
         }
 
         // ─────────────────────────────────────────────────────────────────────
