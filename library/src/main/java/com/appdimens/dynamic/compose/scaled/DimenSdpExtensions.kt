@@ -162,7 +162,7 @@ fun Dp.sdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = Dp
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -202,7 +202,7 @@ fun Dp.sdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = 
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -435,7 +435,7 @@ fun Dp.hdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = Dp
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -475,7 +475,7 @@ fun Dp.hdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = 
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -708,7 +708,7 @@ fun Dp.wdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = Dp
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -748,7 +748,7 @@ fun Dp.wdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = 
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -979,7 +979,7 @@ fun Dp.sdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -1017,7 +1017,7 @@ fun Dp.sdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolv
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -1241,7 +1241,7 @@ fun Dp.hdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -1279,7 +1279,7 @@ fun Dp.hdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolv
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -1504,7 +1504,7 @@ fun Dp.wdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -1542,7 +1542,7 @@ fun Dp.wdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolv
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -1764,7 +1764,7 @@ fun Dp.sdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifie
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -1802,7 +1802,7 @@ fun Dp.sdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualif
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -2019,7 +2019,7 @@ fun Dp.hdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifie
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -2057,7 +2057,7 @@ fun Dp.hdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualif
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -2274,7 +2274,7 @@ fun Dp.wdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifie
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -2312,7 +2312,7 @@ fun Dp.wdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualif
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -2539,7 +2539,7 @@ fun Dp.sdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQ
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -2580,7 +2580,7 @@ fun Dp.sdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: D
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -2810,7 +2810,7 @@ fun Dp.hdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQ
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -2851,7 +2851,7 @@ fun Dp.hdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: D
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -3081,7 +3081,7 @@ fun Dp.wdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQ
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,
@@ -3122,7 +3122,7 @@ fun Dp.wdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: D
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
     val cacheKey = DimenCache.buildKey(
         baseValue = baseValue,

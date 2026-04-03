@@ -130,7 +130,7 @@ fun TextUnit.sspRotate(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val resQ = finalQualifierResolver
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -180,7 +180,7 @@ fun TextUnit.sspRotatePx(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val resQ = finalQualifierResolver
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -403,7 +403,7 @@ fun TextUnit.hspRotate(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val resQ = finalQualifierResolver
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -453,7 +453,7 @@ fun TextUnit.hspRotatePx(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val resQ = finalQualifierResolver
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -676,7 +676,7 @@ fun TextUnit.wspRotate(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val resQ = finalQualifierResolver
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -726,7 +726,7 @@ fun TextUnit.wspRotatePx(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value.toFloat()
+    val baseValue = if (isTargetOrientation) rotationValue.toFloat() else this.value
     val resQ = finalQualifierResolver
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -947,7 +947,7 @@ fun TextUnit.sspMode(
     val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -994,7 +994,7 @@ fun TextUnit.sspModePx(
     val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -1201,7 +1201,7 @@ fun TextUnit.hspMode(
     val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -1248,7 +1248,7 @@ fun TextUnit.hspModePx(
     val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -1455,7 +1455,7 @@ fun TextUnit.wspMode(
     val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -1502,7 +1502,7 @@ fun TextUnit.wspModePx(
     val density = InternalComposeResources.density!!
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
-    val baseValue = if (match) modeValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) modeValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -1763,7 +1763,7 @@ fun TextUnit.sspQualifier(
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -1810,7 +1810,7 @@ fun TextUnit.sspQualifierPx(
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -2068,7 +2068,7 @@ fun TextUnit.hspQualifier(
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -2115,7 +2115,7 @@ fun TextUnit.hspQualifierPx(
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -2373,7 +2373,7 @@ fun TextUnit.wspQualifier(
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -2420,7 +2420,7 @@ fun TextUnit.wspQualifierPx(
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value.toFloat()
+    val baseValue = if (qualifierMatch) qualifiedValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -2697,7 +2697,7 @@ fun TextUnit.sspScreen(
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -2748,7 +2748,7 @@ fun TextUnit.sspScreenPx(
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -3028,7 +3028,7 @@ fun TextUnit.hspScreen(
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -3079,7 +3079,7 @@ fun TextUnit.hspScreenPx(
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -3359,7 +3359,7 @@ fun TextUnit.wspScreen(
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
     val cacheKey = DimenCache.buildKey(
@@ -3410,7 +3410,7 @@ fun TextUnit.wspScreenPx(
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    val baseValue = if (match) screenValue.toFloat() else this.value.toFloat()
+    val baseValue = if (match) screenValue.toFloat() else this.value
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
     val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
     val cacheKey = DimenCache.buildKey(
