@@ -59,6 +59,7 @@ import com.appdimens.dynamic.compose.sdpScreen
 // PT Builder DimenScaled para dimensões condicionais complexas
 import com.appdimens.dynamic.compose.scaledDp
 import com.appdimens.dynamic.compose.sdpa
+import com.appdimens.dynamic.core.AppDimensProvider
 
 /**
  * EN An activity that demonstrates all AppDimens SDP features in Jetpack Compose.
@@ -67,7 +68,11 @@ import com.appdimens.dynamic.compose.sdpa
 class ExampleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { SdpDemoScreen() }
+        setContent {
+            AppDimensProvider {
+                SdpDemoScreen()
+            }
+        }
     }
 }
 

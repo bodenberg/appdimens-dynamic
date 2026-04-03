@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import com.appdimens.dynamic.compose.hdp
 import com.appdimens.dynamic.compose.sdp
 import com.appdimens.dynamic.compose.wdp
+import com.appdimens.dynamic.core.AppDimensProvider
 import com.example.app.compose.benchmark.*
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -79,7 +80,11 @@ class BenchmarkActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val autoStart = intent.getBooleanExtra("AUTO_START_FULL", false)
-        setContent { BenchmarkDashboardScreen(autoStart = autoStart) }
+        setContent {
+            AppDimensProvider {
+                BenchmarkDashboardScreen(autoStart = autoStart)
+            }
+        }
     }
 }
 
