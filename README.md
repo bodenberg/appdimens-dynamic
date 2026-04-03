@@ -250,13 +250,11 @@ DimenPhysicalUnits.toDpFromInch(1f, resources)
 
 <br/>
 <p align="center">
+  <img src="IMAGES/screenshot_video.gif" alt="Demo video (animated)" width="240" height="515" />
+  &nbsp;
   <img src="IMAGES/screenshot.jpg" alt="Layout example" width="240" height="515" />
   &nbsp;
   <img src="IMAGES/screenshot_benchmark.jpg" alt="Benchmark" width="240" height="515" />
-  &nbsp;
-  <video width="240" height="515" controls playsinline preload="metadata">
-    <source src="IMAGES/screenshot_video.mov" type="video/quicktime" />
-  </video>
 </p>
 <br/>
 
