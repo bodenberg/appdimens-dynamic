@@ -137,6 +137,19 @@ class DimenCacheTest {
     }
 
     @Test
+    fun testPeekNullWhenBypassDoesNotStore() {
+        DimenCache.clearAll()
+        DimenCache.isEnabled = true
+        val keyScaled = DimenCache.buildKey(
+            10f, false, false, DimenCache.CalcType.SCALED,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+        val v = DimenCache.getOrPut(keyScaled) { 42f }
+        assertEquals(42f, v, 0f)
+        assertEquals(null, DimenCache.peek(keyScaled))
+    }
+
+    @Test
     fun testCacheBypass() {
         DimenCache.clearAll()
         DimenCache.isEnabled = true

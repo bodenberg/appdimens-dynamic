@@ -29,7 +29,6 @@ import android.content.res.Configuration
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
-import android.util.TypedValue
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.core.DimenCache
 
@@ -490,14 +489,20 @@ fun Number.wdpScreen(context: Context, screenValue: Number, uiModeType: UiModeTy
  * The scaling logic:
  * 1. Builds a 64-bit packed cache key from all dimension parameters.
  * 2. **If [enableCache] is `true`** (default): checks [DimenCache] first. On a hit, returns the
- *    cached pixel value immediately. On a miss, calls [calculateScaledDp] and converts via
- *    [android.util.TypedValue.applyDimension], then stores the result.
+ *    cached pixel value immediately. On a miss, calls [calculateScaledDp] and converts Dp→px via
+ *    `scaledDp * displayMetrics.density` (equivalent to [android.util.TypedValue.applyDimension]
+ *    for `COMPLEX_UNIT_DIP`), then stores the result.
  * 3. **If [enableCache] is `false`**: computes directly via [calculateScaledDp], bypassing cache.
  *
  * > ⚠️ **Bypass note**: when [applyAspectRatio] is `false` and [qualifier] is `SMALL_WIDTH`
  * > with `DEFAULT` inverter, the [DimenCache.getOrPut] call internally bypasses the hash lookup
  * > because a raw multiply (~2 ns) is faster than the cache access (~5 ns). Calls with these
  * > parameters measure raw math performance, NOT cache throughput.
+ *
+ * **Bulk resolution:** for many keys in one pass, prefer building [LongArray] keys with
+ * [DimenCache.buildKey] and [DimenCache.getBatch]. **Early init:** call [DimenSdp.warmupCache]
+ * (or [DimenSsp.warmupCache]) once with your [android.content.Context] so persistence/DataStore
+ * work does not land on the first hot-frame call.
  *
  * PT
  * Converte um [Number] (valor Dp base) em um [Float] em pixels dinamicamente escalado para código View-based.
@@ -526,12 +531,13 @@ fun Number.toDynamicScaledPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
+    val base = this.toFloat()
     val resources = context.resources
     val configuration = resources.configuration
-    val displayMetrics = resources.displayMetrics
-    
+    val density = resources.displayMetrics.density
+
     val cacheKey = DimenCache.buildKey(
-        baseValue = this.toFloat(),
+        baseValue = base,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
         ignoreMultiWindows = ignoreMultiWindows,
         calcType = DimenCache.CalcType.SCALED,
@@ -543,8 +549,8 @@ fun Number.toDynamicScaledPx(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val scaledDp = calculateScaledDp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, scaledDp, displayMetrics)
+        val scaledDp = calculateScaledDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        scaledDp * density
     }
 }
 
@@ -633,7 +639,7 @@ private fun calculateScaledDp(
     } else false
 
     return if (isMultiWindow) {
-        baseValue.toFloat()
+        baseValue
     } else {
         // Qualifier logic
         val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
@@ -654,9 +660,9 @@ private fun calculateScaledDp(
                  val diff = screenDimension - 300f
                  val adjustment = (customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT) * DimenCache.currentLogNormalizedAr
                  val arFactor = 1.0f + diff * (DimenCache.ADJUSTMENT_SCALE + adjustment)
-                 baseValue.toFloat() * arFactor
+                 baseValue * arFactor
             } else {
-                 baseValue.toFloat() * scale
+                 baseValue * scale
             }
         }
     }
@@ -697,11 +703,11 @@ fun Number.toDynamicScaledDp(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val resources = context.resources
-    val configuration = resources.configuration
-    
+    val base = this.toFloat()
+    val configuration = context.resources.configuration
+
     val cacheKey = DimenCache.buildKey(
-        baseValue = this.toFloat(),
+        baseValue = base,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
         ignoreMultiWindows = ignoreMultiWindows,
         calcType = DimenCache.CalcType.SCALED,
@@ -713,6 +719,6 @@ fun Number.toDynamicScaledDp(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        calculateScaledDp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        calculateScaledDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 }

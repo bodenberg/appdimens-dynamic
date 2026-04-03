@@ -240,7 +240,29 @@ class DimenScaled private constructor(
     private fun resolveDp(context: Context, qualifier: DpQualifier): Float {
         val configuration = context.resources.configuration
         val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        return resolveDpInternal(context, qualifier, configuration, currentUiModeType)
+    }
 
+    /**
+     * EN Resolves sdp, hdp, and wdp in one pass (single [UiModeType.fromConfiguration] and config read).
+     * PT Resolve sdp, hdp e wdp numa só passagem.
+     */
+    fun sdpHdpWdpPx(context: Context): Triple<Float, Float, Float> {
+        val configuration = context.resources.configuration
+        val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        val density = context.resources.displayMetrics.density
+        val sdp = resolveDpInternal(context, DpQualifier.SMALL_WIDTH, configuration, currentUiModeType) * density
+        val hdp = resolveDpInternal(context, DpQualifier.HEIGHT, configuration, currentUiModeType) * density
+        val wdp = resolveDpInternal(context, DpQualifier.WIDTH, configuration, currentUiModeType) * density
+        return Triple(sdp, hdp, wdp)
+    }
+
+    private fun resolveDpInternal(
+        context: Context,
+        qualifier: DpQualifier,
+        configuration: Configuration,
+        currentUiModeType: UiModeType
+    ): Float {
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
@@ -282,9 +304,10 @@ class DimenScaled private constructor(
      * EN Resolves the final value in pixels (Float).
      */
     fun px(context: Context, qualifier: DpQualifier): Float {
-        val dpValue = resolveDp(context, qualifier)
-        val density = context.resources.displayMetrics.density
-        return dpValue * density
+        val configuration = context.resources.configuration
+        val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        val dpValue = resolveDpInternal(context, qualifier, configuration, currentUiModeType)
+        return dpValue * context.resources.displayMetrics.density
     }
 
     // EN Convenience properties/methods similar to Compose version.

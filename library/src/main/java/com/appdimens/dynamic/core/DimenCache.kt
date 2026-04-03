@@ -417,7 +417,11 @@ object DimenCache {
     @JvmStatic
     @PublishedApi
     internal fun init(context: Context) {
-        if (isInitialized.get() || isInitializing.getAndSet(true)) return
+        if (isInitialized.get()) {
+            isInitializedFast = true
+            return
+        }
+        if (isInitializing.getAndSet(true)) return
 
         val appContext = context.applicationContext
         val currentSw = appContext.resources.configuration.smallestScreenWidthDp
@@ -512,8 +516,8 @@ object DimenCache {
     @JvmStatic
     @PublishedApi
     internal fun getOrPutInternal(key: Long, context: Context?, compute: () -> Float): Float {
-        // AUTO-INIT only if needed
-        if (context != null && !isInitialized.get()) {
+        // AUTO-INIT — same guard as inline [getOrPut] ([isInitializedFast] + [init])
+        if (context != null && !isInitializedFast) {
             init(context)
         }
 
@@ -633,10 +637,18 @@ object DimenCache {
         getOrPut(key, null, compute)
 
     /**
-     * EN Reads a cached value without computing a fallback.
-     * Returns `null` on a miss.
+     * EN Reads a stored cache value without computing a fallback. Returns `null` on a miss.
      *
-     * PT Lê um valor cacheado sem calcular um fallback. Retorna `null` se não encontrado.
+     * **Bypass interaction:** [getOrPut] intentionally **does not write** to the shard table
+     * for certain cheap calculation types when aspect ratio is off (see fast-path bypass in
+     * [getOrPut]). For those keys, [peek] will typically return `null` even after [getOrPut]
+     * returned a value — the result was computed but not persisted. Use [getOrPut] when you
+     * need the resolved float; use [peek] only to probe entries that were actually stored.
+     *
+     * PT Lê um valor gravado no cache sem calcular fallback. Retorna `null` em miss.
+     *
+     * **Interação com bypass:** para chaves que seguem o bypass de [getOrPut], o valor não é
+     * guardado na tabela; [peek] costuma devolver `null` mesmo após um [getOrPut] bem-sucedido.
      */
     @JvmStatic
     fun peek(key: Long): Float? {

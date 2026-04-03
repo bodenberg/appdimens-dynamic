@@ -47,6 +47,15 @@ import kotlin.math.min
 object DimenSdp {
 
     /**
+     * EN Eagerly initializes [DimenCache] (persistence / DataStore) so the first resolution on a hot path avoids lazy-init work.
+     * PT Inicializa o [DimenCache] antecipadamente para evitar custo lazy no primeiro uso.
+     */
+    @JvmStatic
+    fun warmupCache(context: Context) {
+        DimenCache.init(context)
+    }
+
+    /**
      * EN Quick resolution for Smallest Width (sdp).
      * PT Resolução rápida para Smallest Width (sdp).
      */

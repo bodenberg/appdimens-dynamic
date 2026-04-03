@@ -16,32 +16,33 @@ The library features a **Lock-Free Padded Sharded Cache** architecture with an i
 
 ## 2. Professional Benchmarks
 
-### A. Hardware Metrics (Xiaomi 11T Pro · Snapdragon 888)
+### A. Hardware Metrics (Xiaomi 2107113SG · Snapdragon 888)
 
 > [!NOTE]
-> **Measurement Notice**: Hardware metrics below are from the **v2 baseline**. New physical hardware benchmarks are currently pending verification on the current device environment.
+> **Measurement Notice**: Hardware metrics below were captured on physical device in a stabilized state.
 
 Measurements captured on physical hardware in a stabilized state.
 
 | Operation Type | Result | Status |
 | :--- | :--- | :--- |
 | **Raw Math (No AR)** | **2 ns** | **Optimal** ⚡ |
-| **Raw Math (With AR)** | 41 ns | Standard |
+| **Raw Math (With AR)** | 45 ns | Standard |
 | **Cache Hit (Single - No AR)** | **5 ns** | **Fast** ⚡ |
 | **Cache Hit (Single - AR)** | **35 ns** | **Zero-Math** 🚀 |
-| **Batch Resolution (100 items)** | **168 ns** | **Extreme** 🏎️ |
-| **Batch Cached (100 items - AR)** | **3,706 ns** | **Stable** ✅ |
-| **Persistence Load (100 entries)** | **0.74 ms** | **Fast** |
+| **Batch Resolution (100 items)** | **169 ns** | **Extreme** 🏎️ |
+| **Batch Cached (100 items - AR)** | **3,773 ns** | **Stable** ✅ |
+| **Persistence Load (100 entries)** | **0.76 ms** | **Fast** |
 
-### B. JVM (Local Development - High-End Desktop)
+### B. JVM (Local Development — Ubuntu Linux · JVM 17)
 | Operation Type | Result | Status |
 | :--- | :--- | :--- |
-| **Raw Math (Single)** | 3 ns | Optimal |
-| **Raw Math (With AR)** | 6 ns | Optimal |
-| **Cache Hit (Single)** | **4 ns** | **Fast** ⚡ |
-| **Cache Hit (With AR)** | **4 ns** | **Zero-Math** 🚀 |
-| **Batch Resolution (100 items)** | **79 ns** | **Extreme** |
+| **Raw Math (Single)** | < 1 ns | Optimal |
+| **Raw Math (With AR)** | 2 ns | Optimal |
+| **Cache Hit (Single)** | **1 ns** | **Fast** ⚡ |
+| **Cache Hit (With AR)** | **1 ns** | **Zero-Math** 🚀 |
+| **Batch Resolution (100 items)** | **34 ns** | **Extreme** |
 | **Batch Cached (100 items - AR)** | **242 ns** | **Optimized** 🏎️ |
+| **Persistence Load** | **~0.06 ms** | **Fast** ✅ |
 
 ---
 
@@ -51,9 +52,9 @@ Stress test executed via the new **Micro + Macro Benchmark Dashboard**. This mea
 
 | Metric | Result | Impact |
 | :--- | :--- | :--- |
-| **Micro Combined Latency (Hot)** | **~783 ns** | **High Efficiency** |
-| **Macro Scroll (1000 items)** | ~1,200 ms | **Fluid** |
-| **Est. Cost per item** | ~1.20 µs | **Near-Zero** for 120 FPS |
+| **Micro Combined Latency (Hot)** | **~260 ns** | **Extreme Efficiency** |
+| **Macro Scroll (1000 items)** | ~996 ms | **Fluid** |
+| **Est. Cost per item** | ~996 µs | **Zero Jank** for 120 FPS |
 | **Peak UI Load** | **Indistinguishable** | 0% Jank Detected |
 
 ---
@@ -74,12 +75,12 @@ For **CalcType** values of `AUTO`, `FLUID`, `PERCENT`, and `SCALED` **without As
 > A raw multiply on Snapdragon 888 takes **~2 ns**, while the fastest cache lookup (hash + atomic load + branch) takes **~5 ns**.
 > The cache would add latency, not reduce it.
 
-This is a deliberate design decision—not a missing feature. The cache provides its full benefit only for **Aspect Ratio** paths (which require `ln()`, ~41 ns on hardware), where amortizing the 5 ns lookup cost against 41 ns of computation is clearly worthwhile.
+This is a deliberate design decision—not a missing feature. The cache provides its full benefit only for **Aspect Ratio** paths (which require `ln()`, ~45 ns on hardware in recent captures), where amortizing the 5 ns lookup cost against that compute cost is clearly worthwhile.
 
 | Path | Cost | Cache used? |
 |:---|:---:|:---:|
 | SCALED / no AR (most common) | ~2 ns | ❌ Bypass |
-| SCALED / with AR | ~41 ns | ✅ Cache hit ~35 ns |
+| SCALED / with AR | ~45 ns | ✅ Cache hit ~35 ns |
 | Cache hit (no AR) | ~5 ns | ✅ |
 
 **Consequence for benchmarks**: `DimenSdp.sdp()`, `.hdp()`, `.wdp()` without AR always measure **raw math performance**, not cache performance. Use `.sdpa()` (or any `*a` variant) to measure the cache path.
@@ -88,7 +89,7 @@ This is a deliberate design decision—not a missing feature. The cache provides
 
 ## 6. Benchmark Variability
 
-Benchmark numbers reported in this document reflect measurements taken on a specific device (Xiaomi 11T Pro · Snapdragon 888 · Android 14) under controlled conditions. **Results will vary** based on:
+Benchmark numbers reported in this document reflect measurements taken on a specific device (Xiaomi 2107113SG · Snapdragon 888 · Android 14) under controlled conditions. **Results will vary** based on:
 
 - **Device class**: budget ARM Cortex-A55 clusters can be 5–10× slower than Snapdragon 888 on cache lookups
 - **JIT warm-up state**: first-run (cold JIT) latency can be 3–10× higher than steady-state
@@ -115,4 +116,4 @@ graph TD
 ```
 
 ---
-*Report Updated: 2026-03-31 · v2 Performance Baseline · Certified by AppDimens Performance Lab · Snapdragon 888 Physical Hardware*
+*Report Updated: 2026-04-03 · AppDimens Dynamic · AppDimens Performance Lab · Snapdragon 888 Physical Hardware*

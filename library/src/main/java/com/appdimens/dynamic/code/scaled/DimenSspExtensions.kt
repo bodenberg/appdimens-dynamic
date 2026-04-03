@@ -29,7 +29,6 @@ import android.content.res.Configuration
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
-import android.util.TypedValue
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.core.DimenCache
 import kotlin.math.max
@@ -586,6 +585,11 @@ fun Number.wspScreen(context: Context, screenValue: Number, uiModeType: UiModeTy
  * EN
  * Converts an Int (the base Sp value) into a dynamically scaled pixel value (Float).
  *
+ * Sp→px uses `scaledSp * density * fontScale` when respecting font scale (equivalent to
+ * [android.util.TypedValue.applyDimension] for `COMPLEX_UNIT_SP`), else `scaledSp * density`
+ * for the fixed-Sp path. For many lookups, prefer [DimenCache.getBatch]; for early DataStore init,
+ * [DimenSsp.warmupCache].
+ *
  * PT
  * Converte um Int (o valor base de Sp) em um valor de pixel dinamicamente escalado (Float).
  *
@@ -604,14 +608,15 @@ fun Number.toDynamicScaledSpPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
+    val base = this.toFloat()
     val resources = context.resources
     val configuration = resources.configuration
-    val displayMetrics = resources.displayMetrics
+    val density = resources.displayMetrics.density
 
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
 
     val cacheKey = DimenCache.buildKey(
-        baseValue = this.toFloat(),
+        baseValue = base,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
         ignoreMultiWindows = ignoreMultiWindows,
         calcType = DimenCache.CalcType.SCALED,
@@ -623,9 +628,13 @@ fun Number.toDynamicScaledSpPx(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val scaledSp = calculateScaledSp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-        val unit = if (fontScale) TypedValue.COMPLEX_UNIT_SP else TypedValue.COMPLEX_UNIT_DIP
-        TypedValue.applyDimension(unit, scaledSp, displayMetrics)
+        val scaledSp = calculateScaledSp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        if (fontScale) {
+            val fs = configuration.fontScale
+            scaledSp * density * if (fs > 0f) fs else 1f
+        } else {
+            scaledSp * density
+        }
     }
 }
 
@@ -667,7 +676,7 @@ private fun calculateScaledSp(
     } else false
 
     return if (isMultiWindow) {
-        baseValue.toFloat()
+        baseValue
     } else {
         // Qualifier logic
         val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
@@ -687,9 +696,9 @@ private fun calculateScaledSp(
                  val diff = screenDimension - 300f
                  val adjustment = (customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT) * DimenCache.currentLogNormalizedAr
                  val arFactor = 1.0f + diff * (DimenCache.ADJUSTMENT_SCALE + adjustment)
-                 baseValue.toFloat() * arFactor
+                 baseValue * arFactor
             } else {
-                 baseValue.toFloat() * scale
+                 baseValue * scale
             }
         }
     }
@@ -706,6 +715,8 @@ private fun calculateScaledSp(
  * @param applyAspectRatio If `true`, applies the aspect-ratio multiplier.
  * @param customSensitivityK Override for the AR sensitivity constant (null = library default).
  * @return The scaled Sp value as [Float].
+ *
+ * **Bulk / init:** see [toDynamicScaledSpPx] for [DimenCache.getBatch] and [DimenSsp.warmupCache].
  */
 @JvmOverloads
 fun Number.toDynamicScaledSp(
@@ -717,13 +728,13 @@ fun Number.toDynamicScaledSp(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val resources = context.resources
-    val configuration = resources.configuration
-    
+    val base = this.toFloat()
+    val configuration = context.resources.configuration
+
     val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
 
     val cacheKey = DimenCache.buildKey(
-        baseValue = this.toFloat(),
+        baseValue = base,
         isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
         ignoreMultiWindows = ignoreMultiWindows,
         calcType = DimenCache.CalcType.SCALED,
@@ -735,7 +746,12 @@ fun Number.toDynamicScaledSp(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val raw = calculateScaledSp(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-        if (fontScale) raw else (raw / (resources.displayMetrics.scaledDensity / resources.displayMetrics.density))
+        val raw = calculateScaledSp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        if (fontScale) {
+            raw
+        } else {
+            val scale = configuration.fontScale
+            if (scale > 0f) raw / scale else raw
+        }
     }
 }

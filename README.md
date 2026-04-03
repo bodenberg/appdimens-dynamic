@@ -10,14 +10,14 @@
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.0.0")
+    implementation("io.github.bodenberg:appdimens-dynamic:3.0.1")
 }
 ```
 
 **Requirements:** Min SDK 24 · Compile SDK 36 · Kotlin & Java · Jetpack Compose
 
 > [!NOTE]
-> **Version 3.0.0**
+> **Version 3.0.1**
 > This version implements scale-based calculations (the Android system standard). Support for other calculation methods will be implemented soon.
 
 ---
@@ -55,7 +55,7 @@ val sdpAr = 16.sdpa     // Smallest Width + Aspect Ratio
 val hdpMw = 32.hdpi     // Height + Ignore Multi-Window
 val wspBoth = 50.wdpia  // Width + Both
 val sspAr = 16.sspa     // Scalable Sp + Aspect Ratio
-val seiMw = 16.seii     // Fixed Sp + Ignore Multi-Window
+val nemMw = 16.nemi     // Fixed Sp (Compose: nem) + Ignore Multi-Window
 ```
 
 **Scalable Fonts (TextUnit) — Auto-Scaling Extensions:**
@@ -64,14 +64,12 @@ import com.appdimens.dynamic.compose.ssp // Smallest Width
 import com.appdimens.dynamic.compose.hsp // Height
 import com.appdimens.dynamic.compose.wsp // Width
 
-// Fixed Sp (Ignores system font scale)
-import com.appdimens.dynamic.compose.sei // Smallest Width (Ignore scale)
-import com.appdimens.dynamic.compose.hei // Height (Ignore scale)
-import com.appdimens.dynamic.compose.wei // Width (Ignore scale)
-
+// Fixed Sp (ignores system font scale) — Compose: nem / hem / wem (code-level API: sei / hei / wei)
 Text("Scalable", fontSize = 16.ssp)
 Text("Height based", fontSize = 20.hsp)
-Text("No font scale", fontSize = 16.sei)
+Text("No font scale (sw)", fontSize = 16.nem)
+Text("No font scale (height)", fontSize = 20.hem)
+Text("No font scale (width)", fontSize = 18.wem)
 ```
 
 **Inverter Shortcuts — Orientation-Aware Scaling:**
@@ -148,8 +146,11 @@ val dynamicText = 16.scaledSp()
 ### 2. Kotlin (Code Level)
 
 ```kotlin
-import com.appdimens.dynamic.code.scaled.DimenSdp
-import com.appdimens.dynamic.code.scaled.DimenSsp
+import com.appdimens.dynamic.code.DimenSdp
+import com.appdimens.dynamic.code.DimenSsp
+import com.appdimens.dynamic.common.DpQualifier
+import com.appdimens.dynamic.common.Orientation
+import com.appdimens.dynamic.common.UiModeType
 
 // Core — Pixel values
 val paddingPx = DimenSdp.sdp(context, 16)     // Smallest Width
@@ -173,7 +174,7 @@ val builderSp = 16.scaledSp().screen(UiModeType.TELEVISION, 40).ssp(context)
 val adaptive = DimenSdp.hdpLw(context, 50)    // Height → Width in Landscape
 
 // Facilitators
-val rotated = DimenSdp.sdpRotate(context, 30, Orientation.LANDSCAPE)
+val rotated = DimenSdp.sdpRotate(context, 80, 50, orientation = Orientation.LANDSCAPE)
 val modeVal = DimenSdp.sdpMode(context, 30, 200, UiModeType.TELEVISION)
 val qualVal = DimenSdp.sdpQualifier(context, 30, 80, DpQualifier.SMALL_WIDTH, 600)
 
@@ -183,6 +184,12 @@ val dynamicPx = DimenSdp.scaled(16)
     .screen(DpQualifier.SMALL_WIDTH, 600, 24)
     .screen(Orientation.LANDSCAPE, 12)
     .sdp(context)
+
+// Optional — code-level performance
+DimenSdp.warmupCache(context)   // or DimenSsp.warmupCache — early DimenCache init
+// DimenCache.getBatch(keys, context) { i -> ... }  // many keys in one loop
+// scaled.sdpHdpWdpPx(context)    // DimenScaled: sdp + hdp + wdp in one UiMode read
+// scaledSp.sspHspWspPx(context)  // ScaledSp: ssp + hsp + wsp in one UiMode read
 
 // Physical units
 import com.appdimens.dynamic.code.units.DimenPhysicalUnits
@@ -194,8 +201,11 @@ val dpFromCm = DimenPhysicalUnits.toDpFromCm(2.5f, resources)
 ### 3. Java (Code Level)
 
 ```java
-import com.appdimens.dynamic.code.scaled.DimenSdp;
-import com.appdimens.dynamic.code.scaled.DimenSsp;
+import com.appdimens.dynamic.code.DimenSdp;
+import com.appdimens.dynamic.code.DimenSsp;
+import com.appdimens.dynamic.code.DimenScaled;
+import com.appdimens.dynamic.common.Orientation;
+import com.appdimens.dynamic.common.UiModeType;
 
 // Core (Resolves dynamically at runtime)
 float paddingPx = DimenSdp.sdp(context, 16);
@@ -240,7 +250,11 @@ DimenPhysicalUnits.toDpFromInch(1f, resources)
 
 <br/>
 <p align="center">
-  <img src="IMAGES/screenshot.png" alt="Layout example" width="25%" />
+  <img src="IMAGES/screenshot.jpg" alt="Layout example" width="240" />
+  &nbsp;
+  <img src="IMAGES/screenshot_benchmark.jpg" alt="Benchmark" width="240" />
+  &nbsp;
+  <video src="IMAGES/screenshot_video.mp4" controls playsinline preload="metadata" width="240"></video>
 </p>
 <br/>
 
@@ -260,7 +274,7 @@ DimenPhysicalUnits.toDpFromInch(1f, resources)
 | **Foldable Detection** | `FoldingFeature` integration — detects Fold/Flip open, closed, or half-opened states |
 | **UiModeType** | `NORMAL`, `TELEVISION`, `CAR`, `WATCH`, `DESK`, `APPLIANCE`, `VR_HEADSET`, `FOLD_OPEN`, `FOLD_CLOSED`, `FOLD_HALF_OPENED`, `FLIP_OPEN`, `FLIP_CLOSED`, `FLIP_HALF_OPENED` |
 | **Physical Units** | `DimenPhysicalUnits` — convert mm, cm, inches to Dp/Px |
-| **Sp & TextUnit** | Full support for Scalable Sp (`ssp`) and Fixed Sp (`sei`) — respects or ignores font scale |
+| **Sp & TextUnit** | Scalable Sp (`ssp`, `hsp`, `wsp`); fixed Sp in Compose (`nem`, `hem`, `wem`) or code API (`sei`, `hei`, `wei`) — respects or ignores font scale |
 
 ---
 
@@ -304,8 +318,24 @@ AppDimens Dynamic is designed for maximum efficiency:
 
 - **Automatic Caching**: Once a dimension is calculated for a specific screen configuration, it is stored in `DimenCache` for instant reuse.
 - **Persistence**: Avoiding recalculations across app launches.
-- **Compose Optimization**: Uses `LocalConfiguration.current` and `remember{}` internally to ensure no unnecessary recompositions.
+- **Compose optimization**: Uses `LocalConfiguration.current` with stable `remember` keys (packed layout stamps) to limit allocations and unnecessary recompositions.
 - **Zero Resource Lookups**: By eliminating `@dimen` XML file dependency, it avoids system resource resolution overhead.
+
+### Integration checklist (recommended)
+
+1. **`AppDimensProvider`** — Wrap your Compose root (e.g. `setContent { AppDimensProvider { … } }`) so `LocalUiModeType` is provided. Facilitators such as `.sdpMode` / `.sspMode` then read the mode without recomputing `UiModeType.fromConfiguration` on every call. Dependency: `androidx.window:window` (already used by the library for foldables).
+
+   ```kotlin
+   import com.appdimens.dynamic.core.AppDimensProvider
+   ```
+
+2. **`DimenCache.invalidateOnConfigChange`** — When the activity configuration changes, call `DimenCache.invalidateOnConfigChange(oldConfig, newConfig)` (and keep the previous `Configuration` reference between changes). This keeps the global cache and internal Compose resource snapshots aligned with rotation, window size, density, and font scale.
+
+3. **`DimenCache.getBatch`** — For lists or grids resolving many dimensions in one pass, build `LongArray` keys with `DimenCache.buildKey(...)`, then call `getBatch(keys, context) { index -> … }` so the JIT sees a tight loop and cache lookups stay predictable.
+
+> **Note:** For `SCALED` (and similar) paths **without** aspect ratio, `getOrPut` may **bypass** the shard cache by design (pure multiply is cheaper than a lookup). Benchmarks should separate “bypass / math-only” from “cache hit” (e.g. keys with `applyAspectRatio = true`).
+
+For a deeper breakdown (batching, sharding, bypass layer), see [PERFORMANCE.md](PERFORMANCE.md).
 
 ---
 

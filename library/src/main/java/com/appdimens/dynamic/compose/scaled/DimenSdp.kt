@@ -29,14 +29,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.remember
 import com.appdimens.dynamic.core.DimenCache
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
-import kotlin.math.max
-import kotlin.math.min
+import com.appdimens.dynamic.core.layoutRememberStamp
+import com.appdimens.dynamic.core.pxRememberStamp
 
 private const val BASE_RATIO_STEP = 300f
 private const val ADJUSTMENT_SCALE = 0.10f / 30f
@@ -53,6 +54,10 @@ internal object InternalComposeResources {
     @JvmField @Volatile var context: android.content.Context? = null
     @JvmField @Volatile var density: androidx.compose.ui.unit.Density? = null
 
+    /**
+     * EN Clears cached [LocalConfiguration] / [LocalContext] / [LocalDensity] snapshots after [DimenCache] reset.
+     * PT Limpa snapshots de [LocalConfiguration] / [LocalContext] / [LocalDensity] após reset do [DimenCache].
+     */
     fun reset() {
         configuration = null
         context = null
@@ -478,27 +483,23 @@ fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Invert
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
 
-    return remember(
-        this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
-        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
-        configuration.smallestScreenWidthDp, androidContext
-    ) {
-        val cacheKey = DimenCache.buildKey(
-            baseValue = this.toFloat(),
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = qualifier,
-            inverter = inverter,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
+    val cacheKey = DimenCache.buildKey(
+        baseValue = this.toFloat(),
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = qualifier,
+        inverter = inverter,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
 
-        DimenCache.getOrPut(cacheKey, androidContext) {
-            calculateScaledDpCompose(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-        }.dp
-    }
+    return rememberScaledDp(
+        cacheKey, layoutStamp, androidContext, this.toFloat(), configuration,
+        qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK
+    )
 }
 
 /**
@@ -540,7 +541,7 @@ fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Invert
  * @param customSensitivityK Custom AR sensitivity constant, or `null` for the library default.
  * @return Scaled Dp value as a raw [Float] (caller converts to [Dp] or pixels).
  */
-private fun calculateScaledDpCompose(
+internal fun calculateScaledDpCompose(
     baseValue: Float,
     configuration: Configuration,
     qualifier: DpQualifier,
@@ -597,6 +598,44 @@ private fun calculateScaledDpCompose(
     }
 }
 
+@Composable
+internal fun rememberScaledDp(
+    cacheKey: Long,
+    layoutStamp: Long,
+    androidContext: android.content.Context,
+    baseValue: Float,
+    configuration: Configuration,
+    qualifier: DpQualifier,
+    inverter: Inverter,
+    ignoreMultiWindows: Boolean,
+    applyAspectRatio: Boolean,
+    customSensitivityK: Float?,
+): Dp = remember(cacheKey, layoutStamp) {
+    DimenCache.getOrPut(cacheKey, androidContext) {
+        calculateScaledDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    }.dp
+}
+
+@Composable
+internal fun rememberScaledPxFromDp(
+    cacheKey: Long,
+    pxStamp: Long,
+    androidContext: android.content.Context,
+    density: Density,
+    baseValue: Float,
+    configuration: Configuration,
+    qualifier: DpQualifier,
+    inverter: Inverter,
+    ignoreMultiWindows: Boolean,
+    applyAspectRatio: Boolean,
+    customSensitivityK: Float?,
+): Float = remember(cacheKey, pxStamp) {
+    DimenCache.getOrPut(cacheKey, androidContext) {
+        val scaledDp = calculateScaledDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        density.run { scaledDp.dp.toPx() }
+    }
+}
+
 /**
  * EN
  * Converts a [Number] (base Dp value) into a dynamically scaled pixel [Float] for Jetpack Compose.
@@ -629,26 +668,21 @@ fun Number.toDynamicScaledPx(qualifier: DpQualifier, inverter: Inverter = Invert
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
 
-    return remember(
-        this, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
-        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
-        configuration.smallestScreenWidthDp, androidContext, density
-    ) {
-        val cacheKey = DimenCache.buildKey(
-            baseValue = this.toFloat(),
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = qualifier,
-            inverter = inverter,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
+    val cacheKey = DimenCache.buildKey(
+        baseValue = this.toFloat(),
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = qualifier,
+        inverter = inverter,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
-        DimenCache.getOrPut(cacheKey, androidContext) {
-            val scaledDp = calculateScaledDpCompose(this.toFloat(), configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-            density.run { scaledDp.dp.toPx() }
-        }
-    }
+    return rememberScaledPxFromDp(
+        cacheKey, pxStamp, androidContext, density, this.toFloat(), configuration,
+        qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK
+    )
 }

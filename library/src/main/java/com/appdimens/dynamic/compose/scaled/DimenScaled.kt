@@ -40,6 +40,7 @@ import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.core.getCurrentUiModeType
+import com.appdimens.dynamic.core.scaledEntryRememberStamp
 
 /**
  * EN
@@ -408,16 +409,17 @@ class DimenScaled private constructor(
             kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
         } else 1f
 
+        val entryStamp = scaledEntryRememberStamp(
+            currentUiModeType.ordinal,
+            configuration,
+            aspectRatio,
+            ignoreMultiWindows
+        )
+
         // EN Tries to find the first custom entry that qualifies using remember cache.
         // PT Tenta encontrar a primeira entrada customizada usando cache do remember.
         val foundEntry = remember(
-            currentUiModeType,
-            configuration.orientation,
-            configuration.screenWidthDp,
-            configuration.screenHeightDp,
-            configuration.smallestScreenWidthDp,
-            aspectRatio,
-            ignoreMultiWindows,
+            entryStamp,
             sortedCustomEntries
         ) {
             sortedCustomEntries.firstOrNull { entry ->
@@ -485,14 +487,15 @@ class DimenScaled private constructor(
             kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
         } else 1f
 
-        val foundEntry = remember(
-            currentUiModeType,
-            configuration.orientation,
-            configuration.screenWidthDp,
-            configuration.screenHeightDp,
-            configuration.smallestScreenWidthDp,
+        val entryStampPx = scaledEntryRememberStamp(
+            currentUiModeType.ordinal,
+            configuration,
             aspectRatio,
-            ignoreMultiWindows,
+            ignoreMultiWindows
+        )
+
+        val foundEntry = remember(
+            entryStampPx,
             sortedCustomEntries
         ) {
             sortedCustomEntries.firstOrNull { entry ->

@@ -45,6 +45,15 @@ import kotlin.math.min
 object DimenSsp {
 
     /**
+     * EN Eagerly initializes [DimenCache] (persistence / DataStore) so the first resolution on a hot path avoids lazy-init work.
+     * PT Inicializa o [DimenCache] antecipadamente para evitar custo lazy no primeiro uso.
+     */
+    @JvmStatic
+    fun warmupCache(context: Context) {
+        DimenCache.init(context)
+    }
+
+    /**
      * EN Quick resolution for Smallest Width (ssp).
      * PT Resolução rápida para Smallest Width (ssp).
      */
@@ -425,6 +434,7 @@ object DimenSsp {
 
     /**
      * EN Starts the build chain for the custom dimension ScaledSp from a base Float.
+     * PT Inicia a cadeia de construção para a dimensão customizada ScaledSp a partir de um Float base.
      */
     @JvmStatic
     fun scaled(initialBaseValue: Float): ScaledSp = ScaledSp(initialBaseValue.toInt())

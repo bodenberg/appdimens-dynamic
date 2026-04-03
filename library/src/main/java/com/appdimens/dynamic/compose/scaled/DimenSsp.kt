@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.remember
@@ -38,6 +39,8 @@ import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.core.DimenCache
 import com.appdimens.dynamic.core.LocalUiModeType
+import com.appdimens.dynamic.core.layoutRememberStamp
+import com.appdimens.dynamic.core.pxRememberStamp
 
 // EN Rotation facilitator extensions for Compose.
 // PT Extensões facilitadoras para rotação em Compose.
@@ -654,35 +657,30 @@ fun Number.toDynamicScaledSp(
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
 
-    return remember(
-        this, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
-        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
-        configuration.smallestScreenWidthDp, androidContext, density
-    ) {
-        val cacheKey = DimenCache.buildKey(
-            baseValue = this.toFloat(),
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = qualifier,
-            inverter = inverter,
-            applyAspectRatio = applyAspectRatio,
-            valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
-            customSensitivityK = customSensitivityK
-        )
+    val cacheKey = DimenCache.buildKey(
+        baseValue = this.toFloat(),
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = qualifier,
+        inverter = inverter,
+        applyAspectRatio = applyAspectRatio,
+        valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
-        DimenCache.getOrPut(cacheKey, androidContext) {
-            val raw = calculateSspValueCompose(this.toFloat(), qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
-            if (fontScale) raw else (raw / density.fontScale)
-        }.sp
-    }
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, this.toFloat(), configuration,
+        qualifier, inverter, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
+    )
 }
 
 /**
  * EN Internal logic to calculate the scaled SP value before density/font-scale adjustment.
  * PT Lógica interna para calcular o valor SP escalado antes do ajuste de densidade/fonte.
  */
-private fun calculateSspValueCompose(
+internal fun calculateSspValueCompose(
     baseValue: Float,
     qualifier: DpQualifier,
     inverter: Inverter,
@@ -740,6 +738,57 @@ private fun calculateSspValueCompose(
 }
 
 /**
+ * EN [remember]s the cached [TextUnit] for [toDynamicScaledSp] using [cacheKey] and [spStamp].
+ * PT [remember] do [TextUnit] em cache para [toDynamicScaledSp] usando [cacheKey] e [spStamp].
+ */
+@Composable
+internal fun rememberScaledSp(
+    cacheKey: Long,
+    spStamp: Long,
+    androidContext: android.content.Context,
+    density: Density,
+    baseValue: Float,
+    configuration: Configuration,
+    qualifier: DpQualifier,
+    inverter: Inverter,
+    fontScale: Boolean,
+    ignoreMultiWindows: Boolean,
+    applyAspectRatio: Boolean,
+    customSensitivityK: Float?,
+): TextUnit = remember(cacheKey, spStamp) {
+    DimenCache.getOrPut(cacheKey, androidContext) {
+        val raw = calculateSspValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
+        if (fontScale) raw else (raw / density.fontScale)
+    }.sp
+}
+
+/**
+ * EN [remember]s the cached px [Float] for [toDynamicScaledPx] using [cacheKey] and [sspPxStamp].
+ * PT [remember] do [Float] em px para [toDynamicScaledPx] usando [cacheKey] e [sspPxStamp].
+ */
+@Composable
+internal fun rememberScaledSpPx(
+    cacheKey: Long,
+    sspPxStamp: Long,
+    androidContext: android.content.Context,
+    density: Density,
+    baseValue: Float,
+    configuration: Configuration,
+    qualifier: DpQualifier,
+    inverter: Inverter,
+    fontScale: Boolean,
+    ignoreMultiWindows: Boolean,
+    applyAspectRatio: Boolean,
+    customSensitivityK: Float?,
+): Float = remember(cacheKey, sspPxStamp) {
+    DimenCache.getOrPut(cacheKey, androidContext) {
+        val scaledVal = calculateSspValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
+        val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
+        density.run { spValue.toPx() }
+    }
+}
+
+/**
  * EN
  * Converts a [Number] (base value) into a dynamically scaled pixel [Float] for Compose.
  *
@@ -778,27 +827,21 @@ fun Number.toDynamicScaledPx(
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
 
-    return remember(
-        this, qualifier, fontScale, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
-        configuration.orientation, configuration.screenWidthDp, configuration.screenHeightDp, 
-        configuration.smallestScreenWidthDp, androidContext, density
-    ) {
-        val cacheKey = DimenCache.buildKey(
-            baseValue = this.toFloat(),
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = qualifier,
-            inverter = inverter,
-            applyAspectRatio = applyAspectRatio,
-            valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
-            customSensitivityK = customSensitivityK
-        )
+    val cacheKey = DimenCache.buildKey(
+        baseValue = this.toFloat(),
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = qualifier,
+        inverter = inverter,
+        applyAspectRatio = applyAspectRatio,
+        valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
-        DimenCache.getOrPut(cacheKey, androidContext) {
-            val scaledVal = calculateSspValueCompose(this.toFloat(), qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
-            val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
-            density.run { spValue.toPx() }
-        }
-    }
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, this.toFloat(), configuration,
+        qualifier, inverter, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
+    )
 }

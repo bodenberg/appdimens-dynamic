@@ -1,6 +1,6 @@
 # Technical Performance Report: AppDimens Dynamic
 
-This report documents the performance results **after applying the 4 optimization phases**, comparing them with the original benchmarks.
+This report documents the performance results **after applying the 4 optimization phases** for the current library.
 
 ---
 
@@ -15,51 +15,43 @@ This report documents the performance results **after applying the 4 optimizatio
 
 ---
 
-## 2. Benchmarks — Local JVM (Development Desktop)
+## 2. Benchmarks — Local JVM (Ubuntu Linux · JVM 17)
 
 Executed via `./gradlew :library:testDebugUnitTest` · 1,000,000 iterations per case · 5 trials, minimum reported.
 
-| Operation | PERFORMANCE.md (before) | PERFORMANCE2.md (after) | Δ |
-| :--- | :---: | :---: | :---: |
-| **Raw Math (no AR)** per item | 3 ns | **3 ns** | = |
-| **Raw Math (with AR)** per item | 6 ns | **6 ns** | = |
-| **Cache Hit (no AR)** per item | 4 ns | **4 ns** | = |
-| **Cache Hit (with AR)** per item | 4 ns | **4 ns** | = |
-| **Batch (100 items, math)** | ~85 ns/batch | **79 ns/batch** | **-7%** |
-| **Batch (100 items, math+AR)** | — | **79 ns/batch** | — |
-| **Batch Cache (100 items, no AR)** | ~85 ns/batch | **85 ns/batch** | = |
-| **Batch Cache (100 items, with AR)** | 250 ns/batch | **242 ns/batch** | ✅ |
-| **Public getBatch()** | — | **151 ns/batch** | — |
-| **Persistence Load** | 0.50–0.95 ms | **0.11 ms** | **-78%** ✅ |
+| Operation | Result | Status |
+| :--- | :---: | :--- |
+| **Raw Math (no AR)** per item | **< 1 ns** | **Extreme** 🚀 |
+| **Raw Math (with AR)** per item | **2 ns** | **Optimal** ✅ |
+| **Cache Hit (no AR)** per item | **1 ns** | **Fast** ⚡ |
+| **Cache Hit (with AR)** per item | **1 ns** | **Zero-Math** 🚀 |
+| **Batch (100 items, math)** | **34 ns/batch** | **Extreme** 🏎️ |
+| **Batch Cache (100 items, AR)** | **242 ns/batch** | **Stable** ✅ |
+| **Persistence Load** | **~0.06 ms** | **Fast** ✅ |
 
-> ¹ The `raw_batch_cache_ar` value on the JVM was optimized by restoring full inlining (F1.1).
-> The 242 ns overhead now reflects only the arithmetic cost of the 100x loop lookup.
+> `raw_batch_cache_ar` at **242 ns/batch** remains dominated by the 100× AR lookup loop.
 
 ---
 
-## 3. Benchmarks — Physical Hardware (Xiaomi 11T Pro · Snapdragon 888 · SM8350)
+## 3. Benchmarks — Physical Hardware (Xiaomi 2107113SG · Snapdragon 888 · SM8350)
 
-> [!WARNING]
-> **Hardware Refresh Status**: New benchmarks for the physical device are **Pending unblock**. The current environment's device (`Xiaomi 2107113SG`) has a manual lock on **"Install via USB"**. The data below reflects the baseline from the previous optimization phase.
+> [!NOTE]
+> **Hardware**: Captures below use **`./gradlew :library:connectedDebugAndroidTest`** · 100,000 iterations · 3 trials, minimum reported.
 
-Executed via `./gradlew :library:connectedDebugAndroidTest` · 100,000 iterations · 3 trials, minimum reported.
+| Operation | Result | Status |
+| :--- | :---: | :--- |
+| **Raw Math (no AR)** per item | **2 ns** | **Optimal** ⚡ |
+| **Raw Math (with AR)** per item | **45 ns** | **Standard** |
+| **Cache Hit (no AR)** per item | **5 ns** | **Fast** ⚡ |
+| **Cache Hit (with AR)** per item | **35 ns** | **Zero-Math** 🚀 |
+| **Batch (100 items, math)** | **169 ns/batch** | **Near-Zero** 🚀 |
+| **Batch (100 items, math+AR)** | **194 ns/batch** | **Stable** ✅ |
+| **Batch Cache (100 items, no AR)** | **431 ns/batch** | **Constant** |
+| **Batch Cache (100 items, with AR)** | **3,773 ns** | **Stable** ✅ |
+| **Batch Mixed (50% AR / 50% without)** | **2,036 ns/batch** | **Stable** ✅ |
+| **Persistence Load** | **0.76 ms** | **Fast** ✅ |
 
-### A. Hardware Metrics — New vs. Previous
-
-| Operation | PERFORMANCE.md (before) | PERFORMANCE2.md (after) | Δ |
-| :--- | :---: | :---: | :---: |
-| **Raw Math (no AR)** per item | 3 ns | **2 ns** | **-33%** ✅ |
-| **Raw Math (with AR)** per item | 36–50 ns | **41 ns** | **-2 ns** ✅ |
-| **Cache Hit (no AR)** per item | 4–6 ns | **5 ns** | = Stable |
-| **Cache Hit (with AR)** per item | 25–36 ns | **35 ns** | ✅ |
-| **Batch (100 items, math)** | 200–600 ns/batch | **168 ns/batch** | **-44%** ✅ |
-| **Batch (100 items, math+AR)** | — | **194 ns/batch** | — |
-| **Batch Cache (100 items, no AR)** | 200–600 ns | **431 ns/batch** | — |
-| **Batch Cache (100 items, with AR)** | 4,000 ns | **3,706 ns** | **-7%** ✅ |
-| **Batch Mixed (50% AR / 50% without)** | — | **2,036 ns/batch** | ✅ |
-| **Persistence Load** | 0.50–0.95 ms | **0.74 ms** | Within noise |
-
-> ² **Regression Fix (F1.1):** AR cache hit values initially rose to 6,599 ns due to the extraction of `getOrPutInternal` which broke inlining. After marking the `ShardWrapper` fields as `internal @PublishedApi` and restoring the full inline body, performance returned to the 3,757 ns level, proving the effectiveness of inlining in hot loops (batch). The non-AR hot path (most cases) remains extremely stable at 5 ns.
+> **Regression Fix (F1.1):** Inlining of `getOrPutInternal` and `ShardWrapper` visibility (`internal @PublishedApi`) keeps batch AR paths in the ~3.7–3.8 µs range for 100 cached AR lookups; the non-AR hot path (most cases) remains extremely stable at **~5 ns**.
 
 ---
 
@@ -68,11 +60,11 @@ Executed via `./gradlew :library:connectedDebugAndroidTest` · 100,000 iteration
 ### F1 — Public getBatch()
 
 ```
-JVM:     79 ns / 100 items = 0.79 ns per item (vs. ~0.85 ns individual)
-Android: 168 ns / 100 items = 1.68 ns per item
+JVM:     34 ns / 100 items = 0.34 ns per item
+Android: 169 ns / 100 items = 1.69 ns per item
 ```
 
-The batch API reduces overhead per item by ~7% on the JVM by exposing a continuous loop that the JIT can vectorize. On Android, the gain is more in reducing context calls (Context lookup, init check) that would be repeated 100× in individual calls.
+The batch API exposes a continuous loop that the JVM can optimize aggressively on desktop. On Android, the gain is still largely about amortizing context and init work across 100 resolutions.
 
 **Recommended usage:**
 ```kotlin
@@ -132,39 +124,41 @@ With `ScreenFactors`, the 6 fields + 112-byte padding are isolated in their own 
 1.  **Microbenchmark (CPU-bound)**: Runs off the main thread (10k warmup + 100k measurement iterations). It measures `sdp`, `hdp`, `wdp` (bypass) and `sdpa` (cache) separately to isolate pure calculation vs. lookup costs.
 2.  **Macrobenchmark (UI-bound)**: Measures real scroll performance in a `LazyColumn` with 1,000 items. Uses wall-clock timing to derive scroll duration and per-item rendering cost.
 
+> **Note (Macro):** Wall-clock scroll duration and the estimated cost per item **include the full cost of each list row** — not only `sdp` / dimension resolution, but also **Compose composition (or View inflation/layout)** and drawing for that item. The macro numbers therefore reflect realistic UI work, not isolated math/cache timing.
+
 **Baseline Metrics (Snapdragon 888 · SM8350 · Android 14):**
 
 | Runner | Metric | Result | JIT State |
 | :--- | :--- | :---: | :---: |
-| **Micro** | **Combined Avg** | **~783 ns** | Steady-state |
+| **Micro** | **Combined Avg** | **~619 ns** | Cold |
+| **Micro** | **Combined Avg** | **~303 ns** | Warm (await) |
+| **Micro** | **Combined Avg** | **~260 ns** | **Hot (steady-state)** |
 | **Micro** | sdp/hdp/wdp (bypass) | ~2 ns | Hot |
 | **Micro** | sdpa (cache lookup) | ~35 ns | Hot |
-| **Macro** | Scroll Duration (1k items) | ~1,200 ms | Fluid |
-| **Macro** | Est. Cost per item | ~1.20 µs | Fluid |
+| **Macro** | Scroll Duration (1k items) | ~996 ms | Fluid |
+| **Macro** | Est. Cost per item | ~996 µs | Fluid |
 
-**Steady-state performance:** `~324 ns` per resolution (verified via dashboard).
+**Steady-state performance:** **~260 ns** combined average per 4-call cycle (hot JIT, dashboard capture · 2026-04-03).
 
 ### Warm-up Chart Interpretation
 
 ```
-ns/resolution
-3058 │ ●  Cold Start (JIT compiling)
-     │
-1022 │    ●  JIT warming
-     │
- 861 │       ●  JIT warm
-     │
- 783 │          ●  JIT hot (steady-state)
-     └──────────────────────────────────
-     run 1    run 2    run 3    run 4
+ns/resolution (Combined Avg)
+619 │ ●  Cold Start
+    │
+303 │    ●  JIT warming (await)
+    │
+260 │       ●  JIT hot (steady-state)
+    └─────────────────────────────────
+       run 1    run 2    run 3
 ```
 
-The decay from 3,058 → 783 ns (**-74%**) is the expected behavior of the **ART JIT with AOT profile**:
-- **Run 1**: The Android process is new — methods interpreted and compiled one-at-a-time.
-- **Run 2**: JIT inferred `getOrPutInternal()` and inlined it at the activity call-site.
-- **Run 3+**: Code executed in full ARM64 native code via JIT profile.
+The decay from **~619 → ~260 ns** is the expected behavior of the **ART JIT** as hot paths compile and inline:
+- **Run 1 (cold)**: Interpreter + early JIT; higher combined average.
+- **Run 2 (warm)**: Transition phase (~303 ns).
+- **Run 3 (hot)**: Steady-state native code path (~260 ns).
 
-> **Note:** In production apps with Profile Guided Optimization (PGO), Run 1 does not occur — the ART uses pre-compiled profiles (`.prof`) to ensure the code is already optimized from the first frame. The actual production steady-state is **~783 ns**.
+> **Note:** With Profile Guided Optimization (PGO), cold-run penalties are reduced — steady-state remains near **~260 ns** for this workload on SM8350-class hardware.
 
 ### Context with BenchmarkActivity (Compose + View + 1000 items)
 
@@ -179,37 +173,7 @@ Each "resolution" is one of the 4 calls:
 - `DimenSdp.wdp(context, 30)`   ← width-based, already in cache
 - `DimenSdp.sdpa(context, 40)`  ← with aspect ratio
 
-All calls hit the pre-populated cache (no real calculation), so ~783 ns reflects the **pure cost of cache access**: hash + sharded lookup + `Float.fromBits()` return.
-
----
-
-## 6. Platform Metrics
-
-### B. JVM (Desktop — AMD Ryzen 3 / HotSpot JVM 17)
-
-| Operation | Result | Status |
-| :--- | :---: | :--- |
-| **Raw Math (no AR)** | 3 ns | Optimal |
-| **Raw Math (with AR)** | 6 ns | Optimal |
-| **Cache Hit (no AR)** | **4 ns** | **Fast** ⚡ |
-| **Cache Hit (with AR)** | **4 ns** | **Zero-Math** 🚀 |
-| **Batch (100 items, math)** | **79 ns** | **Extreme** 🏎️ |
-| **Public getBatch()** | **151 ns/batch** | **Batch API** 🆕 |
-| **Persistence Load** | **~110 µs** | **Fast** ✅ |
-
-### C. Android (Xiaomi 11T Pro · Snapdragon 888 · MIUI/Android 14)
-
-| Operation | Result | Status |
-| :--- | :---: | :--- |
-| **Raw Math (no AR)** | **2 ns** | **Optimal** ⚡ |
-| **Raw Math (with AR)** | 41 ns | Standard |
-| **Cache Hit (no AR)** | **5 ns** | **Fast** ⚡ |
-| **Batch (100 items, math)** | **168 ns/batch** | **Near-Zero** 🚀 |
-| **Batch Cache (no AR)** | **431 ns/batch** | Constant |
-| **getBatch() — Public API** | via getBatch() | **🆕 Available** |
-| **Persistence Load** | **0.74 ms** | Fast |
-
-> ² Metrics marked with ² are from the low-level `DimenAndroidPerformanceTest`. The `Benchmark` row reflects the real-world `BenchmarkActivity` dashboard result.
+Mixed bypass (`sdp` / `hdp` / `wdp`) and AR cache (`sdpa`) paths contribute to the **~260 ns** hot steady-state average per 4-call cycle (hash, sharded lookup, and bypass math, inclusive of dispatch overhead in the activity harness).
 
 ---
 
@@ -231,7 +195,7 @@ graph TD
 
 ---
 
-## 7. Simple Calculations Faster Than Cache
+## 6. Simple Calculations Faster Than Cache
 
 For `CalcType` values of `AUTO`, `FLUID`, `PERCENT`, and `SCALED` **without Aspect Ratio** (`applyAspectRatio = false`), `DimenCache.getOrPut()` immediately returns `compute()` without touching the sharded arrays.
 
@@ -239,23 +203,23 @@ For `CalcType` values of `AUTO`, `FLUID`, `PERCENT`, and `SCALED` **without Aspe
 > Measured cost on Snapdragon 888: **~2 ns** (multiply) vs **~5 ns** (hash + atomic lookup).
 > The cache adds overhead for these paths — bypassing it is ~2.5× faster.
 
-This is an intentional hot-path optimization, not a missing feature. The cache is most valuable when the computation is expensive (Aspect Ratio path: **~41 ns** on hardware), making the 5 ns lookup amortize well.
+This is an intentional hot-path optimization, not a missing feature. The cache is most valuable when the computation is expensive (Aspect Ratio path: **~45 ns** on hardware in recent captures), making the 5 ns lookup amortize well.
 
 | Path | Cost | Cache? |
 |:---|:---:|:---:|
 | SCALED without AR (most calls) | ~2 ns | ❌ Bypass |
-| SCALED with AR | ~41 ns → ~35 ns cached | ✅ Cache |
-| Other CalcTypes with AR | ~41 ns → ~35 ns cached | ✅ Cache |
+| SCALED with AR | ~45 ns → ~35 ns cached | ✅ Cache |
+| Other CalcTypes with AR | ~45 ns → ~35 ns cached | ✅ Cache |
 
 **Consequence for benchmarks**: calls via `DimenSdp.sdp()`, `.hdp()`, `.wdp()` (i.e., without AR) measure **raw math latency**, not cache lookup latency. Always use the `*a` variants (`.sdpa()`, `.hdpa()`, etc.) to specifically measure cache throughput.
 
-The `BenchmarkActivity` results reflect a **mixed** measurement: 3 bypass calls (~2 ns each) + 1 cache call (~35 ns), averaging ~11 ns with AR active.
+The `BenchmarkActivity` micro harness reports a **per-cycle** combined average (~260 ns hot) over four calls (3 bypass + 1 cache path), including framework and dispatch overhead — not a per-call pure math figure.
 
 ---
 
-## 8. Benchmark Variability
+## 7. Benchmark Variability
 
-All numbers in this document were captured on a **Xiaomi 11T Pro (Snapdragon 888 SM8350, Android 14)** and an **AMD Ryzen 3 desktop JVM**. Real-world results will differ based on:
+All numbers in this document were captured on a **Xiaomi 2107113SG (Snapdragon 888 SM8350, Android 14)** and a **Ubuntu Linux JVM 17** host. Real-world results will differ based on:
 
 - **Device class**: budget Cortex-A55 cores (e.g. entry-level phones) can be 5–10× slower on atomic operations
 - **JIT stage**: cold start (un-compiled) is 3–10× slower than steady-state hot JIT
@@ -267,5 +231,5 @@ All numbers in this document were captured on a **Xiaomi 11T Pro (Snapdragon 888
 
 ---
 
-*Report generated on: 2026-03-31 · AppDimens Dynamic Performance Lab · Snapdragon 888 (SM8350) · Physical Hardware*
+*Report generated on: 2026-04-03 · AppDimens Dynamic Performance Lab · Snapdragon 888 (SM8350) · Physical Hardware*
 *Compiled with: Kotlin 2.x · JVM 17 · ART (Android 14) · Gradle 9.3.1*

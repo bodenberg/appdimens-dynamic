@@ -38,6 +38,8 @@ import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.core.getCurrentUiModeType
+import com.appdimens.dynamic.core.scaledEntryRememberStamp
+
 /**
  * EN
  * Represents a custom Sp entry with qualifiers and priority, for the Compose Sp builder.
@@ -121,7 +123,10 @@ class ScaledSp private constructor(
      * EN Allow ignoring the constraint scaling based on multi-window resizing properties.
      * PT Permite ignorar o dimensionamento para os layouts de múltiplas janelas (divisão de tela).
      */
-    
+    fun ignoreMultiWindows(ignore: Boolean = true): ScaledSp {
+        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK)
+    }
+
     /**
      * EN Allow applying aspect ratio based constraint scaling.
      * PT Permite aplicar o redimensionamento baseado na proporção da tela.
@@ -129,10 +134,14 @@ class ScaledSp private constructor(
     fun aspectRatio(enable: Boolean = true, sensitivityK: Float? = null): ScaledSp {
         return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignoreMultiWindows, enable, sensitivityK)
     }
-    fun ignoreMultiWindows(ignore: Boolean = true): ScaledSp {
-        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK)
-    }
 
+    /**
+     * EN
+     * Adds a new entry and re-sorts the list by priority, then by qualifier value (descending).
+     *
+     * PT
+     * Adiciona uma nova entrada e reordena por prioridade e depois por valor de qualificador (decrescente).
+     */
     private fun reorderEntries(newEntry: CustomSpEntry): List<CustomSpEntry> {
         return (sortedCustomEntries + newEntry).sortedWith(
             compareBy<CustomSpEntry> { it.priority }
@@ -244,6 +253,10 @@ class ScaledSp private constructor(
     // EN Resolution logic.
     // PT Lógica de resolução.
 
+    /**
+     * EN Resolves the matching [CustomSpEntry] and returns scaled [TextUnit] (Sp) for [qualifier].
+     * PT Resolve a [CustomSpEntry] correspondente e retorna [TextUnit] (Sp) escalonado para [qualifier].
+     */
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolve(qualifier: DpQualifier): TextUnit {
@@ -261,14 +274,15 @@ class ScaledSp private constructor(
             kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
         } else 1f
 
-        val foundEntry = remember(
-            currentUiModeType,
-            configuration.orientation,
-            configuration.screenWidthDp,
-            configuration.screenHeightDp,
-            configuration.smallestScreenWidthDp,
+        val entryStamp = scaledEntryRememberStamp(
+            currentUiModeType.ordinal,
+            configuration,
             aspectRatio,
-            ignoreMultiWindows,
+            ignoreMultiWindows
+        )
+
+        val foundEntry = remember(
+            entryStamp,
             sortedCustomEntries
         ) {
             sortedCustomEntries.firstOrNull { entry ->
@@ -301,6 +315,10 @@ class ScaledSp private constructor(
         return valueToUse.toDynamicScaledSp(finalQualifier, finalFontScale, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
+    /**
+     * EN Same as [resolve] but returns density-scaled pixels ([toDynamicScaledPx]).
+     * PT Igual a [resolve], mas retorna pixels já escalados pela densidade ([toDynamicScaledPx]).
+     */
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolvePx(qualifier: DpQualifier): Float {
@@ -318,14 +336,15 @@ class ScaledSp private constructor(
             kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
         } else 1f
 
-        val foundEntry = remember(
-            currentUiModeType,
-            configuration.orientation,
-            configuration.screenWidthDp,
-            configuration.screenHeightDp,
-            configuration.smallestScreenWidthDp,
+        val entryStampPx = scaledEntryRememberStamp(
+            currentUiModeType.ordinal,
+            configuration,
             aspectRatio,
-            ignoreMultiWindows,
+            ignoreMultiWindows
+        )
+
+        val foundEntry = remember(
+            entryStampPx,
             sortedCustomEntries
         ) {
             sortedCustomEntries.firstOrNull { entry ->
@@ -358,6 +377,10 @@ class ScaledSp private constructor(
         return valueToUse.toDynamicScaledPx(finalQualifier, finalFontScale, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
+    /**
+     * EN Like [resolve] but forces `fontScale = false` (fixed Sp, same idea as `sem` / `wem` accessors).
+     * PT Como [resolve], mas força `fontScale = false` (Sp fixo, mesmo propósito dos acessores `sem` / `wem`).
+     */
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolveNoFontScale(qualifier: DpQualifier): TextUnit {
@@ -375,14 +398,15 @@ class ScaledSp private constructor(
             kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
         } else 1f
 
-        val foundEntry = remember(
-            currentUiModeType,
-            configuration.orientation,
-            configuration.screenWidthDp,
-            configuration.screenHeightDp,
-            configuration.smallestScreenWidthDp,
+        val entryStampNfs = scaledEntryRememberStamp(
+            currentUiModeType.ordinal,
+            configuration,
             aspectRatio,
-            ignoreMultiWindows,
+            ignoreMultiWindows
+        )
+
+        val foundEntry = remember(
+            entryStampNfs,
             sortedCustomEntries
         ) {
             sortedCustomEntries.firstOrNull { entry ->
@@ -414,6 +438,10 @@ class ScaledSp private constructor(
         return valueToUse.toDynamicScaledSp(finalQualifier, fontScale = false, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
+    /**
+     * EN Like [resolvePx] with `fontScale = false`.
+     * PT Como [resolvePx] com `fontScale = false`.
+     */
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolveNoFontScalePx(qualifier: DpQualifier): Float {
@@ -431,14 +459,15 @@ class ScaledSp private constructor(
             kotlin.math.max(currentScreenWidthDp, currentScreenHeightDp) / kotlin.math.min(currentScreenWidthDp, currentScreenHeightDp)
         } else 1f
 
-        val foundEntry = remember(
-            currentUiModeType,
-            configuration.orientation,
-            configuration.screenWidthDp,
-            configuration.screenHeightDp,
-            configuration.smallestScreenWidthDp,
+        val entryStampNfsPx = scaledEntryRememberStamp(
+            currentUiModeType.ordinal,
+            configuration,
             aspectRatio,
-            ignoreMultiWindows,
+            ignoreMultiWindows
+        )
+
+        val foundEntry = remember(
+            entryStampNfsPx,
             sortedCustomEntries
         ) {
             sortedCustomEntries.firstOrNull { entry ->

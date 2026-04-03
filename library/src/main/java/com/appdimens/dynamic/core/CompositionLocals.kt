@@ -29,10 +29,13 @@ val LocalUiModeType = compositionLocalOf { UiModeType.UNDEFINED }
 
 /**
  * EN Provider that automatically computes and provides the [UiModeType] (including foldables)
- * to all child components. This is highly recommended to improve performance of 'mode' extensions.
+ * to all child components. **Recommended for performance:** without it, [getCurrentUiModeType]
+ * falls back to [UiModeType.fromConfiguration] on every `*Mode` / `*Screen` facilitator call.
+ * See the root README section **Performance: DimenCache → Integration checklist**.
  *
- * PT Provedor que computa e fornece automaticamente o [UiModeType] (incluindo dobráveis)
- * para todos os componentes filhos. Isso é altamente recomendado para melhorar a performance das extensões 'mode'.
+ * PT Provedor que computa e fornece o [UiModeType] (incl. dobráveis). **Recomendado para
+ * desempenho:** sem ele, [getCurrentUiModeType] recalcula via [UiModeType.fromConfiguration]
+ * em cada chamada às extensões `*Mode` / `*Screen`.
  */
 @Composable
 fun AppDimensProvider(content: @Composable () -> Unit) {
@@ -69,6 +72,10 @@ internal fun getCurrentUiModeType(): UiModeType {
     return UiModeType.fromConfiguration(context, null)
 }
 
+/**
+ * EN Walks [ContextWrapper] chain to find the hosting [Activity], if any.
+ * PT Percorre a cadeia de [ContextWrapper] para encontrar a [Activity] hospedeira, se existir.
+ */
 internal fun Context.findActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {

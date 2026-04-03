@@ -37,6 +37,18 @@ import com.appdimens.dynamic.core.DimenCache
 /**
  * EN
  * Represents a custom Sp entry with qualifiers and priority, for the non-Compose Sp builder.
+ *
+ * PT
+ * Representa uma entrada de Sp customizada com qualificadores e prioridade, para o builder Sp fora do Compose.
+ *
+ * @param uiModeType The UI mode (CAR, TELEVISION, WATCH, NORMAL). Null for any mode.
+ * @param dpQualifierEntry The Dp qualifier entry (type and value). Null if only UI mode is used.
+ * @param orientation The screen orientation (LANDSCAPE, PORTRAIT, DEFAULT).
+ * @param customValue The base Int Sp value to be used if the condition is met.
+ * @param finalQualifierResolver Optional override for the scaling qualifier at resolution time.
+ * @param priority The resolution priority. 1 is most specific (UI + Qualifier), 4 is least specific.
+ * @param inverter The inverter type to adapt scaling on rotation changes.
+ * @param fontScale Whether to respect the system font scale (default true).
  */
 data class CustomSpEntry(
     val uiModeType: UiModeType? = null,
@@ -54,11 +66,13 @@ data class CustomSpEntry(
 
 /**
  * EN Starts the build chain for ScaledSp from a base Float (treated as sp).
+ * PT Inicia a cadeia de construção para ScaledSp a partir de um Float base (tratado como sp).
  */
 fun Float.scaledSp(): ScaledSp = ScaledSp(this.toInt())
 
 /**
  * EN Starts the build chain for ScaledSp from a base Int (treated as sp).
+ * PT Inicia a cadeia de construção para ScaledSp a partir de um Int base (tratado como sp).
  */
 fun Number.scaledSp(): ScaledSp = ScaledSp(this)
 
@@ -86,7 +100,17 @@ class ScaledSp private constructor(
 
 
     /**
+     * EN Allow ignoring the constraint scaling based on multi-window resizing properties.
+     * PT Permite ignorar o dimensionamento para os layouts de múltiplas janelas (divisão de tela).
+     */
+    @JvmOverloads
+    fun ignoreMultiWindows(ignore: Boolean = true): ScaledSp {
+        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK)
+    }
+
+    /**
      * EN Allow applying aspect ratio based constraint scaling.
+     * PT Permite aplicar o redimensionamento baseado na proporção da tela.
      */
     @JvmOverloads
     fun aspectRatio(enable: Boolean = true, sensitivityK: Float? = null): ScaledSp {
@@ -94,13 +118,12 @@ class ScaledSp private constructor(
     }
 
     /**
-     * EN Allow ignoring the constraint scaling based on multi-window resizing properties.
+     * EN
+     * Adds a new entry and re-sorts the list by priority, then by qualifier value (descending).
+     *
+     * PT
+     * Adiciona uma nova entrada e reordena por prioridade e depois por valor de qualificador (decrescente).
      */
-    @JvmOverloads
-    fun ignoreMultiWindows(ignore: Boolean = true): ScaledSp {
-        return ScaledSp(initialBaseValue, defaultFontScale, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK)
-    }
-
     private fun reorderEntries(newEntry: CustomSpEntry): List<CustomSpEntry> {
         return (sortedCustomEntries + newEntry).sortedWith(
             compareBy<CustomSpEntry> { it.priority }
@@ -109,7 +132,12 @@ class ScaledSp private constructor(
     }
 
     // EN Fluent methods for construction.
+    // PT Métodos fluentes para construção.
 
+    /**
+     * EN Priority 1: Most specific qualifier — combines [UiModeType] and Dp qualifier (sw, h, w).
+     * PT Prioridade 1: qualificador mais específico — combina [UiModeType] e qualificador Dp (sw, h, w).
+     */
     @JvmOverloads
     fun screen(
         uiModeType: UiModeType,
@@ -134,6 +162,10 @@ class ScaledSp private constructor(
         return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
+    /**
+     * EN Priority 2: [UiModeType] only (e.g. TELEVISION, WATCH).
+     * PT Prioridade 2: apenas [UiModeType] (ex.: TELEVISION, WATCH).
+     */
     @JvmOverloads
     fun screen(
         type: UiModeType,
@@ -155,6 +187,10 @@ class ScaledSp private constructor(
         return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
+    /**
+     * EN Priority 3: Dp qualifier (sw, h, w) without [UiModeType] restriction.
+     * PT Prioridade 3: qualificador Dp (sw, h, w) sem restrição de [UiModeType].
+     */
     @JvmOverloads
     fun screen(
         type: DpQualifier,
@@ -177,6 +213,10 @@ class ScaledSp private constructor(
         return ScaledSp(initialBaseValue, defaultFontScale, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
+    /**
+     * EN Priority 4: orientation only.
+     * PT Prioridade 4: apenas orientação.
+     */
     @JvmOverloads
     fun screen(
         orientation: Orientation = Orientation.DEFAULT,
@@ -197,11 +237,57 @@ class ScaledSp private constructor(
     }
 
     // EN Resolution logic.
+    // PT Lógica de resolução.
 
+    /**
+     * EN Resolves [qualifier] to px using the first matching [CustomSpEntry], optionally overriding font scale.
+     * PT Resolve [qualifier] em px usando a primeira [CustomSpEntry] correspondente, com override opcional da escala de fonte.
+     */
     private fun resolvePx(context: Context, qualifier: DpQualifier, fontScaleOverride: Boolean? = null): Float {
         val configuration = context.resources.configuration
         val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        return resolvePxInternal(context, qualifier, configuration, currentUiModeType, fontScaleOverride)
+    }
 
+    /**
+     * EN Resolves ssp, hsp, and wsp in one pass (single [UiModeType.fromConfiguration] read).
+     * PT Resolve ssp, hsp e wsp numa só passagem.
+     */
+    fun sspHspWspPx(context: Context): Triple<Float, Float, Float> {
+        val configuration = context.resources.configuration
+        val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        return Triple(
+            resolvePxInternal(context, DpQualifier.SMALL_WIDTH, configuration, currentUiModeType, null),
+            resolvePxInternal(context, DpQualifier.HEIGHT, configuration, currentUiModeType, null),
+            resolvePxInternal(context, DpQualifier.WIDTH, configuration, currentUiModeType, null)
+        )
+    }
+
+    /**
+     * EN Resolves sei, hei, and wei in one pass (fixed Sp / no font-scale path).
+     * PT Resolve sei, hei e wei numa só passagem (Sp fixo / sem escala de fonte).
+     */
+    fun seiHeiWeiPx(context: Context): Triple<Float, Float, Float> {
+        val configuration = context.resources.configuration
+        val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        return Triple(
+            resolvePxInternal(context, DpQualifier.SMALL_WIDTH, configuration, currentUiModeType, false),
+            resolvePxInternal(context, DpQualifier.HEIGHT, configuration, currentUiModeType, false),
+            resolvePxInternal(context, DpQualifier.WIDTH, configuration, currentUiModeType, false)
+        )
+    }
+
+    /**
+     * EN Shared implementation for [resolvePx], [sspHspWspPx], and [seiHeiWeiPx].
+     * PT Implementação compartilhada para [resolvePx], [sspHspWspPx] e [seiHeiWeiPx].
+     */
+    private fun resolvePxInternal(
+        context: Context,
+        qualifier: DpQualifier,
+        configuration: Configuration,
+        currentUiModeType: UiModeType,
+        fontScaleOverride: Boolean?
+    ): Float {
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 

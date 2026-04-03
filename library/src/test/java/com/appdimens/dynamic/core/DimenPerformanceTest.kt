@@ -6,6 +6,12 @@ import kotlin.system.measureNanoTime
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
 
+/**
+ * JVM-only micro-benchmarks for [DimenCache]. Labels printed to stdout are for human inspection;
+ * **do not** interpret `*_no_ar` rows as “cache RAM hits” — [DimenCache.getOrPut] bypasses shard
+ * storage for cheap [CalcType.SCALED] keys without aspect ratio (see KDoc on [DimenCache.getOrPut]).
+ * Use AR keys (`batchKeysAr`) or non-bypass types to measure actual storage lookup cost.
+ */
 class DimenPerformanceTest {
 
     private val iterations = 1000000
@@ -29,6 +35,7 @@ class DimenPerformanceTest {
     fun setup() {
         DimenCache.isEnabled = true
         DimenCache.isInitialized.set(true)
+        DimenCache.isInitializedFast = true
         for (i in 0 until batchSize) {
             DimenCache.getOrPut(batchKeysNoAr[i]) { batchValues[i] }
             DimenCache.getOrPut(batchKeysAr[i]) { batchValues[i] }
@@ -223,13 +230,13 @@ class DimenPerformanceTest {
         println("--- PERFORMANCE_REPORT_START ---")
         println("raw_single_calc_math: ${timeA / iterations}")
         println("raw_single_calc_ar: ${timeB / iterations}")
-        println("raw_single_cache_no_ar: ${timeC1 / iterations}")
-        println("raw_single_cache_ar: ${timeC2 / iterations}")
+        println("raw_single_get_or_put_no_ar_bypass_path: ${timeC1 / iterations}")
+        println("raw_single_get_or_put_ar_stored: ${timeC2 / iterations}")
         println("raw_batch_calc_math: ${batchA / batchIterations}")
         println("raw_batch_calc_ar: ${batchB / batchIterations}")
-        println("raw_batch_cache_no_ar: ${batchC1 / batchIterations}")
-        println("raw_batch_cache_ar: ${batchC2 / batchIterations}")
-        println("raw_batch_cache_mixed: ${batchC3 / batchIterations}")
+        println("raw_batch_get_or_put_no_ar_bypass_path: ${batchC1 / batchIterations}")
+        println("raw_batch_get_or_put_ar_stored: ${batchC2 / batchIterations}")
+        println("raw_batch_get_or_put_mixed: ${batchC3 / batchIterations}")
         println("raw_get_batch: ${batchD1 / batchIterations}")
         println("raw_persistence_load: ${timeD}")
         println("checksum_validation: $checksum") 
