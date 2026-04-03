@@ -59,13 +59,7 @@ fun Number.sspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -115,13 +109,7 @@ fun TextUnit.sspRotate(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -165,13 +153,7 @@ fun TextUnit.sspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -221,13 +203,7 @@ fun TextUnit.sspRotatePlain(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -275,13 +251,7 @@ fun TextUnit.sspRotatePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -332,13 +302,7 @@ fun Number.hspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -388,13 +352,7 @@ fun TextUnit.hspRotate(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -438,13 +396,7 @@ fun TextUnit.hspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -494,13 +446,7 @@ fun TextUnit.hspRotatePlain(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -548,13 +494,7 @@ fun TextUnit.hspRotatePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -605,13 +545,7 @@ fun Number.wspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -661,13 +595,7 @@ fun TextUnit.wspRotate(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -711,13 +639,7 @@ fun TextUnit.wspRotatePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -767,13 +689,7 @@ fun TextUnit.wspRotatePlain(
     orientation: Orientation = Orientation.LANDSCAPE,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -821,13 +737,7 @@ fun TextUnit.wspRotatePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -883,13 +793,7 @@ fun Number.sspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -935,13 +839,7 @@ fun TextUnit.sspMode(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -982,13 +880,7 @@ fun TextUnit.sspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1033,13 +925,7 @@ fun TextUnit.sspModePlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1080,15 +966,7 @@ fun TextUnit.sspModePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1137,13 +1015,7 @@ fun Number.hspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1189,13 +1061,7 @@ fun TextUnit.hspMode(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1236,13 +1102,7 @@ fun TextUnit.hspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1287,13 +1147,7 @@ fun TextUnit.hspModePlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1334,15 +1188,7 @@ fun TextUnit.hspModePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1391,13 +1237,7 @@ fun Number.wspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1443,13 +1283,7 @@ fun TextUnit.wspMode(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1490,13 +1324,7 @@ fun TextUnit.wspModePx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1541,13 +1369,7 @@ fun TextUnit.wspModePlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1588,15 +1410,7 @@ fun TextUnit.wspModePlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1653,13 +1467,7 @@ fun Number.sspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1701,13 +1509,7 @@ fun Number.sspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1752,13 +1554,7 @@ fun TextUnit.sspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1799,13 +1595,7 @@ fun TextUnit.sspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1850,13 +1640,7 @@ fun TextUnit.sspQualifierPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1901,13 +1685,7 @@ fun TextUnit.sspQualifierPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1958,13 +1736,7 @@ fun Number.hspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2006,13 +1778,7 @@ fun Number.hspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2057,13 +1823,7 @@ fun TextUnit.hspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2104,13 +1864,7 @@ fun TextUnit.hspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2155,13 +1909,7 @@ fun TextUnit.hspQualifierPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2206,13 +1954,7 @@ fun TextUnit.hspQualifierPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2263,13 +2005,7 @@ fun Number.wspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2311,13 +2047,7 @@ fun Number.wspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2362,13 +2092,7 @@ fun TextUnit.wspQualifier(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2409,13 +2133,7 @@ fun TextUnit.wspQualifierPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2460,13 +2178,7 @@ fun TextUnit.wspQualifierPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2511,13 +2223,7 @@ fun TextUnit.wspQualifierPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2574,13 +2280,7 @@ fun Number.sspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2626,13 +2326,7 @@ fun Number.sspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2683,13 +2377,7 @@ fun TextUnit.sspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2734,13 +2422,7 @@ fun TextUnit.sspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2791,13 +2473,7 @@ fun TextUnit.sspScreenPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2846,11 +2522,7 @@ fun TextUnit.sspScreenPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2905,13 +2577,7 @@ fun Number.hspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2957,13 +2623,7 @@ fun Number.hspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3014,13 +2674,7 @@ fun TextUnit.hspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3065,13 +2719,7 @@ fun TextUnit.hspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3122,13 +2770,7 @@ fun TextUnit.hspScreenPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3177,11 +2819,7 @@ fun TextUnit.hspScreenPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3236,13 +2874,7 @@ fun Number.wspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3288,13 +2920,7 @@ fun Number.wspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3345,13 +2971,7 @@ fun TextUnit.wspScreen(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3396,13 +3016,7 @@ fun TextUnit.wspScreenPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3453,13 +3067,7 @@ fun TextUnit.wspScreenPlain(
     finalQualifierResolver: DpQualifier? = null,
     fontScale: Boolean = true
 , ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): TextUnit {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3508,11 +3116,7 @@ fun TextUnit.wspScreenPlainPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!

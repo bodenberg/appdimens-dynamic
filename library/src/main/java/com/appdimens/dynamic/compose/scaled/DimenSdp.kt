@@ -44,8 +44,13 @@ private const val ADJUSTMENT_SCALE = 0.10f / 30f
 private const val SENSITIVITY_DEFAULT = 0.08f / 30f
 
 /**
- * EN Internal cache to minimize Local*.current lookups in hot paths.
- * PT Cache interno para minimizar lookups de Local*.current em caminhos críticos.
+ * EN Snapshots of [LocalConfiguration], [LocalContext], and [LocalDensity] for hot paths.
+ * Must be refreshed every composition via the sync helpers below; [DimenCache.clearAll]
+ * clears these so the next frame re-binds after cache invalidation.
+ *
+ * PT Snapshots de [LocalConfiguration], [LocalContext] e [LocalDensity] para caminhos críticos.
+ * Devem ser atualizados a cada composição com os helpers de sync abaixo; [DimenCache.clearAll]
+ * limpa para o próximo frame reassociar após invalidação do cache.
  *
  * @see [DimenCache.addResetListener] for how this is invalidated.
  */
@@ -69,6 +74,26 @@ internal object InternalComposeResources {
     }
 }
 
+/**
+ * EN Refreshes configuration and context snapshots (paths that only need [Configuration] + [Context] for cache keys and scaling).
+ * PT Atualiza snapshots de configuração e contexto (caminhos que só precisam de [Configuration] + [Context]).
+ */
+@Composable
+internal fun syncInternalComposeConfigurationAndContext() {
+    InternalComposeResources.configuration = LocalConfiguration.current
+    InternalComposeResources.context = LocalContext.current
+}
+
+/**
+ * EN Refreshes configuration, context, and density (pixel / SP-to-px paths that use [LocalDensity]).
+ * PT Atualiza configuração, contexto e densidade (caminhos em px / SP que usam [LocalDensity]).
+ */
+@Composable
+internal fun syncInternalComposeConfigurationContextAndDensity() {
+    InternalComposeResources.configuration = LocalConfiguration.current
+    InternalComposeResources.context = LocalContext.current
+    InternalComposeResources.density = LocalDensity.current
+}
 
 /**
  * EN
@@ -476,10 +501,7 @@ val Number.wdpPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, In
  */
 @Composable
 fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
 
@@ -659,11 +681,7 @@ internal fun rememberScaledPxFromDp(
  */
 @Composable
 fun Number.toDynamicScaledPx(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!

@@ -389,10 +389,7 @@ class DimenScaled private constructor(
     @SuppressLint("ConfigurationScreenWidthHeight") // EN The annotation is necessary as we access screen metrics. / PT A anotação é necessária, pois acessamos métricas da tela.
     @Composable
     private fun resolve(qualifier: DpQualifier): Dp {
-        if (InternalComposeResources.context == null) {
-            InternalComposeResources.context = LocalContext.current
-            InternalComposeResources.configuration = LocalConfiguration.current
-        }
+        syncInternalComposeConfigurationAndContext()
         val context = InternalComposeResources.context!!
         val configuration = InternalComposeResources.configuration!!
 
@@ -468,11 +465,7 @@ class DimenScaled private constructor(
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolvePx(qualifier: DpQualifier): Float {
-        if (InternalComposeResources.density == null) {
-            InternalComposeResources.context = LocalContext.current
-            InternalComposeResources.configuration = LocalConfiguration.current
-            InternalComposeResources.density = LocalDensity.current
-        }
+        syncInternalComposeConfigurationAndContext()
         val context = InternalComposeResources.context!!
         val configuration = InternalComposeResources.configuration!!
 

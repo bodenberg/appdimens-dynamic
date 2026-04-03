@@ -60,12 +60,7 @@ import com.appdimens.dynamic.core.pxRememberStamp
  */
 @Composable
 fun Int.sdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val isTargetOrientation = when (orientation) {
@@ -99,13 +94,7 @@ fun Int.sdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = D
  */
 @Composable
 fun Int.sdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -149,12 +138,7 @@ fun Int.sdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier =
  */
 @Composable
 fun Dp.sdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val isTargetOrientation = when (orientation) {
@@ -187,13 +171,7 @@ fun Dp.sdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = Dp
  */
 @Composable
 fun Dp.sdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -236,12 +214,7 @@ fun Dp.sdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = 
  */
 @Composable
 fun Dp.sdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val isTargetOrientation = when (orientation) {
@@ -278,13 +251,7 @@ fun Dp.sdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifier
  */
 @Composable
 fun Dp.sdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -333,12 +300,7 @@ fun Dp.sdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualifi
  */
 @Composable
 fun Int.hdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val isTargetOrientation = when (orientation) {
@@ -372,13 +334,7 @@ fun Int.hdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = D
  */
 @Composable
 fun Int.hdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -422,12 +378,7 @@ fun Int.hdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier =
  */
 @Composable
 fun Dp.hdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val isTargetOrientation = when (orientation) {
@@ -460,13 +411,7 @@ fun Dp.hdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = Dp
  */
 @Composable
 fun Dp.hdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -509,12 +454,7 @@ fun Dp.hdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = 
  */
 @Composable
 fun Dp.hdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val isTargetOrientation = when (orientation) {
@@ -551,13 +491,7 @@ fun Dp.hdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifier
  */
 @Composable
 fun Dp.hdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -606,12 +540,7 @@ fun Dp.hdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualifi
  */
 @Composable
 fun Int.wdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val isTargetOrientation = when (orientation) {
@@ -645,13 +574,7 @@ fun Int.wdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = D
  */
 @Composable
 fun Int.wdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -695,12 +618,7 @@ fun Int.wdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier =
  */
 @Composable
 fun Dp.wdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val isTargetOrientation = when (orientation) {
@@ -733,13 +651,7 @@ fun Dp.wdpRotate(rotationValue: Number, finalQualifierResolver: DpQualifier = Dp
  */
 @Composable
 fun Dp.wdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -782,12 +694,7 @@ fun Dp.wdpRotatePx(rotationValue: Number, finalQualifierResolver: DpQualifier = 
  */
 @Composable
 fun Dp.wdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val isTargetOrientation = when (orientation) {
@@ -824,13 +731,7 @@ fun Dp.wdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifier
  */
 @Composable
 fun Dp.wdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -884,12 +785,7 @@ fun Dp.wdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualifi
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Int.sdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val currentUiModeType = getCurrentUiModeType()
@@ -922,13 +818,7 @@ fun Int.sdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolve
  */
 @Composable
 fun Int.sdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -968,12 +858,7 @@ fun Int.sdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResol
  */
 @Composable
 fun Dp.sdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val currentUiModeType = getCurrentUiModeType()
@@ -1004,13 +889,7 @@ fun Dp.sdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver
  */
 @Composable
 fun Dp.sdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1049,12 +928,7 @@ fun Dp.sdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolv
  */
 @Composable
 fun Dp.sdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val currentUiModeType = getCurrentUiModeType()
@@ -1089,15 +963,7 @@ fun Dp.sdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierRes
  */
 @Composable
 fun Dp.sdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1145,12 +1011,7 @@ fun Dp.sdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifierR
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Int.hdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val currentUiModeType = getCurrentUiModeType()
@@ -1183,13 +1044,7 @@ fun Int.hdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolve
  */
 @Composable
 fun Int.hdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1230,12 +1085,7 @@ fun Int.hdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResol
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.hdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val currentUiModeType = getCurrentUiModeType()
@@ -1266,13 +1116,7 @@ fun Dp.hdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver
  */
 @Composable
 fun Dp.hdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1312,12 +1156,7 @@ fun Dp.hdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolv
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.hdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val currentUiModeType = getCurrentUiModeType()
@@ -1352,15 +1191,7 @@ fun Dp.hdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierRes
  */
 @Composable
 fun Dp.hdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1408,12 +1239,7 @@ fun Dp.hdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifierR
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Int.wdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val currentUiModeType = getCurrentUiModeType()
@@ -1446,13 +1272,7 @@ fun Int.wdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolve
  */
 @Composable
 fun Int.wdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1493,12 +1313,7 @@ fun Int.wdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResol
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.wdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val currentUiModeType = getCurrentUiModeType()
@@ -1529,13 +1344,7 @@ fun Dp.wdpMode(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver
  */
 @Composable
 fun Dp.wdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1575,12 +1384,7 @@ fun Dp.wdpModePx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolv
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.wdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val currentUiModeType = getCurrentUiModeType()
@@ -1615,15 +1419,7 @@ fun Dp.wdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierRes
  */
 @Composable
 fun Dp.wdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1674,12 +1470,7 @@ fun Dp.wdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifierR
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Number.sdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1710,13 +1501,7 @@ fun Number.sdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qual
  */
 @Composable
 fun Number.sdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1755,12 +1540,7 @@ fun Number.sdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qu
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.sdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1791,13 +1571,7 @@ fun Dp.sdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifie
  */
 @Composable
 fun Dp.sdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1836,12 +1610,7 @@ fun Dp.sdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualif
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.sdpQualifierPlain(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1876,13 +1645,7 @@ fun Dp.sdpQualifierPlain(qualifiedValue: Number, qualifierType: DpQualifier, qua
  */
 @Composable
 fun Dp.sdpQualifierPlainPx(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -1929,12 +1692,7 @@ fun Dp.sdpQualifierPlainPx(qualifiedValue: Number, qualifierType: DpQualifier, q
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Number.hdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -1965,13 +1723,7 @@ fun Number.hdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qual
  */
 @Composable
 fun Number.hdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2010,12 +1762,7 @@ fun Number.hdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qu
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.hdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -2046,13 +1793,7 @@ fun Dp.hdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifie
  */
 @Composable
 fun Dp.hdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2091,12 +1832,7 @@ fun Dp.hdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualif
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.hdpQualifierPlain(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -2131,13 +1867,7 @@ fun Dp.hdpQualifierPlain(qualifiedValue: Number, qualifierType: DpQualifier, qua
  */
 @Composable
 fun Dp.hdpQualifierPlainPx(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2184,12 +1914,7 @@ fun Dp.hdpQualifierPlainPx(qualifiedValue: Number, qualifierType: DpQualifier, q
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Number.wdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -2220,13 +1945,7 @@ fun Number.wdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qual
  */
 @Composable
 fun Number.wdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2265,12 +1984,7 @@ fun Number.wdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qu
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.wdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -2301,13 +2015,7 @@ fun Dp.wdpQualifier(qualifiedValue: Number, qualifierType: DpQualifier, qualifie
  */
 @Composable
 fun Dp.wdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.context = LocalContext.current
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2346,12 +2054,7 @@ fun Dp.wdpQualifierPx(qualifiedValue: Number, qualifierType: DpQualifier, qualif
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.wdpQualifierPlain(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.configuration == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
@@ -2386,13 +2089,7 @@ fun Dp.wdpQualifierPlain(qualifiedValue: Number, qualifierType: DpQualifier, qua
  */
 @Composable
 fun Dp.wdpQualifierPlainPx(qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val configuration = InternalComposeResources.configuration!!
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
@@ -2442,10 +2139,7 @@ fun Dp.wdpQualifierPlainPx(qualifiedValue: Number, qualifierType: DpQualifier, q
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Number.sdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
@@ -2479,13 +2173,7 @@ fun Number.sdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType:
  */
 @Composable
 fun Number.sdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2529,10 +2217,7 @@ fun Number.sdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierTyp
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.sdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
@@ -2566,13 +2251,7 @@ fun Dp.sdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQ
  */
 @Composable
 fun Dp.sdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2616,10 +2295,7 @@ fun Dp.sdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: D
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.sdpScreenPlain(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
@@ -2657,13 +2333,7 @@ fun Dp.sdpScreenPlain(screenValue: Number, uiModeType: UiModeType, qualifierType
  */
 @Composable
 fun Dp.sdpScreenPlainPx(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val configuration = InternalComposeResources.configuration!!
@@ -2713,10 +2383,7 @@ fun Dp.sdpScreenPlainPx(screenValue: Number, uiModeType: UiModeType, qualifierTy
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Number.hdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
@@ -2750,13 +2417,7 @@ fun Number.hdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType:
  */
 @Composable
 fun Number.hdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2800,10 +2461,7 @@ fun Number.hdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierTyp
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.hdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
@@ -2837,13 +2495,7 @@ fun Dp.hdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQ
  */
 @Composable
 fun Dp.hdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -2887,10 +2539,7 @@ fun Dp.hdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: D
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.hdpScreenPlain(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
@@ -2928,13 +2577,7 @@ fun Dp.hdpScreenPlain(screenValue: Number, uiModeType: UiModeType, qualifierType
  */
 @Composable
 fun Dp.hdpScreenPlainPx(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val configuration = InternalComposeResources.configuration!!
@@ -2984,10 +2627,7 @@ fun Dp.hdpScreenPlainPx(screenValue: Number, uiModeType: UiModeType, qualifierTy
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Number.wdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
@@ -3021,13 +2661,7 @@ fun Number.wdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType:
  */
 @Composable
 fun Number.wdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3071,10 +2705,7 @@ fun Number.wdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierTyp
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.wdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
@@ -3108,13 +2739,7 @@ fun Dp.wdpScreen(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQ
  */
 @Composable
 fun Dp.wdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.density = LocalDensity.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val density = InternalComposeResources.density!!
@@ -3158,10 +2783,7 @@ fun Dp.wdpScreenPx(screenValue: Number, uiModeType: UiModeType, qualifierType: D
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun Dp.wdpScreenPlain(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationAndContext()
     val androidContext = InternalComposeResources.context!!
     val configuration = InternalComposeResources.configuration!!
     val currentUiModeType = getCurrentUiModeType()
@@ -3199,13 +2821,7 @@ fun Dp.wdpScreenPlain(screenValue: Number, uiModeType: UiModeType, qualifierType
  */
 @Composable
 fun Dp.wdpScreenPlainPx(screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
-    if (InternalComposeResources.density == null) {
-        InternalComposeResources.configuration = LocalConfiguration.current
-        InternalComposeResources.density = LocalDensity.current
-    }
-    if (InternalComposeResources.context == null) {
-        InternalComposeResources.context = LocalContext.current
-    }
+    syncInternalComposeConfigurationContextAndDensity()
     val androidContext = InternalComposeResources.context!!
     val density = InternalComposeResources.density!!
     val configuration = InternalComposeResources.configuration!!
