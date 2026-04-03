@@ -321,19 +321,90 @@ AppDimens Dynamic is designed for maximum efficiency:
 - **Compose optimization**: Uses `LocalConfiguration.current` with stable `remember` keys (packed layout stamps) to limit allocations and unnecessary recompositions.
 - **Zero Resource Lookups**: By eliminating `@dimen` XML file dependency, it avoids system resource resolution overhead.
 
-### Integration checklist (recommended)
+### Production setup (optional)
 
-1. **`AppDimensProvider`** — Wrap your Compose root (e.g. `setContent { AppDimensProvider { … } }`) so `LocalUiModeType` is provided. Facilitators such as `.sdpMode` / `.sspMode` then read the mode without recomputing `UiModeType.fromConfiguration` on every call. Dependency: `androidx.window:window` (already used by the library for foldables).
+Most apps work out of the box with the Compose or `DimenSdp` / `DimenSsp` APIs. Use the steps below when you hit **mode-based facilitators**, **stale sizes after rotation**, or **custom batch performance** work.
 
-   ```kotlin
-   import com.appdimens.dynamic.core.AppDimensProvider
-   ```
+| Step | Do you need it? |
+|------|-----------------|
+| **AppDimensProvider** | Yes if you use **`.sdpMode` / `.sspMode` / `.sdpScreen` / `.sspScreen`** (or care about **fold state** without recomputing `UiModeType` every time). Skip if you only use **`.sdp` / `.hdp` / `.wdp` / `.ssp`** etc. |
+| **invalidateOnConfigChange** | Yes if dimensions look **wrong after rotation, split-screen, density, or font-scale changes** while the same process stays alive. Call it from the place you already react to configuration (usually `Activity`). |
+| **getBatch** | Rare. **Low-level batch** API for many cache lookups in one loop. **`DimenCache.buildKey` is `internal`** to the library module, so typical **app** code does not build keys; use normal extensions unless you are extending the library or mirroring tests. See [PERFORMANCE.md](PERFORMANCE.md). |
 
-2. **`DimenCache.invalidateOnConfigChange`** — When the activity configuration changes, call `DimenCache.invalidateOnConfigChange(oldConfig, newConfig)` (and keep the previous `Configuration` reference between changes). This keeps the global cache and internal Compose resource snapshots aligned with rotation, window size, density, and font scale.
+---
 
-3. **`DimenCache.getBatch`** — For lists or grids resolving many dimensions in one pass, build `LongArray` keys with `DimenCache.buildKey(...)`, then call `getBatch(keys, context) { index -> … }` so the JIT sees a tight loop and cache lookups stay predictable.
+#### 1. `AppDimensProvider` (Compose)
 
-> **Note:** For `SCALED` (and similar) paths **without** aspect ratio, `getOrPut` may **bypass** the shard cache by design (pure multiply is cheaper than a lookup). Benchmarks should separate “bypass / math-only” from “cache hit” (e.g. keys with `applyAspectRatio = true`).
+Wrap the content passed to `setContent` so `LocalUiModeType` is set once per composition subtree. Facilitators like `.sspMode(…, UiModeType.TELEVISION)` read this value instead of calling `UiModeType.fromConfiguration` on every invocation.
+
+`androidx.window:window` is already pulled in by this library (foldables).
+
+```kotlin
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import com.appdimens.dynamic.core.AppDimensProvider
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            AppDimensProvider {
+                // Your NavHost / theme / screens
+                MyApp()
+            }
+        }
+    }
+}
+```
+
+---
+
+#### 2. `DimenCache.invalidateOnConfigChange`
+
+Keeps **persisted / in-memory cache entries** and scaling factors aligned when `Configuration` actually changes (orientation, smallest width, density, font scale, etc.).
+
+Store the **previous** configuration, pass **old + new** into `invalidateOnConfigChange`, then **update** the stored copy. If your `Activity` does not override `onConfigurationChanged`, you usually **do not** need this unless you observe config elsewhere (custom listener, `WindowInsets`, etc.).
+
+Merge into the same `Activity` that hosts Compose (e.g. the `MainActivity` from the previous snippet):
+
+```kotlin
+import android.content.res.Configuration
+import com.appdimens.dynamic.core.DimenCache
+
+private var lastConfiguration: Configuration? = null
+
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    lastConfiguration = Configuration(resources.configuration)
+    // … setContent { AppDimensProvider { … } }
+}
+
+override fun onConfigurationChanged(newConfig: Configuration) {
+    DimenCache.invalidateOnConfigChange(lastConfiguration, newConfig)
+    lastConfiguration = Configuration(newConfig)
+    super.onConfigurationChanged(newConfig)
+}
+```
+
+> **Manifest:** you only receive `onConfigurationChanged` if the activity declares `android:configChanges` for the changes you handle; otherwise the activity is recreated and a fresh `Configuration` applies automatically.
+
+---
+
+#### 3. `DimenCache.getBatch` (advanced)
+
+`getBatch(keys, context) { index -> … }` fills a `FloatArray` in one tight loop (good for JIT). Keys are 64-bit values that must match the cache layout used inside the library; **`buildKey` is not public** outside the library artifact, so **most applications never call this directly** — lists and `LazyColumn` normally rely on the existing `@Composable` extensions, which already integrate with `DimenCache`.
+
+Use **getBatch** when you maintain custom resolution code **inside** the library or a fork, or when profiling with the same patterns as `DimenCacheTest` / [PERFORMANCE.md](PERFORMANCE.md).
+
+---
+
+#### Benchmarks: cache “bypass” vs “hit”
+
+For **`SCALED`** (and similar) paths **without** `applyAspectRatio`, the implementation may **skip** the sharded cache and do a **cheap multiply** instead of a lookup — by design. When measuring, separate:
+
+- **Math-only / bypass** — `applyAspectRatio = false` on those calc types  
+- **Cache path** — e.g. `applyAspectRatio = true`, where storing the result amortizes heavier work  
 
 For a deeper breakdown (batching, sharding, bypass layer), see [PERFORMANCE.md](PERFORMANCE.md).
 
