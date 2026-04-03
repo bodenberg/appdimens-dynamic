@@ -254,8 +254,8 @@ DimenPhysicalUnits.toDpFromInch(1f, resources)
   &nbsp;
   <img src="IMAGES/screenshot_benchmark.jpg" alt="Benchmark" width="240" height="515" />
   &nbsp;
-  <video width="240" height="515" controls>
-    <source src="IMAGES/screenshot_video.mp4" type="video/mp4">
+  <video width="240" height="515" controls playsinline preload="metadata">
+    <source src="IMAGES/screenshot_video.mov" type="video/quicktime" />
   </video>
 </p>
 <br/>
