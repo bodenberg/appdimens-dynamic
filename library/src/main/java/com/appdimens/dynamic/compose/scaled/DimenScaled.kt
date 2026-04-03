@@ -31,7 +31,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.appdimens.dynamic.common.DpQualifier
@@ -389,9 +388,8 @@ class DimenScaled private constructor(
     @SuppressLint("ConfigurationScreenWidthHeight") // EN The annotation is necessary as we access screen metrics. / PT A anotação é necessária, pois acessamos métricas da tela.
     @Composable
     private fun resolve(qualifier: DpQualifier): Dp {
-        syncInternalComposeConfigurationAndContext()
-        val context = InternalComposeResources.context!!
-        val configuration = InternalComposeResources.configuration!!
+        val context = LocalContext.current
+        val configuration = LocalConfiguration.current
 
         // EN Extract FoldingFeature dynamically if context is an Activity
         // PT Extrai o FoldingFeature dinamicamente se o contexto for uma Activity
@@ -465,9 +463,8 @@ class DimenScaled private constructor(
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolvePx(qualifier: DpQualifier): Float {
-        syncInternalComposeConfigurationAndContext()
-        val context = InternalComposeResources.context!!
-        val configuration = InternalComposeResources.configuration!!
+        val context = LocalContext.current
+        val configuration = LocalConfiguration.current
 
         val currentUiModeType = getCurrentUiModeType()
 

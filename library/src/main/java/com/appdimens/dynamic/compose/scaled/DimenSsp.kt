@@ -648,10 +648,9 @@ fun Number.toDynamicScaledSp(
     inverter: Inverter = Inverter.DEFAULT,
     ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null
 ): TextUnit {
-    syncInternalComposeConfigurationContextAndDensity()
-    val configuration = InternalComposeResources.configuration!!
-    val androidContext = InternalComposeResources.context!!
-    val density = InternalComposeResources.density!!
+    val configuration = LocalConfiguration.current
+    val androidContext = LocalContext.current
+    val density = LocalDensity.current
 
     val cacheKey = DimenCache.buildKey(
         baseValue = this.toFloat(),
@@ -814,10 +813,9 @@ fun Number.toDynamicScaledPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    syncInternalComposeConfigurationContextAndDensity()
-    val configuration = InternalComposeResources.configuration!!
-    val androidContext = InternalComposeResources.context!!
-    val density = InternalComposeResources.density!!
+    val configuration = LocalConfiguration.current
+    val androidContext = LocalContext.current
+    val density = LocalDensity.current
 
     val cacheKey = DimenCache.buildKey(
         baseValue = this.toFloat(),

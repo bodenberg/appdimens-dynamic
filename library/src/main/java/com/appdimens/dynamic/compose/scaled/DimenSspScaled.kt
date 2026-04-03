@@ -29,6 +29,7 @@ import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.TextUnit
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.DpQualifierEntry
@@ -258,8 +259,7 @@ class ScaledSp private constructor(
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolve(qualifier: DpQualifier): TextUnit {
-        syncInternalComposeConfigurationAndContext()
-        val configuration = InternalComposeResources.configuration!!
+        val configuration = LocalConfiguration.current
 
         val currentUiModeType = getCurrentUiModeType()
 
@@ -320,8 +320,7 @@ class ScaledSp private constructor(
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolvePx(qualifier: DpQualifier): Float {
-        syncInternalComposeConfigurationAndContext()
-        val configuration = InternalComposeResources.configuration!!
+        val configuration = LocalConfiguration.current
 
         val currentUiModeType = getCurrentUiModeType()
 
@@ -382,8 +381,7 @@ class ScaledSp private constructor(
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolveNoFontScale(qualifier: DpQualifier): TextUnit {
-        syncInternalComposeConfigurationAndContext()
-        val configuration = InternalComposeResources.configuration!!
+        val configuration = LocalConfiguration.current
 
         val currentUiModeType = getCurrentUiModeType()
 
@@ -443,8 +441,7 @@ class ScaledSp private constructor(
     @SuppressLint("ConfigurationScreenWidthHeight")
     @Composable
     private fun resolveNoFontScalePx(qualifier: DpQualifier): Float {
-        syncInternalComposeConfigurationAndContext()
-        val configuration = InternalComposeResources.configuration!!
+        val configuration = LocalConfiguration.current
 
         val currentUiModeType = getCurrentUiModeType()
 
