@@ -5,8 +5,12 @@
     <img src="https://img.shields.io/badge/Docs-Full%20documentation-1d4ed8?style=for-the-badge&logo=gitbook&logoColor=white&labelColor=1e3a8a" alt="Full documentation — guides and strategies">
   </a>
   &nbsp;&nbsp;
-  <a href="./DOCUMENTATION/index.md" title="Generated KDoc — packages, types, and members">
-    <img src="https://img.shields.io/badge/KDoc-API%20reference-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white&labelColor=4c1d95" alt="KDoc API reference">
+  <a href="./DOCUMENTATION/index.md" title="API documentation in the repo — Markdown package index (KDoc export)">
+    <img src="https://img.shields.io/badge/API%20DOCUMENTATION--7F52FF?style=for-the-badge&logo=markdown&logoColor=white&labelColor=4c1d95" alt="API DOCUMENTATION">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://appdimens3.web.app/" title="Hosted Dokka site — searchable API reference">
+    <img src="https://img.shields.io/badge/KDOC%20REFERENCE--0d9488?style=for-the-badge&logo=firebase&logoColor=white&labelColor=115e59" alt="KDOC REFERENCE">
   </a>
 </p>
 
@@ -16,7 +20,7 @@
 
 **AppDimens Dynamic** is the most complete responsive dimension library for Android. It provides a purely dynamic, code-level scaling system — including Jetpack Compose extensions, code-level APIs, conditional builders, orientation-aware inverters, and physical unit converters — all in a single, zero-configuration dependency.
 
-> **Calculation cheat sheet:** scaled · percent (`p*`) · percent (`space*`) · power · fluid · auto · diagonal · fill · fit · interpolated · logarithmic · perimeter · density · resize · physical units — [DOCUMENTATION/README.md](DOCUMENTATION/README.md) · **KDoc API** (packages & symbols) — [DOCUMENTATION/index.md](DOCUMENTATION/index.md)
+> **Calculation cheat sheet:** scaled · percent (`p*`) · percent (`space*`) · power · fluid · auto · diagonal · fill · fit · interpolated · logarithmic · perimeter · density · resize · physical units — [DOCUMENTATION/README.md](DOCUMENTATION/README.md) · **API documentation** (Markdown index) — [DOCUMENTATION/index.md](DOCUMENTATION/index.md) · **KDoc reference** (hosted) — [appdimens3.web.app](https://appdimens3.web.app/)
 
 ---
 
@@ -495,7 +499,7 @@ Each strategy lives in its own package (`compose/<strategy>` and `code/<strategy
 
 **General guidance:** start with **`scaled`** (`sdp` / `hdp` / `wdp` and `ssp` / `hsp` / `wsp`). Switch strategy only when visual QA or layout requirements (tablet, ultrawide, TV, split-screen) call for a different growth curve. Pick the right **axis**: **SDP** for consistency across rotation; **HDP** for vertical lists; **WDP** when width should dominate.
 
-**Deep dive:** per-strategy documentation (what it is, formulas, how/when to use, trade-offs) lives in [DOCUMENTATION/README.md](DOCUMENTATION/README.md). **KDoc API reference** (Markdown export of library KDoc — entry point): [DOCUMENTATION/index.md](DOCUMENTATION/index.md). **Full Compose API catalog** (every scaled `Number` property, facilitators, builders, prefix map): [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md).
+**Deep dive:** per-strategy documentation (what it is, formulas, how/when to use, trade-offs) lives in [DOCUMENTATION/README.md](DOCUMENTATION/README.md). **API documentation** (Markdown export — package index): [DOCUMENTATION/index.md](DOCUMENTATION/index.md). **KDoc reference** (hosted Dokka): [appdimens3.web.app](https://appdimens3.web.app/). **Full Compose API catalog** (every scaled `Number` property, facilitators, builders, prefix map): [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md).
 
 | Strategy | Package (Compose example) | What it computes | Best use | When it’s useful |
 |----------|---------------------------|------------------|----------|------------------|
