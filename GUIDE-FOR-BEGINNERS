@@ -1,0 +1,413 @@
+# 📚 Complete Guide: AppDimens Dynamic – All Calculations for Beginners
+
+## Quick Introduction
+
+You write **once** and your code automatically adapts to any device. The library provides **12 different strategies**, each with its own “growth formula”.
+
+---
+
+## 🎯 The 3 Core Pillars
+
+### **1️⃣ SDP** (Smallest Dimension Proportion) – The Smallest Side
+
+```
+Uses: SHORTEST side of the screen
+Best for: Padding, spacing, general sizes
+```
+
+### **2️⃣ HDP** (Height Dimension Proportion) – Height
+
+```
+Uses: Screen HEIGHT only
+Best for: Component height, vertical lists
+```
+
+### **3️⃣ WDP** (Width Dimension Proportion) – Width
+
+```
+Uses: Screen WIDTH only
+Best for: Horizontal components
+```
+
+---
+
+## 📊 The 12 Calculation Strategies
+
+### **#1. SCALED (Default) ⭐**
+
+**Code:**
+
+```kotlin
+// Compose
+Modifier.padding(16.sdp)   // SDP
+Modifier.height(100.hdp)   // HDP
+Modifier.width(200.wdp)    // WDP
+Text("Text", fontSize = 16.ssp)
+
+// Views
+DimenSdp.sdp(context, 16)
+```
+
+**Formula (Simple):**
+
+```
+Result = Value × (Screen_Size / 300)
+```
+
+**What it means:**
+
+* 300 dp is the reference “normal” size
+* Larger screens → bigger values
+* **Linear and predictable growth**
+
+**Example:**
+
+```
+Phone 360 dp:   16 × (360/300) = 19.2 px
+Tablet 480 dp:  16 × (480/300) = 25.6 px
+Tablet 600 dp:  16 × (600/300) = 32 px
+TV 1200 dp:     16 × (1200/300) = 64 px
+```
+
+**When to use:**
+✅ Default layouts
+✅ Spacing and padding
+✅ General sizes
+✅ **Start here!**
+
+---
+
+### **#2. AUTO (Automatic) ⭐⭐**
+
+**Code:**
+
+```kotlin
+Modifier.padding(16.asdp)
+Modifier.height(100.ahdp)
+Modifier.width(200.awdp)
+Text("Text", fontSize = 16.assp)
+```
+
+**Formula:**
+
+```
+Up to 480 dp:
+  Same as SCALED
+
+Above 480 dp:
+  Result = (480/300) × Value + 0.4 × ln(1 + (Size - 480) / 300)
+```
+
+**What it means:**
+
+* Phones → behaves like SCALED
+* Tablets → **much slower growth**
+* Prevents oversized UI on large screens
+
+**When to use:**
+✅ Phone + tablet with one token set
+✅ When SCALED grows too much
+
+---
+
+### **#3. PERCENT (Literal Percentage)**
+
+**Code:**
+
+```kotlin
+Modifier.width(10.spaceW)   // 10% width
+Modifier.height(20.spaceSw) // 20% smallest side
+```
+
+**Formula:**
+
+```
+Result = (Percentage / 100) × Screen_Size
+```
+
+**What it means:**
+
+* Always keeps the same **percentage**
+* Fully proportional layouts
+
+**When to use:**
+✅ Grids, columns
+✅ Exact percentages
+
+---
+
+### **#4. POWER (Sublinear Growth)**
+
+**Formula:**
+
+```
+Result = Value × (Size / 300)^0.75
+```
+
+**What it means:**
+
+* Slower than linear scaling
+* Prevents oversized elements
+
+**When to use:**
+✅ Icons
+✅ Large displays (TVs, ultrawide)
+
+---
+
+### **#5. FLUID (Comfort Zone)**
+
+**Formula:**
+
+```
+≤320 dp → 0.8×  
+≥768 dp → 1.2×  
+Between → linear interpolation
+```
+
+**What it means:**
+
+* Keeps values within a stable range
+* Avoids big jumps on phones
+
+**When to use:**
+✅ Typography on mobile
+✅ Stable spacing
+
+---
+
+### **#6. DIAGONAL**
+
+**Formula:**
+
+```
+Diagonal = √(width² + height²)
+Result = Value × (Diagonal / 611.63)
+```
+
+**What it means:**
+
+* Uses total screen size
+* More “real” scaling
+
+**When to use:**
+✅ Games
+✅ Dashboards
+
+---
+
+### **#7. FILL (CSS “cover”)**
+
+**Formula:**
+
+```
+Result = Value × max(width_ratio, height_ratio)
+```
+
+**What it means:**
+
+* Uses the **largest axis**
+* Fills the screen
+
+**When to use:**
+✅ Backgrounds
+✅ Hero sections
+
+---
+
+### **#8. FIT (CSS “contain”)**
+
+**Formula:**
+
+```
+Result = Value × min(width_ratio, height_ratio)
+```
+
+**What it means:**
+
+* Uses the **smallest axis**
+* Prevents overflow
+
+**When to use:**
+✅ Forms
+✅ Reading layouts
+
+---
+
+### **#9. INTERPOLATED**
+
+**Formula:**
+
+```
+Result = Value + (Linear - Value) × 0.5
+```
+
+**What it means:**
+
+* 50% fixed + 50% scalable
+* Smooth growth
+
+**When to use:**
+✅ Fine-tuning UI scaling
+
+---
+
+### **#10. LOGARITHMIC**
+
+**Formula:**
+
+```
+Result = Value × (1 + 0.4 × ln(Size / 300))
+```
+
+**What it means:**
+
+* Very smooth growth
+* Works across all screen sizes
+
+**When to use:**
+✅ One token for all devices
+
+---
+
+### **#11. PERIMETER**
+
+**Formula:**
+
+```
+Perimeter = width + height
+Result = Value × (Perimeter / 833)
+```
+
+**What it means:**
+
+* Uses both axes (sum)
+* Balanced scaling
+
+**When to use:**
+✅ Cards
+✅ Thumbnails
+
+---
+
+### **#12. DENSITY (DPI-based)**
+
+**Formula:**
+
+```
+Result = Value × (DPI / 160)
+```
+
+**What it means:**
+
+* Based on pixel density
+* Not screen size
+
+**When to use:**
+✅ Legacy bitmap assets
+
+---
+
+## 🔧 Modifiers (Suffixes)
+
+| Suffix   | Meaning                 |
+| -------- | ----------------------- |
+| *(none)* | Default                 |
+| `a`      | Aspect ratio adjustment |
+| `i`      | Ignore split-screen     |
+| `ia`     | Both                    |
+
+---
+
+## 🔄 Orientation Inverters
+
+| Inverter | Behavior            |
+| -------- | ------------------- |
+| `Ph`     | Height in portrait  |
+| `Pw`     | Width in portrait   |
+| `Lw`     | Width in landscape  |
+| `Lh`     | Height in landscape |
+
+---
+
+## 📱 Quick Comparison
+
+```
+Need → Use
+
+Default → SCALED  
+Phone + Tablet → AUTO  
+Exact % → PERCENT  
+Slow growth → POWER  
+Stable phone UI → FLUID  
+Full screen → FILL  
+No overflow → FIT  
+Balanced → INTERPOLATED  
+All devices → LOGARITHMIC  
+Cards → PERIMETER  
+Legacy → DENSITY
+```
+
+---
+
+## 🚀 Practical Example
+
+```kotlin
+Card(
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(
+            horizontal = 16.sdp,
+            vertical = 12.asdp
+        )
+) {
+    Column(
+        modifier = Modifier.padding(16.sdp)
+    ) {
+        Text(
+            "My Card",
+            fontSize = 24.ssp
+        )
+
+        Text(
+            "Card description",
+            fontSize = 16.ssp
+        )
+
+        Button(
+            modifier = Modifier
+                .height(48.sdp)
+                .fillMaxWidth()
+        ) {
+            Text("Click", fontSize = 16.ssp)
+        }
+    }
+}
+```
+
+---
+
+## 💡 Final Tips
+
+1. Start with **SCALED**
+2. If it grows too much → use **AUTO**
+3. For universal tokens → use **LOGARITHMIC**
+4. For backgrounds → use **FILL**
+5. For reading → use **FIT**
+
+---
+
+## 🎓 Quick Recap
+
+You only need 3 strategies to start:
+
+1. **SCALED**
+2. **AUTO**
+3. **PERCENT**
+
+Modifiers:
+
+* `a` → aspect ratio
+* `i` → ignore split-screen
+
+**Start simple and scale when needed.** 🚀
