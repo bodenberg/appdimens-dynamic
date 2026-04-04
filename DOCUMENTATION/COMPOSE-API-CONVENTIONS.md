@@ -78,6 +78,8 @@ fun Number.toDynamicScaledPx(...): Float
 fun Number.toDynamicScaledSp(...): TextUnit  // also supports fontScale, inverter, etc.
 ```
 
+On the **View / `code`** side, `toDynamicScaledPx` and `toDynamicScaledDp` also have **`Int`** and **`Float`** overloads with the same parameters (mirroring `Number`), to avoid boxing on hot paths.
+
 Use when you need a combination that is not exposed as a `val` shortcut.
 
 ---
@@ -157,6 +159,8 @@ Same for **`hdpQualifier*`**, **`wdpQualifier*`**.
 Same for **`hdpScreen*`**, **`wdpScreen*`**.
 
 **Recommendation:** wrap the tree with `AppDimensProvider` when using mode/fold-related `UiModeType` heavily (see [library/PERFORMANCE.md](../library/PERFORMANCE.md)).
+
+**Performance:** `sdpMode` / `hdpMode` / `wdpMode` and `sdpScreen` / `hdpScreen` / `wdpScreen` (and strategy equivalents) resolve `UiModeType` via **`DimenCache.getCachedUiModeType(context)`**, which caches the result per `Configuration` hash — they do **not** call `SensorManager` / `WindowMetricsCalculator` on every invocation.
 
 ---
 

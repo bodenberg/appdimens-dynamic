@@ -10,7 +10,7 @@
 
 - `rw = shorter / 300`, `rh = longer / 533` (`BASE_WIDTH_DP`, `BASE_HEIGHT_DP` in `DesignScaleConstants`).
 - `out = base × max(rw, rh)`
-- With **`a`**: `aspectRatioMultiplier`.
+- With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 
 Implementation: `calculateFillDpCompose` in `DimenFillDp.kt`.
 

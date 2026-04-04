@@ -8,11 +8,14 @@
 
 ## Calculation used
 
-For effective axis `dim` (dp), after inverters and with multi-window handling:
+Conceptually, for effective axis `dim` (dp), after inverters and with multi-window handling:
 
 - `ratio = dim / 300`
 - `out = base × ratio^0.75`
-- With **`applyAspectRatio`**: multiply by `aspectRatioMultiplier(configuration, sensitivity)` (log of aspect vs 16:9 reference).
+
+**Implementation note:** For **smallest-width** + **default inverter**, `ratio^0.75` is **pre-computed** once per configuration change (`DimenCache.currentPowerScale`). Other qualifiers still compute `ratio` from `readScreenDp` and use `Math.pow(ratio, 0.75)`.
+
+- With **`applyAspectRatio`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 
 Implementation: `calculatePowerDpCompose` in `DimenPowerDp.kt`.
 

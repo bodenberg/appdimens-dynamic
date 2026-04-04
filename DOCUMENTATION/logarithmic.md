@@ -8,10 +8,16 @@
 
 ## Calculation used
 
+Mathematically (effective axis `dim` in dp):
+
 - `inv = 1/300`
 - If `dim > 300`: `scale = 1 + 0.4 × ln(dim × inv)`
 - If `dim ≤ 300`: `scale = 1 − 0.4 × ln(300 / dim)`
-- `out = base × scale`; with **`a`**: `aspectRatioMultiplier`.
+- `out = base × scale`
+
+**Implementation note:** For **smallest-width** + **default inverter**, `scale` uses **smallestScreenWidthDp** and is **pre-computed** once per configuration change (`DimenCache.currentLogScale`). Other qualifiers still evaluate the piecewise `ln` formula above inline.
+
+- With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 
 Implementation: `calculateLogarithmicDpCompose` in `DimenLogarithmicDp.kt`.
 

@@ -8,10 +8,16 @@
 
 ## Calculation used
 
+Mathematically, for the current window:
+
 - `shorter = min(widthDp, heightDp)`, `longer = max(...)`
 - `diag = √(shorter² + longer²)`
-- `out = base × (diag / BASE_DIAGONAL_DP)` with `BASE_DIAGONAL_DP = √(300² + 533²) ≈ 611.63` (`DesignScaleConstants`).
-- With **`a`**: additional `aspectRatioMultiplier`.
+- `scale = diag / BASE_DIAGONAL_DP` with `BASE_DIAGONAL_DP = √(300² + 533²) ≈ 611.63` (`DesignScaleConstants`).
+- `out = base × scale`.
+
+**Implementation note:** `scale` is **pre-computed** once per configuration change in `DimenCache.ScreenFactors.updateFactors()` (exposed as `DimenCache.currentDiagonalScale`). The steps above describe what that factor represents; the runtime does not recompute `√(shorter² + longer²)` on every call.
+
+- With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr` (also derived from cached screen factors).
 
 Implementation: `calculateDiagonalDpCompose` in `DimenDiagonalDp.kt`.
 

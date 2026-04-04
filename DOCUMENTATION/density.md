@@ -9,7 +9,7 @@
 ## Calculation used
 
 - `out = base × (configuration.densityDpi / 160f)`
-- With **`a`**: `aspectRatioMultiplier` (aspect correction on top of the result).
+- With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 
 Implementation: `calculateDensityDpCompose` in `DimenDensityDp.kt`.
 

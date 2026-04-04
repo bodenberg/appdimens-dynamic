@@ -12,7 +12,7 @@ With `inv = 1/300`, `transition = 480`, `sensitivity = 0.4`:
 
 - If `dim ≤ 480`: `scale = dim × inv` (same as linear scaled in that range).
 - If `dim > 480`: `scale = (480 × inv) + sensitivity × ln(1 + (dim − 480) × inv)`
-- Result: `base × scale`; with **`a`**, multiply by `aspectRatioMultiplier`.
+- Result: `base × scale`; with **`a`**, multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 
 Implementation: `calculateAutoDpCompose` in `DimenAutoDp.kt`.
 

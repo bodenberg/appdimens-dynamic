@@ -10,7 +10,7 @@
 
 - Read the effective axis in dp (after orientation **inverters**, if any).
 - **Without** `applyAspectRatio` (`a` / `ia`): result ≈ `base × (dim / 300)` — factor `1/300` (`INV_BASE_RATIO` in `DimenCache`).
-- **With** `applyAspectRatio`: uses the refined curve in `DimenCache.calculateRawScaling`, combining deviation from 300 dp with adjustment tied to the log of the normalized screen aspect.
+- **With** `applyAspectRatio`: uses `DimenCache.calculateRawScaling`, which combines deviation from 300 dp with adjustment from **pre-computed** screen factors (`arMultiplier`, `logNormalizedAr` in `ScreenFactors`, updated on configuration change).
 - With `ignoreMultiWindows` (`i` / `ia`) and the multi-window heuristic active: returns the **raw base** value (no scaling).
 - Reference constant: `BASE_WIDTH_DP = 300f` in `DesignScaleConstants` (which axis is used depends on the qualifier).
 
@@ -27,6 +27,8 @@ import com.appdimens.dynamic.compose.wdp
 
 Modifier.padding(16.sdp).width(100.wdp)
 ```
+
+The **`code`** module also exposes **`Int`** and **`Float`** receiver overloads for `sdp` / `hdp` / `wdp` (and `a` / `i` / `ia` variants), plus `toDynamicScaledPx` / `toDynamicScaledDp`, to avoid `Number` boxing on hot paths. The **`Number`** overloads remain for backward compatibility.
 
 **Code (Views / Kotlin)** — `com.appdimens.dynamic.code.DimenSdp`, `DimenSsp`, extensions `ssp`, `scaledSp()`, etc.
 
@@ -46,7 +48,7 @@ It is the library’s balanced choice: **predictable**, tightly integrated with 
 
 ## Advantages and trade-offs
 
-- **Pros:** familiar curve; strong performance (including cache bypass on hot paths without AR); rich README examples.
+- **Pros:** familiar curve; strong performance — without aspect ratio, `DimenCache.getOrPut` bypasses shard storage for six cheap `CalcType`s (**PERCENT**, **SCALED**, **DENSITY**, **DIAGONAL**, **INTERPOLATED**, **PERIMETER**); see [library/PERFORMANCE.md](../library/PERFORMANCE.md). Rich README examples.
 - **Cons:** on very large screens, linear growth (without `a`) can feel aggressive vs **power** or **fluid** — then consider another strategy only for affected components.
 
 ## Recommended usage strategy

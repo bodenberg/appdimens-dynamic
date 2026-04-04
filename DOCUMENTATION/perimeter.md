@@ -8,8 +8,14 @@
 
 ## Calculation used
 
-- `out = base × ((shorter + longer) / 833)`
-- With **`a`**: `aspectRatioMultiplier`.
+Mathematically:
+
+- `scale = (shorter + longer) / BASE_PERIMETER_DP` with `BASE_PERIMETER_DP = 833` (`DesignScaleConstants`, aligned with 300 + 533).
+- `out = base × scale`
+
+**Implementation note:** `scale` is **pre-computed** once per configuration change (`DimenCache.currentPerimeterScale`). The formula matches `(shorter + longer) / 833`; the runtime does not re-sum sides on every call.
+
+- With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 
 Implementation: `calculatePerimeterDpCompose` in `DimenPerimeterDp.kt`.
 

@@ -14,7 +14,7 @@ With `dim` the effective axis in dp:
 - If `dim ≤ 320` → `v = minV`
 - If `dim ≥ 768` → `v = maxV`
 - Else → linear interpolation of `minV` to `maxV` between 320 and 768
-- With **`a`**: multiply by `aspectRatioMultiplier`.
+- With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 
 Implementation: `calculateFluidDpCompose` in `DimenFluidDp.kt`.
 

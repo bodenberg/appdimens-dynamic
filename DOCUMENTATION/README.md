@@ -4,11 +4,13 @@ This folder goes deeper into each **scaling strategy** in [AppDimens Dynamic](..
 
 For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../library/PERFORMANCE.md).
 
-**Full Compose API (every `Number` property, facilitators, builders, prefix map):** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md)
+**Full Compose API (every `Number` / `Int` / `Float` property where exposed, facilitators, builders, prefix map):** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md)
 
 **KDoc API reference** (generated from library `/** … */` KDoc — packages, types, members): [index.md](index.md). Symbol files live under [`KDOC/`](KDOC/) (short path without `[` / `]` so GitHub resolves relative Markdown links correctly).
 
 **Atualizar a referência KDoc exportada:** o módulo `library` gera HTML via `./gradlew :library:dokkaGenerateHtml`; o diretório de saída está definido em [`library/build.gradle.kts`](../library/build.gradle.kts) (`dokka { … outputDirectory … }`, por defeito aponta para uma pasta tipo `DOCUMENTATION2` na raiz do repo). Depois de gerar, sincronize/copie os ficheiros para [`KDOC/`](KDOC/) se o projeto versionar a documentação aí — só assim nomes como **`unitSizeInDp`** substituem páginas antigas (**`unitSizePerPx`**).
+
+**Nota:** após otimizações de performance (fatores pré-computados em `DimenCache`, `getCachedUiModeType`, sobrecargas `Int`/`Float` em `code.scaled`, etc.), a árvore [`KDOC/`](KDOC/) versionada pode ficar **desatualizada** até voltar a correr Dokka e sincronizar — as páginas manuais em `scaled.md`, [library/PERFORMANCE.md](../library/PERFORMANCE.md) e [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md) refletem o estado atual do código com mais frequência.
 
 ## Summary
 
