@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for AutoSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para AutoSp a partir de um Float base (tratado como sp).
  */
-fun Float.autoSp(): AutoSp = AutoSp(this.toInt())
+fun Float.autoSp(): AutoSp = AutoSp(this)
 
 /**
  * EN Starts the build chain for AutoSp from a base Int (treated as sp).

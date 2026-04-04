@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for LogarithmicSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para LogarithmicSp a partir de um Float base (tratado como sp).
  */
-fun Float.logarithmicSp(): LogarithmicSp = LogarithmicSp(this.toInt())
+fun Float.logarithmicSp(): LogarithmicSp = LogarithmicSp(this)
 
 /**
  * EN Starts the build chain for LogarithmicSp from a base Int (treated as sp).

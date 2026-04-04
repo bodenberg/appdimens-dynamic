@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.powerSp().screen(...)`.
  */
 @Composable
-fun TextUnit.powerSp(): PowerSp = PowerSp(this.value.toInt())
+fun TextUnit.powerSp(): PowerSp = PowerSp(this.value)
 
 /**
  * EN Starts the build chain for PowerSp from a base Int (treated as sp).

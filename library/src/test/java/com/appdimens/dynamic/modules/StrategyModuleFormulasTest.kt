@@ -66,4 +66,25 @@ class StrategyModuleFormulasTest {
         )
         assertEquals(expected, out, 0.001f)
     }
+
+    @Test
+    fun percent_fractionalBaseValue_preserved() {
+        val cfg = config(400)
+        val out = calculatePercentDpCompose(
+            15.5f, cfg, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT,
+            ignoreMultiWindows = false, applyAspectRatio = false, customSensitivityK = null
+        )
+        assertEquals(15.5f * 400f * DimenCache.INV_BASE_RATIO, out, 0.001f)
+    }
+
+    @Test
+    fun auto_fractionalBaseValue_preserved() {
+        val cfg = config(300)
+        val out = calculateAutoDpCompose(
+            0.7f, cfg, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT,
+            ignoreMultiWindows = false, applyAspectRatio = false, customSensitivityK = null
+        )
+        val scale = 300f * DimenCache.INV_BASE_RATIO
+        assertEquals(0.7f * scale, out, 0.001f)
+    }
 }

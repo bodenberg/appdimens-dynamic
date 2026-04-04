@@ -437,7 +437,7 @@ object DimenFitSp {
      * PT Inicia a cadeia de construção para a dimensão customizada FitSp a partir de um Float base.
      */
     @JvmStatic
-    fun scaled(initialBaseValue: Float): FitSp = FitSp(initialBaseValue.toInt())
+    fun scaled(initialBaseValue: Float): FitSp = FitSp(initialBaseValue)
 
     // EN Qualifier-based conditional dynamic scaling for Sp.
     // PT Escalonamento condicional baseado em qualificador para Sp.

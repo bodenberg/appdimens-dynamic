@@ -437,7 +437,7 @@ object DimenPowerSp {
      * PT Inicia a cadeia de construção para a dimensão customizada PowerSp a partir de um Float base.
      */
     @JvmStatic
-    fun scaled(initialBaseValue: Float): PowerSp = PowerSp(initialBaseValue.toInt())
+    fun scaled(initialBaseValue: Float): PowerSp = PowerSp(initialBaseValue)
 
     // EN Qualifier-based conditional dynamic scaling for Sp.
     // PT Escalonamento condicional baseado em qualificador para Sp.

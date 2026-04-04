@@ -290,7 +290,7 @@ class DimenDensityScaled private constructor(
         val dpToUse = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return dpToUse.toInt().toDynamicDensityDp(
+        return dpToUse.toFloat().toDynamicDensityDp(
             context,
             finalQualifier,
             foundEntry?.inverter ?: Inverter.DEFAULT,

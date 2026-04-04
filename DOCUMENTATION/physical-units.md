@@ -6,12 +6,19 @@ Conversion of **real-world** measures (millimeters, centimeters, inches) using `
 
 ## Calculation used
 
-- **`toMm(mm, resources, context?)`**: `TypedValue.COMPLEX_UNIT_MM` → **dp** as `Float` (`/ density`); may use **`DimenCache`** (`CalcType.UNITIES`).
-- **`toCm(cm, resources)`**: implemented via mm conversion → **px** `Float` from `applyDimension` (see source).
-- **`toInch(inches, resources)`**: **px** `Float`.
-- **Composable** `Float`/`Int`.`mm` / `.cm` / `.inch`: wrap the above with `LocalDensity` / `LocalResources` — **return `Float`** (physical conversion result); for layout, convert to `Dp` with **`.dp`** where appropriate.
+- **`toMm(mm, resources, context?)`**: `TypedValue.COMPLEX_UNIT_MM` divided by **`density`** → **dp** as `Float`; may use **`DimenCache`** (`CalcType.UNITIES`).
+- **`toCm(cm, resources, context?)`**: same pattern as `toMm` via mm (`cm × 10`) → **dp** `Float` (cached like `toMm`).
+- **`toInch(inches, resources, context?)`**: `TypedValue.COMPLEX_UNIT_IN` divided by **`density`** → **dp** `Float` (cached like `toMm`).
+- **Composable** `Float` / `Int` **`.mm`**, **`.cm`**, **`.inch`**: wrap the above with `LocalDensity` / `LocalResources` / `LocalContext`. They return a **`Float` in dp-equivalent units** (not layout pixels). For Compose layout, use **`.dp`** on the result, e.g. `10f.mm.dp`.
 
 Pure helpers (`convertMmToCm`, `inchToMm`, …) are **math-only** between unit labels.
+
+**Code module (`com.appdimens.dynamic.code.units.DimenPhysicalUnits`):**
+
+- **`toPxFromMm` / `Cm` / `Inch`**: direct `applyDimension` → **pixels** (no double conversion).
+- **`toDpFromMm` / `Cm` / `Inch`**: physical unit → **dp**.
+- **`toSpFromMm` / `Cm` / `Inch`**: via dp and **`scaledDensity`**.
+- **`radiusFromDiameter`** / **`radiusFromCircumference`**: radius in **dp** after normalizing the diameter/circumference: **MM / CM / INCH** via `toDp*`, **DP** raw, **SP** as `value × (scaledDensity / density)`, **PX** as `value / density`.
 
 ## How to use
 
@@ -27,38 +34,38 @@ Modifier.height(2.5f.cm.dp)
 ```
 
 | Composable property | Receivers | Return | Typical use |
-|--------------------|-----------|--------|---------------|
-| `mm` | `Float`, `Int` | `Float` | `10f.mm.dp` → `Dp` for `Modifier` |
-| `cm` | `Float`, `Int` | `Float` | `2.5f.cm.dp` |
-| `inch` | `Float`, `Int` | `Float` | `1f.inch.dp` |
+|--------------------|-----------|--------|-------------|
+| `mm` | `Float`, `Int` | `Float` (dp) | `10f.mm.dp` → `Dp` for `Modifier` |
+| `cm` | `Float`, `Int` | `Float` (dp) | `2.5f.cm.dp` |
+| `inch` | `Float`, `Int` | `Float` (dp) | `1f.inch.dp` |
 
-**Composable instance helpers** (on `DimenPhysicalUnits` receiver in the same file)
+**Composable instance helpers** (on `DimenPhysicalUnits` in the same file)
 
 | API | Example |
 |-----|---------|
-| `Float.radius(type: UnitType)` | `48f.radius(UnitType.MM)` — radius in px |
+| `Float.radius(type: UnitType)` | `48f.radius(UnitType.MM)` — radius in **dp** |
 | `Number.radius(type: UnitType)` | `48.radius(UnitType.DP)` |
 | `Float.measureDiameter(isCircumference: Boolean)` | Toggle diameter vs circumference display |
 | `Number.measureDiameter(isCircumference: Boolean)` | Same |
 
-**Object `DimenPhysicalUnits` (code / tests)**
+**Object `DimenPhysicalUnits` (Compose) — non-composable helpers**
 
 | API | Role | Example |
 |-----|------|---------|
 | `toMm(mm, resources, context?)` | mm → dp `Float` | `DimenPhysicalUnits.toMm(10f, resources)` |
-| `toCm(cm, resources)` | cm → px `Float` | `DimenPhysicalUnits.toCm(2.5f, resources)` |
-| `toInch(inches, resources)` | inch → px `Float` | `DimenPhysicalUnits.toInch(1f, resources)` |
+| `toCm(cm, resources, context?)` | cm → dp `Float` | `DimenPhysicalUnits.toCm(2.5f, resources)` |
+| `toInch(inches, resources, context?)` | inch → dp `Float` | `DimenPhysicalUnits.toInch(1f, resources)` |
 | `convertMmToCm` / `convertMmToInch` | pure `Float` | `convertMmToCm(100f)` |
 | `convertCmToMm` / `convertCmToInch` | pure `Float` | `convertCmToInch(2.54f)` |
 | `convertInchToCm` / `convertInchToMm` | pure `Float` | `convertInchToMm(1f)` |
-| `Float.mmToCm()`, `Number.mmToCm()`, `Float.mmToInch()`, … | sugar over `convert*` | `5f.mmToInch()` |
-| `Float.cmToMm()`, `Number.cmToMm()`, `Float.cmToInch()`, … | sugar | `1f.cmToMm()` |
-| `Float.inchToCm()`, `Number.inchToCm()`, `Float.inchToMm()`, … | sugar | `1f.inchToCm()` |
-| `radius(diameter, type: UnitType, resources)` | half-size in px | `radius(24f, UnitType.MM, resources)` |
+| `Float.mmToCm()`, `Number.mmToCm()`, … | sugar over `convert*` | `5f.mmToInch()` |
+| `radius(diameter, type: UnitType, resources)` | half-size in **dp** | `radius(24f, UnitType.MM, resources)` |
 | `displayMeasureDiameter(diameter, isCircumference)` | scale for circumference | internal + extensions |
-| `unitSizePerPx(type, resources)` | size of **1.0** unit in px | `unitSizePerPx(UnitType.MM, resources)` |
+| `unitSizeInDp(type, resources)` | size of **1.0** logical unit in **dp** (mm/cm/inch/dp/sp/px normalized to dp) | `unitSizeInDp(UnitType.MM, resources)` |
 
-Use **`UnitType`** (`MM`, `CM`, `INCH`, `SP`, `DP`, …) with `radius` and `unitSizePerPx`.
+Use **`UnitType`** (`MM`, `CM`, `INCH`, `SP`, `DP`, `PX`, …) with `radius` and `unitSizeInDp`.
+
+> **Note:** the former name `unitSizePerPx` was renamed to **`unitSizeInDp`** because the values are expressed in **dp**, not raw pixels. If you still see `unitSizePerPx` in an old **KDoc** export under `DOCUMENTATION/KDOC/`, regenerate HTML with Dokka (see [README.md](README.md) in this folder).
 
 ## Why use it
 

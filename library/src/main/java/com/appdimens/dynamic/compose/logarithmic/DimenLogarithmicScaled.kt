@@ -367,7 +367,7 @@ class DimenLogarithmicScaled private constructor(
             priority = 4,
             inverter = inverter
         )
-        return DimenLogarithmicScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenLogarithmicScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     // EN Composable resolution logic.
@@ -456,8 +456,8 @@ class DimenLogarithmicScaled private constructor(
         // ou o 'finalQualifierResolver' específico da entrada customizada, se definido.
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicLogarithmicDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val baseDp = dpToUse.value
+        return baseDp.toDynamicLogarithmicDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @SuppressLint("ConfigurationScreenWidthHeight")
@@ -512,8 +512,8 @@ class DimenLogarithmicScaled private constructor(
 
         val dpToUse: Dp = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
-        val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicLogarithmicPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val baseDp = dpToUse.value
+        return baseDp.toDynamicLogarithmicPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**

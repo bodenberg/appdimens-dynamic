@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.fillSp().screen(...)`.
  */
 @Composable
-fun TextUnit.fillSp(): FillSp = FillSp(this.value.toInt())
+fun TextUnit.fillSp(): FillSp = FillSp(this.value)
 
 /**
  * EN Starts the build chain for FillSp from a base Int (treated as sp).

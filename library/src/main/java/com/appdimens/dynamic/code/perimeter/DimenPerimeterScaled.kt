@@ -290,7 +290,7 @@ class DimenPerimeterScaled private constructor(
         val dpToUse = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return dpToUse.toInt().toDynamicPerimeterDp(
+        return dpToUse.toFloat().toDynamicPerimeterDp(
             context,
             finalQualifier,
             foundEntry?.inverter ?: Inverter.DEFAULT,

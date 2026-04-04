@@ -33,188 +33,90 @@ import com.appdimens.dynamic.common.UnitType
  */
 object DimenPhysicalUnits {
 
-    // MARK: - Constants
-
-    /**
-     * EN Points per inch (standard resolution).
-     * PT Pontos por polegada (resolução padrão).
-     */
-    const val POINTS_PER_INCH = 72.0f
-
-    /**
-     * EN Points per centimeter.
-     * PT Pontos por centímetro.
-     */
-    const val POINTS_PER_CM = POINTS_PER_INCH / 2.54f
-
-    /**
-     * EN Points per millimeter.
-     * PT Pontos por milímetro.
-     */
-    const val POINTS_PER_MM = POINTS_PER_CM / 10.0f
-
     // MARK: - Conversion Methods
 
     /**
      * EN Converts millimeters to Dp.
-     * @param mm The value in millimeters.
-     * @param resources The Context's Resources.
-     * @return The value in Dp.
      * PT Converte milímetros para Dp.
-     * @param mm O valor em milímetros.
-     * @param resources Os Resources do Context.
-     * @return O valor em Dp.
      */
     @JvmStatic
     fun toDpFromMm(mm: Float, resources: Resources): Float {
-        val points = mm * POINTS_PER_MM
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_PT, points, resources.displayMetrics
-        )
+        val dm = resources.displayMetrics
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, mm, dm) / dm.density
     }
 
     /**
      * EN Converts centimeters to Dp.
-     * @param cm The value in centimeters.
-     * @param resources The Context's Resources.
-     * @return The value in Dp.
      * PT Converte centímetros para Dp.
-     * @param cm O valor em centímetros.
-     * @param resources Os Resources do Context.
-     * @return O valor em Dp.
      */
     @JvmStatic
     fun toDpFromCm(cm: Float, resources: Resources): Float {
-        val points = cm * POINTS_PER_CM
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_PT, points, resources.displayMetrics
-        )
+        val dm = resources.displayMetrics
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, cm * 10f, dm) / dm.density
     }
 
     /**
      * EN Converts inches to Dp.
-     * @param inch The value in inches.
-     * @param resources The Context's Resources.
-     * @return The value in Dp.
      * PT Converte polegadas para Dp.
-     * @param inch O valor em polegadas.
-     * @param resources Os Resources do Context.
-     * @return O valor em Dp.
      */
     @JvmStatic
     fun toDpFromInch(inch: Float, resources: Resources): Float {
-        val points = inch * POINTS_PER_INCH
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_PT, points, resources.displayMetrics
-        )
+        val dm = resources.displayMetrics
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_IN, inch, dm) / dm.density
     }
 
     /**
      * EN Converts millimeters to Pixels.
-     * @param mm The value in millimeters.
-     * @param resources The Context's Resources.
-     * @return The value in Pixels.
      * PT Converte milímetros para Pixels.
-     * @param mm O valor em milímetros.
-     * @param resources Os Resources do Context.
-     * @return O valor em Pixels.
      */
     @JvmStatic
-    fun toPxFromMm(mm: Float, resources: Resources): Float {
-        val dp = toDpFromMm(mm, resources)
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics
-        )
-    }
+    fun toPxFromMm(mm: Float, resources: Resources): Float =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, mm, resources.displayMetrics)
 
     /**
      * EN Converts centimeters to Pixels.
-     * @param cm The value in centimeters.
-     * @param resources The Context's Resources.
-     * @return The value in Pixels.
      * PT Converte centímetros para Pixels.
-     * @param cm O valor em centímetros.
-     * @param resources Os Resources do Context.
-     * @return O valor em Pixels.
      */
     @JvmStatic
-    fun toPxFromCm(cm: Float, resources: Resources): Float {
-        val dp = toDpFromCm(cm, resources)
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics
-        )
-    }
+    fun toPxFromCm(cm: Float, resources: Resources): Float =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, cm * 10f, resources.displayMetrics)
 
     /**
      * EN Converts inches to Pixels.
-     * @param inch The value in inches.
-     * @param resources The Context's Resources.
-     * @return The value in Pixels.
      * PT Converte polegadas para Pixels.
-     * @param inch O valor em polegadas.
-     * @param resources Os Resources do Context.
-     * @return O valor em Pixels.
      */
     @JvmStatic
-    fun toPxFromInch(inch: Float, resources: Resources): Float {
-        val dp = toDpFromInch(inch, resources)
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics
-        )
-    }
+    fun toPxFromInch(inch: Float, resources: Resources): Float =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_IN, inch, resources.displayMetrics)
 
     /**
      * EN Converts millimeters to SP.
-     * @param mm The value in millimeters.
-     * @param resources The Context's Resources.
-     * @return The value in SP.
      * PT Converte milímetros para SP.
-     * @param mm O valor em milímetros.
-     * @param resources Os Resources do Context.
-     * @return O valor em SP.
      */
     @JvmStatic
     fun toSpFromMm(mm: Float, resources: Resources): Float {
-        val dp = toDpFromMm(mm, resources)
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_SP, dp, resources.displayMetrics
-        )
+        val dm = resources.displayMetrics
+        return toPxFromMm(mm, resources) / dm.scaledDensity
     }
 
     /**
      * EN Converts centimeters to SP.
-     * @param cm The value in centimeters.
-     * @param resources The Context's Resources.
-     * @return The value in SP.
      * PT Converte centímetros para SP.
-     * @param cm O valor em centímetros.
-     * @param resources Os Resources do Context.
-     * @return O valor em SP.
      */
     @JvmStatic
     fun toSpFromCm(cm: Float, resources: Resources): Float {
-        val dp = toDpFromCm(cm, resources)
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_SP, dp, resources.displayMetrics
-        )
+        val dm = resources.displayMetrics
+        return toPxFromCm(cm, resources) / dm.scaledDensity
     }
 
     /**
      * EN Converts inches to SP.
-     * @param inch The value in inches.
-     * @param resources The Context's Resources.
-     * @return The value in SP.
      * PT Converte polegadas para SP.
-     * @param inch O valor em polegadas.
-     * @param resources Os Resources do Context.
-     * @return O valor em SP.
      */
     @JvmStatic
     fun toSpFromInch(inch: Float, resources: Resources): Float {
-        val dp = toDpFromInch(inch, resources)
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_SP, dp, resources.displayMetrics
-        )
+        val dm = resources.displayMetrics
+        return toPxFromInch(inch, resources) / dm.scaledDensity
     }
 
     // MARK: - Utility Methods
@@ -238,7 +140,8 @@ object DimenPhysicalUnits {
             UnitType.CM -> toDpFromCm(diameter, resources)
             UnitType.INCH -> toDpFromInch(diameter, resources)
             UnitType.DP -> diameter
-            else -> diameter
+            UnitType.SP -> diameter * (resources.displayMetrics.scaledDensity / resources.displayMetrics.density)
+            UnitType.PX -> diameter / resources.displayMetrics.density
         }
         
         return diameterInDp / 2.0f
@@ -247,12 +150,12 @@ object DimenPhysicalUnits {
     /**
      * EN Converts a circumference value in a specific physical unit to radius in Dp.
      * @param circumference The circumference value.
-     * @param unitType The unit type (mm, cm, inch).
+     * @param unitType The unit type (mm, cm, inch, dp, sp, px).
      * @param resources The Context's Resources.
      * @return The radius in Dp.
      * PT Converte um valor de circunferência em uma unidade física específica para raio em Dp.
      * @param circumference O valor da circunferência.
-     * @param unitType O tipo de unidade (mm, cm, inch).
+     * @param unitType O tipo de unidade (mm, cm, inch, dp, sp, px).
      * @param resources Os Resources do Context.
      * @return O raio em Dp.
      */
@@ -263,7 +166,8 @@ object DimenPhysicalUnits {
             UnitType.CM -> toDpFromCm(circumference, resources)
             UnitType.INCH -> toDpFromInch(circumference, resources)
             UnitType.DP -> circumference
-            else -> circumference
+            UnitType.SP -> circumference * (resources.displayMetrics.scaledDensity / resources.displayMetrics.density)
+            UnitType.PX -> circumference / resources.displayMetrics.density
         }
         
         return circumferenceInDp / (2.0f * kotlin.math.PI.toFloat())

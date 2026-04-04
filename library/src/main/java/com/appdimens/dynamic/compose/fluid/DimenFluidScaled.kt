@@ -367,7 +367,7 @@ class DimenFluidScaled private constructor(
             priority = 4,
             inverter = inverter
         )
-        return DimenFluidScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenFluidScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     // EN Composable resolution logic.
@@ -456,8 +456,8 @@ class DimenFluidScaled private constructor(
         // ou o 'finalQualifierResolver' específico da entrada customizada, se definido.
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicFluidDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val baseDp = dpToUse.value
+        return baseDp.toDynamicFluidDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @SuppressLint("ConfigurationScreenWidthHeight")
@@ -512,8 +512,8 @@ class DimenFluidScaled private constructor(
 
         val dpToUse: Dp = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
-        val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicFluidPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val baseDp = dpToUse.value
+        return baseDp.toDynamicFluidPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**

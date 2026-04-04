@@ -367,7 +367,7 @@ class DimenInterpolatedScaled private constructor(
             priority = 4,
             inverter = inverter
         )
-        return DimenInterpolatedScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenInterpolatedScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     // EN Composable resolution logic.
@@ -456,8 +456,8 @@ class DimenInterpolatedScaled private constructor(
         // ou o 'finalQualifierResolver' específico da entrada customizada, se definido.
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicInterpolatedDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val baseDp = dpToUse.value
+        return baseDp.toDynamicInterpolatedDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @SuppressLint("ConfigurationScreenWidthHeight")
@@ -512,8 +512,8 @@ class DimenInterpolatedScaled private constructor(
 
         val dpToUse: Dp = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
-        val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicInterpolatedPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val baseDp = dpToUse.value
+        return baseDp.toDynamicInterpolatedPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**

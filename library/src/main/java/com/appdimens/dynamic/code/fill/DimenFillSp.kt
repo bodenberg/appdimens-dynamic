@@ -437,7 +437,7 @@ object DimenFillSp {
      * PT Inicia a cadeia de construção para a dimensão customizada FillSp a partir de um Float base.
      */
     @JvmStatic
-    fun scaled(initialBaseValue: Float): FillSp = FillSp(initialBaseValue.toInt())
+    fun scaled(initialBaseValue: Float): FillSp = FillSp(initialBaseValue)
 
     // EN Qualifier-based conditional dynamic scaling for Sp.
     // PT Escalonamento condicional baseado em qualificador para Sp.

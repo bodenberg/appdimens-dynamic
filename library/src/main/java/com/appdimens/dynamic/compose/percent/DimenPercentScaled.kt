@@ -367,7 +367,7 @@ class DimenPercentScaled private constructor(
             priority = 4,
             inverter = inverter
         )
-        return DimenPercentScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows)
+        return DimenPercentScaled(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     // EN Composable resolution logic.
@@ -456,8 +456,8 @@ class DimenPercentScaled private constructor(
         // ou o 'finalQualifierResolver' específico da entrada customizada, se definido.
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicPercentDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val baseDp = dpToUse.value
+        return baseDp.toDynamicPercentDp(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     @SuppressLint("ConfigurationScreenWidthHeight")
@@ -512,8 +512,8 @@ class DimenPercentScaled private constructor(
 
         val dpToUse: Dp = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
-        val baseIntDp = dpToUse.value.toInt()
-        return baseIntDp.toDynamicPercentPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val baseDp = dpToUse.value
+        return baseDp.toDynamicPercentPx(finalQualifier, foundEntry?.inverter ?: Inverter.DEFAULT, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
     }
 
     /**

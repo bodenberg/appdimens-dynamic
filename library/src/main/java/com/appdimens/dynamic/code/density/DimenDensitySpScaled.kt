@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for DensitySp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para DensitySp a partir de um Float base (tratado como sp).
  */
-fun Float.densitySp(): DensitySp = DensitySp(this.toInt())
+fun Float.densitySp(): DensitySp = DensitySp(this)
 
 /**
  * EN Starts the build chain for DensitySp from a base Int (treated as sp).

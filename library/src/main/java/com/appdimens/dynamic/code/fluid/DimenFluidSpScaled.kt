@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for FluidSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para FluidSp a partir de um Float base (tratado como sp).
  */
-fun Float.fluidSp(): FluidSp = FluidSp(this.toInt())
+fun Float.fluidSp(): FluidSp = FluidSp(this)
 
 /**
  * EN Starts the build chain for FluidSp from a base Int (treated as sp).

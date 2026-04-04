@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for PowerSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para PowerSp a partir de um Float base (tratado como sp).
  */
-fun Float.powerSp(): PowerSp = PowerSp(this.toInt())
+fun Float.powerSp(): PowerSp = PowerSp(this)
 
 /**
  * EN Starts the build chain for PowerSp from a base Int (treated as sp).

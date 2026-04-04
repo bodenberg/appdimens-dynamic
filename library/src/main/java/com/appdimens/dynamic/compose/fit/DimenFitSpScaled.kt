@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.fitSp().screen(...)`.
  */
 @Composable
-fun TextUnit.fitSp(): FitSp = FitSp(this.value.toInt())
+fun TextUnit.fitSp(): FitSp = FitSp(this.value)
 
 /**
  * EN Starts the build chain for FitSp from a base Int (treated as sp).

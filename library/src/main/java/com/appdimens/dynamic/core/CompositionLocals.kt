@@ -49,7 +49,9 @@ fun AppDimensProvider(content: @Composable () -> Unit) {
     val foldingFeature = windowLayoutInfo?.value?.displayFeatures
         ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
         
-    val uiModeType = UiModeType.fromConfiguration(context, foldingFeature)
+    val uiModeType = remember(context, foldingFeature) {
+        UiModeType.fromConfiguration(context, foldingFeature)
+    }
     
     CompositionLocalProvider(LocalUiModeType provides uiModeType) {
         content()
@@ -61,15 +63,11 @@ fun AppDimensProvider(content: @Composable () -> Unit) {
  * PT Auxiliar interno para obter o UiModeType, recalculando se não for fornecido.
  */
 @Composable
-@ReadOnlyComposable
 internal fun getCurrentUiModeType(): UiModeType {
     val provided = LocalUiModeType.current
     if (provided != UiModeType.UNDEFINED) return provided
-    
-    // Fallback if AppDimensProvider is not used (less efficient but maintains backward compatibility)
     val context = LocalContext.current
-    // Note: We don't use WindowInfoTracker here as it's not ReadOnlyComposable and expensive
-    return UiModeType.fromConfiguration(context, null)
+    return remember(context) { UiModeType.fromConfiguration(context, null) }
 }
 
 /**

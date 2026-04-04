@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for ScaledSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para ScaledSp a partir de um Float base (tratado como sp).
  */
-fun Float.scaledSp(): ScaledSp = ScaledSp(this.toInt())
+fun Float.scaledSp(): ScaledSp = ScaledSp(this)
 
 /**
  * EN Starts the build chain for ScaledSp from a base Int (treated as sp).

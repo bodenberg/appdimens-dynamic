@@ -437,7 +437,7 @@ object DimenLogarithmicSp {
      * PT Inicia a cadeia de construção para a dimensão customizada LogarithmicSp a partir de um Float base.
      */
     @JvmStatic
-    fun scaled(initialBaseValue: Float): LogarithmicSp = LogarithmicSp(initialBaseValue.toInt())
+    fun scaled(initialBaseValue: Float): LogarithmicSp = LogarithmicSp(initialBaseValue)
 
     // EN Qualifier-based conditional dynamic scaling for Sp.
     // PT Escalonamento condicional baseado em qualificador para Sp.

@@ -38,6 +38,7 @@ import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.core.DimenCache
+import com.appdimens.dynamic.core.DimenCalculationPlumbing
 import com.appdimens.dynamic.core.LocalUiModeType
 import com.appdimens.dynamic.core.layoutRememberStamp
 import com.appdimens.dynamic.core.pxRememberStamp
@@ -687,48 +688,25 @@ internal fun calculateSspValueCompose(
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
-    var actualQualifier = qualifier
-    when (inverter) {
-        Inverter.PH_TO_LW -> if (isLandscape && qualifier == DpQualifier.HEIGHT)      actualQualifier = DpQualifier.WIDTH
-        Inverter.PW_TO_LH -> if (isLandscape && qualifier == DpQualifier.WIDTH)       actualQualifier = DpQualifier.HEIGHT
-        Inverter.LH_TO_PW -> if (isPortrait  && qualifier == DpQualifier.HEIGHT)      actualQualifier = DpQualifier.WIDTH
-        Inverter.LW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.WIDTH)       actualQualifier = DpQualifier.HEIGHT
-        Inverter.SW_TO_LH -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-        Inverter.SW_TO_LW -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-        Inverter.SW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-        Inverter.SW_TO_PW -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-        Inverter.DEFAULT  -> {}
+    val actualQualifier = DimenCalculationPlumbing.effectiveQualifier(qualifier, inverter, isLandscape, isPortrait)
+
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) {
+        return baseValue
     }
 
-    val isMultiWindow = if (ignoreMultiWindows) {
-        val swDp = configuration.smallestScreenWidthDp.toFloat()
-        val cwDp = configuration.screenWidthDp.toFloat()
-        val isLayoutSplit = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
-        val isSmallDiff = (swDp - cwDp) < (swDp * 0.1f)
-        isLayoutSplit && !isSmallDiff
-    } else false
+    val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
+    if (isDefaultSw && customSensitivityK == null) {
+        return DimenCache.calculateRawScaling(baseValue, applyAspectRatio, null)
+    }
 
-    return if (isMultiWindow) {
-        baseValue
+    val screenDim = DimenCalculationPlumbing.readScreenDp(configuration, actualQualifier)
+    val scale = screenDim * DimenCache.INV_BASE_RATIO
+    return if (applyAspectRatio) {
+        val diff = screenDim - 300f
+        val adj = (customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT) * DimenCache.currentLogNormalizedAr
+        baseValue * (1.0f + diff * (DimenCache.ADJUSTMENT_SCALE + adj))
     } else {
-        val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
-        if (isDefaultSw && customSensitivityK == null) {
-            DimenCache.calculateRawScaling(baseValue, applyAspectRatio, null)
-        } else {
-            val screenDim = when (actualQualifier) {
-                DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
-                DpQualifier.WIDTH  -> configuration.screenWidthDp.toFloat()
-                else               -> configuration.smallestScreenWidthDp.toFloat()
-            }
-            val scale = screenDim * 0.0033333334f
-            if (applyAspectRatio) {
-                val diff = screenDim - 300f
-                val adj = (customSensitivityK ?: 0.0026666667f) * DimenCache.currentLogNormalizedAr
-                baseValue * (1.0f + diff * (0.0033333334f + adj))
-            } else {
-                baseValue * scale
-            }
-        }
+        baseValue * scale
     }
 }
 

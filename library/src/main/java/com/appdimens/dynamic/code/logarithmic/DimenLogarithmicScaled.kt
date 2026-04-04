@@ -290,7 +290,7 @@ class DimenLogarithmicScaled private constructor(
         val dpToUse = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return dpToUse.toInt().toDynamicLogarithmicDp(
+        return dpToUse.toFloat().toDynamicLogarithmicDp(
             context,
             finalQualifier,
             foundEntry?.inverter ?: Inverter.DEFAULT,

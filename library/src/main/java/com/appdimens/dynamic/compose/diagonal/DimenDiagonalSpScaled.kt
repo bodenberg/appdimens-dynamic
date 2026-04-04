@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.diagonalSp().screen(...)`.
  */
 @Composable
-fun TextUnit.diagonalSp(): DiagonalSp = DiagonalSp(this.value.toInt())
+fun TextUnit.diagonalSp(): DiagonalSp = DiagonalSp(this.value)
 
 /**
  * EN Starts the build chain for DiagonalSp from a base Int (treated as sp).

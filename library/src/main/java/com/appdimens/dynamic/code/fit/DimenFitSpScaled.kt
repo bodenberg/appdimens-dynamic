@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for FitSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para FitSp a partir de um Float base (tratado como sp).
  */
-fun Float.fitSp(): FitSp = FitSp(this.toInt())
+fun Float.fitSp(): FitSp = FitSp(this)
 
 /**
  * EN Starts the build chain for FitSp from a base Int (treated as sp).

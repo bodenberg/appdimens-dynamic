@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for InterpolatedSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para InterpolatedSp a partir de um Float base (tratado como sp).
  */
-fun Float.interpolatedSp(): InterpolatedSp = InterpolatedSp(this.toInt())
+fun Float.interpolatedSp(): InterpolatedSp = InterpolatedSp(this)
 
 /**
  * EN Starts the build chain for InterpolatedSp from a base Int (treated as sp).

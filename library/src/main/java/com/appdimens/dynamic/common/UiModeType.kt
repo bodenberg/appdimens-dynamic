@@ -149,22 +149,20 @@ enum class UiModeType(val configValue: Int) {
             // EN 1. Try to use Jetpack WindowManager FoldingFeature if provided
             // PT 1. Tenta usar o FoldingFeature do Jetpack WindowManager se fornecido
             if (foldingFeature != null) {
-                // If it's a folding feature, we decide if it's Fold or Flip based on orientation,
-                // and if it's open, closed or half_opened based on state.
-                
                 val isFold = foldingFeature.orientation == androidx.window.layout.FoldingFeature.Orientation.VERTICAL
                 
                 return if (isFold) {
-                    when {
-                        foldingFeature.state == androidx.window.layout.FoldingFeature.State.FLAT -> FOLD_OPEN
-                        foldingFeature.state == androidx.window.layout.FoldingFeature.State.HALF_OPENED -> FOLD_HALF_OPENED
+                    when (foldingFeature.state) {
+                        androidx.window.layout.FoldingFeature.State.FLAT -> FOLD_OPEN
+                        androidx.window.layout.FoldingFeature.State.HALF_OPENED -> FOLD_HALF_OPENED
+                        // Defensive: FoldingFeature is typically absent when closed;
+                        // future API versions may add new states.
                         else -> FOLD_CLOSED
                     }
                 } else {
-                    // Usually horizontal fold is a Flip device.
-                    when {
-                        foldingFeature.state == androidx.window.layout.FoldingFeature.State.FLAT -> FLIP_OPEN
-                        foldingFeature.state == androidx.window.layout.FoldingFeature.State.HALF_OPENED -> FLIP_HALF_OPENED
+                    when (foldingFeature.state) {
+                        androidx.window.layout.FoldingFeature.State.FLAT -> FLIP_OPEN
+                        androidx.window.layout.FoldingFeature.State.HALF_OPENED -> FLIP_HALF_OPENED
                         else -> FLIP_CLOSED
                     }
                 }
@@ -191,11 +189,20 @@ enum class UiModeType(val configValue: Int) {
                 val currentSwDp = config.smallestScreenWidthDp
                 
                 return if (isFold) {
-                    if (currentSwDp >= 600) FOLD_OPEN else FOLD_CLOSED
+                    val unfoldedThreshold = (maxSwDp * 0.85f).toInt()
+                    when {
+                        currentSwDp >= unfoldedThreshold -> FOLD_OPEN
+                        currentSwDp >= (unfoldedThreshold * 0.6f).toInt() -> FOLD_HALF_OPENED
+                        else -> FOLD_CLOSED
+                    }
                 } else {
-                    // EN Flips when open have normal sizes, but when closed they are tiny
-                    // PT Flips quando abertos têm tamanhos normais, mas quando fechados são minúsculos
-                    if (currentSwDp < 400 && config.screenHeightDp < 400) FLIP_CLOSED else FLIP_OPEN
+                    val area = config.screenWidthDp * config.screenHeightDp
+                    val unfoldedArea = (maxSwDp * maxSwDp * 0.7f).toInt()
+                    when {
+                        area >= unfoldedArea -> FLIP_OPEN
+                        area >= (unfoldedArea * 0.5f).toInt() -> FLIP_HALF_OPENED
+                        else -> FLIP_CLOSED
+                    }
                 }
             }
 

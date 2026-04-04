@@ -211,7 +211,9 @@ object AspectRatioLookup {
     )
 
     init {
-        // Runtime assertion: keys must be sorted (debug-only cost, stripped by R8 in release)
+        require(keys.size == values.size) {
+            "AspectRatioLookup: keys (${keys.size}) and values (${values.size}) must have same length"
+        }
         for (i in 1 until keys.size) {
             require(keys[i] >= keys[i - 1]) {
                 "AspectRatioLookup.keys is not sorted at index $i: ${keys[i-1]} > ${keys[i]}"
@@ -220,7 +222,7 @@ object AspectRatioLookup {
     }
 
     /**
-     * Binary search with tolerance.  O(log n) ≈ 7 comparisons for 130 entries.
+     * Binary search with tolerance.  O(log n) ≈ 7 comparisons for 111 entries.
      *
      * @param normalizedAr  `currentAr / 1.78f`
      * @return `ln(normalizedAr)` from the table, or `null` if not within tolerance.

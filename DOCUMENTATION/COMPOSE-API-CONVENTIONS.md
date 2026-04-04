@@ -229,7 +229,9 @@ Entries are sorted by **priority** (1 = most specific) and **qualifier value** (
 | 3 | `DpQualifier` + threshold | `.screen(DpQualifier.SMALL_WIDTH, 600, 24)` |
 | 4 | `Orientation` | `.screen(Orientation.LANDSCAPE, 12)` |
 
-Each overload has variants taking `customValue` as `Dp` or `Number`, and optional `finalQualifierResolver`, `inverter`.
+Each overload has variants taking `customValue` as `Dp` or `Number`, and optional `finalQualifierResolver`, `inverter`. The **`Number`** branch must preserve the same **`applyAspectRatio`** and **`customSensitivityK`** as the **`Dp`** branch (fractional dp values are kept as `Float`, not truncated to `Int`).
+
+**Physical units (mm / cm / inch)** are documented in [physical-units.md](physical-units.md) (`unitSizeInDp`, `radius` in dp, `code.units` conversions).
 
 ### 6.4 Resolution properties (`DimenScaled`)
 
@@ -489,4 +491,6 @@ When the library adds a new property or facilitator, update:
 1. The Kotlin sources under `library/src/main/java/com/appdimens/dynamic/compose/`.
 2. This file (or regenerate Appendix A with the project script).
 3. The strategy overview in [scaled.md](scaled.md) and [README.md](../README.md).
+4. Regenerate API HTML under **`DOCUMENTATION/KDOC/`** with `./gradlew :library:dokkaGenerateHtml` (then copy/sync output per project convention) so symbol pages match renamed members (e.g. `unitSizeInDp`).
+5. [physical-units.md](physical-units.md) when `DimenPhysicalUnits` or `code.units` behavior changes.
 

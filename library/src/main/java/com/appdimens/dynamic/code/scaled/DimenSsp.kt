@@ -437,7 +437,7 @@ object DimenSsp {
      * PT Inicia a cadeia de construção para a dimensão customizada ScaledSp a partir de um Float base.
      */
     @JvmStatic
-    fun scaled(initialBaseValue: Float): ScaledSp = ScaledSp(initialBaseValue.toInt())
+    fun scaled(initialBaseValue: Float): ScaledSp = ScaledSp(initialBaseValue)
 
     // EN Qualifier-based conditional dynamic scaling for Sp.
     // PT Escalonamento condicional baseado em qualificador para Sp.

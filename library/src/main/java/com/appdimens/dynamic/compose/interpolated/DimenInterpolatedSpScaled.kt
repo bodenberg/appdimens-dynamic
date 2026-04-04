@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.interpolatedSp().screen(...)`.
  */
 @Composable
-fun TextUnit.interpolatedSp(): InterpolatedSp = InterpolatedSp(this.value.toInt())
+fun TextUnit.interpolatedSp(): InterpolatedSp = InterpolatedSp(this.value)
 
 /**
  * EN Starts the build chain for InterpolatedSp from a base Int (treated as sp).

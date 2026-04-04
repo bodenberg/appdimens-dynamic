@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.percentSp().screen(...)`.
  */
 @Composable
-fun TextUnit.percentSp(): PercentSp = PercentSp(this.value.toInt())
+fun TextUnit.percentSp(): PercentSp = PercentSp(this.value)
 
 /**
  * EN Starts the build chain for PercentSp from a base Int (treated as sp).

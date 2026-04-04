@@ -32,6 +32,8 @@ Modifier.padding(16.sdp).width(100.wdp)
 
 Each strategy follows the same **file pattern**: `Dimen*Dp`, `*DpExtensions`, `*Scaled`, `*Sp`, `*SpExtensions`, `*SpScaled` (in `scaled`, Sp templates may use names like `DimenSsp*` in legacy code).
 
+**Builders (`scaledDp` / `scaledSp`):** `customValue` accepts **fractional** dp/sp (`Number` / `Dp`); values are **not** truncated to integers. The **`screen(..., customValue: Number)`** overload forwards **`applyAspectRatio`** and **`customSensitivityK`** like the **`Dp`** overload. **SSP** scaling uses the same **`DimenCalculationPlumbing`** multi-window and qualifier rules as the Dp path.
+
 ## Why use it
 
 It is the library’s balanced choice: **predictable**, tightly integrated with **DimenCache**, supports **builders** (`scaledDp()` / `scaledSp()`), facilitators (rotation, UI mode, qualifier), and inverters — without exotic curves.

@@ -13,9 +13,6 @@ fun literalPercentOfScreenDp(
     configuration: Configuration,
     ignoreMultiWindows: Boolean,
 ): Float {
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) {
-        return percent
-    }
     val dim = DimenCalculationPlumbing.readScreenDp(configuration, qualifier)
     return (percent / 100f) * dim
 }
@@ -26,8 +23,5 @@ fun literalPercentOfReferenceDp(
     configuration: Configuration,
     ignoreMultiWindows: Boolean,
 ): Float {
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) {
-        return percent
-    }
     return (percent / 100f) * referenceDp
 }

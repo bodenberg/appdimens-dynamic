@@ -48,13 +48,14 @@ fun ResizeBound.resolveToPx(
     density: Float,
     fontScale: Float,
 ): Float {
+    require(density > 0f) { "density must be positive, was $density" }
     val fs = if (fontScale > 0f) fontScale else 1f
     return when (this) {
-        is ResizeBound.FixedDp -> dp * density
-        is ResizeBound.FixedSp -> sp * density * fs
+        is ResizeBound.FixedDp -> dp.coerceAtLeast(0f) * density
+        is ResizeBound.FixedSp -> sp.coerceAtLeast(0f) * density * fs
         is ResizeBound.Percent -> {
             val axisDp = DimenCalculationPlumbing.readScreenDp(configuration, axis)
-            (value / 100f) * axisDp * density
+            (value.coerceIn(0f, 100f) / 100f) * axisDp * density
         }
     }
 }

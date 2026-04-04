@@ -5,12 +5,12 @@
 **Percent** provides two API families:
 
 1. **`psdp` / `phdp` / `pwdp` (and Sp variants)** — scales the base value **linearly** with the chosen axis, equivalent to multiplying by `dim/300` when **`applyAspectRatio` is off**; with **`a`**, uses the same correction family as scaled (difference from base and aspect).
-2. **`space*` extensions** (`DimenPercentSpace.kt`) — return a **true fraction** (receiver 0–100) of width, height, smallest width, or a reference length in dp.
+2. **`space*` extensions** (`DimenPercentSpace.kt`) — interpret the receiver as **0–100** and return **`(percent / 100) × axisOrReference`** in **dp** (or px for `*Px` variants), using the current `Configuration` axis or the given reference length.
 
 ## Calculation used
 
 - **psdp / phdp / pwdp:** in `calculatePercentDpCompose`, without AR: `base × dim × (1/300)`. With AR: aligned with adjustment from difference vs 300 dp and `logNormalizedAr` (as scaled with AR).
-- **`space*`:** explicit percentage of a `Configuration` metric (or reference); full contract in the main README (`i` variants for ignore-multi-window with raw-dp fallback when applicable).
+- **`space*`:** always computes a **length** in dp (or px for `*Px`), including in **multi-window** when the library’s heuristic marks the window as constrained: the axis read is still the **current** window’s `screenWidthDp` / `screenHeightDp` / `smallestScreenWidthDp` (or the reference length). Variants with **`i`** pass `ignoreMultiWindows = true` into the pipeline (affects **psdp**-style scaling elsewhere; **`space*`** still returns a fractional length, not a raw `50` for “50%”).
 
 Suffixes **`a`**, **`i`**, **`ia`** and **inverters** follow the global library pattern.
 
@@ -34,7 +34,7 @@ Use **`space*`** when you need a **literal screen percentage**; use **`psdp`…*
 
 ## Literal `space*` API (`compose.percent` — `DimenPercentSpace.kt`)
 
-**Contract:** the **receiver** is the percentage **0–100** (e.g. `10` → 10%). **`i`** / **`Wi`** / **`Swi`** / … variants set `ignoreMultiWindows = true` (split-screen fallback per library heuristic).
+**Contract:** the **receiver** is the percentage **0–100** (e.g. `10` → 10% of the chosen axis or reference). **`i`** / **`Wi`** / **`Swi`** / … variants set `ignoreMultiWindows = true` for APIs that forward that flag; **`space*`** results remain **dp** (or **px**) derived from the same percentage formula, not the literal receiver value.
 
 ### Screen-axis `Dp` / px (no extra args)
 
@@ -81,7 +81,7 @@ Use **`space*`** when you need a **literal screen percentage**; use **`psdp`…*
 | `spaceSpi(reference: Dp)` / `spaceSpi(reference: Number)` | `TextUnit` + `i` | `10.spaceSpi(200.dp)` |
 | `spaceSpPx` / `spaceSpiPx` | `Float` | `10.spaceSpPx(200.dp)` |
 
-**Recommendation:** prefer **`spaceW` / `spaceSw` / `spaceH`** for true layout %-columns; keep **`psdp`** for token-style scaling. Test **`i`** variants in split-screen if users report jumps.
+**Recommendation:** prefer **`spaceW` / `spaceSw` / `spaceH`** for true layout %-columns; keep **`psdp`** for token-style scaling. For **`psdp` / `pssp`** and other scaled-style APIs, test **`i`** in split-screen (may return **unscaled base** when the multi-window heuristic applies); **`space*`** keeps the **% of axis** semantics.
 
 ## Why use it
 
@@ -95,10 +95,10 @@ For layouts where size should track one screen edge **uniformly**, or for “alw
 ## Advantages and trade-offs
 
 - **Pros:** clear linear math (without AR); `space*` separates “design dp” from “% of screen”.
-- **Cons:** without AR, growth on tablets can be **stronger** than **power**; `space*` needs care with split-screen and the `i` contract.
+- **Cons:** without AR, growth on tablets can be **stronger** than **power**; combine **`psdp`** with **`i`** carefully in split-screen (behavior differs from **`space*`** percentage lengths).
 
 ## Recommended usage strategy
 
-Define most UI tokens with **scaled**; reserve **percent** where the design spec is **explicitly** percentage-based or linear along an edge. Validate multi-window behavior if you use `space*` without `i`.
+Define most UI tokens with **scaled**; reserve **percent** where the design spec is **explicitly** percentage-based or linear along an edge. Validate multi-window behavior for **`psdp`** / **`i`**; **`space*`** continues to express a true **% of window** in dp.
 
 [Back to index](README.md)

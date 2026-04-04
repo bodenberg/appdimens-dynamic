@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.fluidSp().screen(...)`.
  */
 @Composable
-fun TextUnit.fluidSp(): FluidSp = FluidSp(this.value.toInt())
+fun TextUnit.fluidSp(): FluidSp = FluidSp(this.value)
 
 /**
  * EN Starts the build chain for FluidSp from a base Int (treated as sp).

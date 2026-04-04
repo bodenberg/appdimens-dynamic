@@ -139,13 +139,28 @@ object DimenPhysicalUnits {
      */
 
     /**
-     * EN Converts Centimeters (CM) to Pixels (PX).
+     * EN Converts Centimeters (CM) to Dp.
      *
-     * PT Converte Centímetros (CM) para Pixels (PX).
+     * PT Converte Centímetros (CM) para Dp.
      */
-    fun toCm(cm: Float, resources: Resources): Float = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_MM, cm * MM_TO_CM_FACTOR, resources.displayMetrics
-    )
+    fun toCm(cm: Float, resources: Resources, context: android.content.Context? = null): Float {
+        val configuration = resources.configuration
+        val cacheKey = DimenCache.buildKey(
+            baseValue            = cm,
+            isLandscape          = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows   = false,
+            calcType             = DimenCache.CalcType.UNITIES,
+            qualifier            = DpQualifier.HEIGHT,
+            inverter             = Inverter.DEFAULT,
+            applyAspectRatio     = false,
+            valueType            = DimenCache.ValueType.DP,
+            customSensitivityK   = cm
+        )
+        return DimenCache.getOrPut(cacheKey, context) {
+            val dm = resources.displayMetrics
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, cm * MM_TO_CM_FACTOR, dm) / dm.density
+        }
+    }
 
     /**
      * EN Converts Centimeters (CM) to Millimeters (MM).
@@ -196,12 +211,28 @@ object DimenPhysicalUnits {
      */
 
     /**
-     * EN Converts Inches (Inch) to Pixels (PX).
+     * EN Converts Inches (Inch) to Dp.
      *
-     * PT Converte Polegadas (Inch) para Pixels (PX).
+     * PT Converte Polegadas (Inch) para Dp.
      */
-    fun toInch(inches: Float, resources: Resources): Float =
-        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_IN, inches, resources.displayMetrics)
+    fun toInch(inches: Float, resources: Resources, context: android.content.Context? = null): Float {
+        val configuration = resources.configuration
+        val cacheKey = DimenCache.buildKey(
+            baseValue            = inches,
+            isLandscape          = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            ignoreMultiWindows   = false,
+            calcType             = DimenCache.CalcType.UNITIES,
+            qualifier            = DpQualifier.WIDTH,
+            inverter             = Inverter.DEFAULT,
+            applyAspectRatio     = false,
+            valueType            = DimenCache.ValueType.DP,
+            customSensitivityK   = inches
+        )
+        return DimenCache.getOrPut(cacheKey, context) {
+            val dm = resources.displayMetrics
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_IN, inches, dm) / dm.density
+        }
+    }
 
     /**
      * EN Converts Inches (Inch) to Centimeters (CM).
@@ -246,15 +277,15 @@ object DimenPhysicalUnits {
     fun Number.inchToMm(): Float = convertInchToMm(this.toFloat())
 
     /**
-     * EN Composable Extensions for Physical Units in PX.
+     * EN Composable Extensions for Physical Units in Dp.
      *
-     * PT Extensões Composable para Unidades Físicas em PX.
+     * PT Extensões Composable para Unidades Físicas em Dp.
      */
 
     /**
-     * EN Float extension to convert MM to PX.
+     * EN Float extension to convert MM to Dp.
      *
-     * PT Extensão de Float para converter MM para PX.
+     * PT Extensão de Float para converter MM para Dp.
      */
     @get:Composable
     val Float.mm: Float
@@ -265,9 +296,9 @@ object DimenPhysicalUnits {
         }
 
     /**
-     * EN Int extension to convert MM to PX.
+     * EN Int extension to convert MM to Dp.
      *
-     * PT Extensão de Int para converter MM para PX.
+     * PT Extensão de Int para converter MM para Dp.
      */
     @get:Composable
     val Int.mm: Float
@@ -278,51 +309,55 @@ object DimenPhysicalUnits {
         }
 
     /**
-     * EN Float extension to convert CM to PX.
+     * EN Float extension to convert CM to Dp.
      *
-     * PT Extensão de Float para converter CM para PX.
+     * PT Extensão de Float para converter CM para Dp.
      */
     @get:Composable
     val Float.cm: Float
         get() {
+            val context = LocalContext.current
             val resources = LocalResources.current
-            return with(LocalDensity.current) { toCm(this@cm, resources) }
+            return with(LocalDensity.current) { toCm(this@cm, resources, context) }
         }
 
     /**
-     * EN Int extension to convert CM to PX.
+     * EN Int extension to convert CM to Dp.
      *
-     * PT Extensão de Int para converter CM para PX.
+     * PT Extensão de Int para converter CM para Dp.
      */
     @get:Composable
     val Int.cm: Float
         get() {
+            val context = LocalContext.current
             val resources = LocalResources.current
-            return with(LocalDensity.current) { toCm(this@cm.toFloat(), resources) }
+            return with(LocalDensity.current) { toCm(this@cm.toFloat(), resources, context) }
         }
 
     /**
-     * EN Float extension to convert Inch to PX.
+     * EN Float extension to convert Inch to Dp.
      *
-     * PT Extensão de Float para converter Inch para PX.
+     * PT Extensão de Float para converter Inch para Dp.
      */
     @get:Composable
     val Float.inch: Float
         get() {
+            val context = LocalContext.current
             val resources = LocalResources.current
-            return with(LocalDensity.current) { toInch(this@inch, resources) }
+            return with(LocalDensity.current) { toInch(this@inch, resources, context) }
         }
 
     /**
-     * EN Int extension to convert Inch to PX.
+     * EN Int extension to convert Inch to Dp.
      *
-     * PT Extensão de Int para converter Inch para PX.
+     * PT Extensão de Int para converter Inch para Dp.
      */
     @get:Composable
     val Int.inch: Float
         get() {
+            val context = LocalContext.current
             val resources = LocalResources.current
-            return with(LocalDensity.current) { toInch(this@inch.toFloat(), resources) }
+            return with(LocalDensity.current) { toInch(this@inch.toFloat(), resources, context) }
         }
 
     /**
@@ -332,23 +367,27 @@ object DimenPhysicalUnits {
      */
 
     /**
-     * EN Converts a diameter value in a specific physical unit to Radius in Pixels (PX).
+     * EN Converts a diameter value in a specific physical unit to Radius in Dp.
      *
-     * PT Converte um valor de diâmetro em uma unidade física específica para Raio em Pixels (PX).
+     * PT Converte um valor de diâmetro em uma unidade física específica para Raio em Dp.
      */
-    fun radius(diameter: Float, type: UnitType, resources: Resources): Float = when (type) {
-        UnitType.INCH -> toInch(diameter, resources)
-        UnitType.CM -> toCm(diameter, resources)
-        UnitType.MM -> toMm(diameter, resources)
-        UnitType.SP -> diameter.sp.value
-        UnitType.DP -> diameter.dp.value
-        else -> diameter
-    } / 2.0f
+    fun radius(diameter: Float, type: UnitType, resources: Resources): Float {
+        val dm = resources.displayMetrics
+        val inDp = when (type) {
+            UnitType.INCH -> toInch(diameter, resources)
+            UnitType.CM -> toCm(diameter, resources)
+            UnitType.MM -> toMm(diameter, resources)
+            UnitType.SP -> diameter * (dm.scaledDensity / dm.density)
+            UnitType.DP -> diameter
+            UnitType.PX -> diameter / dm.density
+        }
+        return inDp / 2.0f
+    }
 
     /**
-     * EN Float extension to calculate the Radius in Pixels (PX).
+     * EN Float extension to calculate the Radius in Dp.
      *
-     * PT Extensão de Float para calcular o Raio em Pixels (PX).
+     * PT Extensão de Float para calcular o Raio em Dp.
      */
     @Composable
     fun Float.radius(type: UnitType): Float {
@@ -357,9 +396,9 @@ object DimenPhysicalUnits {
     }
 
     /**
-     * EN Int extension to calculate the Radius in Pixels (PX).
+     * EN Int extension to calculate the Radius in Dp.
      *
-     * PT Extensão de Int para calcular o Raio em Pixels (PX).
+     * PT Extensão de Int para calcular o Raio em Dp.
      */
     @Composable
     fun Number.radius(type: UnitType): Float {
@@ -392,17 +431,19 @@ object DimenPhysicalUnits {
         displayMeasureDiameter(this.toFloat(), isCircumference)
 
     /**
-     * EN Calculates the size of 1 unit (1.0f) in Pixels (PX) for a specific physical unit.
+     * EN Calculates the size of 1 unit (1.0f) in Dp for a specific physical unit.
      *
-     * PT Calcula o tamanho de 1 unidade (1.0f) em Pixels (PX) para uma unidade física específica.
+     * PT Calcula o tamanho de 1 unidade (1.0f) em Dp para uma unidade física específica.
      */
-    fun unitSizePerPx(type: UnitType, resources: Resources): Float =
-        when (type) {
+    fun unitSizeInDp(type: UnitType, resources: Resources): Float {
+        val dm = resources.displayMetrics
+        return when (type) {
             UnitType.INCH -> toInch(1.0f, resources)
             UnitType.CM -> toCm(1.0f, resources)
-            UnitType.MM  -> toMm(1.0f, resources)
-            UnitType.SP -> 1.sp.value
-            UnitType.DP -> 1.dp.value
-            else-> 1f
+            UnitType.MM -> toMm(1.0f, resources)
+            UnitType.SP -> dm.scaledDensity / dm.density
+            UnitType.DP -> 1f
+            UnitType.PX -> 1f / dm.density
         }
+    }
 }

@@ -12,7 +12,10 @@ import androidx.compose.ui.unit.Density
 
 /**
  * EN Layout + [Context] identity for [com.appdimens.dynamic.compose.toDynamicScaledDp] / cache paths that keyed [Configuration] metrics and [androidContext].
+ * Uses [System.identityHashCode] for the context component; hash collisions are benign — they
+ * cause an unnecessary `remember` recomputation but never produce incorrect dimension values.
  * PT Layout + identidade de [Context] para caminhos que usavam métricas de [Configuration] e [androidContext].
+ * Colisões de identityHashCode são benignas (causam recomputação desnecessária, nunca valores errados).
  */
 internal fun layoutRememberStamp(configuration: Configuration, context: Context): Long {
     val sw = configuration.smallestScreenWidthDp.toLong() and 0xFFFFFL

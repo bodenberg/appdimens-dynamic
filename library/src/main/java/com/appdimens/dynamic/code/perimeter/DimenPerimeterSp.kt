@@ -437,7 +437,7 @@ object DimenPerimeterSp {
      * PT Inicia a cadeia de construção para a dimensão customizada PerimeterSp a partir de um Float base.
      */
     @JvmStatic
-    fun scaled(initialBaseValue: Float): PerimeterSp = PerimeterSp(initialBaseValue.toInt())
+    fun scaled(initialBaseValue: Float): PerimeterSp = PerimeterSp(initialBaseValue)
 
     // EN Qualifier-based conditional dynamic scaling for Sp.
     // PT Escalonamento condicional baseado em qualificador para Sp.

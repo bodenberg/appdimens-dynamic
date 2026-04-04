@@ -398,7 +398,7 @@ class MainActivity : ComponentActivity() {
 
 #### 2. `DimenCache.invalidateOnConfigChange`
 
-Keeps **persisted / in-memory cache entries** and scaling factors aligned when `Configuration` actually changes (orientation, smallest width, density, font scale, etc.).
+Keeps **persisted / in-memory cache entries** and scaling factors aligned when `Configuration` actually changes (orientation, smallest width, density, font scale, **`screenWidthDp`**, **`screenHeightDp`**, etc.). Changes in window dimensions (e.g. split-screen resize) are treated as physical changes and trigger a full cache invalidation plus factor update.
 
 Store the **previous** configuration, pass **old + new** into `invalidateOnConfigChange`, then **update** the stored copy. If your `Activity` does not override `onConfigurationChanged`, you usually **do not** need this unless you observe config elsewhere (custom listener, `WindowInsets`, etc.).
 
@@ -487,9 +487,9 @@ Inverters adapt dimension semantics when the screen rotates (e.g., swapping Widt
 
 ## 📏 Physical Units (DimenPhysicalUnits)
 
-AppDimens Dynamic provides direct conversion of **real physical measurement units** (mm, cm, inches) to DP/PX — ensuring absolute physical size regardless of device density.
+AppDimens Dynamic provides direct conversion of **real physical measurement units** (mm, cm, inches) to **dp** (and **px** via the code module) — ensuring approximate physical size regardless of device density.
 
-Compose extensions: `10.mm`, `2.5f.cm`, `1.inch` → `Dp` values directly.
+Compose extensions: `10f.mm`, `2.5f.cm`, `1f.inch` → **`Float` in dp**; use **`.dp`** to convert to `Dp` for layout (e.g. `Modifier.width(10f.mm.dp)`). The code module (`code.units.DimenPhysicalUnits`) exposes `toDpFromMm/Cm/Inch` (→ dp), `toPxFromMm/Cm/Inch` (→ px), and `toSpFromMm/Cm/Inch` (→ sp). Helper `unitSizeInDp(type, resources)` returns the size of 1 logical unit in dp. For details see [DOCUMENTATION/physical-units.md](DOCUMENTATION/physical-units.md).
 
 ---
 
@@ -531,7 +531,7 @@ Each strategy lives in its own package (`compose/<strategy>` and `code/<strategy
 | **Ignore multi-window** (`i`) | `10.spaceWi`, `10.spaceWPxi`, `spaceI(200.dp)`, `spaceWSpi()`, … | `10.spaceWi(context)`, `10.spaceWPxi(context)`, `10.spaceI(ref, context)`, `10.spaceWSpi(context)`, … |
 | **Text (Sp)** | `10.spaceWSp()`, `10.spaceWSpiPx()`, `10.spaceSp(200.dp)`, … | `DimenPercentSp.spaceWSp(context, 10)`; `10.spaceWSp(context)` returns a **sp** value for `COMPLEX_UNIT_SP` |
 
-**Contract:** the receiver is the **percent in 0–100** (e.g. `10` → 10%). With **`ignoreMultiWindows = true`** and the library’s split-screen heuristic active, the result falls back to the **raw percent number** as dp (same idea as `psdpi`), instead of applying the fraction of the metric.
+**Contract:** the receiver is the **percent in 0–100** (e.g. `10` → 10%). **`space*`** always computes **(percent / 100) × axis or reference** in dp (or px for `*Px` variants), including in multi-window — the axis read is the **current window’s** `screenWidthDp` / `screenHeightDp` / `smallestScreenWidthDp`. The **`i`** suffix passes `ignoreMultiWindows = true` into the pipeline but does **not** cause `space*` to return a raw literal percent as dp. For **`psdp` / `pssp`** (strategy-style scaling, not `space*`), the `i` variant may return the **unscaled base** when the multi-window heuristic is active.
 
 **Java:** `DimenPercent.spaceW`, `spaceWPx`, `spaceWi`, … and `DimenPercentSp.spaceWSp`, … mirror the Kotlin extensions.
 

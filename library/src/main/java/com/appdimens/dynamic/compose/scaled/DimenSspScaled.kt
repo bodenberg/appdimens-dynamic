@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.scaledSp().screen(...)`.
  */
 @Composable
-fun TextUnit.scaledSp(): ScaledSp = ScaledSp(this.value.toInt())
+fun TextUnit.scaledSp(): ScaledSp = ScaledSp(this.value)
 
 /**
  * EN Starts the build chain for ScaledSp from a base Int (treated as sp).

@@ -437,7 +437,7 @@ object DimenPercentSp {
      * PT Inicia a cadeia de construção para a dimensão customizada PercentSp a partir de um Float base.
      */
     @JvmStatic
-    fun scaled(initialBaseValue: Float): PercentSp = PercentSp(initialBaseValue.toInt())
+    fun scaled(initialBaseValue: Float): PercentSp = PercentSp(initialBaseValue)
 
     // EN Qualifier-based conditional dynamic scaling for Sp.
     // PT Escalonamento condicional baseado em qualificador para Sp.
@@ -546,86 +546,4 @@ object DimenPercentSp {
     @JvmOverloads
     fun wspMode(context: Context, value: Int, modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
         value.wspMode(context, modeValue, uiModeType, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-
-    // EN Literal % of screen / reference as Sp / Sp px.
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceWSp(context: Context, percent: Int, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false): Float =
-        percent.spaceWSp(context, fontScale, ignoreMultiWindows)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceWSpPx(context: Context, percent: Int, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false): Float =
-        percent.spaceWSpPx(context, fontScale, ignoreMultiWindows)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceSwSp(context: Context, percent: Int, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false): Float =
-        percent.spaceSwSp(context, fontScale, ignoreMultiWindows)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceSwSpPx(context: Context, percent: Int, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false): Float =
-        percent.spaceSwSpPx(context, fontScale, ignoreMultiWindows)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceHSp(context: Context, percent: Int, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false): Float =
-        percent.spaceHSp(context, fontScale, ignoreMultiWindows)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceHSpPx(context: Context, percent: Int, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false): Float =
-        percent.spaceHSpPx(context, fontScale, ignoreMultiWindows)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceSp(context: Context, percent: Int, referenceDp: Float, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false): Float =
-        percent.spaceSp(referenceDp, context, fontScale, ignoreMultiWindows)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceSpPx(context: Context, percent: Int, referenceDp: Float, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false): Float =
-        percent.spaceSpPx(referenceDp, context, fontScale, ignoreMultiWindows)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceWSpi(context: Context, percent: Int, fontScale: Boolean = true): Float =
-        percent.spaceWSpi(context, fontScale)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceWSpiPx(context: Context, percent: Int, fontScale: Boolean = true): Float =
-        percent.spaceWSpiPx(context, fontScale)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceSwSpi(context: Context, percent: Int, fontScale: Boolean = true): Float =
-        percent.spaceSwSpi(context, fontScale)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceSwSpiPx(context: Context, percent: Int, fontScale: Boolean = true): Float =
-        percent.spaceSwSpiPx(context, fontScale)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceHSpi(context: Context, percent: Int, fontScale: Boolean = true): Float =
-        percent.spaceHSpi(context, fontScale)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceHSpiPx(context: Context, percent: Int, fontScale: Boolean = true): Float =
-        percent.spaceHSpiPx(context, fontScale)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceSpi(context: Context, percent: Int, referenceDp: Float, fontScale: Boolean = true): Float =
-        percent.spaceSpi(referenceDp, context, fontScale)
-
-    @JvmStatic
-    @JvmOverloads
-    fun spaceSpiPx(context: Context, percent: Int, referenceDp: Float, fontScale: Boolean = true): Float =
-        percent.spaceSpiPx(referenceDp, context, fontScale)
 }

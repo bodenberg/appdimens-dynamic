@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for PerimeterSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para PerimeterSp a partir de um Float base (tratado como sp).
  */
-fun Float.perimeterSp(): PerimeterSp = PerimeterSp(this.toInt())
+fun Float.perimeterSp(): PerimeterSp = PerimeterSp(this)
 
 /**
  * EN Starts the build chain for PerimeterSp from a base Int (treated as sp).

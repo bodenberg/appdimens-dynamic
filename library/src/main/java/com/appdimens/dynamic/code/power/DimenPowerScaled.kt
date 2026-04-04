@@ -290,7 +290,7 @@ class DimenPowerScaled private constructor(
         val dpToUse = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return dpToUse.toInt().toDynamicPowerDp(
+        return dpToUse.toFloat().toDynamicPowerDp(
             context,
             finalQualifier,
             foundEntry?.inverter ?: Inverter.DEFAULT,

@@ -9,9 +9,9 @@ This module is **not** prefix-mirrored like sdp/hdp strategies; the full Compose
 ## Calculation used
 
 - Build a sequence of candidate **pixels** from `minPx` to `maxPx` with `stepPx` granularity (`buildResizeStepsPx` in `ResizeMath.kt`).
-- **Binary search** (`findLargestFittingResizePx`) finds the largest candidate for which a “fits” predicate is true.
+- **Binary search** (`findLargestFittingResizePx`) finds the largest candidate for which a “fits” predicate is true. If **no** candidate satisfies `fits`, the result is **`0f`** (including when the step table has a **single** element that does not fit).
 - For Compose text, each **sp** candidate is measured with `rememberTextMeasurer` and `Constraints(maxWidth, maxHeight)` aligned to local style; only `fontSize` is swept.
-- Variants with **box-local percent** (`autoResize*Percent`) and **`ResizeBound`** for **screen-axis** percent (sw / w / h) or fixed dp/sp — see the main README and `ResizeBound.kt`.
+- Variants with **box-local percent** (`autoResize*Percent`) and **`ResizeBound`** for **screen-axis** percent (sw / w / h) or fixed dp/sp — see the main README and `ResizeBound.kt`. **`ResizeBound.resolveToPx`** requires **`density > 0`** and clamps negative dp/sp and out-of-range percent inputs to safe bounds.
 
 `DimenCache.CalcType.RESIZE` tags related cache entries where applicable; core logic lives in the **resize** module, not `calculateRawScaling`.
 

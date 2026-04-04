@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for FillSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para FillSp a partir de um Float base (tratado como sp).
  */
-fun Float.fillSp(): FillSp = FillSp(this.toInt())
+fun Float.fillSp(): FillSp = FillSp(this)
 
 /**
  * EN Starts the build chain for FillSp from a base Int (treated as sp).

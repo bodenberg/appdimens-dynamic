@@ -290,7 +290,7 @@ class DimenFluidScaled private constructor(
         val dpToUse = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return dpToUse.toInt().toDynamicFluidDp(
+        return dpToUse.toFloat().toDynamicFluidDp(
             context,
             finalQualifier,
             foundEntry?.inverter ?: Inverter.DEFAULT,

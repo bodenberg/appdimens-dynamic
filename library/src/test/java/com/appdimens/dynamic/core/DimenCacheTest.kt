@@ -207,8 +207,7 @@ class DimenCacheTest {
         assertEquals(expectedArValue, arResult, 0.001f)
         assertEquals(1, DimenCache.stats().populated)
         
-        // Match buildKey layout: CalcType (13) is at bit 18
-        val arKey = (13L shl 18) or (java.lang.Float.floatToRawIntBits(1.78f).toLong() and 0xFFFFFFFFL)
+        val arKey = ((java.lang.Float.floatToRawIntBits(1.78f).toLong() and 0xFFFFFFFFL) shl 31) or (13L shl 27)
         val hAr = (arKey xor (arKey ushr 32)).toInt()
         val mixedAr = hAr xor (hAr ushr 16)
         val shardIndex = (mixedAr ushr 9) and DimenCache.SHARD_MASK
@@ -227,7 +226,7 @@ class DimenCacheTest {
             val i = m and DimenCache.SHARD_SIZE_MASK
             if (s == shardIndex && i == slotIndex) {
                 // Ensure it's not an AR key (CalcType != 13)
-                if ((k ushr 18 and 0xFL) != 13L) {
+                if ((k ushr 27 and 0xFL) != 13L) {
                     collisionKey = k
                     break
                 }

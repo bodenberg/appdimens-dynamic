@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.logarithmicSp().screen(...)`.
  */
 @Composable
-fun TextUnit.logarithmicSp(): LogarithmicSp = LogarithmicSp(this.value.toInt())
+fun TextUnit.logarithmicSp(): LogarithmicSp = LogarithmicSp(this.value)
 
 /**
  * EN Starts the build chain for LogarithmicSp from a base Int (treated as sp).

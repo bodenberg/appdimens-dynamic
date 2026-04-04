@@ -29,12 +29,11 @@
  * Bit Layout of the 64-bit Cache Key (Long):
  *  [63]     applyAspectRatio          1 bit
  *  [62-31]  baseValue bits            32 bits  (Float.toRawBits)
- *  [30-22]  (unused)                  9 bits
- *  [21-18]  CalcType ordinal          4 bits  (covers 0..15)
- *  [17-15]  ValueType                 3 bits  (covers 0..7)
- *  [14-7]   sensitivityK fingerprint  8 bits  (float bits ushr 24 & 0xFF)
- *  [6-5]    DpQualifier ordinal       2 bits  (covers 0..3)
- *  [4-2]    Inverter ordinal          3 bits  (covers 0..7)
+ *  [30-27]  CalcType ordinal          4 bits  (covers 0..15)
+ *  [26-24]  ValueType                 3 bits  (covers 0..7)
+ *  [23-8]   sensitivityK fingerprint  16 bits (float bits ushr 16 & 0xFFFF)
+ *  [7-6]    DpQualifier ordinal       2 bits  (covers 0..3)
+ *  [5-2]    Inverter ordinal          4 bits  (covers 0..15)
  *  [1]      isLandscape               1 bit
  *  [0]      ignoreMultiWindows        1 bit
  *
@@ -96,7 +95,7 @@ object DimenCache {
     // CONFIGURATION & PERSISTENT STATE
     // ─────────────────────────────────────────────────────────────────────────
 
-    internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "dimens_cache_prefs")
+    internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "com.appdimens.dynamic.cache")
     internal val KEY_SW_DP = intPreferencesKey("smallest_width_dp")
     internal val KEY_CACHE_DATA = byteArrayPreferencesKey("cache_mirror")
 
@@ -322,10 +321,18 @@ object DimenCache {
     init {
         scope.launch {
             @OptIn(FlowPreview::class)
-            saveFlow.debounce(500).collect { ctx ->
+            saveFlow.sample(500).collect { ctx ->
                 performSave(ctx)
             }
         }
+    }
+
+    /**
+     * Cancels the background persistence scope. Intended for test teardown.
+     */
+    @JvmStatic
+    fun shutdown() {
+        scope.cancel()
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -348,12 +355,11 @@ object DimenCache {
      * ```
      * [63]     applyAspectRatio          1 bit
      * [62-31]  baseValue bits            32 bits  (Float.toRawBits)
-     * [30-22]  (unused)                  9 bits
-     * [21-18]  CalcType ordinal          4 bits  (covers 0..15)
-     * [17-15]  ValueType                 3 bits  (covers 0..7)
-     * [14-7]   sensitivityK fingerprint  8 bits  (float bits ushr 24 & 0xFF)
-     * [6-5]    DpQualifier ordinal       2 bits  (covers 0..3)
-     * [4-2]    Inverter ordinal          3 bits  (covers 0..7)
+     * [30-27]  CalcType ordinal          4 bits  (covers 0..15)
+     * [26-24]  ValueType                 3 bits  (covers 0..7)
+     * [23-8]   sensitivityK fingerprint  16 bits (float bits ushr 16 & 0xFFFF)
+     * [7-6]    DpQualifier ordinal       2 bits  (covers 0..3)
+     * [5-2]    Inverter ordinal          4 bits  (covers 0..15)
      * [1]      isLandscape               1 bit
      * [0]      ignoreMultiWindows        1 bit
      * ```
@@ -375,18 +381,18 @@ object DimenCache {
         val bv  = baseValue.toRawBits().toLong() and 0xFFFFFFFFL
         val ct  = calcType.ordinal.toLong() and 0xFL
         val vt  = valueType.ordinal.toLong() and 0x7L
-        val sk  = (customSensitivityK?.toRawBits()?.ushr(24)?.and(0xFF)?.toLong() ?: 0xFFL)
+        val sk  = (customSensitivityK?.toRawBits()?.ushr(16)?.and(0xFFFF)?.toLong() ?: 0xFFFFL)
         val q   = qualifier.ordinal.toLong() and 0x3L
-        val inv = inverter.ordinal.toLong() and 0x7L
+        val inv = inverter.ordinal.toLong() and 0xFL
         val land = if (isLandscape) 1L else 0L
         val imw  = if (ignoreMultiWindows) 1L else 0L
 
         return (ar  shl 63) or
                (bv  shl 31) or
-               (ct  shl 18) or
-               (vt  shl 15) or
-               (sk  shl  7) or
-               (q   shl  5) or
+               (ct  shl 27) or
+               (vt  shl 24) or
+               (sk  shl  8) or
+               (q   shl  6) or
                (inv shl  2) or
                (land shl 1) or
                imw
@@ -424,7 +430,12 @@ object DimenCache {
         if (isInitializing.getAndSet(true)) return
 
         val appContext = context.applicationContext
-        val currentSw = appContext.resources.configuration.smallestScreenWidthDp
+        val config = appContext.resources.configuration
+        val currentSw = config.smallestScreenWidthDp
+
+        updateFactors(config)
+        factors.smallestWidthDp = currentSw
+        isInitializedFast = true
 
         scope.launch {
             try {
@@ -440,12 +451,10 @@ object DimenCache {
                 } else {
                     loadFromByteArray(rawData)
                 }
-                factors.smallestWidthDp = currentSw
             } catch (_: Exception) {
                 // Fallback to empty cache on error
             } finally {
                 isInitialized.set(true)
-                isInitializedFast = true
                 isInitializing.set(false)
             }
         }
@@ -540,15 +549,15 @@ object DimenCache {
         // MISS
         val computed = compute()
 
-        val ct      = (key         ushr 18 and 0xFL).toInt()
-        val existCt = (existingKey ushr 18 and 0xFL).toInt()
+        val ct      = (key         ushr 27 and 0xFL).toInt()
+        val existCt = (existingKey ushr 27 and 0xFL).toInt()
 
         val isNewAr = ct == 13
         val isOldAr = existingKey != 0L && existCt == 13
 
         if (existingKey == 0L || !isOldAr || isNewAr) {
-            shardKeys.set(slotIndex, key)
             shardValues.set(slotIndex, computed.toRawBits())
+            shardKeys.set(slotIndex, key)
             context?.let { saveToPersistence(it) }
         }
 
@@ -599,7 +608,7 @@ object DimenCache {
         // Bypass only for CalcTypes that reduce to ~one multiply without AR (bit 63 clear).
         // AUTO(0) and FLUID(4) use non-trivial math in their modules — do not bypass.
         if (key >= 0) {
-            val ct = (key ushr 18 and 0xFL).toInt()
+            val ct = (key ushr 27 and 0xFL).toInt()
             if (ct == 7 || ct == 11 || ct == 14) return compute()
         }
 
@@ -619,14 +628,14 @@ object DimenCache {
         // MISS — compute then conditionally store
         val computed = compute()
 
-        val ct      = (key         ushr 18 and 0xFL).toInt()
-        val existCt = (existingKey ushr 18 and 0xFL).toInt()
+        val ct      = (key         ushr 27 and 0xFL).toInt()
+        val existCt = (existingKey ushr 27 and 0xFL).toInt()
         val isNewAr = ct == 13
         val isOldAr = existingKey != 0L && existCt == 13
 
         if (existingKey == 0L || !isOldAr || isNewAr) {
-            shard.keys.set(slot, key)
             shard.values.set(slot, computed.toRawBits())
+            shard.keys.set(slot, key)
             context?.let { saveToPersistence(it) }
         }
 
@@ -713,9 +722,8 @@ object DimenCache {
     @JvmStatic
     @PublishedApi
     internal fun getOrPutAspectRatio(normalizedAr: Float, context: Context? = null): Float {
-        // Special key: CalcType = ASPECT_RATIO (13) at bit 18
-        val arKey = (13L shl 18) or
-                (java.lang.Float.floatToRawIntBits(normalizedAr).toLong() and 0xFFFFFFFFL)
+        val arKey = ((java.lang.Float.floatToRawIntBits(normalizedAr).toLong() and 0xFFFFFFFFL) shl 31) or
+                (13L shl 27)
         return getOrPut(arKey, context) {
             kotlin.math.ln(normalizedAr)
         }
@@ -746,6 +754,8 @@ object DimenCache {
 
         val physicalChange = oldMin != newMin ||
                 oldMax != newMax ||
+                old.screenWidthDp != new.screenWidthDp ||
+                old.screenHeightDp != new.screenHeightDp ||
                 old.smallestScreenWidthDp != new.smallestScreenWidthDp ||
                 old.densityDpi != new.densityDpi
 

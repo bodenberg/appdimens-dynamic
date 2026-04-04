@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for PercentSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para PercentSp a partir de um Float base (tratado como sp).
  */
-fun Float.percentSp(): PercentSp = PercentSp(this.toInt())
+fun Float.percentSp(): PercentSp = PercentSp(this)
 
 /**
  * EN Starts the build chain for PercentSp from a base Int (treated as sp).

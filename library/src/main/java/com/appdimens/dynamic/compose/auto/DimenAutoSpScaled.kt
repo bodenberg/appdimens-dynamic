@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.autoSp().screen(...)`.
  */
 @Composable
-fun TextUnit.autoSp(): AutoSp = AutoSp(this.value.toInt())
+fun TextUnit.autoSp(): AutoSp = AutoSp(this.value)
 
 /**
  * EN Starts the build chain for AutoSp from a base Int (treated as sp).

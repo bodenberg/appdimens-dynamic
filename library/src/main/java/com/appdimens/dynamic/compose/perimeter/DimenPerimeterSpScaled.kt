@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.perimeterSp().screen(...)`.
  */
 @Composable
-fun TextUnit.perimeterSp(): PerimeterSp = PerimeterSp(this.value.toInt())
+fun TextUnit.perimeterSp(): PerimeterSp = PerimeterSp(this.value)
 
 /**
  * EN Starts the build chain for PerimeterSp from a base Int (treated as sp).

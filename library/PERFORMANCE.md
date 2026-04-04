@@ -16,6 +16,10 @@ All other strategy ordinals (`AUTO`, `FLUID`, `POWER`, `LOGARITHMIC`, `INTERPOLA
 
 For the three “simple multiplier” types above, measured cost of a single multiply is lower than a full cache slot lookup; memoization is still provided by **Compose `remember`** (and by call-site batching where used). When **aspect ratio is on**, the computation is heavier and the cache path is used.
 
+## Persistence
+
+`DimenCache` writes to a Preferences DataStore with namespace **`com.appdimens.dynamic.cache`**. The write flow uses **`sample(500)`** (not `debounce`) so that a first-startup burst of cache misses flushes within 500 ms of the *first* miss, instead of waiting until the burst quiets. For testing, call **`DimenCache.shutdown()`** to cancel the internal `CoroutineScope` and avoid leaked writes during teardown.
+
 ## Benchmarks
 
 Do not use SCALED / PERCENT / DENSITY **without** AR to measure cache throughput — those calls intentionally bypass shard storage.

@@ -36,17 +36,17 @@ fun buildResizeStepsPx(minPx: Float, maxPx: Float, stepPx: Float): FloatArray {
 
 /**
  * EN Largest step in [sortedStepsPx] (ascending) for which [fits] returns true.
- * If none fit, returns [sortedStepsPx].first().
+ * If none fit, returns `0f`.
  */
 fun findLargestFittingResizePx(
     sortedStepsPx: FloatArray,
     fits: (candidatePx: Float) -> Boolean,
 ): Float {
     if (sortedStepsPx.isEmpty()) return 0f
-    if (sortedStepsPx.size == 1) return sortedStepsPx[0]
+    if (sortedStepsPx.size == 1) return if (fits(sortedStepsPx[0])) sortedStepsPx[0] else 0f
     var left = 0
     var right = sortedStepsPx.size - 1
-    var best = sortedStepsPx[0]
+    var best = 0f
     while (left <= right) {
         val mid = (left + right) ushr 1
         val v = sortedStepsPx[mid]

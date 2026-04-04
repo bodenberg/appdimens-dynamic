@@ -77,7 +77,7 @@ data class CustomSpEntry(
  * Exemplo de uso: `16.sp.densitySp().screen(...)`.
  */
 @Composable
-fun TextUnit.densitySp(): DensitySp = DensitySp(this.value.toInt())
+fun TextUnit.densitySp(): DensitySp = DensitySp(this.value)
 
 /**
  * EN Starts the build chain for DensitySp from a base Int (treated as sp).

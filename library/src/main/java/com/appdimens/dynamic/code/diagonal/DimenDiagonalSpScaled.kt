@@ -68,7 +68,7 @@ data class CustomSpEntry(
  * EN Starts the build chain for DiagonalSp from a base Float (treated as sp).
  * PT Inicia a cadeia de construção para DiagonalSp a partir de um Float base (tratado como sp).
  */
-fun Float.diagonalSp(): DiagonalSp = DiagonalSp(this.toInt())
+fun Float.diagonalSp(): DiagonalSp = DiagonalSp(this)
 
 /**
  * EN Starts the build chain for DiagonalSp from a base Int (treated as sp).
