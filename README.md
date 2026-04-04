@@ -16,21 +16,6 @@ dependencies {
 
 **Requirements:** Min SDK 24 · Compile SDK 36 · Kotlin & Java · Jetpack Compose
 
-### Strategy modules (Compose / code)
-
-Each scaling strategy has its **own package** (same pattern as `scaled`): calculation code stays inside that package. Examples:
-
-- `com.appdimens.dynamic.compose.scaled` — `sdp`, `hdp`, `wdp`, `ssp`, …
-- `com.appdimens.dynamic.compose.percent` — `psdp`, `phdp`, `pwdp`, `pssp`, literal `spaceW` / `spaceSw` / `spaceH` / `space(…)`, …
-- `com.appdimens.dynamic.compose.resize` — auto-resize inside `BoxWithConstraints` (`autoResizeTextSp`, `autoResizeSquareSize`, …); Views: `com.appdimens.dynamic.code.resize.DimenResize`
-- `com.appdimens.dynamic.compose.power`, `fluid`, `auto`, … (see `library/src/main/java/com/appdimens/dynamic/compose/`)
-
-Strategy packages **do not import each other**; they depend only on `common` and `core`.
-
-Per strategy, **Compose** mirrors `compose/scaled/` with six artefacts: `Dimen{Strategy}Dp`, `Dimen{Strategy}DpExtensions` (rotate / mode / qualifier / screen), `Dimen{Strategy}Scaled` (builder), `Dimen{Strategy}Sp`, `Dimen{Strategy}SpExtensions`, `Dimen{Strategy}SpScaled`. **Code** mirrors `code/scaled/` (`Dimen{Strategy}`, `Dimen{Strategy}Extensions`, `Dimen{Strategy}Scaled`, and the three `*Sp*` files; templates in `scaled/` remain `DimenSsp*`). Regenerate from `library/scripts/generate_strategy_modules.py` (and `generate_ssp_strategy_modules.py` for SSP-only template edits).
-
-Cache bypass behaviour per `CalcType` is documented in [library/PERFORMANCE.md](library/PERFORMANCE.md).
-
 ---
 
 ## 💻 Usage Examples
