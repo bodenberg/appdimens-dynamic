@@ -10,7 +10,7 @@
 
 **AppDimens Dynamic** is the most complete responsive dimension library for Android. It provides a purely dynamic, code-level scaling system — including Jetpack Compose extensions, code-level APIs, conditional builders, orientation-aware inverters, and physical unit converters — all in a single, zero-configuration dependency.
 
-> **Calculation cheat sheet:** **scaled** & **percent `p*`** → `base × axis/300` (with optional **`a`** aspect-ratio multiplier and global **`i`** multi-window rules — see docs). **power** → `base × (axis/300)^0.75`. **fluid** → between `0.8×base` and `1.2×base` as axis runs **320–768** dp (plateaus outside). **auto** → linear to **480** dp, then `+ 0.4·ln(1 + (axis−480)/300)`. **diagonal** → `base × √(w²+h²) / √(300²+533²)`. **fill** → `base × max(short/300, long/533)`; **fit** → `base × min(…)`. **interpolated** → `base + 0.5·(base·axis/300 − base)`. **logarithmic** → scale from **`0.4·ln`** above/below **300** dp on the axis. **perimeter** → `base × (short+long)/833`. **density** → `base × densityDpi/160`. **percent `space*`** → receiver **%** of smallest width / width / height. **resize** → largest size in a stepped **min…max** range that still **fits** constraints (binary search). **Physical (mm/cm/in)** → platform **`DisplayMetrics`** conversion, not the 300 dp law. More detail: [DOCUMENTATION/README.md](DOCUMENTATION/README.md).
+> **Calculation cheat sheet:** scaled · percent (`p*`) · percent (`space*`) · power · fluid · auto · diagonal · fill · fit · interpolated · logarithmic · perimeter · density · resize · physical units — [DOCUMENTATION/README.md](DOCUMENTATION/README.md)
 
 ---
 
