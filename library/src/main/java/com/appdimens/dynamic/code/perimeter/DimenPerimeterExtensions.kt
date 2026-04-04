@@ -551,7 +551,7 @@ fun Number.toDynamicPerimeterPx(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val scaledDp = calculatePerimeterDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val scaledDp = calculatePerimeterDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
         scaledDp * density
     }
 }
@@ -612,9 +612,10 @@ internal fun calculatePerimeterDp(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: Context? = null
 ): Float {
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) return baseValue
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
     val sm = DimenCalculationPlumbing.smallestSideDp(configuration)
     val lg = DimenCalculationPlumbing.largestSideDp(configuration)
     var out = baseValue * ((sm + lg) / DesignScaleConstants.BASE_PERIMETER_DP)
@@ -678,6 +679,6 @@ fun Number.toDynamicPerimeterDp(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        calculatePerimeterDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        calculatePerimeterDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
     }
 }

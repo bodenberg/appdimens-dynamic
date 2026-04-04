@@ -551,7 +551,7 @@ fun Number.toDynamicDiagonalPx(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val scaledDp = calculateDiagonalDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val scaledDp = calculateDiagonalDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
         scaledDp * density
     }
 }
@@ -612,9 +612,10 @@ internal fun calculateDiagonalDp(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: Context? = null
 ): Float {
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) return baseValue
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
     val sm = DimenCalculationPlumbing.smallestSideDp(configuration)
     val lg = DimenCalculationPlumbing.largestSideDp(configuration)
     val diag = kotlin.math.sqrt((sm * sm + lg * lg).toDouble()).toFloat()
@@ -679,6 +680,6 @@ fun Number.toDynamicDiagonalDp(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        calculateDiagonalDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        calculateDiagonalDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
     }
 }

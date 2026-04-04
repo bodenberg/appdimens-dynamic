@@ -551,7 +551,7 @@ fun Number.toDynamicFluidPx(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val scaledDp = calculateFluidDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val scaledDp = calculateFluidDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
         scaledDp * density
     }
 }
@@ -612,12 +612,13 @@ internal fun calculateFluidDp(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: Context? = null
 ): Float {
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val q = DimenCalculationPlumbing.effectiveQualifier(qualifier, inverter, isLandscape, isPortrait)
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) return baseValue
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
     val dim = DimenCalculationPlumbing.readScreenDp(configuration, q)
     val minV = baseValue * 0.8f
     val maxV = baseValue * 1.2f
@@ -689,6 +690,6 @@ fun Number.toDynamicFluidDp(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        calculateFluidDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        calculateFluidDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
     }
 }

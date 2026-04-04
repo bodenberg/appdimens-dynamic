@@ -551,7 +551,7 @@ fun Number.toDynamicPercentPx(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val scaledDp = calculatePercentDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val scaledDp = calculatePercentDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
         scaledDp * density
     }
 }
@@ -612,12 +612,13 @@ internal fun calculatePercentDp(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: Context? = null
 ): Float {
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val q = DimenCalculationPlumbing.effectiveQualifier(qualifier, inverter, isLandscape, isPortrait)
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) return baseValue
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
     val dim = DimenCalculationPlumbing.readScreenDp(configuration, q)
     if (!applyAspectRatio) return baseValue * dim * DimenCache.INV_BASE_RATIO
     val diff = dim - DesignScaleConstants.BASE_WIDTH_DP
@@ -676,6 +677,6 @@ fun Number.toDynamicPercentDp(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        calculatePercentDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        calculatePercentDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
     }
 }

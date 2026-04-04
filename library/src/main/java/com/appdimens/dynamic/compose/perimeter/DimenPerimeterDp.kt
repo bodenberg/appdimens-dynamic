@@ -388,9 +388,10 @@ internal fun calculatePerimeterDpCompose(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: android.content.Context? = null
 ): Float {
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) return baseValue
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
     val sm = DimenCalculationPlumbing.smallestSideDp(configuration)
     val lg = DimenCalculationPlumbing.largestSideDp(configuration)
     var out = baseValue * ((sm + lg) / DesignScaleConstants.BASE_PERIMETER_DP)
@@ -474,7 +475,7 @@ internal fun rememberPerimeterDp(
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
 ): Dp = rememberDimenDp(cacheKey, layoutStamp, androidContext) {
-    calculatePerimeterDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    calculatePerimeterDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, androidContext)
 }
 
 @Composable
@@ -491,7 +492,7 @@ internal fun rememberPerimeterPxFromDp(
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
 ): Float = rememberDimenPxFromDp(cacheKey, pxStamp, androidContext, density) {
-    calculatePerimeterDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    calculatePerimeterDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, androidContext)
 }
 
 /**

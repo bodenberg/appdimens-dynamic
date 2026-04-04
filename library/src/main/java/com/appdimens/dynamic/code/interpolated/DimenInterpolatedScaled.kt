@@ -290,7 +290,7 @@ class DimenInterpolatedScaled private constructor(
         val dpToUse = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return dpToUse.toFloat().toDynamicInterpolatedDp(
+        return dpToUse.toDynamicInterpolatedDp(
             context,
             finalQualifier,
             foundEntry?.inverter ?: Inverter.DEFAULT,

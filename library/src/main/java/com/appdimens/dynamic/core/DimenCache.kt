@@ -54,6 +54,7 @@ import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicIntegerArray
 import java.util.concurrent.atomic.AtomicLongArray
+import java.util.concurrent.atomic.LongAdder
 import kotlin.math.max
 import kotlin.math.min
 
@@ -99,7 +100,17 @@ object DimenCache {
     internal val KEY_SW_DP = intPreferencesKey("smallest_width_dp")
     internal val KEY_CACHE_DATA = byteArrayPreferencesKey("cache_mirror")
 
-    internal val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    @Volatile
+    private var _scope: CoroutineScope? = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val scopeLock = Any()
+
+    internal val scope: CoroutineScope
+        get() = _scope ?: synchronized(scopeLock) {
+            _scope ?: CoroutineScope(SupervisorJob() + Dispatchers.IO).also {
+                _scope = it
+                launchSaveCollector(it)
+            }
+        }
     internal val isInitializing = AtomicBoolean(false)
     /**
      * Internal flag to avoid [AtomicBoolean.get] overhead on every hot-path call.
@@ -125,6 +136,32 @@ object DimenCache {
         AUTO, DIAGONAL, FILL, FIT, FLUID, INTERPOLATED, LOGARITHMIC,
         PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO, DENSITY
     }
+
+    @JvmField @PublishedApi internal val CT_PERCENT      = CalcType.PERCENT.ordinal
+    @JvmField @PublishedApi internal val CT_SCALED       = CalcType.SCALED.ordinal
+    @JvmField @PublishedApi internal val CT_DENSITY      = CalcType.DENSITY.ordinal
+    @JvmField @PublishedApi internal val CT_ASPECT_RATIO = CalcType.ASPECT_RATIO.ordinal
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // DIAGNOSTICS COUNTERS — guarded by [diagnosticsEnabled] to avoid overhead
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * EN When `true`, hit/miss/eviction counters are incremented on every cache
+     * operation. Uses [LongAdder] for low-contention counting. Disabled by
+     * default so production apps pay zero overhead.
+     *
+     * PT Quando `true`, contadores de hit/miss/eviction são incrementados a cada
+     * operação. Desativado por padrão para não penalizar apps em produção.
+     */
+    @JvmStatic
+    @Volatile
+    @PublishedApi
+    internal var diagnosticsEnabled: Boolean = false
+
+    @JvmField @PublishedApi internal val hitCount      = LongAdder()
+    @JvmField @PublishedApi internal val missCount     = LongAdder()
+    @JvmField @PublishedApi internal val evictionCount = LongAdder()
 
     /**
      * EN Master switch for the cache system. If disabled, all calls will recompute.
@@ -318,8 +355,8 @@ object DimenCache {
         onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
     )
 
-    init {
-        scope.launch {
+    private fun launchSaveCollector(target: CoroutineScope) {
+        target.launch {
             @OptIn(FlowPreview::class)
             saveFlow.sample(500).collect { ctx ->
                 performSave(ctx)
@@ -327,12 +364,23 @@ object DimenCache {
         }
     }
 
+    init {
+        _scope?.let { launchSaveCollector(it) }
+    }
+
     /**
-     * Cancels the background persistence scope. Intended for test teardown.
+     * EN Cancels the background persistence scope. Intended for test teardown.
+     * The scope is automatically re-created on next use (e.g. [saveToPersistence]).
+     *
+     * PT Cancela o escopo de persistência em background. Destinado a teardown de testes.
+     * O escopo é recriado automaticamente no próximo uso.
      */
     @JvmStatic
     fun shutdown() {
-        scope.cancel()
+        synchronized(scopeLock) {
+            _scope?.cancel()
+            _scope = null
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -469,8 +517,11 @@ object DimenCache {
                 val key   = buffer.long
                 val value = buffer.float
                 if (key != 0L) {
-                    shard.keys.set(i, key)
-                    shard.values.set(i, value.toRawBits())
+                    // CAS merge: only populate empty slots so entries computed
+                    // during the init→DataStore window are preserved.
+                    if (shard.keys.compareAndSet(i, 0L, key)) {
+                        shard.values.set(i, value.toRawBits())
+                    }
                 }
             }
         }
@@ -543,19 +594,22 @@ object DimenCache {
         // FAST PATH
         val existingKey = shardKeys.get(slotIndex)
         if (existingKey == key) {
+            if (diagnosticsEnabled) hitCount.increment()
             return Float.fromBits(shardValues.get(slotIndex))
         }
 
         // MISS
+        if (diagnosticsEnabled) missCount.increment()
         val computed = compute()
 
         val ct      = (key         ushr 27 and 0xFL).toInt()
         val existCt = (existingKey ushr 27 and 0xFL).toInt()
 
-        val isNewAr = ct == 13
-        val isOldAr = existingKey != 0L && existCt == 13
+        val isNewAr = ct == CT_ASPECT_RATIO
+        val isOldAr = existingKey != 0L && existCt == CT_ASPECT_RATIO
 
         if (existingKey == 0L || !isOldAr || isNewAr) {
+            if (diagnosticsEnabled && existingKey != 0L) evictionCount.increment()
             shardValues.set(slotIndex, computed.toRawBits())
             shardKeys.set(slotIndex, key)
             context?.let { saveToPersistence(it) }
@@ -589,8 +643,8 @@ object DimenCache {
         // 0. FAST BYPASS — intentional design decision.
         //
         // When Aspect Ratio is NOT active (bit 63 == 0) and the CalcType is one of the
-        // "simple multiplier" types (PERCENT=7, SCALED=11, DENSITY=14), the scaling
-        // formula often reduces to a single float multiply: `baseValue * scale`.
+        // "simple multiplier" types (PERCENT, SCALED, DENSITY), the scaling formula
+        // often reduces to a single float multiply: `baseValue * scale`.
         //
         // Measured cost on Snapdragon 888:
         //   Raw math (multiply)  ≈  2 ns
@@ -601,15 +655,11 @@ object DimenCache {
         // hot-path optimization.  The cache is only beneficial when the computation
         // is expensive (e.g. AR path with ln(), ≈41 ns), making the 5 ns lookup cheap.
         //
-        // ⚠️  Consequence for benchmarks: calls to SCALED / PERCENT / DENSITY
-        //     without AR will NEVER hit the cache.  BenchmarkActivity results for
-        //     these variants reflect pure math cost (~2 ns), NOT cache retrieval cost.
-        //     Do not use these variants to measure cache throughput.
         // Bypass only for CalcTypes that reduce to ~one multiply without AR (bit 63 clear).
         // AUTO(0) and FLUID(4) use non-trivial math in their modules — do not bypass.
         if (key >= 0) {
             val ct = (key ushr 27 and 0xFL).toInt()
-            if (ct == 7 || ct == 11 || ct == 14) return compute()
+            if (ct == CT_PERCENT || ct == CT_SCALED || ct == CT_DENSITY) return compute()
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -623,17 +673,22 @@ object DimenCache {
         val slot  = mixed and SHARD_SIZE_MASK
 
         val existingKey = shard.keys.get(slot)
-        if (existingKey == key) return Float.fromBits(shard.values.get(slot))
+        if (existingKey == key) {
+            if (diagnosticsEnabled) hitCount.increment()
+            return Float.fromBits(shard.values.get(slot))
+        }
 
         // MISS — compute then conditionally store
+        if (diagnosticsEnabled) missCount.increment()
         val computed = compute()
 
         val ct      = (key         ushr 27 and 0xFL).toInt()
         val existCt = (existingKey ushr 27 and 0xFL).toInt()
-        val isNewAr = ct == 13
-        val isOldAr = existingKey != 0L && existCt == 13
+        val isNewAr = ct == CT_ASPECT_RATIO
+        val isOldAr = existingKey != 0L && existCt == CT_ASPECT_RATIO
 
         if (existingKey == 0L || !isOldAr || isNewAr) {
+            if (diagnosticsEnabled && existingKey != 0L) evictionCount.increment()
             shard.values.set(slot, computed.toRawBits())
             shard.keys.set(slot, key)
             context?.let { saveToPersistence(it) }
@@ -723,7 +778,7 @@ object DimenCache {
     @PublishedApi
     internal fun getOrPutAspectRatio(normalizedAr: Float, context: Context? = null): Float {
         val arKey = ((java.lang.Float.floatToRawIntBits(normalizedAr).toLong() and 0xFFFFFFFFL) shl 31) or
-                (13L shl 27)
+                (CT_ASPECT_RATIO.toLong() shl 27)
         return getOrPut(arKey, context) {
             kotlin.math.ln(normalizedAr)
         }
@@ -793,7 +848,7 @@ object DimenCache {
 
     /** EN Clears all cache slots. Java-compatible alias. */
     @JvmStatic
-    fun clear() = clearAll()
+    fun clear(context: Context? = null) = clearAll(context)
 
     // ─────────────────────────────────────────────────────────────────────────
     // [FASE 4] clearAll() — lazySet + 4× loop unrolling
@@ -819,7 +874,8 @@ object DimenCache {
      * unrolling 4× para otimização de pipeline. Thread-safe.
      */
     @JvmStatic
-    fun clearAll() {
+    @JvmOverloads
+    fun clearAll(context: Context? = null) {
         for (s in 0 until SHARD_COUNT) {
             val shard = shards[s]
             val keys  = shard.keys
@@ -840,6 +896,14 @@ object DimenCache {
             }
         }
         resetListeners.forEach { it() }
+
+        context?.let { ctx ->
+            scope.launch {
+                try {
+                    ctx.applicationContext.dataStore.edit { it.clear() }
+                } catch (_: Exception) { }
+            }
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -855,23 +919,49 @@ object DimenCache {
                 if (keys.get(i) != 0L) populated++
             }
         }
+        val hits   = hitCount.sum()
+        val misses = missCount.sum()
+        val total  = hits + misses
         return CacheStats(
-            capacity  = CACHE_SIZE,
-            populated = populated,
-            fillRatio = populated.toFloat() / CACHE_SIZE
+            capacity   = CACHE_SIZE,
+            populated  = populated,
+            fillRatio  = populated.toFloat() / CACHE_SIZE,
+            hits       = hits,
+            misses     = misses,
+            evictions  = evictionCount.sum(),
+            hitRate    = if (total > 0) hits.toFloat() / total else 0f
         )
     }
 
     /**
-     * EN Cache usage statistics snapshot.
-     * PT Snapshot de métricas de uso do cache.
+     * EN Resets the diagnostic counters (hit, miss, eviction) to zero.
+     * PT Zera os contadores de diagnóstico (hit, miss, eviction).
+     */
+    @JvmStatic
+    fun resetDiagnostics() {
+        hitCount.reset()
+        missCount.reset()
+        evictionCount.reset()
+    }
+
+    /**
+     * EN Cache usage statistics snapshot. The [hits], [misses], [evictions], and [hitRate]
+     * fields are only meaningful when [diagnosticsEnabled] is `true`.
+     *
+     * PT Snapshot de métricas de uso do cache. [hits], [misses], [evictions] e [hitRate]
+     * só são significativos quando [diagnosticsEnabled] está `true`.
      */
     data class CacheStats(
         val capacity  : Int,
         val populated : Int,
-        val fillRatio : Float
+        val fillRatio : Float,
+        val hits      : Long = 0,
+        val misses    : Long = 0,
+        val evictions : Long = 0,
+        val hitRate   : Float = 0f
     ) {
         override fun toString(): String =
-            "DimenCache: $populated/$capacity slots used (${(fillRatio * 100).toInt()}% fill)"
+            "DimenCache: $populated/$capacity slots used (${(fillRatio * 100).toInt()}% fill)" +
+            if (hits + misses > 0) ", hits=$hits misses=$misses evictions=$evictions hitRate=${(hitRate * 100).toInt()}%" else ""
     }
 }

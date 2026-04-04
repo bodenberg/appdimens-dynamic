@@ -388,12 +388,13 @@ internal fun calculatePercentDpCompose(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: android.content.Context? = null
 ): Float {
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val q = DimenCalculationPlumbing.effectiveQualifier(qualifier, inverter, isLandscape, isPortrait)
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) return baseValue
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
     val dim = DimenCalculationPlumbing.readScreenDp(configuration, q)
     if (!applyAspectRatio) return baseValue * dim * DimenCache.INV_BASE_RATIO
     val diff = dim - DesignScaleConstants.BASE_WIDTH_DP
@@ -472,7 +473,7 @@ internal fun rememberPercentDp(
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
 ): Dp = rememberDimenDp(cacheKey, layoutStamp, androidContext) {
-    calculatePercentDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    calculatePercentDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, androidContext)
 }
 
 @Composable
@@ -489,7 +490,7 @@ internal fun rememberPercentPxFromDp(
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
 ): Float = rememberDimenPxFromDp(cacheKey, pxStamp, androidContext, density) {
-    calculatePercentDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    calculatePercentDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, androidContext)
 }
 
 /**

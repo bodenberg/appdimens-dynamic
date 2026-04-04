@@ -388,12 +388,13 @@ internal fun calculateFluidDpCompose(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: android.content.Context? = null
 ): Float {
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val q = DimenCalculationPlumbing.effectiveQualifier(qualifier, inverter, isLandscape, isPortrait)
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) return baseValue
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
     val dim = DimenCalculationPlumbing.readScreenDp(configuration, q)
     val minV = baseValue * 0.8f
     val maxV = baseValue * 1.2f
@@ -485,7 +486,7 @@ internal fun rememberFluidDp(
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
 ): Dp = rememberDimenDp(cacheKey, layoutStamp, androidContext) {
-    calculateFluidDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    calculateFluidDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, androidContext)
 }
 
 @Composable
@@ -502,7 +503,7 @@ internal fun rememberFluidPxFromDp(
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
 ): Float = rememberDimenPxFromDp(cacheKey, pxStamp, androidContext, density) {
-    calculateFluidDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    calculateFluidDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, androidContext)
 }
 
 /**

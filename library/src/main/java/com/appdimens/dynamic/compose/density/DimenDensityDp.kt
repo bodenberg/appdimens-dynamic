@@ -388,9 +388,10 @@ internal fun calculateDensityDpCompose(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: android.content.Context? = null
 ): Float {
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) return baseValue
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
     val densityScale = configuration.densityDpi / 160f
     var out = baseValue * densityScale
     if (applyAspectRatio) {
@@ -473,7 +474,7 @@ internal fun rememberDensityDp(
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
 ): Dp = rememberDimenDp(cacheKey, layoutStamp, androidContext) {
-    calculateDensityDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    calculateDensityDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, androidContext)
 }
 
 @Composable
@@ -490,7 +491,7 @@ internal fun rememberDensityPxFromDp(
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
 ): Float = rememberDimenPxFromDp(cacheKey, pxStamp, androidContext, density) {
-    calculateDensityDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    calculateDensityDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, androidContext)
 }
 
 /**

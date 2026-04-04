@@ -551,7 +551,7 @@ fun Number.toDynamicFillPx(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val scaledDp = calculateFillDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val scaledDp = calculateFillDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
         scaledDp * density
     }
 }
@@ -612,9 +612,10 @@ internal fun calculateFillDp(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: Context? = null
 ): Float {
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) return baseValue
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
     val sm = DimenCalculationPlumbing.smallestSideDp(configuration)
     val lg = DimenCalculationPlumbing.largestSideDp(configuration)
     val rw = sm / DesignScaleConstants.BASE_WIDTH_DP
@@ -680,6 +681,6 @@ fun Number.toDynamicFillDp(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        calculateFillDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        calculateFillDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
     }
 }

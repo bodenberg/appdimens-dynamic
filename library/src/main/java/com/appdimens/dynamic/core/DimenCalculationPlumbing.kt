@@ -4,42 +4,15 @@
  */
 package com.appdimens.dynamic.core
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Configuration
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
-import java.lang.reflect.Method
 import kotlin.math.ln
 
 object DimenCalculationPlumbing {
-
-    /**
-     * `Configuration.windowConfiguration` and `WindowConfiguration` are @hide in the public SDK stub,
-     * so windowing mode is read reflectively (minSdk 24 guarantees the field on devices).
-     */
-    private object WindowingModeAccess {
-        private val readMode: (Configuration) -> Int? = run {
-            try {
-                val wcField = Configuration::class.java.getDeclaredField("windowConfiguration").apply {
-                    isAccessible = true
-                }
-                val getWindowingMode: Method =
-                    Class.forName("android.app.WindowConfiguration").getMethod("getWindowingMode")
-                ({ cfg: Configuration ->
-                    runCatching {
-                        val wc = wcField.get(cfg) ?: return@runCatching null
-                        getWindowingMode.invoke(wc) as Int
-                    }.getOrNull()
-                })
-            } catch (_: ReflectiveOperationException) {
-                { _ -> null }
-            }
-        }
-
-        fun read(configuration: Configuration): Int? = readMode(configuration)
-    }
-
-    private const val WINDOWING_MODE_UNDEFINED = 0
-    private const val WINDOWING_MODE_FULLSCREEN = 1
 
     fun effectiveQualifier(
         qualifier: DpQualifier,
@@ -62,17 +35,39 @@ object DimenCalculationPlumbing {
         return actual
     }
 
-    fun isMultiWindowConstrained(configuration: Configuration, ignoreMultiWindows: Boolean): Boolean {
+    /**
+     * Returns `true` when the app is in a multi-window mode (split-screen, freeform, PiP)
+     * **and** the caller opted into suppressing scaling via [ignoreMultiWindows].
+     *
+     * Primary detection uses the public [Activity.isInMultiWindowMode] API (available since
+     * API 24, which matches the library's minSdk). When no [Activity] can be resolved from
+     * the supplied [context], a heuristic based on [Configuration] dimensions is used as
+     * a best-effort fallback.
+     *
+     * @param context Optional [Context] used to resolve the hosting [Activity].
+     *                Pass this whenever available for reliable multi-window detection.
+     */
+    fun isMultiWindowConstrained(
+        configuration: Configuration,
+        ignoreMultiWindows: Boolean,
+        context: Context? = null,
+    ): Boolean {
         if (!ignoreMultiWindows) return false
-        val mode = WindowingModeAccess.read(configuration)
-        val nonFullscreen = mode != null &&
-            mode != WINDOWING_MODE_UNDEFINED &&
-            mode != WINDOWING_MODE_FULLSCREEN
-        if (nonFullscreen) return true
+        val activity = context?.findActivityInternal()
+        if (activity != null) return activity.isInMultiWindowMode
         val swDp = configuration.smallestScreenWidthDp.toFloat()
         if (swDp <= 0f) return false
         val cwDp = configuration.screenWidthDp.toFloat()
         return (swDp - cwDp) >= (swDp * 0.1f)
+    }
+
+    private fun Context.findActivityInternal(): Activity? {
+        var ctx: Context = this
+        while (ctx is ContextWrapper) {
+            if (ctx is Activity) return ctx
+            ctx = ctx.baseContext
+        }
+        return null
     }
 
     fun readScreenDp(configuration: Configuration, actualQualifier: DpQualifier): Float =

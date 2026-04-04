@@ -290,7 +290,7 @@ class DimenPercentScaled private constructor(
         val dpToUse = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return dpToUse.toFloat().toDynamicPercentDp(
+        return dpToUse.toDynamicPercentDp(
             context,
             finalQualifier,
             foundEntry?.inverter ?: Inverter.DEFAULT,

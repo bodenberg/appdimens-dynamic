@@ -377,7 +377,7 @@ object DimenPhysicalUnits {
             UnitType.INCH -> toInch(diameter, resources)
             UnitType.CM -> toCm(diameter, resources)
             UnitType.MM -> toMm(diameter, resources)
-            UnitType.SP -> diameter * (dm.scaledDensity / dm.density)
+            UnitType.SP -> diameter * resources.configuration.fontScale
             UnitType.DP -> diameter
             UnitType.PX -> diameter / dm.density
         }
@@ -441,7 +441,7 @@ object DimenPhysicalUnits {
             UnitType.INCH -> toInch(1.0f, resources)
             UnitType.CM -> toCm(1.0f, resources)
             UnitType.MM -> toMm(1.0f, resources)
-            UnitType.SP -> dm.scaledDensity / dm.density
+            UnitType.SP -> resources.configuration.fontScale
             UnitType.DP -> 1f
             UnitType.PX -> 1f / dm.density
         }

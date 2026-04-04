@@ -551,7 +551,7 @@ fun Number.toDynamicDensityPx(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val scaledDp = calculateDensityDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val scaledDp = calculateDensityDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
         scaledDp * density
     }
 }
@@ -612,9 +612,10 @@ internal fun calculateDensityDp(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: Context? = null
 ): Float {
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) return baseValue
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
     val densityScale = configuration.densityDpi / 160f
     var out = baseValue * densityScale
     if (applyAspectRatio) {
@@ -677,6 +678,6 @@ fun Number.toDynamicDensityDp(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        calculateDensityDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        calculateDensityDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
     }
 }

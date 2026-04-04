@@ -290,7 +290,7 @@ class DimenDiagonalScaled private constructor(
         val dpToUse = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return dpToUse.toFloat().toDynamicDiagonalDp(
+        return dpToUse.toDynamicDiagonalDp(
             context,
             finalQualifier,
             foundEntry?.inverter ?: Inverter.DEFAULT,

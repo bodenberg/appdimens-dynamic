@@ -549,7 +549,7 @@ fun Number.toDynamicScaledPx(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val scaledDp = calculateScaledDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val scaledDp = calculateScaledDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
         scaledDp * density
     }
 }
@@ -610,14 +610,15 @@ private fun calculateScaledDp(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    context: Context? = null
 ): Float {
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val actualQualifier = com.appdimens.dynamic.core.DimenCalculationPlumbing.effectiveQualifier(
         qualifier, inverter, isLandscape, isPortrait
     )
-    if (com.appdimens.dynamic.core.DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) {
+    if (com.appdimens.dynamic.core.DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) {
         return baseValue
     }
     val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
@@ -686,6 +687,6 @@ fun Number.toDynamicScaledDp(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        calculateScaledDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        calculateScaledDp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
     }
 }

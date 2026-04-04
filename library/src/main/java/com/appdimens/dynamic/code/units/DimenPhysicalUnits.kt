@@ -96,7 +96,7 @@ object DimenPhysicalUnits {
     @JvmStatic
     fun toSpFromMm(mm: Float, resources: Resources): Float {
         val dm = resources.displayMetrics
-        return toPxFromMm(mm, resources) / dm.scaledDensity
+        return toPxFromMm(mm, resources) / (dm.density * resources.configuration.fontScale)
     }
 
     /**
@@ -106,7 +106,7 @@ object DimenPhysicalUnits {
     @JvmStatic
     fun toSpFromCm(cm: Float, resources: Resources): Float {
         val dm = resources.displayMetrics
-        return toPxFromCm(cm, resources) / dm.scaledDensity
+        return toPxFromCm(cm, resources) / (dm.density * resources.configuration.fontScale)
     }
 
     /**
@@ -116,7 +116,7 @@ object DimenPhysicalUnits {
     @JvmStatic
     fun toSpFromInch(inch: Float, resources: Resources): Float {
         val dm = resources.displayMetrics
-        return toPxFromInch(inch, resources) / dm.scaledDensity
+        return toPxFromInch(inch, resources) / (dm.density * resources.configuration.fontScale)
     }
 
     // MARK: - Utility Methods
@@ -140,7 +140,7 @@ object DimenPhysicalUnits {
             UnitType.CM -> toDpFromCm(diameter, resources)
             UnitType.INCH -> toDpFromInch(diameter, resources)
             UnitType.DP -> diameter
-            UnitType.SP -> diameter * (resources.displayMetrics.scaledDensity / resources.displayMetrics.density)
+            UnitType.SP -> diameter * resources.configuration.fontScale
             UnitType.PX -> diameter / resources.displayMetrics.density
         }
         
@@ -166,7 +166,7 @@ object DimenPhysicalUnits {
             UnitType.CM -> toDpFromCm(circumference, resources)
             UnitType.INCH -> toDpFromInch(circumference, resources)
             UnitType.DP -> circumference
-            UnitType.SP -> circumference * (resources.displayMetrics.scaledDensity / resources.displayMetrics.density)
+            UnitType.SP -> circumference * resources.configuration.fontScale
             UnitType.PX -> circumference / resources.displayMetrics.density
         }
         

@@ -290,7 +290,7 @@ class DimenFitScaled private constructor(
         val dpToUse = foundEntry?.customValue ?: initialBaseDp
         val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
 
-        return dpToUse.toFloat().toDynamicFitDp(
+        return dpToUse.toDynamicFitDp(
             context,
             finalQualifier,
             foundEntry?.inverter ?: Inverter.DEFAULT,

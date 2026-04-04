@@ -11,18 +11,21 @@ import android.content.res.Configuration
 import androidx.compose.ui.unit.Density
 
 /**
- * EN Layout + [Context] identity for [com.appdimens.dynamic.compose.toDynamicScaledDp] / cache paths that keyed [Configuration] metrics and [androidContext].
- * Uses [System.identityHashCode] for the context component; hash collisions are benign — they
- * cause an unnecessary `remember` recomputation but never produce incorrect dimension values.
- * PT Layout + identidade de [Context] para caminhos que usavam métricas de [Configuration] e [androidContext].
- * Colisões de identityHashCode são benignas (causam recomputação desnecessária, nunca valores errados).
+ * EN Layout stamp for [androidx.compose.runtime.remember] keys.
+ * Uses [Configuration.hashCode] which reflects actual content (densityDpi, locale, fontScale,
+ * orientation, etc.), ensuring correct recomposition when any configuration field changes.
+ *
+ * PT Carimbo de layout para chaves de [remember].
+ * Usa [Configuration.hashCode] que reflete o conteúdo real, garantindo recomposição correta
+ * quando qualquer campo da configuração muda.
  */
+@Suppress("UNUSED_PARAMETER")
 internal fun layoutRememberStamp(configuration: Configuration, context: Context): Long {
     val sw = configuration.smallestScreenWidthDp.toLong() and 0xFFFFFL
     val w = configuration.screenWidthDp.toLong() and 0xFFFFFL
     val h = configuration.screenHeightDp.toLong() and 0xFFFFFL
     val o = configuration.orientation.toLong() and 0xFL
-    val id = System.identityHashCode(context).toLong()
+    val id = configuration.hashCode().toLong()
     return ((o shl 60) or (sw shl 40) or (w shl 20) or h) xor id
 }
 

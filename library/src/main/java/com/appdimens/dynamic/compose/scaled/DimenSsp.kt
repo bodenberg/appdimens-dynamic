@@ -683,14 +683,15 @@ internal fun calculateSspValueCompose(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-    configuration: Configuration
+    configuration: Configuration,
+    context: android.content.Context? = null
 ): Float {
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     val actualQualifier = DimenCalculationPlumbing.effectiveQualifier(qualifier, inverter, isLandscape, isPortrait)
 
-    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) {
+    if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) {
         return baseValue
     }
 
@@ -730,7 +731,7 @@ internal fun rememberScaledSp(
     customSensitivityK: Float?,
 ): TextUnit = remember(cacheKey, spStamp) {
     DimenCache.getOrPut(cacheKey, androidContext) {
-        val raw = calculateSspValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
+        val raw = calculateSspValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration, androidContext)
         if (fontScale) raw else (raw / density.fontScale)
     }.sp
 }
@@ -755,7 +756,7 @@ internal fun rememberScaledSpPx(
     customSensitivityK: Float?,
 ): Float = remember(cacheKey, sspPxStamp) {
     DimenCache.getOrPut(cacheKey, androidContext) {
-        val scaledVal = calculateSspValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
+        val scaledVal = calculateSspValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration, androidContext)
         val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
         density.run { spValue.toPx() }
     }
