@@ -70,7 +70,7 @@ dependencies {
 
 ## Quick start — Scaled (Compose)
 
-**Scaled** uses **300 dp** as the design reference. It is what **most apps use most of the time** — with or without **`a`** (aspect ratio), e.g. `16.sdp` vs `16.sdpa`.
+**Scaled** uses **300 dp** as the design reference. It is the **most widely used** strategy in real apps and the **recommended default**: use plain `sdp` / `hdp` / `wdp` / `ssp` when a single curve is enough, and the **`a`** suffix (aspect ratio–aware), e.g. `16.sdpa`, when you want scaling tuned to screen shape. **After Scaled**, the next strategies teams typically adopt are **percent** (sizes as a fraction of an axis) and **auto** (breakpoint-style steps); the other modes are for specialized layouts — see [DOCUMENTATION/README.md](DOCUMENTATION/README.md).
 
 | Extension | Based on | Typical use |
 |-----------|----------|-------------|
@@ -277,6 +277,8 @@ Approximate **real-world** size on screen (density-based). Compose: use helpers 
 ---
 
 ## More strategies & full API
+
+**Recommendation order for most apps:** **Scaled** (with or without `a`) → then **percent** → then **auto**; explore the rest when you have a clear need (fluid, fit, diagonal, etc.).
 
 Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **fill**, **fit**, **interpolated**, **logarithmic**, **perimeter**, **density**) use the **same suffix patterns** as Scaled with a **different import prefix** — see [DOCUMENTATION/README.md](DOCUMENTATION/README.md) and [**GUIDE-FOR-BEGINNERS**](./GUIDE-FOR-BEGINNERS).
 
