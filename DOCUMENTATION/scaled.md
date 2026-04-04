@@ -1,22 +1,22 @@
-# Estratégia Scaled (`compose.scaled` / `code` espelhado)
+# Scaled strategy (`compose.scaled` / mirrored `code`)
 
-## O que é
+## What it is
 
-A estratégia **scaled** é o modo **padrão** do AppDimens Dynamic: escala valores de design em torno da referência de **300 dp** no eixo escolhido (**smallest width**, **altura** ou **largura** da janela). Corresponde ao comportamento clássico SDP / HDP / WDP com cache, qualificadores e integração com `Configuration`.
+**Scaled** is the **default** AppDimens Dynamic mode: it scales design values around the **300 dp** reference on the chosen axis (**smallest width**, **height**, or **width** of the window). This is the classic SDP / HDP / WDP behavior with cache, qualifiers, and `Configuration` integration.
 
-## Cálculo utilizado
+## Calculation used
 
-- Lê-se a dimensão em dp do eixo efetivo (após **inversores** de orientação, se usados).
-- **Sem** `applyAspectRatio` (`a` / `ia`): resultado ≈ `base × (dim / 300)` — fator `1/300` (`INV_BASE_RATIO` em `DimenCache`).
-- **Com** `applyAspectRatio`: usa a curva refinada em `DimenCache.calculateRawScaling`, combinando desvio da dimensão em relação a 300 dp com ajuste ligado ao log do aspeto normalizado do ecrã.
-- Com `ignoreMultiWindows` (`i` / `ia`) ativo e heurística de multi-janela: devolve o **valor base** sem escala.
-- Constante de referência: `BASE_WIDTH_DP = 300f` em `DesignScaleConstants` (eixo usado depende do qualificador).
+- Read the effective axis in dp (after orientation **inverters**, if any).
+- **Without** `applyAspectRatio` (`a` / `ia`): result ≈ `base × (dim / 300)` — factor `1/300` (`INV_BASE_RATIO` in `DimenCache`).
+- **With** `applyAspectRatio`: uses the refined curve in `DimenCache.calculateRawScaling`, combining deviation from 300 dp with adjustment tied to the log of the normalized screen aspect.
+- With `ignoreMultiWindows` (`i` / `ia`) and the multi-window heuristic active: returns the **raw base** value (no scaling).
+- Reference constant: `BASE_WIDTH_DP = 300f` in `DesignScaleConstants` (which axis is used depends on the qualifier).
 
-Sufixos habituais: **`a`** = aspect ratio; **`i`** = ignorar multi-janela; **`ia`** = ambos. Inversores (ex.: `.sdpPh`, `.sdpLw`) trocam o eixo efetivo consoante orientação.
+Common suffixes: **`a`** = aspect ratio; **`i`** = ignore multi-window; **`ia`** = both. Inverters (e.g. `.sdpPh`, `.sdpLw`) swap the effective axis by orientation.
 
-## Como usar
+## How to use
 
-**Compose** — importe extensões de `com.appdimens.dynamic.compose.scaled` (ou o pacote que expõe `sdp`, `hdp`, `wdp`, `ssp`, etc.):
+**Compose** — import extensions from `com.appdimens.dynamic.compose.scaled` (the package that exposes `sdp`, `hdp`, `wdp`, `ssp`, etc.):
 
 ```kotlin
 import com.appdimens.dynamic.compose.sdp
@@ -26,27 +26,27 @@ import com.appdimens.dynamic.compose.wdp
 Modifier.padding(16.sdp).width(100.wdp)
 ```
 
-**Código (Views / Kotlin)** — `com.appdimens.dynamic.code.DimenSdp`, `DimenSsp`, extensões `ssp`, `scaledSp()`, etc.
+**Code (Views / Kotlin)** — `com.appdimens.dynamic.code.DimenSdp`, `DimenSsp`, extensions `ssp`, `scaledSp()`, etc.
 
-Cada estratégia expõe o mesmo **padrão de ficheiros**: `Dimen*Dp`, `*DpExtensions`, `*Scaled`, `*Sp`, `*SpExtensions`, `*SpScaled` (em `scaled`, os templates de Sp podem usar nomes como `DimenSsp*` no código legado).
+Each strategy follows the same **file pattern**: `Dimen*Dp`, `*DpExtensions`, `*Scaled`, `*Sp`, `*SpExtensions`, `*SpScaled` (in `scaled`, Sp templates may use names like `DimenSsp*` in legacy code).
 
-## Por que usar
+## Why use it
 
-É o equilíbrio da biblioteca: **previsível**, bem integrado com **DimenCache**, suporta **builders** (`scaledDp()` / `scaledSp()`), facilitadores (rotação, modo UI, qualifier) e inversores — sem curvas exóticas.
+It is the library’s balanced choice: **predictable**, tightly integrated with **DimenCache**, supports **builders** (`scaledDp()` / `scaledSp()`), facilitators (rotation, UI mode, qualifier), and inverters — without exotic curves.
 
-## Em que caso usar
+## When to use it
 
-- Layouts de aplicação normais (telefone, tablet, foldable).
-- Quando quiser o mesmo “look” que a documentação principal descreve como referência.
-- Sempre que não houver razão forte para percent puro, power, fluid, etc.
+- Normal app layouts (phone, tablet, foldable).
+- When you want the same baseline “look” the main README describes.
+- Whenever there is no strong reason to use pure percent, power, fluid, etc.
 
-## Vantagens e trade-offs
+## Advantages and trade-offs
 
-- **Vantagens:** curva familiar; ótimo desempenho (incluindo bypass de cache em caminhos quentes sem AR); documentação e exemplos abundantes no README.
-- **Trade-offs:** em ecrãs muito grandes, o crescimento linear (sem `a`) pode parecer agressivo frente a **power** ou **fluid**; nesse caso avalie outra estratégia só nos componentes afetados.
+- **Pros:** familiar curve; strong performance (including cache bypass on hot paths without AR); rich README examples.
+- **Cons:** on very large screens, linear growth (without `a`) can feel aggressive vs **power** or **fluid** — then consider another strategy only for affected components.
 
-## Estratégia de uso recomendada
+## Recommended usage strategy
 
-Use **SDP** (`.sdp`) para espaçamentos e tamanhos que devem manter-se coerentes à rotação; **HDP** para listas verticais; **WDP** quando a largura disponível deve dominar. Ative **`a`** se ratios não standard degradarem o layout. Só depois de QA, substitua pontualmente por outra estratégia documentada neste índice.
+Use **SDP** (`.sdp`) for spacing and sizes that should stay coherent across rotation; **HDP** for vertical lists; **WDP** when available width should dominate. Enable **`a`** if non-standard aspect ratios hurt the layout. Only after QA, replace selectively with another strategy from this index.
 
-[Voltar ao índice](README.md)
+[Back to index](README.md)

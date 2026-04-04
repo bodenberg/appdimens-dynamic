@@ -1,5 +1,11 @@
 # AppDimens Dynamic (SDP, HDP, WDP)
 
+<p align="center">
+  <a href="./DOCUMENTATION/README.md"><img src="https://img.shields.io/badge/Full_documentation-4285F4?style=for-the-badge" alt="Full documentation"></a>
+</p>
+
+---
+
 ![AppDimens Banner](IMAGES/banner_top.png)
 
 **AppDimens Dynamic** is the most complete responsive dimension library for Android. It provides a purely dynamic, code-level scaling system — including Jetpack Compose extensions, code-level APIs, conditional builders, orientation-aware inverters, and physical unit converters — all in a single, zero-configuration dependency.
@@ -24,9 +30,7 @@ dependencies {
 
 **Basic — Auto-Scaling Extensions:**
 ```kotlin
-import com.appdimens.dynamic.compose.sdp
-import com.appdimens.dynamic.compose.hdp
-import com.appdimens.dynamic.compose.wdp
+import com.appdimens.dynamic.compose.*
 
 Box(
     modifier = Modifier
@@ -56,9 +60,7 @@ val nemMw = 16.nemi     // Fixed Sp (Compose: nem) + Ignore Multi-Window
 
 **Scalable Fonts (TextUnit) — Auto-Scaling Extensions:**
 ```kotlin
-import com.appdimens.dynamic.compose.ssp // Smallest Width
-import com.appdimens.dynamic.compose.hsp // Height
-import com.appdimens.dynamic.compose.wsp // Width
+import com.appdimens.dynamic.compose.*
 
 // Fixed Sp (ignores system font scale) — Compose: nem / hem / wem (code-level API: sei / hei / wei)
 Text("Scalable", fontSize = 16.ssp)
@@ -70,10 +72,7 @@ Text("No font scale (width)", fontSize = 18.wem)
 
 **Inverter Shortcuts — Orientation-Aware Scaling:**
 ```kotlin
-import com.appdimens.dynamic.compose.sdpPh
-import com.appdimens.dynamic.compose.sdpLw
-import com.appdimens.dynamic.compose.hdpLw
-import com.appdimens.dynamic.compose.wdpLh
+import com.appdimens.dynamic.compose.*
 
 // .sdpPh → uses Smallest Width by default; in Portrait → switches to Height
 val adaptiveVert = 32.sdpPh
@@ -90,11 +89,7 @@ val widthToHeight = 50.wdpLh
 
 **Facilitators — Quick Conditional Overrides:**
 ```kotlin
-import com.appdimens.dynamic.compose.sdpRotate
-import com.appdimens.dynamic.compose.sdpRotatePlain
-import com.appdimens.dynamic.compose.sdpMode
-import com.appdimens.dynamic.compose.sdpQualifier
-import com.appdimens.dynamic.compose.sdpScreen
+import com.appdimens.dynamic.compose.*
 
 // 1. Int Extension: Scales by default (80.sdp default, 50.sdp in Landscape)
 val rotInt = 80.sdpRotate(50)
@@ -119,8 +114,7 @@ val fontTV = 16.sspMode(40, UiModeType.TELEVISION)
 
 **DimenScaled & ScaledSp Builder — Complex Multi-Condition Chains:**
 ```kotlin
-import com.appdimens.dynamic.compose.scaledDp
-import com.appdimens.dynamic.compose.scaledSp
+import com.appdimens.dynamic.compose.*
 
 val dynamicPadding = 16.scaledDp()
     .aspectRatio(true)           // Enable Aspect Ratio scaling
@@ -141,10 +135,6 @@ val dynamicText = 16.scaledSp()
 
 **What it is:** helpers that pick the **largest** size in a `min…max` range (with a **step**) that still **fits** the space `BoxWithConstraints` exposes (`maxWidth` / `maxHeight`). Similar in spirit to `TextView` auto-size: you define bounds and granularity; the library searches downward from `max` until the predicate (fits in box / text layout does not overflow) succeeds.
 
-**How it works:** sizes are converted to pixels using the current `Configuration` and density. For **text**, each candidate **sp** size is laid out with `rememberTextMeasurer` using **`Constraints(maxWidth, maxHeight)`**, **`LocalLayoutDirection`**, and the same **`TextStyle`** fields that affect layout (weight, letter spacing, line height, `platformTextStyle` / font padding, etc.) — only `fontSize` is swept. **`maxLines == 0` / `null` / `-1`** means no line-count cap in the measurer, but the text must still **fit the box height** (multi-line wrap is limited by `maxHeight`). Call these composables **inside** `BoxWithConstraints { … }` (`BoxWithConstraintsScope` extensions).
-
-**Percent sizing:** (1) **Box-local** — `minPercent` / `maxPercent` are **0–100** of the **inner** content width, height, or `min(width,height)` (`autoResizeSquareSizePercent`, `autoResizeWidthSizePercent`, `autoResizeHeightSizePercent`, `autoResizeTextSpPercent` + `AutoResizePercentBasis`). (2) **Screen-axis** — pass **`ResizeBound`** (`resizePercentSw` / `resizePercentW` / `resizePercentH`, or fixed dp/sp) on overloads that take `ResizeBound` for min/max/step (square, width, height, and text).
-
 **Optional parameters:**
 
 - **`autoResizeTextSp`:** `style` (`null` → `LocalTextStyle.current`), `maxLines` / `maxLength` (`null`, `≤ 0`, or `-1` → ignore limit / full string; if you use `maxLength`, show the same prefix in `Text`, e.g. `take(n)`), `softWrap`, `overflow`, `contentPadding` (subtract insets from usable width/height). Overloads with **`ResizeBound`** use **screen** % (sw / w / h) or fixed dp/sp for the swept font-size range in px.
@@ -159,23 +149,14 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.appdimens.dynamic.compose.resize.AutoResizePercentBasis
-import com.appdimens.dynamic.compose.resize.autoResizeSquareSize
-import com.appdimens.dynamic.compose.resize.autoResizeSquareSizePercent
-import com.appdimens.dynamic.compose.resize.autoResizeTextSp
-import com.appdimens.dynamic.compose.resize.autoResizeTextSpPercent
-import com.appdimens.dynamic.compose.resize.autoResizeWidthSize
-import com.appdimens.dynamic.compose.resize.autoResizeWidthSizePercent
-import com.appdimens.dynamic.compose.resize.autoResizeHeightSize
-import com.appdimens.dynamic.compose.resize.autoResizeHeightSizePercent
-import com.appdimens.dynamic.core.resizeFixedSp
-import com.appdimens.dynamic.core.resizePercentH
+import com.appdimens.dynamic.compose.resize.*
+import com.appdimens.dynamic.core.*
 
 // Text: Number / TextUnit(.sp) / Dp (.value treated as sp). Optional: style, maxLines, maxLength, contentPadding, softWrap, overflow
 BoxWithConstraints(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
     val fontSize = autoResizeTextSp(
         text = "Headline that must fit this width",
-        minSp = 10,
+        minSp = 10, //or TextUnit
         maxSp = 28,
         stepSp = 1,
         maxLines = 2,
@@ -184,68 +165,10 @@ BoxWithConstraints(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
     Text("Headline that must fit this width", fontSize = fontSize, maxLines = 2)
 }
 
-// Explicit sp; style = null uses LocalTextStyle
-BoxWithConstraints(Modifier.fillMaxWidth()) {
-    val fontSize = autoResizeTextSp(
-        text = "Subtitle",
-        minSp = 12.sp,
-        maxSp = 20.sp,
-        stepSp = 1.sp,
-        style = null,
-    )
-    Text("Subtitle", fontSize = fontSize)
-}
-
 // Square: Number = dp. Optional uniform inset (simulates parent content padding) when contentPadding is null
 BoxWithConstraints(Modifier.fillMaxWidth().height(120.dp)) {
     val side = autoResizeSquareSize(min = 16, max = 96, step = 4, contentPaddingUniformDp = 8)
     /* Image(Modifier.size(side), …) */
-}
-
-// Square: 10%…80% of min(inner width, inner height), step in dp
-BoxWithConstraints(Modifier.fillMaxWidth().height(120.dp)) {
-    val sidePct = autoResizeSquareSizePercent(minPercent = 10f, maxPercent = 80f, step = 2.dp)
-    /* Modifier.size(sidePct) */
-}
-
-// Width / height: box-local percent (0–100) of inner width / height
-BoxWithConstraints(Modifier.fillMaxWidth().height(56.dp)) {
-    val wPct = autoResizeWidthSizePercent(minPercent = 5f, maxPercent = 95f, step = 2.dp)
-    /* Modifier.width(wPct) */
-}
-
-// Text: font size range from % of inner height (or WIDTH / MIN_SIDE); step in sp
-BoxWithConstraints(Modifier.fillMaxWidth().height(120.dp)) {
-    val fsPct = autoResizeTextSpPercent(
-        text = "Scaled by box height",
-        minPercent = 4f,
-        maxPercent = 28f,
-        stepSp = 1,
-        percentBasis = AutoResizePercentBasis.HEIGHT,
-    )
-    Text("Scaled by box height", fontSize = fsPct)
-}
-
-// Text: min/max/step as ResizeBound — e.g. screen height % (0–100) + sp step
-BoxWithConstraints(Modifier.fillMaxWidth().height(100.dp)) {
-    val fsScreen = autoResizeTextSp(
-        text = "Screen % range",
-        min = resizePercentH(2f),
-        max = resizePercentH(12f),
-        step = resizeFixedSp(0.5f),
-    )
-    Text("Screen % range", fontSize = fsScreen)
-}
-
-// Width / height: optional contentPadding on that axis
-BoxWithConstraints(Modifier.fillMaxWidth().height(48.dp)) {
-    val w = autoResizeWidthSize(
-        min = 24.dp,
-        max = maxWidth,
-        step = 4.dp,
-        contentPadding = PaddingValues(horizontal = 6.dp),
-    )
-    /* Modifier.width(w).height(32.dp) */
 }
 
 BoxWithConstraints(Modifier.fillMaxWidth().height(80.dp)) {
@@ -268,11 +191,6 @@ BoxWithConstraints(Modifier.fillMaxWidth().height(80.dp)) {
 ### 2. Kotlin (Code Level)
 
 ```kotlin
-import com.appdimens.dynamic.code.DimenSdp
-import com.appdimens.dynamic.code.DimenSsp
-import com.appdimens.dynamic.common.DpQualifier
-import com.appdimens.dynamic.common.Orientation
-import com.appdimens.dynamic.common.UiModeType
 
 // Core — Pixel values
 val paddingPx = DimenSdp.sdp(context, 16)     // Smallest Width
@@ -323,12 +241,6 @@ val dpFromCm = DimenPhysicalUnits.toDpFromCm(2.5f, resources)
 ### 3. Java (Code Level)
 
 ```java
-import com.appdimens.dynamic.code.DimenSdp;
-import com.appdimens.dynamic.code.DimenSsp;
-import com.appdimens.dynamic.code.DimenScaled;
-import com.appdimens.dynamic.common.Orientation;
-import com.appdimens.dynamic.common.UiModeType;
-
 // Core (Resolves dynamically at runtime)
 float paddingPx = DimenSdp.sdp(context, 16);
 float heightPx = DimenSdp.hdp(context, 32);
@@ -354,11 +266,6 @@ float result = scaled.sdp(context);
 ### 4. Physical Units
 
 ```kotlin
-// Compose extensions
-import com.appdimens.dynamic.compose.mm
-import com.appdimens.dynamic.compose.cm
-import com.appdimens.dynamic.compose.inch
-
 val widthMm = 10.mm       // 10mm → Dp
 val widthCm = 2.5f.cm     // 2.5cm → Dp
 val widthIn = 1.inch      // 1 inch → Dp
@@ -462,11 +369,6 @@ Wrap the content passed to `setContent` so `LocalUiModeType` is set once per com
 `androidx.window:window` is already pulled in by this library (foldables).
 
 ```kotlin
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import com.appdimens.dynamic.core.AppDimensProvider
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -584,6 +486,8 @@ Compose extensions: `10.mm`, `2.5f.cm`, `1.inch` → `Dp` values directly.
 Each strategy lives in its own package (`compose/<strategy>` and `code/<strategy>`). All of them honor **inverters**, **`ignoreMultiWindows`** (`i` / `ia`), and **`applyAspectRatio`** (`a` / `ia`) where applicable — the conventions described elsewhere in this README still apply.
 
 **General guidance:** start with **`scaled`** (`sdp` / `hdp` / `wdp` and `ssp` / `hsp` / `wsp`). Switch strategy only when visual QA or layout requirements (tablet, ultrawide, TV, split-screen) call for a different growth curve. Pick the right **axis**: **SDP** for consistency across rotation; **HDP** for vertical lists; **WDP** when width should dominate.
+
+**Deep dive:** per-strategy documentation (what it is, formulas, how/when to use, trade-offs) lives in [DOCUMENTATION/README.md](DOCUMENTATION/README.md).
 
 | Strategy | Package (Compose example) | What it computes | Best use | When it’s useful |
 |----------|---------------------------|------------------|----------|------------------|
