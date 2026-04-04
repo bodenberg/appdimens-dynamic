@@ -6,32 +6,32 @@
 
 | Name |
 |---|
-| [com.appdimens.dynamic.code](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code/index.md) |
-| [com.appdimens.dynamic.code.auto](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.auto/index.md) |
-| [com.appdimens.dynamic.code.density](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.density/index.md) |
-| [com.appdimens.dynamic.code.diagonal](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.diagonal/index.md) |
-| [com.appdimens.dynamic.code.fill](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.fill/index.md) |
-| [com.appdimens.dynamic.code.fit](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.fit/index.md) |
-| [com.appdimens.dynamic.code.fluid](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.fluid/index.md) |
-| [com.appdimens.dynamic.code.interpolated](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.interpolated/index.md) |
-| [com.appdimens.dynamic.code.logarithmic](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.logarithmic/index.md) |
-| [com.appdimens.dynamic.code.percent](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.percent/index.md) |
-| [com.appdimens.dynamic.code.perimeter](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.perimeter/index.md) |
-| [com.appdimens.dynamic.code.power](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.power/index.md) |
-| [com.appdimens.dynamic.code.resize](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.resize/index.md) |
-| [com.appdimens.dynamic.code.units](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.code.units/index.md) |
-| [com.appdimens.dynamic.common](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.common/index.md) |
-| [com.appdimens.dynamic.compose](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose/index.md) |
-| [com.appdimens.dynamic.compose.auto](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.auto/index.md) |
-| [com.appdimens.dynamic.compose.density](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.density/index.md) |
-| [com.appdimens.dynamic.compose.diagonal](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.diagonal/index.md) |
-| [com.appdimens.dynamic.compose.fill](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.fill/index.md) |
-| [com.appdimens.dynamic.compose.fit](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.fit/index.md) |
-| [com.appdimens.dynamic.compose.fluid](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.fluid/index.md) |
-| [com.appdimens.dynamic.compose.interpolated](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.interpolated/index.md) |
-| [com.appdimens.dynamic.compose.logarithmic](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.logarithmic/index.md) |
-| [com.appdimens.dynamic.compose.percent](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.percent/index.md) |
-| [com.appdimens.dynamic.compose.perimeter](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.perimeter/index.md) |
-| [com.appdimens.dynamic.compose.power](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.power/index.md) |
-| [com.appdimens.dynamic.compose.resize](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.compose.resize/index.md) |
-| [com.appdimens.dynamic.core](-app-dimens -s-d-p, -h-d-p, -w-d-p[58] -scalable -width and -height -dimensions/com.appdimens.dynamic.core/index.md) |
+| [com.appdimens.dynamic.code](KDOC/com.appdimens.dynamic.code/index.md) |
+| [com.appdimens.dynamic.code.auto](KDOC/com.appdimens.dynamic.code.auto/index.md) |
+| [com.appdimens.dynamic.code.density](KDOC/com.appdimens.dynamic.code.density/index.md) |
+| [com.appdimens.dynamic.code.diagonal](KDOC/com.appdimens.dynamic.code.diagonal/index.md) |
+| [com.appdimens.dynamic.code.fill](KDOC/com.appdimens.dynamic.code.fill/index.md) |
+| [com.appdimens.dynamic.code.fit](KDOC/com.appdimens.dynamic.code.fit/index.md) |
+| [com.appdimens.dynamic.code.fluid](KDOC/com.appdimens.dynamic.code.fluid/index.md) |
+| [com.appdimens.dynamic.code.interpolated](KDOC/com.appdimens.dynamic.code.interpolated/index.md) |
+| [com.appdimens.dynamic.code.logarithmic](KDOC/com.appdimens.dynamic.code.logarithmic/index.md) |
+| [com.appdimens.dynamic.code.percent](KDOC/com.appdimens.dynamic.code.percent/index.md) |
+| [com.appdimens.dynamic.code.perimeter](KDOC/com.appdimens.dynamic.code.perimeter/index.md) |
+| [com.appdimens.dynamic.code.power](KDOC/com.appdimens.dynamic.code.power/index.md) |
+| [com.appdimens.dynamic.code.resize](KDOC/com.appdimens.dynamic.code.resize/index.md) |
+| [com.appdimens.dynamic.code.units](KDOC/com.appdimens.dynamic.code.units/index.md) |
+| [com.appdimens.dynamic.common](KDOC/com.appdimens.dynamic.common/index.md) |
+| [com.appdimens.dynamic.compose](KDOC/com.appdimens.dynamic.compose/index.md) |
+| [com.appdimens.dynamic.compose.auto](KDOC/com.appdimens.dynamic.compose.auto/index.md) |
+| [com.appdimens.dynamic.compose.density](KDOC/com.appdimens.dynamic.compose.density/index.md) |
+| [com.appdimens.dynamic.compose.diagonal](KDOC/com.appdimens.dynamic.compose.diagonal/index.md) |
+| [com.appdimens.dynamic.compose.fill](KDOC/com.appdimens.dynamic.compose.fill/index.md) |
+| [com.appdimens.dynamic.compose.fit](KDOC/com.appdimens.dynamic.compose.fit/index.md) |
+| [com.appdimens.dynamic.compose.fluid](KDOC/com.appdimens.dynamic.compose.fluid/index.md) |
+| [com.appdimens.dynamic.compose.interpolated](KDOC/com.appdimens.dynamic.compose.interpolated/index.md) |
+| [com.appdimens.dynamic.compose.logarithmic](KDOC/com.appdimens.dynamic.compose.logarithmic/index.md) |
+| [com.appdimens.dynamic.compose.percent](KDOC/com.appdimens.dynamic.compose.percent/index.md) |
+| [com.appdimens.dynamic.compose.perimeter](KDOC/com.appdimens.dynamic.compose.perimeter/index.md) |
+| [com.appdimens.dynamic.compose.power](KDOC/com.appdimens.dynamic.compose.power/index.md) |
+| [com.appdimens.dynamic.compose.resize](KDOC/com.appdimens.dynamic.compose.resize/index.md) |
+| [com.appdimens.dynamic.core](KDOC/com.appdimens.dynamic.core/index.md) |

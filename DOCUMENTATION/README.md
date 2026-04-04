@@ -6,7 +6,7 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 
 **Full Compose API (every `Number` property, facilitators, builders, prefix map):** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md)
 
-**KDoc API reference** (generated from library `/** … */` KDoc — packages, types, members): [index.md](index.md)
+**KDoc API reference** (generated from library `/** … */` KDoc — packages, types, members): [index.md](index.md). Symbol files live under [`KDOC/`](KDOC/) (short path without `[` / `]` so GitHub resolves relative Markdown links correctly).
 
 ## Summary
 
