@@ -175,7 +175,11 @@ class DimenCacheTest {
 
         val keyDiag = DimenCache.buildKey(14, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         assertEquals(20f, DimenCache.getOrPut(keyDiag) { 20f }, 0f)
-        assertEquals(20f, DimenCache.peek(keyDiag) ?: -1f, 0f)
+        assertNull("DIAGONAL no-AR bypass: nothing stored", DimenCache.peek(keyDiag))
+
+        val keyPower = DimenCache.buildKey(14, false, false, DimenCache.CalcType.POWER, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        assertEquals(20f, DimenCache.getOrPut(keyPower) { 20f }, 0f)
+        assertEquals(20f, DimenCache.peek(keyPower) ?: -1f, 0f)
 
         val keyAutoAr = DimenCache.buildKey(15, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP)
         assertEquals(15f, DimenCache.getOrPut(keyAutoAr) { 15f }, 0f)
@@ -185,8 +189,8 @@ class DimenCacheTest {
     @Test
     fun testReadyToUseValues() {
         DimenCache.clearAll()
-        // Use DIAGONAL because it is NOT bypassed
-        val key = DimenCache.buildKey(10, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        // Use POWER because it is NOT bypassed (DIAGONAL is now bypassed)
+        val key = DimenCache.buildKey(10, false, false, DimenCache.CalcType.POWER, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         
         val computedValue = 15.5f
         val result1 = DimenCache.getOrPut(key) { computedValue }

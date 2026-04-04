@@ -66,7 +66,7 @@ class DimenCacheInvalidationTest {
         DimenCache.invalidateOnConfigChange(null, old)
 
         val key = DimenCache.buildKey(
-            30f, false, false, DimenCache.CalcType.DIAGONAL,
+            30f, false, false, DimenCache.CalcType.POWER,
             com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
             com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
         )
@@ -85,7 +85,7 @@ class DimenCacheInvalidationTest {
         DimenCache.invalidateOnConfigChange(null, old)
 
         val key = DimenCache.buildKey(
-            31f, false, false, DimenCache.CalcType.DIAGONAL,
+            31f, false, false, DimenCache.CalcType.POWER,
             com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
             com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
         )

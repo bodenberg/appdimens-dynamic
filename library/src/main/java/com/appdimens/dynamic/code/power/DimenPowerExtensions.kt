@@ -142,7 +142,7 @@ fun Number.pwsdpMode(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val currentUiModeType = UiModeType.fromConfiguration(context, null) // In non-Compose we could try to find activity but usually context is enough
+    val currentUiModeType = DimenCache.getCachedUiModeType(context) // In non-Compose we could try to find activity but usually context is enough
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicPowerPx(context, finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -164,7 +164,7 @@ fun Number.pwhdpMode(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val currentUiModeType = UiModeType.fromConfiguration(context, null)
+    val currentUiModeType = DimenCache.getCachedUiModeType(context)
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicPowerPx(context, finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -186,7 +186,7 @@ fun Number.pwwdpMode(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val currentUiModeType = UiModeType.fromConfiguration(context, null)
+    val currentUiModeType = DimenCache.getCachedUiModeType(context)
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicPowerPx(context, finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -426,7 +426,7 @@ fun Number.pwwdpQualifier(context: Context, qualifiedValue: Number, qualifierTyp
  */
 fun Number.pwsdpScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
-    val currentUiModeType = UiModeType.fromConfiguration(context, null)
+    val currentUiModeType = DimenCache.getCachedUiModeType(context)
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (uiModeMatch && qualifierMatch) {
@@ -449,7 +449,7 @@ fun Number.pwsdpScreen(context: Context, screenValue: Number, uiModeType: UiMode
  */
 fun Number.pwhdpScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
-    val currentUiModeType = UiModeType.fromConfiguration(context, null)
+    val currentUiModeType = DimenCache.getCachedUiModeType(context)
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (uiModeMatch && qualifierMatch) {
@@ -472,7 +472,7 @@ fun Number.pwhdpScreen(context: Context, screenValue: Number, uiModeType: UiMode
  */
 fun Number.pwwdpScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
-    val currentUiModeType = UiModeType.fromConfiguration(context, null)
+    val currentUiModeType = DimenCache.getCachedUiModeType(context)
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (uiModeMatch && qualifierMatch) {
@@ -620,14 +620,21 @@ internal fun calculatePowerDp(
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val q = DimenCalculationPlumbing.effectiveQualifier(qualifier, inverter, isLandscape, isPortrait)
     if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
-    val dim = DimenCalculationPlumbing.readScreenDp(configuration, q)
-    val ratio = dim / DesignScaleConstants.BASE_WIDTH_DP
-    var out = baseValue * ratio.toDouble().pow(0.75).toFloat()
+    val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
+    val scale = if (isDefaultSw) {
+        DimenCache.currentPowerScale
+    } else {
+        val dim = DimenCalculationPlumbing.readScreenDp(configuration, q)
+        val ratio = dim / DesignScaleConstants.BASE_WIDTH_DP
+        Math.pow(ratio.toDouble(), 0.75).toFloat()
+    }
+    var out = baseValue * scale
     if (applyAspectRatio) {
-        out *= DimenCalculationPlumbing.aspectRatioMultiplier(
-            configuration,
-            customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT
-        )
+        out *= if (customSensitivityK == null) {
+            DimenCache.currentAspectRatioMul
+        } else {
+            1f + customSensitivityK * DimenCache.currentLogNormalizedAr
+        }
     }
     return out
 }

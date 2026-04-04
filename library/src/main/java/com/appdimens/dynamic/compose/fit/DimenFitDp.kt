@@ -398,10 +398,11 @@ internal fun calculateFitDpCompose(
     val rh = lg / DesignScaleConstants.BASE_HEIGHT_DP
     var out = baseValue * minOf(rw, rh)
     if (applyAspectRatio) {
-        out *= DimenCalculationPlumbing.aspectRatioMultiplier(
-            configuration,
-            customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT
-        )
+        out *= if (customSensitivityK == null) {
+            DimenCache.currentAspectRatioMul
+        } else {
+            1f + customSensitivityK * DimenCache.currentLogNormalizedAr
+        }
     }
     return out
 }

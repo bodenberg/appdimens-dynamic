@@ -392,15 +392,13 @@ internal fun calculateDiagonalDpCompose(
     context: android.content.Context? = null
 ): Float {
     if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
-    val sm = DimenCalculationPlumbing.smallestSideDp(configuration)
-    val lg = DimenCalculationPlumbing.largestSideDp(configuration)
-    val diag = kotlin.math.sqrt((sm * sm + lg * lg).toDouble()).toFloat()
-    var out = baseValue * (diag / DesignScaleConstants.BASE_DIAGONAL_DP)
+    var out = baseValue * DimenCache.currentDiagonalScale
     if (applyAspectRatio) {
-        out *= DimenCalculationPlumbing.aspectRatioMultiplier(
-            configuration,
-            customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT
-        )
+        out *= if (customSensitivityK == null) {
+            DimenCache.currentAspectRatioMul
+        } else {
+            1f + customSensitivityK * DimenCache.currentLogNormalizedAr
+        }
     }
     return out
 }

@@ -141,7 +141,7 @@ fun Number.prsdpMode(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val currentUiModeType = UiModeType.fromConfiguration(context, null) // In non-Compose we could try to find activity but usually context is enough
+    val currentUiModeType = DimenCache.getCachedUiModeType(context) // In non-Compose we could try to find activity but usually context is enough
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicPerimeterPx(context, finalQualifierResolver ?: DpQualifier.SMALL_WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -163,7 +163,7 @@ fun Number.prhdpMode(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val currentUiModeType = UiModeType.fromConfiguration(context, null)
+    val currentUiModeType = DimenCache.getCachedUiModeType(context)
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicPerimeterPx(context, finalQualifierResolver ?: DpQualifier.HEIGHT, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -185,7 +185,7 @@ fun Number.prwdpMode(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
-    val currentUiModeType = UiModeType.fromConfiguration(context, null)
+    val currentUiModeType = DimenCache.getCachedUiModeType(context)
     return if (currentUiModeType == uiModeType) {
         modeValue.toDynamicPerimeterPx(context, finalQualifierResolver ?: DpQualifier.WIDTH, ignoreMultiWindows = ignoreMultiWindows, applyAspectRatio = applyAspectRatio, customSensitivityK = customSensitivityK)
     } else {
@@ -425,7 +425,7 @@ fun Number.prwdpQualifier(context: Context, qualifiedValue: Number, qualifierTyp
  */
 fun Number.prsdpScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
-    val currentUiModeType = UiModeType.fromConfiguration(context, null)
+    val currentUiModeType = DimenCache.getCachedUiModeType(context)
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (uiModeMatch && qualifierMatch) {
@@ -448,7 +448,7 @@ fun Number.prsdpScreen(context: Context, screenValue: Number, uiModeType: UiMode
  */
 fun Number.prhdpScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
-    val currentUiModeType = UiModeType.fromConfiguration(context, null)
+    val currentUiModeType = DimenCache.getCachedUiModeType(context)
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (uiModeMatch && qualifierMatch) {
@@ -471,7 +471,7 @@ fun Number.prhdpScreen(context: Context, screenValue: Number, uiModeType: UiMode
  */
 fun Number.prwdpScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
-    val currentUiModeType = UiModeType.fromConfiguration(context, null)
+    val currentUiModeType = DimenCache.getCachedUiModeType(context)
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (uiModeMatch && qualifierMatch) {
@@ -616,14 +616,13 @@ internal fun calculatePerimeterDp(
     context: Context? = null
 ): Float {
     if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
-    val sm = DimenCalculationPlumbing.smallestSideDp(configuration)
-    val lg = DimenCalculationPlumbing.largestSideDp(configuration)
-    var out = baseValue * ((sm + lg) / DesignScaleConstants.BASE_PERIMETER_DP)
+    var out = baseValue * DimenCache.currentPerimeterScale
     if (applyAspectRatio) {
-        out *= DimenCalculationPlumbing.aspectRatioMultiplier(
-            configuration,
-            customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT
-        )
+        out *= if (customSensitivityK == null) {
+            DimenCache.currentAspectRatioMul
+        } else {
+            1f + customSensitivityK * DimenCache.currentLogNormalizedAr
+        }
     }
     return out
 }

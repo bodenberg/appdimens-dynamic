@@ -395,20 +395,26 @@ internal fun calculateLogarithmicDpCompose(
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val q = DimenCalculationPlumbing.effectiveQualifier(qualifier, inverter, isLandscape, isPortrait)
     if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
-    val dim = DimenCalculationPlumbing.readScreenDp(configuration, q)
-    val sens = 0.4f
-    val inv = DimenCache.INV_BASE_RATIO
-    val scale = if (dim > DesignScaleConstants.BASE_WIDTH_DP) {
-        1f + sens * kotlin.math.ln(dim * inv)
+    val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
+    val scale = if (isDefaultSw) {
+        DimenCache.currentLogScale
     } else {
-        1f - sens * kotlin.math.ln(DesignScaleConstants.BASE_WIDTH_DP / dim)
+        val dim = DimenCalculationPlumbing.readScreenDp(configuration, q)
+        val sens = 0.4f
+        val inv = DimenCache.INV_BASE_RATIO
+        if (dim > DesignScaleConstants.BASE_WIDTH_DP) {
+            1f + sens * kotlin.math.ln(dim * inv)
+        } else {
+            1f - sens * kotlin.math.ln(DesignScaleConstants.BASE_WIDTH_DP / dim)
+        }
     }
     var out = baseValue * scale
     if (applyAspectRatio) {
-        out *= DimenCalculationPlumbing.aspectRatioMultiplier(
-            configuration,
-            customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT
-        )
+        out *= if (customSensitivityK == null) {
+            DimenCache.currentAspectRatioMul
+        } else {
+            1f + customSensitivityK * DimenCache.currentLogNormalizedAr
+        }
     }
     return out
 }

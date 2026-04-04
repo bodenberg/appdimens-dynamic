@@ -245,7 +245,7 @@ class PerimeterSp private constructor(
      */
     private fun resolvePx(context: Context, qualifier: DpQualifier, fontScaleOverride: Boolean? = null): Float {
         val configuration = context.resources.configuration
-        val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        val currentUiModeType = DimenCache.getCachedUiModeType(context)
         return resolvePxInternal(context, qualifier, configuration, currentUiModeType, fontScaleOverride)
     }
 
@@ -255,7 +255,7 @@ class PerimeterSp private constructor(
      */
     fun sspHspWspPx(context: Context): Triple<Float, Float, Float> {
         val configuration = context.resources.configuration
-        val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        val currentUiModeType = DimenCache.getCachedUiModeType(context)
         return Triple(
             resolvePxInternal(context, DpQualifier.SMALL_WIDTH, configuration, currentUiModeType, null),
             resolvePxInternal(context, DpQualifier.HEIGHT, configuration, currentUiModeType, null),
@@ -269,7 +269,7 @@ class PerimeterSp private constructor(
      */
     fun seiHeiWeiPx(context: Context): Triple<Float, Float, Float> {
         val configuration = context.resources.configuration
-        val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        val currentUiModeType = DimenCache.getCachedUiModeType(context)
         return Triple(
             resolvePxInternal(context, DpQualifier.SMALL_WIDTH, configuration, currentUiModeType, false),
             resolvePxInternal(context, DpQualifier.HEIGHT, configuration, currentUiModeType, false),

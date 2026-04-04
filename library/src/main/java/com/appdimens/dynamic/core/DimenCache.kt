@@ -48,6 +48,7 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
+import com.appdimens.dynamic.common.UiModeType
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.nio.ByteBuffer
@@ -137,10 +138,13 @@ object DimenCache {
         PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO, DENSITY
     }
 
-    @JvmField @PublishedApi internal val CT_PERCENT      = CalcType.PERCENT.ordinal
-    @JvmField @PublishedApi internal val CT_SCALED       = CalcType.SCALED.ordinal
-    @JvmField @PublishedApi internal val CT_DENSITY      = CalcType.DENSITY.ordinal
-    @JvmField @PublishedApi internal val CT_ASPECT_RATIO = CalcType.ASPECT_RATIO.ordinal
+    @JvmField @PublishedApi internal val CT_PERCENT       = CalcType.PERCENT.ordinal
+    @JvmField @PublishedApi internal val CT_SCALED        = CalcType.SCALED.ordinal
+    @JvmField @PublishedApi internal val CT_DENSITY       = CalcType.DENSITY.ordinal
+    @JvmField @PublishedApi internal val CT_ASPECT_RATIO  = CalcType.ASPECT_RATIO.ordinal
+    @JvmField @PublishedApi internal val CT_DIAGONAL      = CalcType.DIAGONAL.ordinal
+    @JvmField @PublishedApi internal val CT_INTERPOLATED  = CalcType.INTERPOLATED.ordinal
+    @JvmField @PublishedApi internal val CT_PERIMETER     = CalcType.PERIMETER.ordinal
 
     // ─────────────────────────────────────────────────────────────────────────
     // DIAGNOSTICS COUNTERS — guarded by [diagnosticsEnabled] to avoid overhead
@@ -173,6 +177,29 @@ object DimenCache {
     internal var isEnabled: Boolean = true
 
     // ─────────────────────────────────────────────────────────────────────────
+    // [FASE 5] CACHED UiModeType — avoids SensorManager + WindowMetrics per call
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @JvmField @Volatile
+    internal var cachedUiMode: UiModeType = UiModeType.UNDEFINED
+
+    @Volatile
+    private var cachedUiModeConfigHash: Int = 0
+
+    @JvmStatic
+    internal fun getCachedUiModeType(context: Context): UiModeType {
+        val configHash = context.resources.configuration.hashCode()
+        val cached = cachedUiMode
+        if (cachedUiModeConfigHash == configHash && cached != UiModeType.UNDEFINED) {
+            return cached
+        }
+        val mode = UiModeType.fromConfiguration(context, null)
+        cachedUiMode = mode
+        cachedUiModeConfigHash = configHash
+        return mode
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // [FASE 3] SCREEN FACTORS — padded object to prevent false sharing on @Volatile fields
     //
     // ARM64 cache line = 64 bytes. JVM object header ≈ 16 bytes.
@@ -196,7 +223,14 @@ object DimenCache {
         @JvmField @Volatile var density        : Float = 1.0f
         @JvmField @Volatile var scale          : Float = 1.0f
         @JvmField @Volatile var arMultiplier   : Float = 1.0f
-        // 128-byte padding guard (14 × Long = 112 bytes + object fields overhead ≥ 128)
+        // [FASE 5] Pre-computed per-strategy scale factors (config-change only)
+        @JvmField @Volatile var diagonalScale     : Float = 1.0f
+        @JvmField @Volatile var powerScale        : Float = 1.0f
+        @JvmField @Volatile var logScale          : Float = 1.0f
+        @JvmField @Volatile var interpolatedScale : Float = 1.0f
+        @JvmField @Volatile var perimeterScale    : Float = 1.0f
+        @JvmField @Volatile var aspectRatioMul    : Float = 1.0f
+        // 128-byte padding guard (8 × Long = 64 bytes + object fields overhead ≥ 128)
         @Suppress("unused") @JvmField val _p0 = 0L
         @Suppress("unused") @JvmField val _p1 = 0L
         @Suppress("unused") @JvmField val _p2 = 0L
@@ -205,12 +239,6 @@ object DimenCache {
         @Suppress("unused") @JvmField val _p5 = 0L
         @Suppress("unused") @JvmField val _p6 = 0L
         @Suppress("unused") @JvmField val _p7 = 0L
-        @Suppress("unused") @JvmField val _p8 = 0L
-        @Suppress("unused") @JvmField val _p9 = 0L
-        @Suppress("unused") @JvmField val _pA = 0L
-        @Suppress("unused") @JvmField val _pB = 0L
-        @Suppress("unused") @JvmField val _pC = 0L
-        @Suppress("unused") @JvmField val _pD = 0L
     }
 
     @JvmField
@@ -218,12 +246,18 @@ object DimenCache {
     internal val factors = ScreenFactors()
 
     // Convenience accessors — @PublishedApi so they are reachable from inline functions
-    @PublishedApi internal val currentNormalizedAr   get() = factors.normalizedAr
-    @PublishedApi internal val currentLogNormalizedAr get() = factors.logNormalizedAr
-    @PublishedApi internal val currentSmallestWidthDp get() = factors.smallestWidthDp
-    @PublishedApi internal val currentDensity         get() = factors.density
-    @PublishedApi internal val currentScale           get() = factors.scale
-    @PublishedApi internal val currentArMultiplier    get() = factors.arMultiplier
+    @PublishedApi internal val currentNormalizedAr      get() = factors.normalizedAr
+    @PublishedApi internal val currentLogNormalizedAr   get() = factors.logNormalizedAr
+    @PublishedApi internal val currentSmallestWidthDp   get() = factors.smallestWidthDp
+    @PublishedApi internal val currentDensity           get() = factors.density
+    @PublishedApi internal val currentScale             get() = factors.scale
+    @PublishedApi internal val currentArMultiplier      get() = factors.arMultiplier
+    @PublishedApi internal val currentDiagonalScale     get() = factors.diagonalScale
+    @PublishedApi internal val currentPowerScale        get() = factors.powerScale
+    @PublishedApi internal val currentLogScale          get() = factors.logScale
+    @PublishedApi internal val currentInterpolatedScale get() = factors.interpolatedScale
+    @PublishedApi internal val currentPerimeterScale    get() = factors.perimeterScale
+    @PublishedApi internal val currentAspectRatioMul    get() = factors.aspectRatioMul
 
     /**
      * Number of slots in the primary (Tier-1) fast cache.
@@ -304,12 +338,14 @@ object DimenCache {
      * PT Aliases de compatibilidade com os testes existentes.
      */
     @PublishedApi
-    internal val keysArray: Array<AtomicLongArray>
-        get() = Array(SHARD_COUNT) { shards[it].keys }
+    internal val keysArray: Array<AtomicLongArray> by lazy {
+        Array(SHARD_COUNT) { shards[it].keys }
+    }
 
     @PublishedApi
-    internal val valueBitsArray: Array<AtomicIntegerArray>
-        get() = Array(SHARD_COUNT) { shards[it].values }
+    internal val valueBitsArray: Array<AtomicIntegerArray> by lazy {
+        Array(SHARD_COUNT) { shards[it].values }
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // MATH CONSTANTS
@@ -659,7 +695,8 @@ object DimenCache {
         // AUTO(0) and FLUID(4) use non-trivial math in their modules — do not bypass.
         if (key >= 0) {
             val ct = (key ushr 27 and 0xFL).toInt()
-            if (ct == CT_PERCENT || ct == CT_SCALED || ct == CT_DENSITY) return compute()
+            if (ct == CT_PERCENT || ct == CT_SCALED || ct == CT_DENSITY
+                || ct == CT_DIAGONAL || ct == CT_INTERPOLATED || ct == CT_PERIMETER) return compute()
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -844,6 +881,28 @@ object DimenCache {
         f.arMultiplier = 1.0f + diff * (ADJUSTMENT_SCALE + adjustment)
 
         f.density = config.densityDpi.toFloat() / 160f
+
+        // [FASE 5] Pre-compute per-strategy scale factors
+        val diag = Math.sqrt((minDim * minDim + maxDim * maxDim).toDouble()).toFloat()
+        f.diagonalScale = diag / DesignScaleConstants.BASE_DIAGONAL_DP
+
+        val ratio = sw / DesignScaleConstants.BASE_WIDTH_DP
+        f.powerScale = Math.pow(ratio.toDouble(), 0.75).toFloat()
+
+        val swInv = sw * INV_BASE_RATIO
+        f.logScale = if (sw > DesignScaleConstants.BASE_WIDTH_DP) {
+            1f + 0.4f * kotlin.math.ln(swInv)
+        } else if (sw > 0f) {
+            1f - 0.4f * kotlin.math.ln(DesignScaleConstants.BASE_WIDTH_DP / sw)
+        } else {
+            1f
+        }
+
+        f.interpolatedScale = 1f + (sw * INV_BASE_RATIO - 1f) * 0.5f
+
+        f.perimeterScale = (minDim + maxDim) / DesignScaleConstants.BASE_PERIMETER_DP
+
+        f.aspectRatioMul = 1f + SENSITIVITY_DEFAULT * f.logNormalizedAr
     }
 
     /** EN Clears all cache slots. Java-compatible alias. */

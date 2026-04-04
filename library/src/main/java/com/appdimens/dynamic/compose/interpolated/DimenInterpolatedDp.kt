@@ -395,14 +395,20 @@ internal fun calculateInterpolatedDpCompose(
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val q = DimenCalculationPlumbing.effectiveQualifier(qualifier, inverter, isLandscape, isPortrait)
     if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
-    val dim = DimenCalculationPlumbing.readScreenDp(configuration, q)
-    val linear = baseValue * dim * DimenCache.INV_BASE_RATIO
-    var out = baseValue + (linear - baseValue) * 0.5f
+    val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
+    var out = if (isDefaultSw) {
+        baseValue * DimenCache.currentInterpolatedScale
+    } else {
+        val dim = DimenCalculationPlumbing.readScreenDp(configuration, q)
+        val linear = baseValue * dim * DimenCache.INV_BASE_RATIO
+        baseValue + (linear - baseValue) * 0.5f
+    }
     if (applyAspectRatio) {
-        out *= DimenCalculationPlumbing.aspectRatioMultiplier(
-            configuration,
-            customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT
-        )
+        out *= if (customSensitivityK == null) {
+            DimenCache.currentAspectRatioMul
+        } else {
+            1f + customSensitivityK * DimenCache.currentLogNormalizedAr
+        }
     }
     return out
 }

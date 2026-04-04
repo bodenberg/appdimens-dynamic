@@ -39,6 +39,7 @@ class StrategyModuleFormulasTest {
     @Test
     fun diagonal_usesDesignDiagonalConstant() {
         val cfg = config(300, w = 400, h = 300)
+        DimenCache.invalidateOnConfigChange(null, cfg)
         val sm = 300f
         val lg = 400f
         val diag = sqrt((sm * sm + lg * lg).toDouble()).toFloat()

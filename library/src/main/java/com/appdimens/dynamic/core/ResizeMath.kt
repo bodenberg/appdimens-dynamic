@@ -19,19 +19,19 @@ fun buildResizeStepsPx(minPx: Float, maxPx: Float, stepPx: Float): FloatArray {
     if (stepPx <= 0f) {
         return floatArrayOf(lo)
     }
-    val est = (((hi - lo) / stepPx).toInt() + 2).coerceAtLeast(1)
-    val out = ArrayList<Float>(minOf(est, MAX_RESIZE_STEPS))
+    val capacity = (((hi - lo) / stepPx).toInt() + 2).coerceIn(1, MAX_RESIZE_STEPS)
+    val buf = FloatArray(capacity)
     var x = lo
     val epsilon = stepPx * 1e-4f
     var count = 0
-    while (x <= hi + epsilon && count < MAX_RESIZE_STEPS) {
-        out.add(min(x, hi))
+    while (x <= hi + epsilon && count < capacity) {
+        buf[count] = min(x, hi)
         x += stepPx
         count++
     }
-    if (out.isEmpty()) out.add(lo)
-    if (out.last() < hi - epsilon && out.size < MAX_RESIZE_STEPS) out.add(hi)
-    return out.toFloatArray()
+    if (count == 0) { buf[0] = lo; count = 1 }
+    if (buf[count - 1] < hi - epsilon && count < capacity) { buf[count] = hi; count++ }
+    return if (count == capacity) buf else buf.copyOf(count)
 }
 
 /**

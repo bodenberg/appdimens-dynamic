@@ -239,7 +239,7 @@ class DimenPerimeterScaled private constructor(
 
     private fun resolveDp(context: Context, qualifier: DpQualifier): Float {
         val configuration = context.resources.configuration
-        val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        val currentUiModeType = DimenCache.getCachedUiModeType(context)
         return resolveDpInternal(context, qualifier, configuration, currentUiModeType)
     }
 
@@ -249,7 +249,7 @@ class DimenPerimeterScaled private constructor(
      */
     fun sdpHdpWdpPx(context: Context): Triple<Float, Float, Float> {
         val configuration = context.resources.configuration
-        val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        val currentUiModeType = DimenCache.getCachedUiModeType(context)
         val density = context.resources.displayMetrics.density
         val sdp = resolveDpInternal(context, DpQualifier.SMALL_WIDTH, configuration, currentUiModeType) * density
         val hdp = resolveDpInternal(context, DpQualifier.HEIGHT, configuration, currentUiModeType) * density
@@ -305,7 +305,7 @@ class DimenPerimeterScaled private constructor(
      */
     fun px(context: Context, qualifier: DpQualifier): Float {
         val configuration = context.resources.configuration
-        val currentUiModeType = UiModeType.fromConfiguration(context, null)
+        val currentUiModeType = DimenCache.getCachedUiModeType(context)
         val dpValue = resolveDpInternal(context, qualifier, configuration, currentUiModeType)
         return dpValue * context.resources.displayMetrics.density
     }

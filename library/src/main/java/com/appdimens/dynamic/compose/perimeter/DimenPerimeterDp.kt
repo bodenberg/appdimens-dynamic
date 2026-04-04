@@ -392,14 +392,13 @@ internal fun calculatePerimeterDpCompose(
     context: android.content.Context? = null
 ): Float {
     if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
-    val sm = DimenCalculationPlumbing.smallestSideDp(configuration)
-    val lg = DimenCalculationPlumbing.largestSideDp(configuration)
-    var out = baseValue * ((sm + lg) / DesignScaleConstants.BASE_PERIMETER_DP)
+    var out = baseValue * DimenCache.currentPerimeterScale
     if (applyAspectRatio) {
-        out *= DimenCalculationPlumbing.aspectRatioMultiplier(
-            configuration,
-            customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT
-        )
+        out *= if (customSensitivityK == null) {
+            DimenCache.currentAspectRatioMul
+        } else {
+            1f + customSensitivityK * DimenCache.currentLogNormalizedAr
+        }
     }
     return out
 }
