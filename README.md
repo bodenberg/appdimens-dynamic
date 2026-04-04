@@ -16,10 +16,6 @@ dependencies {
 
 **Requirements:** Min SDK 24 · Compile SDK 36 · Kotlin & Java · Jetpack Compose
 
-> [!NOTE]
-> **Version 3.0.1**
-> This version implements scale-based calculations (the Android system standard). Additional strategies (percent, power, fluid, diagonal, …) ship as **separate packages** under `compose/<strategy>` and `code/<strategy>`; see the section below.
-
 ### Strategy modules (Compose / code)
 
 Each scaling strategy has its **own package** (same pattern as `scaled`): calculation code stays inside that package. Examples:
