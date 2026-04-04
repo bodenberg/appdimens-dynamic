@@ -1,5 +1,7 @@
 # Fit strategy (`compose.fit` / `code.fit`)
 
+**Same API surface as scaled** with prefixes `ftsdp` / `fthdp` / `ftwdp` / `ftssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
+
 ## What it is
 
 **Fit** is the dual of **fill**: a **“contain”**-style factor. It uses the **minimum** of `shorter/300` and `longer/533`, limiting scale by the **tighter** side of the screen so the layout does not mentally or physically **overflow**.

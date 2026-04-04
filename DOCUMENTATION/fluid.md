@@ -1,5 +1,7 @@
 # Fluid strategy (`compose.fluid` / `code.fluid`)
 
+**Same API surface as scaled** with prefixes `fsdp` / `fhdp` / `fwdp` / `fssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
+
 ## What it is
 
 **Fluid** clamps variation to a **narrow band** around the base in the mid phone range: the effective size interpolates between **80%** and **120%** of the base while the axis (in dp) runs from **320** to **768**; below 320 it stays at 80%; above 768 it caps at 120%.

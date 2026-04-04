@@ -1,5 +1,7 @@
 # Power strategy (`compose.power` / `code.power`)
 
+**Same extension / facilitator / builder shape as scaled** — replace the prefix `sdp` → `pwsdp`, `hdp` → `pwhdp`, `wdp` → `pwwdp`, `ssp` → `pwssp`, etc. Full table: [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
+
 ## What it is
 
 **Power** applies **sublinear** growth on the axis: the scale factor goes like `(dim/300)^0.75` instead of `dim/300`. Useful to keep icons, margins, and text from “blowing up” on wide monitors or large tablets while still growing smoothly.

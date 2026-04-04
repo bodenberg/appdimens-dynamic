@@ -1,5 +1,7 @@
 # Scaled strategy (`compose.scaled` / mirrored `code`)
 
+**Complete API surface (all `sdp`/`hdp`/`wdp`/`ssp`… properties, facilitators, `scaledDp`/`scaledSp`, prefix map for other strategies):** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md)
+
 ## What it is
 
 **Scaled** is the **default** AppDimens Dynamic mode: it scales design values around the **300 dp** reference on the chosen axis (**smallest width**, **height**, or **width** of the window). This is the classic SDP / HDP / WDP behavior with cache, qualifiers, and `Configuration` integration.

@@ -1,5 +1,7 @@
 # Interpolated strategy (`compose.interpolated` / `code.interpolated`)
 
+**Same API surface as scaled** with prefixes `isdp` / `ihdp` / `iwdp` / `issp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
+
 ## What it is
 
 **Interpolated** takes the **arithmetic mean** between the **fixed** base token (dp) and the **fully linear** value at the 300 dp reference: `base + (linear − base) × 0.5`. It is a compromise between “always the same dp” and “fully proportional to the axis”.

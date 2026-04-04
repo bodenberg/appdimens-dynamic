@@ -1,5 +1,7 @@
 # Logarithmic strategy (`compose.logarithmic` / `code.logarithmic`)
 
+**Same API surface as scaled** with prefixes `logsdp` / `loghdp` / `logwdp` / `logssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
+
 ## What it is
 
 **Logarithmic** shapes the multiplier with the **natural log** around **300 dp** on the effective axis: above 300 dp it grows with `ln(dim/300)`; below it shrinks with `ln(300/dim)`. Internal sensitivity **0.4** in the current implementation. Smooths extremes without rigid plateaus like **fluid**.

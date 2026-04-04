@@ -1,5 +1,7 @@
 # Auto strategy (`compose.auto` / `code.auto`)
 
+**Same API surface as scaled** with prefixes `asdp` / `ahdp` / `awdp` / `assp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
+
 ## What it is
 
 **Auto** combines **linear** scaling with 300 dp reference up to **480 dp** on the axis; beyond that it adds a **logarithmic** term so tablet growth is more restrained than a pure line, without being as “flat” as fluid’s plateaus.

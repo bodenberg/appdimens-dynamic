@@ -1,5 +1,7 @@
 # Density strategy (`compose.density` / `code.density`)
 
+**Same API surface as scaled** with prefixes `dsdp` / `dhdp` / `dwdp` / `dssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
+
 ## What it is
 
 **Density** multiplies the base by **`densityDpi / 160`** — the same factor that ties dp to px per density bucket. It does **not** replace width-based responsive layout; it aligns sizes with the **mdpi/hdpi/xhdpi/… bucket**.

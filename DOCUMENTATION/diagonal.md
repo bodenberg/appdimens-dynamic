@@ -1,5 +1,7 @@
 # Diagonal strategy (`compose.diagonal` / `code.diagonal`)
 
+**Same API surface as scaled** with prefixes `dgsdp` / `dghdp` / `dgwdp` / `dgssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
+
 ## What it is
 
 **Diagonal** scales by the **length of the screen rectangle’s diagonal** in dp: it combines width and height into one number, reflecting “perceived canvas size” better than a single axis alone. The SDP/HDP/WDP qualifier **does not change** the diagonal used — the math always uses the current window’s shorter and longer side.

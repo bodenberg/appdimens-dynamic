@@ -4,6 +4,8 @@ This folder goes deeper into each **scaling strategy** in [AppDimens Dynamic](..
 
 For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../library/PERFORMANCE.md).
 
+**Full Compose API (every `Number` property, facilitators, builders, prefix map):** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md)
+
 ## Summary
 
 | Strategy | Document |
@@ -25,6 +27,7 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 
 ### Quick links
 
+0. [Compose API reference — conventions & scaled catalog](COMPOSE-API-CONVENTIONS.md)  
 1. [Scaled](scaled.md) — recommended starting point  
 2. [Percent](percent.md)  
 3. [Power](power.md)  

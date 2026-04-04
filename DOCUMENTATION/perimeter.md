@@ -1,5 +1,7 @@
 # Perimeter strategy (`compose.perimeter` / `code.perimeter`)
 
+**Same API surface as scaled** with prefixes `prsdp` / `prhdp` / `prwdp` / `prssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
+
 ## What it is
 
 **Perimeter** scales by the **normalized screen perimeter**: sum of shorter and longer side in dp, divided by reference **833 dp** (perimeter reference aligned with 300 + 533 in `DesignScaleConstants`). It reflects “width + height” together, unlike diagonal or a single axis.

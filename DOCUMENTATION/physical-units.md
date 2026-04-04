@@ -2,51 +2,81 @@
 
 ## What it is
 
-Conversion of **real-world** measures (millimeters, centimeters, inches) to **dp** (and px at the code level), using the current `DisplayMetrics` / `Resources` **density**. It does not follow the “300 dp axis” scaling model; use it when the requirement is **approximate physical size** on the device.
+Conversion of **real-world** measures (millimeters, centimeters, inches) using `DisplayMetrics` / `Resources`. It does **not** follow the “300 dp axis” scaling model; use when you need **approximate physical size** on the device.
 
 ## Calculation used
 
-Conversions based on screen dpi (e.g. inches → dp via `xdpi`/`ydpi` or equivalent inside `DimenPhysicalUnits`). In Compose, extensions like `10.mm`, `2.5f.cm`, `1.inch` yield `Dp`. The cache may use `CalcType.UNITIES` for paths that go through the library’s dimension system.
+- **`toMm(mm, resources, context?)`**: `TypedValue.COMPLEX_UNIT_MM` → **dp** as `Float` (`/ density`); may use **`DimenCache`** (`CalcType.UNITIES`).
+- **`toCm(cm, resources)`**: implemented via mm conversion → **px** `Float` from `applyDimension` (see source).
+- **`toInch(inches, resources)`**: **px** `Float`.
+- **Composable** `Float`/`Int`.`mm` / `.cm` / `.inch`: wrap the above with `LocalDensity` / `LocalResources` — **return `Float`** (physical conversion result); for layout, convert to `Dp` with **`.dp`** where appropriate.
 
-See `DimenPhysicalUnits.kt` under `compose/units` and `code/units` for exact signatures (`toDpFromMm`, `toDpFromCm`, `toDpFromInch`, etc.).
+Pure helpers (`convertMmToCm`, `inchToMm`, …) are **math-only** between unit labels.
 
 ## How to use
 
-**Compose:**
+**Compose** (import `com.appdimens.dynamic.compose.mm`, `.cm`, `.inch`):
 
 ```kotlin
+import androidx.compose.ui.unit.dp
 import com.appdimens.dynamic.compose.mm
 import com.appdimens.dynamic.compose.cm
 
-Modifier.width(10.mm)
-Modifier.height(2.5f.cm)
+Modifier.width(10f.mm.dp)
+Modifier.height(2.5f.cm.dp)
 ```
 
-**Code:**
+| Composable property | Receivers | Return | Typical use |
+|--------------------|-----------|--------|---------------|
+| `mm` | `Float`, `Int` | `Float` | `10f.mm.dp` → `Dp` for `Modifier` |
+| `cm` | `Float`, `Int` | `Float` | `2.5f.cm.dp` |
+| `inch` | `Float`, `Int` | `Float` | `1f.inch.dp` |
 
-```kotlin
-import com.appdimens.dynamic.code.units.DimenPhysicalUnits
+**Composable instance helpers** (on `DimenPhysicalUnits` receiver in the same file)
 
-val dp = DimenPhysicalUnits.toDpFromCm(2.5f, resources)
-```
+| API | Example |
+|-----|---------|
+| `Float.radius(type: UnitType)` | `48f.radius(UnitType.MM)` — radius in px |
+| `Number.radius(type: UnitType)` | `48.radius(UnitType.DP)` |
+| `Float.measureDiameter(isCircumference: Boolean)` | Toggle diameter vs circumference display |
+| `Number.measureDiameter(isCircumference: Boolean)` | Same |
+
+**Object `DimenPhysicalUnits` (code / tests)**
+
+| API | Role | Example |
+|-----|------|---------|
+| `toMm(mm, resources, context?)` | mm → dp `Float` | `DimenPhysicalUnits.toMm(10f, resources)` |
+| `toCm(cm, resources)` | cm → px `Float` | `DimenPhysicalUnits.toCm(2.5f, resources)` |
+| `toInch(inches, resources)` | inch → px `Float` | `DimenPhysicalUnits.toInch(1f, resources)` |
+| `convertMmToCm` / `convertMmToInch` | pure `Float` | `convertMmToCm(100f)` |
+| `convertCmToMm` / `convertCmToInch` | pure `Float` | `convertCmToInch(2.54f)` |
+| `convertInchToCm` / `convertInchToMm` | pure `Float` | `convertInchToMm(1f)` |
+| `Float.mmToCm()`, `Number.mmToCm()`, `Float.mmToInch()`, … | sugar over `convert*` | `5f.mmToInch()` |
+| `Float.cmToMm()`, `Number.cmToMm()`, `Float.cmToInch()`, … | sugar | `1f.cmToMm()` |
+| `Float.inchToCm()`, `Number.inchToCm()`, `Float.inchToMm()`, … | sugar | `1f.inchToCm()` |
+| `radius(diameter, type: UnitType, resources)` | half-size in px | `radius(24f, UnitType.MM, resources)` |
+| `displayMeasureDiameter(diameter, isCircumference)` | scale for circumference | internal + extensions |
+| `unitSizePerPx(type, resources)` | size of **1.0** unit in px | `unitSizePerPx(UnitType.MM, resources)` |
+
+Use **`UnitType`** (`MM`, `CM`, `INCH`, `SP`, `DP`, …) with `radius` and `unitSizePerPx`.
 
 ## Why use it
 
-Specs from **print**, **regulation** (minimum touch target in mm), ruler-based prototyping, or alignment with **physical** materials.
+Specs from **print**, **regulation** (touch target in mm), ruler-based prototyping, or **physical** mockups.
 
 ## When to use it
 
-- Buttons with minimum height in **mm**.
-- Previews that must match a **cm** mockup.
-- When **dp alone** does not speak to stakeholders who think in physical units.
+- Minimum tap target in **mm**.
+- Matching a **cm** spec.
+- When stakeholders reason in **inches** / **mm**, not dp.
 
 ## Advantages and trade-offs
 
-- **Pros:** close to the real world; independent of which scaling strategy you use elsewhere.
-- **Cons:** “exact physical size” varies by device (real vs nominal dpi); does not solve **responsive layout** by itself — combine with constraints and **scaled** where needed.
+- **Pros:** speaks “real world”; orthogonal to scaling strategies.
+- **Cons:** real vs nominal dpi varies; not a substitute for **scaled** / breakpoints for layout grids.
 
 ## Recommended usage strategy
 
-Use physical units for **legal / accessibility minimums** and isolated cases; build the main UI **grid** with **scaled** (or another strategy) for consistency across form factors.
+Use for **legal / a11y minimums** and isolated measurements; build the main **grid** with **scaled** (or another strategy).
 
 [Back to index](README.md)

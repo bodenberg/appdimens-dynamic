@@ -1,5 +1,7 @@
 # Fill strategy (`compose.fill` / `code.fill`)
 
+**Same API surface as scaled** with prefixes `flsdp` / `flhdp` / `flwdp` / `flssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
+
 ## What it is
 
 **Fill** uses a **CSS “cover”**-style factor: the **maximum** of scale by the shorter side (vs 300 dp) and the longer side (vs 533 dp). Content “fills” the available space, favoring whichever side demands more scale.
