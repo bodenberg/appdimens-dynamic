@@ -35,6 +35,8 @@ Best for: Horizontal components
 
 ### **#1. SCALED (Default) ⭐**
 
+**Reality check:** In practice, **Scaled is the strategy people use the most** and it covers **most everyday screens**. Stick to plain **`sdp` / `hdp` / `wdp` / `ssp`** when you want simple proportional growth. Add **`a`** (aspect ratio), e.g. **`16.sdpa`** or **`16.sspa`**, when tall tablets or unusual aspect ratios need a **smoother, refined** adjustment — still Scaled, just with the extra flag.
+
 **Code:**
 
 ```kotlin
@@ -411,3 +413,188 @@ Modifiers:
 * `i` → ignore split-screen
 
 **Start simple and scale when needed.** 🚀
+
+---
+
+## 📐 Resize — sizes that **fit inside a box** (not from screen formula alone)
+
+**Idea in plain words:** Sometimes a number (font size, icon side, width) must be **as large as possible** but still **fit** inside the space the parent gives you — for example a long title in a card. **Resize** does **not** use the “screen ÷ 300” formula by itself; it **tries several sizes** (like steps on a ladder) until it finds the biggest one that still fits.
+
+**When to use:**
+✅ Headlines that must not overflow  
+✅ Icons or squares that should use “all the room” in a cell  
+✅ Anything where the **parent size** matters more than the global screen size  
+
+**Rule:** Call these functions **only inside** `BoxWithConstraints { ... }` — that block tells you how much width/height you really have.
+
+**Example — text that shrinks until it fits:**
+
+```kotlin
+import androidx.compose.foundation.layout.BoxWithConstraints
+import com.appdimens.dynamic.compose.resize.autoResizeTextSp
+
+BoxWithConstraints(Modifier.fillMaxWidth()) {
+    val fontSize = autoResizeTextSp(
+        text = "Very long product name that might not fit",
+        minSp = 12,
+        maxSp = 28,
+        stepSp = 1,
+        maxLines = 2,
+    )
+    Text(
+        text = "Very long product name that might not fit",
+        fontSize = fontSize,
+        maxLines = 2,
+    )
+}
+```
+
+**What happens:** The library tests 28 sp, 27 sp, 26 sp… down to 12 sp (or your `stepSp`) and picks the **largest** size where the text still fits in `maxLines` and the box.
+
+**Example — largest square that fits:**
+
+```kotlin
+import com.appdimens.dynamic.compose.resize.autoResizeSquareSize
+
+BoxWithConstraints(Modifier.fillMaxSize()) {
+    val side = autoResizeSquareSize(min = 24, max = 120, step = 4)
+    Box(Modifier.size(side)) { /* icon or avatar */ }
+}
+```
+
+There are also helpers for **width only**, **height only**, and ranges based on **% of the inner box** — same idea: pick the biggest step that still fits.
+
+---
+
+## 🔢 Percent **with tokens** (`psdp`, `phdp`, `pwdp`) — not only `space*`
+
+You already saw **`spaceW`** / **`spaceSw`** (pure percentage of the screen). The library also offers **percent-style scaling with the same suffix pattern as SCALED**:
+
+| You want              | Typical extension | Idea                          |
+| --------------------- | ----------------- | ----------------------------- |
+| % feel, SW-based name | `16.psdp`         | Like scaled, but **percent** strategy |
+| Height axis           | `16.phdp`         | Same pattern on height        |
+| Width axis            | `16.pwdp`         | Same pattern on width         |
+
+**Mental model:** Think “I want **percent logic** but I still like the **`sdp` / `hdp` / `wdp` naming** I learned above.” Import from `com.appdimens.dynamic.compose.percent` (e.g. `psdp`).
+
+```kotlin
+import com.appdimens.dynamic.compose.percent.psdp
+
+Modifier.padding(12.psdp)
+```
+
+You can still add **`a`**, **`i`**, **`ia`** and **Px** variants the same way as SCALED — see the main README and [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md).
+
+---
+
+## 📏 `…Px` extensions — when you need **pixels**, not `Dp`
+
+**Idea:** `16.sdp` gives a **`Dp`** for layouts. Sometimes you need a **`Float` in px** (Canvas, custom drawing, old interop).
+
+**Pattern:** Add **`Px`** to the name.
+
+```kotlin
+val strokeWidthPx = 2f.sdpPx      // Float in px, SDP-based
+val paddingPx = 16.hdpPx          // height axis, px
+```
+
+Same **suffixes** (`a`, `i`, `ia`, inverters) exist on many **Px** properties — check the API for your strategy.
+
+---
+
+## 🔤 `nem` / `hem` / `wem` — scalable **Sp** that **ignores system font size**
+
+**Problem:** `16.ssp` scales with the screen **and** usually follows the user’s **font scale** (Accessibility). Sometimes you want screen-based size but **not** to grow with “larger text” in settings.
+
+**Fix:** “Fixed em” style extensions on the **scaled** strategy:
+
+| Extension | Axis / meaning        | Use case              |
+| --------- | --------------------- | --------------------- |
+| `16.nem`  | Smallest-width based  | Toolbar, fixed rhythm |
+| `16.hem`  | Height-based          | Vertical emphasis     |
+| `16.wem`  | Width-based           | Horizontal emphasis   |
+
+```kotlin
+Text("Always same visual weight vs layout", fontSize = 14.nem)
+```
+
+You still get **responsive** sizing vs the device; you just **don’t** tie this particular text to **system font scale** the way `ssp` does.
+
+---
+
+## 🎛️ Facilitators — one value **normally**, another **in special cases**
+
+**Idea:** Instead of `if (orientation == …)` everywhere, use **one call** that picks the right branch.
+
+| Family        | Example (SCALED) | Plain English                                      |
+| ------------- | ---------------- | -------------------------------------------------- |
+| **Rotate**    | `80.sdpRotate(50, Orientation.LANDSCAPE)` | “Usually 80 sdp; in landscape use 50 (scaled).”      |
+| **Mode**      | `30.sdpMode(200, UiModeType.TELEVISION)` | “Usually 30; on TV use 200 (scaled).”              |
+| **Qualifier** | `60.sdpQualifier(120, DpQualifier.SMALL_WIDTH, 600)` | “If smallest width ≥ 600, use 120; else 60.”       |
+| **Screen**    | `70.sdpScreen(150, UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600)` | Combines **mode** + **width threshold** in one rule. |
+
+Many overloads accept **`Int`**, **`Dp`**, or **“plain”** variants — see the main README. **Other strategies** use the same **names** with their **prefix** (e.g. `asdpRotate`, `pwsdpMode`).
+
+---
+
+## 🧱 Builders — `scaledDp()` / `scaledSp()` (chain many rules)
+
+**Idea:** Start from a number and **chain** options: aspect ratio, ignore multi-window, then several **screen** rules (TV, large sw, landscape…). At the end read `.sdp`, `.hdp`, `.wdp` or Sp.
+
+```kotlin
+val padding = 16.scaledDp()
+    .aspectRatio(true)
+    .ignoreMultiWindows(true)
+    .screen(UiModeType.TELEVISION, 40)
+    .screen(DpQualifier.SMALL_WIDTH, 600, 24)
+    .sdp
+```
+
+**Beginner tip:** Use simple **`16.sdp`** first; move to **builders** when one component needs **many** conditions.
+
+---
+
+## 📦 Physical units — **real-world** size (mm, cm, inch)
+
+**Idea:** Say “**10 mm** on screen” instead of guessing dp. The library converts using the device’s **density** (so it’s only **approximate** physical size, like any Android dp).
+
+**Typical use:** Rulers, print-like layouts, specs from design in **mm** or **inch**.
+
+**Easy Compose pattern:** Use **`DimenPhysicalUnits.toMm` / `toCm` / `toInch`** with **`LocalResources`** — they return a **`Float` in dp**. Then use **`.dp`**:
+
+```kotlin
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.unit.dp
+import com.appdimens.dynamic.compose.DimenPhysicalUnits
+
+@Composable
+fun RulerBar() {
+    val resources = LocalResources.current
+    val widthDp = DimenPhysicalUnits.toMm(10f, resources)   // 10 mm → dp
+    val heightDp = DimenPhysicalUnits.toInch(0.25f, resources)
+    Modifier
+        .width(widthDp.dp)
+        .height(heightDp.dp)
+}
+```
+
+Inside the same **`@Composable`**, you can also use the shorthand **`10f.mm`**, **`2.5f.cm`**, **`1f.inch`** **if** you import the extensions from **`DimenPhysicalUnits`** (see [DOCUMENTATION/physical-units.md](DOCUMENTATION/physical-units.md)).
+
+There are helpers in **`com.appdimens.dynamic.code.units`** for non-Compose code, plus **radius** from diameter, etc. Full table: [DOCUMENTATION/physical-units.md](DOCUMENTATION/physical-units.md).
+
+---
+
+## ✅ Checklist — “Did I miss something?”
+
+| Topic              | Remember |
+| ------------------ | -------- |
+| **Resize**         | Inside `BoxWithConstraints`; “largest size that still fits” |
+| **psdp / phdp / pwdp** | Percent strategy, sdp-like names |
+| **…Px**            | `Float` pixels for Canvas / custom drawing |
+| **nem / hem / wem** | Screen-scaled Sp **without** following system font scale like `ssp` |
+| **Rotate / Mode / Qualifier / Screen** | One-liner conditional sizing |
+| **scaledDp / scaledSp** | Chain many rules, then `.sdp` / `.ssp` |
+| **mm / cm / inch** | Real-world units → dp on screen |
+
+When in doubt, stay on **SCALED** (`sdp` / `hdp` / `wdp`) and add these tools only when a real layout problem appears.
