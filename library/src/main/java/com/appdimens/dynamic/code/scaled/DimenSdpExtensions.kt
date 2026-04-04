@@ -614,57 +614,24 @@ private fun calculateScaledDp(
 ): Float {
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-    var actualQualifier = qualifier
-
-    when (inverter) {
-        Inverter.PH_TO_LW -> if (isLandscape && qualifier == DpQualifier.HEIGHT) actualQualifier = DpQualifier.WIDTH
-        Inverter.PW_TO_LH -> if (isLandscape && qualifier == DpQualifier.WIDTH)  actualQualifier = DpQualifier.HEIGHT
-        Inverter.LH_TO_PW -> if (isPortrait  && qualifier == DpQualifier.HEIGHT) actualQualifier = DpQualifier.WIDTH
-        Inverter.LW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.WIDTH)  actualQualifier = DpQualifier.HEIGHT
-        Inverter.SW_TO_LH -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-        Inverter.SW_TO_LW -> if (isLandscape && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-        Inverter.SW_TO_PH -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.HEIGHT
-        Inverter.SW_TO_PW -> if (isPortrait  && qualifier == DpQualifier.SMALL_WIDTH) actualQualifier = DpQualifier.WIDTH
-        Inverter.DEFAULT  -> {}
+    val actualQualifier = com.appdimens.dynamic.core.DimenCalculationPlumbing.effectiveQualifier(
+        qualifier, inverter, isLandscape, isPortrait
+    )
+    if (com.appdimens.dynamic.core.DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows)) {
+        return baseValue
     }
-
-    val isMultiWindow = if (ignoreMultiWindows) {
-        val smallestWidthDp = configuration.smallestScreenWidthDp.toFloat()
-        val currentScreenWidthDp = configuration.screenWidthDp.toFloat()
-        // Simple heuristic for multi-window detection in non-Compose
-        val isLayoutSplit = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
-        val isSmallDiff = (smallestWidthDp - currentScreenWidthDp) < (smallestWidthDp * 0.1f)
-        isLayoutSplit && !isSmallDiff
-    } else false
-
-    return if (isMultiWindow) {
-        baseValue
+    val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
+    if (isDefaultSw && customSensitivityK == null) {
+        return DimenCache.calculateRawScaling(baseValue, applyAspectRatio, null)
+    }
+    val screenDimension = com.appdimens.dynamic.core.DimenCalculationPlumbing.readScreenDp(configuration, actualQualifier)
+    val scale = screenDimension * DimenCache.INV_BASE_RATIO
+    return if (applyAspectRatio) {
+        val diff = screenDimension - 300f
+        val adjustment = (customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT) * DimenCache.currentLogNormalizedAr
+        baseValue * (1.0f + diff * (DimenCache.ADJUSTMENT_SCALE + adjustment))
     } else {
-        // Qualifier logic
-        val isDefaultSw = (qualifier == DpQualifier.SMALL_WIDTH) && (inverter == Inverter.DEFAULT)
-        if (isDefaultSw && customSensitivityK == null) {
-            // ULTRA FAST PATH: use pre-calculated global factor
-            DimenCache.calculateRawScaling(baseValue, applyAspectRatio, null)
-        } else {
-            // Need to determine specific screen dimension for other qualifiers
-            val screenDimension = when (actualQualifier) {
-                DpQualifier.HEIGHT -> configuration.screenHeightDp.toFloat()
-                DpQualifier.WIDTH -> configuration.screenWidthDp.toFloat()
-                else -> configuration.smallestScreenWidthDp.toFloat()
-            }
-            // Fallback to manual scaling if not using the primary global SW qualifier
-            val scale = screenDimension * DimenCache.INV_BASE_RATIO
-            if (applyAspectRatio) {
-                 // For non-SW qualifiers with AR, we still do the math but at least it's in the MISS path
-                 val diff = screenDimension - 300f
-                 val adjustment = (customSensitivityK ?: DimenCache.SENSITIVITY_DEFAULT) * DimenCache.currentLogNormalizedAr
-                 val arFactor = 1.0f + diff * (DimenCache.ADJUSTMENT_SCALE + adjustment)
-                 baseValue * arFactor
-            } else {
-                 baseValue * scale
-            }
-        }
+        baseValue * scale
     }
 }
 

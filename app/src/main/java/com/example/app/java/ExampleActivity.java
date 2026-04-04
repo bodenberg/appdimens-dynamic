@@ -2,8 +2,8 @@
  * @author Bodenberg
  * GIT: https://github.com/bodenberg/appdimens-sdps.git
  *
- * EN Java ExampleActivity — Comprehensive demo of all AppDimens SDP code features from Java.
- * PT Java ExampleActivity — Demonstração completa de todos os recursos do AppDimens SDP via Java.
+ * EN Java ExampleActivity — Core SDP + DimenSsp (§2b) + DimenScaled + DimenResize (§6, twin of Compose §5) + physical units + XML note.
+ * PT Java — SDP + DimenSsp (§2b) + DimenScaled + DimenResize (§6, equivalente ao Compose §5) + unidades físicas + nota XML.
  */
 package com.example.app.java;
 
@@ -15,6 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.appdimens.dynamic.code.units.DimenPhysicalUnits;
 import com.appdimens.dynamic.code.DimenSdp;
 import com.appdimens.dynamic.code.DimenScaled;
+import com.appdimens.dynamic.code.DimenSsp;
+import com.appdimens.dynamic.code.resize.DimenResize;
+import com.appdimens.dynamic.core.ResizeBound;
+import com.appdimens.dynamic.core.ResizeRangePx;
 import com.appdimens.dynamic.common.DpQualifier;
 import com.appdimens.dynamic.common.Orientation;
 import com.appdimens.dynamic.common.UiModeType;
@@ -56,6 +60,17 @@ public class ExampleActivity extends AppCompatActivity {
         float hdp32 = DimenSdp.hdp(this, 32);   // EN Height based / PT Baseado na altura
         float wdp100 = DimenSdp.wdp(this, 100); // EN Width based / PT Baseado na largura
         Log.d(TAG, "2. Shortcuts — sdp(16)=" + sdp16 + "px, hdp(32)=" + hdp32 + "px, wdp(100)=" + wdp100 + "px");
+
+        // ╔══════════════════════════════════════════════════════════════╗
+        // ║ 2b. SCALABLE SP — DimenSsp (Compose: .ssp / .hsp / .wsp)   ║
+        // ╚══════════════════════════════════════════════════════════════╝
+
+        // EN Same scaled-sp axes as Compose; values are px for setTextSize(COMPLEX_UNIT_PX, …).
+        // PT Mesmos eixos sp escalável que no Compose; retorno em px para setTextSize em px.
+        float ssp16px = DimenSsp.ssp(this, 16);
+        float hsp20px = DimenSsp.hsp(this, 20);
+        float wsp18px = DimenSsp.wsp(this, 18);
+        Log.d(TAG, "2b. SSp — ssp(16)=" + ssp16px + "px, hsp(20)=" + hsp20px + "px, wsp(18)=" + wsp18px + "px");
 
         // ╔══════════════════════════════════════════════════════════════╗
         // ║ 3. INVERTER SHORTCUTS — sdpPh / sdpLw / hdpLw / wdpLh     ║
@@ -152,7 +167,44 @@ public class ExampleActivity extends AppCompatActivity {
         Log.d(TAG, "5. DimenScaled — sdp=" + scaledSdp + "px, hdp=" + scaledHdp + "px, wdp=" + scaledWdp + "px");
 
         // ╔══════════════════════════════════════════════════════════════╗
-        // ║ 6. PHYSICAL UNITS — DimenPhysicalUnits                     ║
+        // ║ 6. AUTO-RESIZE (code) — DimenResize (Compose §5 equivalent)  ║
+        // ╚══════════════════════════════════════════════════════════════╝
+
+        // EN Build a px range (dp / sp / % of sw|w|h) then pick largest step that fits a limit.
+        // PT Constrói intervalo em px (dp/sp/% de sw|w|h) e escolhe o maior passo que cabe num limite.
+        float density = getResources().getDisplayMetrics().density;
+        final float containerPx = 120f * density;
+
+        ResizeRangePx squareRange = DimenResize.rangePx(
+            this,
+            new ResizeBound.FixedDp(16f),
+            new ResizeBound.FixedDp(100f),
+            new ResizeBound.FixedDp(4f)
+        );
+        float iconSidePx = DimenResize.fittingPx(squareRange, candidatePx -> candidatePx <= containerPx);
+        Log.d(TAG, "6. Resize dp range — largest square side px=" + iconSidePx + " (limit " + containerPx + "px)");
+
+        ResizeRangePx textRange = DimenResize.rangePx(
+            this,
+            new ResizeBound.FixedSp(10f),
+            new ResizeBound.FixedSp(22f),
+            new ResizeBound.FixedSp(2f)
+        );
+        final float mockMaxTextWidthPx = 280f;
+        float textSizePx = DimenResize.fittingPx(textRange, candidate -> candidate <= mockMaxTextWidthPx);
+        Log.d(TAG, "6. Resize sp range — candidate text px=" + textSizePx + " (mock width " + mockMaxTextWidthPx + "px)");
+
+        ResizeRangePx mixedRange = DimenResize.rangePx(
+            this,
+            new ResizeBound.FixedDp(8f),
+            new ResizeBound.Percent(40f, DpQualifier.SMALL_WIDTH),
+            new ResizeBound.FixedDp(4f)
+        );
+        float mixedPx = DimenResize.fittingPx(mixedRange, candidate -> candidate <= containerPx);
+        Log.d(TAG, "6. Resize mixed — max %sw… picked px=" + mixedPx);
+
+        // ╔══════════════════════════════════════════════════════════════╗
+        // ║ 7. PHYSICAL UNITS — DimenPhysicalUnits                     ║
         // ╚══════════════════════════════════════════════════════════════╝
 
         // EN Convert physical units (cm, mm, inches) to dp.
@@ -160,10 +212,10 @@ public class ExampleActivity extends AppCompatActivity {
         float dpFromCm = DimenPhysicalUnits.toDpFromCm(2.5f, getResources());
         float dpFromMm = DimenPhysicalUnits.toDpFromMm(25f, getResources());
         float dpFromIn = DimenPhysicalUnits.toDpFromInch(1f, getResources());
-        Log.d(TAG, "6. Physical — 2.5cm=" + dpFromCm + "dp, 25mm=" + dpFromMm + "dp, 1in=" + dpFromIn + "dp");
+        Log.d(TAG, "7. Physical — 2.5cm=" + dpFromCm + "dp, 25mm=" + dpFromMm + "dp, 1in=" + dpFromIn + "dp");
 
         // ╔══════════════════════════════════════════════════════════════╗
-        // ║ 7. XML RESOURCE USAGE — Using dimens directly in XML       ║
+        // ║ 8. XML RESOURCE USAGE — Using dimens directly in XML       ║
         // ╚══════════════════════════════════════════════════════════════╝
 
         // EN In XML layouts, you can use dimension resources directly:

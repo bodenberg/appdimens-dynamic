@@ -70,18 +70,18 @@ class BenchmarkController(
      * EN Runs the full pipeline: Micro → cooldown → Macro.
      * PT Executa o pipeline completo: Micro → cooldown → Macro.
      */
-    fun runFull() {
+    fun runFull(mode: BenchmarkCalculationMode = BenchmarkCalculationMode.SCALED) {
         scope.launch {
             reset()
             
             // ── Phase 1: Calculation ──────────────────────────────────────
-            val calc = runCalculationBenchmark(context) { _phase.value = it }
+            val calc = runCalculationBenchmark(context, mode) { _phase.value = it }
             _result.value = _result.value.copy(calculation = calc)
             
             delay(COOLDOWN_MS)
 
             // ── Phase 2: Micro ────────────────────────────────────────────
-            val micro = runMicroBenchmark(context) { _phase.value = it }
+            val micro = runMicroBenchmark(context, mode) { _phase.value = it }
             _result.value = _result.value.copy(micro = micro)
 
             // EN Cooldown between phases — reduces GC and JIT interference.
@@ -101,10 +101,10 @@ class BenchmarkController(
      * EN Runs only the Microbenchmark. Macro results will remain null.
      * PT Executa apenas o Microbenchmark. Resultados Macro permanecerão nulos.
      */
-    fun runMicroOnly() {
+    fun runMicroOnly(mode: BenchmarkCalculationMode = BenchmarkCalculationMode.SCALED) {
         scope.launch {
             reset()
-            val micro = runMicroBenchmark(context) { _phase.value = it }
+            val micro = runMicroBenchmark(context, mode) { _phase.value = it }
             _result.value = _result.value.copy(micro = micro)
             _phase.value = BenchmarkPhase.DONE
         }
@@ -114,10 +114,10 @@ class BenchmarkController(
      * EN Runs only the Calculation benchmark. Other results will remain null.
      * PT Executa apenas o benchmark de Cálculo. Outros resultados permanecerão nulos.
      */
-    fun runCalculationOnly() {
+    fun runCalculationOnly(mode: BenchmarkCalculationMode = BenchmarkCalculationMode.SCALED) {
         scope.launch {
             reset()
-            val calc = runCalculationBenchmark(context) { _phase.value = it }
+            val calc = runCalculationBenchmark(context, mode) { _phase.value = it }
             _result.value = _result.value.copy(calculation = calc)
             _phase.value = BenchmarkPhase.DONE
         }

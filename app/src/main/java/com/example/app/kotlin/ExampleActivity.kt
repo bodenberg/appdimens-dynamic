@@ -2,8 +2,8 @@
  * @author Bodenberg
  * GIT: https://github.com/bodenberg/appdimens-sdps.git
  *
- * EN Kotlin/XML ExampleActivity — Comprehensive demo of all AppDimens SDP code features.
- * PT Kotlin/XML ExampleActivity — Demonstração completa de todos os recursos do AppDimens SDP via código.
+ * EN Kotlin/XML ExampleActivity — Core SDP + DimenSsp (§2b) + DimenScaled + DimenResize (§6, twin of Compose §5) + physical units.
+ * PT ExampleActivity Kotlin/XML — SDP + DimenSsp (§2b) + DimenScaled + DimenResize (§6, equivalente ao Compose §5) + unidades físicas.
  */
 package com.example.app.kotlin
 
@@ -11,11 +11,16 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.appdimens.dynamic.code.DimenSdp
+import com.appdimens.dynamic.code.DimenSsp
 import com.appdimens.dynamic.code.scaledDp
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.code.units.DimenPhysicalUnits
+import com.appdimens.dynamic.code.resize.DimenResize
+import com.appdimens.dynamic.core.resizeFixedDp
+import com.appdimens.dynamic.core.resizeFixedSp
+import com.appdimens.dynamic.core.resizePercentSw
 import com.example.app.databinding.ActivitySdpBinding
 
 class ExampleActivity : AppCompatActivity() {
@@ -55,6 +60,17 @@ class ExampleActivity : AppCompatActivity() {
         val hdp32 = DimenSdp.hdp(this, 32)   // EN Height based / PT Baseado na altura
         val wdp100 = DimenSdp.wdp(this, 100) // EN Width based / PT Baseado na largura
         Log.d(TAG, "2. Shortcuts — sdp(16)=${sdp16}px, hdp(32)=${hdp32}px, wdp(100)=${wdp100}px")
+
+        // ╔══════════════════════════════════════════════════════════════╗
+        // ║ 2b. SCALABLE SP — DimenSsp (Compose: .ssp / .hsp / .wsp)     ║
+        // ╚══════════════════════════════════════════════════════════════╝
+
+        // EN Same scaled-sp axes as Compose; values are px for setTextSize(COMPLEX_UNIT_PX, …).
+        // PT Mesmos eixos sp escalável que no Compose; retorno em px para setTextSize em px.
+        val ssp16px = DimenSsp.ssp(this, 16)
+        val hsp20px = DimenSsp.hsp(this, 20)
+        val wsp18px = DimenSsp.wsp(this, 18)
+        Log.d(TAG, "2b. SSp — ssp(16)=${ssp16px}px, hsp(20)=${hsp20px}px, wsp(18)=${wsp18px}px")
 
         // ╔══════════════════════════════════════════════════════════════╗
         // ║ 3. INVERTER SHORTCUTS — sdpPh / sdpLw / hdpLw / wdpLh     ║
@@ -156,10 +172,48 @@ class ExampleActivity : AppCompatActivity() {
             .screen(UiModeType.TELEVISION, 300)
             .screen(DpQualifier.SMALL_WIDTH, 600, 120)
             .sdp(this)
-        Log.d(TAG, "5. DimenScaled Alt — 80.scaledSdp()...sdp=${scaledAlt}px")
+        Log.d(TAG, "5. DimenScaled Alt — 80.scaledDp()…sdp=${scaledAlt}px")
 
         // ╔══════════════════════════════════════════════════════════════╗
-        // ║ 6. PHYSICAL UNITS — DimenPhysicalUnits                     ║
+        // ║ 6. AUTO-RESIZE (code) — DimenResize (Compose §5 equivalent) ║
+        // ╚══════════════════════════════════════════════════════════════╝
+
+        // EN Build a px range (dp / sp / % of sw|w|h) then pick largest step that fits a limit.
+        // PT Constrói intervalo em px (dp/sp/% de sw|w|h) e escolhe o maior passo que cabe num limite.
+        val density = resources.displayMetrics.density
+        val containerPx = 120f * density
+        val squareRange = DimenResize.rangePx(
+            this,
+            min = resizeFixedDp(16f),
+            max = resizeFixedDp(100f),
+            step = resizeFixedDp(4f),
+        )
+        val iconSidePx = DimenResize.fittingPx(squareRange) { it <= containerPx }
+        Log.d(TAG, "6. Resize dp range — largest square side px=$iconSidePx (limit ${containerPx}px)")
+
+        val textRange = DimenResize.rangePx(
+            this,
+            min = resizeFixedSp(10f),
+            max = resizeFixedSp(22f),
+            step = resizeFixedSp(2f),
+        )
+        val mockMaxTextWidthPx = 280f
+        val textSizePx = DimenResize.fittingPx(textRange) { candidate ->
+            candidate <= mockMaxTextWidthPx
+        }
+        Log.d(TAG, "6. Resize sp range — candidate text px=$textSizePx (mock width ${mockMaxTextWidthPx}px)")
+
+        val mixedRange = DimenResize.rangePx(
+            this,
+            min = resizeFixedDp(8f),
+            max = resizePercentSw(40f),
+            step = resizeFixedDp(4f),
+        )
+        val mixedPx = DimenResize.fittingPx(mixedRange) { it <= containerPx }
+        Log.d(TAG, "6. Resize mixed — max %sw… picked px=$mixedPx")
+
+        // ╔══════════════════════════════════════════════════════════════╗
+        // ║ 7. PHYSICAL UNITS — DimenPhysicalUnits                     ║
         // ╚══════════════════════════════════════════════════════════════╝
 
         // EN Convert physical units (cm, mm, inches) to dp.
@@ -167,6 +221,6 @@ class ExampleActivity : AppCompatActivity() {
         val dpFromCm = DimenPhysicalUnits.toDpFromCm(2.5f, resources)
         val dpFromMm = DimenPhysicalUnits.toDpFromMm(25f, resources)
         val dpFromIn = DimenPhysicalUnits.toDpFromInch(1f, resources)
-        Log.d(TAG, "6. Physical — 2.5cm=${dpFromCm}dp, 25mm=${dpFromMm}dp, 1in=${dpFromIn}dp")
+        Log.d(TAG, "7. Physical — 2.5cm=${dpFromCm}dp, 25mm=${dpFromMm}dp, 1in=${dpFromIn}dp")
     }
 }

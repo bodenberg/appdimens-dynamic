@@ -108,6 +108,10 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false) {
     val scope       = rememberCoroutineScope()
     val activity    = context as? BenchmarkActivity
 
+    // EN Calculation family for Micro + Calculation benchmarks (Macro list stays scaled sdp).
+    // PT Família de cálculo para benchmarks Micro + Cálculo (lista Macro permanece sdp scaled).
+    var calculationMode by remember { mutableStateOf(BenchmarkCalculationMode.SCALED) }
+
     // EN Instantiate controller — stable across recompositions
     // PT Instanciar controlador — estável entre recomposições
     val controller = remember { BenchmarkController(scope, context, listState) }
@@ -121,7 +125,7 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false) {
     LaunchedEffect(Unit) {
         if (autoStart) {
             android.util.Log.i("APPDIMENS_AUTO", "Auto-start triggered via Intent extra.")
-            controller.runFull()
+            controller.runFull(calculationMode)
         }
     }
 
@@ -162,12 +166,14 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false) {
                 // ── Control Panel ──────────────────────────────────────────
                 item {
                     ControlPanel(
-                        phase     = phase,
-                        isRunning = isRunning,
-                        onFull    = { controller.runFull() },
-                        onCalc    = { controller.runCalculationOnly() },
-                        onMicro   = { controller.runMicroOnly() },
-                        onMacro   = { controller.runMacroOnly() }
+                        phase          = phase,
+                        isRunning      = isRunning,
+                        selectedMode   = calculationMode,
+                        onModeChange   = { calculationMode = it },
+                        onFull         = { controller.runFull(calculationMode) },
+                        onCalc         = { controller.runCalculationOnly(calculationMode) },
+                        onMicro        = { controller.runMicroOnly(calculationMode) },
+                        onMacro        = { controller.runMacroOnly() }
                     )
                 }
 
@@ -175,10 +181,20 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false) {
                 item { StatusSection(phase = phase, isRunning = isRunning) }
 
                 // ── Calculation Results Section ─────────────────────────────
-                item { CalculationResultSection(result = result.calculation) }
+                item {
+                    CalculationResultSection(
+                        result      = result.calculation,
+                        pendingMode = calculationMode
+                    )
+                }
 
                 // ── Micro Results Section ──────────────────────────────────
-                item { MicroResultSection(result = result.micro) }
+                item {
+                    MicroResultSection(
+                        result      = result.micro,
+                        pendingMode = calculationMode
+                    )
+                }
 
                 // ── Macro Results Section ──────────────────────────────────
                 item { MacroResultSection(result = result.macro) }
@@ -187,7 +203,7 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false) {
                 item {
                     DashboardSectionHeader(
                         icon  = "🗂️",
-                        label = "UI Stress List — ${MACRO_ITEM_COUNT} Items",
+                        label = "UI Stress List — ${MACRO_ITEM_COUNT} Items (scaled sdp)",
                         color = TextSecondary
                     )
                 }
@@ -209,6 +225,8 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false) {
 private fun ControlPanel(
     phase: BenchmarkPhase,
     isRunning: Boolean,
+    selectedMode: BenchmarkCalculationMode,
+    onModeChange: (BenchmarkCalculationMode) -> Unit,
     onFull: () -> Unit,
     onCalc: () -> Unit,
     onMicro: () -> Unit,
@@ -222,6 +240,63 @@ private fun ControlPanel(
             fontSize = 15.sp,
             modifier = Modifier.padding(bottom = 12.dp)
         )
+
+        var modeMenuExpanded by remember { mutableStateOf(false) }
+        Text(
+            "Calculation type (Micro + Calc)",
+            color = TextSecondary,
+            fontSize = 11.sp,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(
+                onClick = { modeMenuExpanded = true },
+                enabled = !isRunning,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = AccentCyan
+                ),
+                border = androidx.compose.foundation.BorderStroke(1.dp, SurfaceBorder)
+            ) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        selectedMode.displayLabel,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Start
+                    )
+                }
+            }
+            DropdownMenu(
+                expanded = modeMenuExpanded,
+                onDismissRequest = { modeMenuExpanded = false },
+                modifier = Modifier.align(Alignment.TopStart).fillMaxWidth(),
+                containerColor = SurfaceCard
+            ) {
+                BenchmarkCalculationMode.entries.forEach { mode ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                mode.displayLabel,
+                                color = if (mode == selectedMode) AccentCyan else TextPrimary,
+                                fontSize = 14.sp
+                            )
+                        },
+                        onClick = {
+                            onModeChange(mode)
+                            modeMenuExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -369,13 +444,21 @@ private fun StatusSection(phase: BenchmarkPhase, isRunning: Boolean) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun CalculationResultSection(result: CalculationBenchmarkResult?) {
-    DashboardSectionHeader(icon = "🧪", label = "Calculation Test — Mixed Path", color = AccentGreen)
+private fun CalculationResultSection(
+    result: CalculationBenchmarkResult?,
+    pendingMode: BenchmarkCalculationMode
+) {
+    val modeLabel = result?.mode?.displayLabel ?: pendingMode.displayLabel
+    DashboardSectionHeader(
+        icon  = "🧪",
+        label = "Calculation Test — $modeLabel",
+        color = AccentGreen
+    )
 
     DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
         AnimatedVisibility(visible = result == null) {
             Text(
-                "Run Calculation or Full benchmark to see results.",
+                "Run Calculation or Full benchmark to see results. Selected: $modeLabel",
                 color    = TextSecondary,
                 fontSize = 12.sp
             )
@@ -383,6 +466,7 @@ private fun CalculationResultSection(result: CalculationBenchmarkResult?) {
         AnimatedVisibility(visible = result != null) {
             result?.let { r ->
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    MetricRow("Mode",           r.mode.displayLabel, AccentGreen)
                     MetricRow("Avg resolution", r.avgNsPerRes.formatNs(), AccentGreen, isHighlight = true)
                     MetricRow("Total calls",    "${"%,d".format(r.totalOps)}",   AccentGreen)
                     
@@ -406,13 +490,21 @@ private fun CalculationResultSection(result: CalculationBenchmarkResult?) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun MicroResultSection(result: MicroBenchmarkResult?) {
-    DashboardSectionHeader(icon = "⚙️", label = "Microbenchmark — CPU Performance", color = AccentPurple)
+private fun MicroResultSection(
+    result: MicroBenchmarkResult?,
+    pendingMode: BenchmarkCalculationMode
+) {
+    val modeLabel = result?.mode?.displayLabel ?: pendingMode.displayLabel
+    DashboardSectionHeader(
+        icon  = "⚙️",
+        label = "Microbenchmark — $modeLabel",
+        color = AccentPurple
+    )
 
     DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
         AnimatedVisibility(visible = result == null) {
             Text(
-                "Run Micro or Full benchmark to see results.",
+                "Run Micro or Full benchmark to see results. Selected: $modeLabel",
                 color    = TextSecondary,
                 fontSize = 12.sp
             )
@@ -420,6 +512,7 @@ private fun MicroResultSection(result: MicroBenchmarkResult?) {
         AnimatedVisibility(visible = result != null) {
             result?.let { r ->
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    MetricRow("Mode",          r.mode.displayLabel, AccentPurple)
                     MetricRow("Combined avg",  r.avgNsPerOp.formatNs(), AccentPurple, isHighlight = true)
                     MetricRow("Total ops",     "${"%,d".format(r.totalOps)} ops", AccentPurple)
                     MetricRow("Wall time",     "${r.totalTimeMs} ms", AccentPurple)
@@ -428,10 +521,10 @@ private fun MicroResultSection(result: MicroBenchmarkResult?) {
                     Text("Call-type breakdown", color = TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     HorizontalDivider(color = SurfaceBorder)
 
-                    PathRow(label = "sdp  (bypass path)", avgNs = r.sdpBypassAvgNs, color = AccentGreen)
-                    PathRow(label = "hdp  (bypass path)", avgNs = r.hdpBypassAvgNs, color = AccentGreen)
-                    PathRow(label = "wdp  (bypass path)", avgNs = r.wdpBypassAvgNs, color = AccentGreen)
-                    PathRow(label = "sdpa (cache  path)", avgNs = r.sdpaCacheAvgNs, color = AccentAmber)
+                    PathRow(label = "sw   (no AR)", avgNs = r.sdpBypassAvgNs, color = AccentGreen)
+                    PathRow(label = "h    (no AR)", avgNs = r.hdpBypassAvgNs, color = AccentGreen)
+                    PathRow(label = "w    (no AR)", avgNs = r.wdpBypassAvgNs, color = AccentGreen)
+                    PathRow(label = "sw+a (AR)", avgNs = r.sdpaCacheAvgNs, color = AccentAmber)
 
                     Spacer(Modifier.height(4.dp))
                     Text(

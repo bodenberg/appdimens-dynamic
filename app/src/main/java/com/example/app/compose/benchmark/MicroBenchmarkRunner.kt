@@ -15,7 +15,6 @@ package com.example.app.compose.benchmark
 
 import android.content.Context
 import android.util.Log
-import com.appdimens.dynamic.code.DimenSdp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -41,12 +40,16 @@ private const val MEASURE_ITERATIONS = 100_000
  *    Sequência: aquecimento (descartado) → tempo sdp → tempo hdp → tempo wdp → tempo sdpa.
  *
  * @param context EN Android context needed for dimension resolution. PT Contexto Android para resolução de dimensão.
+ * @param mode EN Calculation family (default scaled). PT Família de cálculo (padrão scaled).
  * @param onPhaseChange EN Callback invoked when phase transitions occur. PT Callback invocado nas transições de fase.
  */
 suspend fun runMicroBenchmark(
     context: Context,
+    mode: BenchmarkCalculationMode = BenchmarkCalculationMode.SCALED,
     onPhaseChange: (BenchmarkPhase) -> Unit
 ): MicroBenchmarkResult = withContext(Dispatchers.Default) {
+
+    val ops = mode.ops()
 
     // ── WARMUP PHASE ──────────────────────────────────────────────────────────
     // EN Discard all results. This primes JIT, branch predictors, and cache lines.
@@ -55,10 +58,10 @@ suspend fun runMicroBenchmark(
 
     var warmupAcc = 0f
     repeat(WARMUP_ITERATIONS) {
-        warmupAcc += DimenSdp.sdp(context, 100)
-        warmupAcc += DimenSdp.hdp(context, 50)
-        warmupAcc += DimenSdp.wdp(context, 30)
-        warmupAcc += DimenSdp.sdpa(context, 40)
+        warmupAcc += ops.sdp(context, 100)
+        warmupAcc += ops.hdp(context, 50)
+        warmupAcc += ops.wdp(context, 30)
+        warmupAcc += ops.sdpa(context, 40)
     }
     // Consume accumulator to prevent dead-code elimination of warmup block
     Log.v(TAG, "Warmup complete (acc=$warmupAcc, ${WARMUP_ITERATIONS} iters discarded)")
@@ -69,12 +72,12 @@ suspend fun runMicroBenchmark(
     val startWall = System.currentTimeMillis()
 
     // ── sdp (bypass path) ────────────────────────────────────────────────────
-    // EN sdp uses CalcType.SCALED with bit 63 == 0 → pure math, no cache lookup.
-    // PT sdp usa CalcType.SCALED com bit 63 == 0 → matemática pura, sem cache lookup.
+    // EN sw-qualifier call without AR — may bypass cache for cheap calc types (see DimenCache.getOrPut).
+    // PT chamada sw sem AR — pode fazer bypass de cache para tipos baratos (ver DimenCache.getOrPut).
     var sdpAcc = 0f
     val sdpStartNs = System.nanoTime()
     repeat(MEASURE_ITERATIONS) {
-        sdpAcc += DimenSdp.sdp(context, 100)
+        sdpAcc += ops.sdp(context, 100)
     }
     val sdpElapsedNs = System.nanoTime() - sdpStartNs
     val sdpAvgNs = sdpElapsedNs / MEASURE_ITERATIONS
@@ -83,7 +86,7 @@ suspend fun runMicroBenchmark(
     var hdpAcc = 0f
     val hdpStartNs = System.nanoTime()
     repeat(MEASURE_ITERATIONS) {
-        hdpAcc += DimenSdp.hdp(context, 50)
+        hdpAcc += ops.hdp(context, 50)
     }
     val hdpElapsedNs = System.nanoTime() - hdpStartNs
     val hdpAvgNs = hdpElapsedNs / MEASURE_ITERATIONS
@@ -92,18 +95,18 @@ suspend fun runMicroBenchmark(
     var wdpAcc = 0f
     val wdpStartNs = System.nanoTime()
     repeat(MEASURE_ITERATIONS) {
-        wdpAcc += DimenSdp.wdp(context, 30)
+        wdpAcc += ops.wdp(context, 30)
     }
     val wdpElapsedNs = System.nanoTime() - wdpStartNs
     val wdpAvgNs = wdpElapsedNs / MEASURE_ITERATIONS
 
     // ── sdpa (cache path) ────────────────────────────────────────────────────
-    // EN sdpa applies aspect ratio correction → goes through full cache lookup.
-    // PT sdpa aplica correção de proporção → passa pelo caminho completo de cache lookup.
+    // EN +AR smallest-width path → typically full cache / heavier work.
+    // PT caminho sw+AR → tipicamente cache completo / trabalho mais pesado.
     var sdpaAcc = 0f
     val sdpaStartNs = System.nanoTime()
     repeat(MEASURE_ITERATIONS) {
-        sdpaAcc += DimenSdp.sdpa(context, 40)
+        sdpaAcc += ops.sdpa(context, 40)
     }
     val sdpaElapsedNs = System.nanoTime() - sdpaStartNs
     val sdpaAvgNs = sdpaElapsedNs / MEASURE_ITERATIONS
@@ -120,6 +123,7 @@ suspend fun runMicroBenchmark(
 
     // ── Logcat export ─────────────────────────────────────────────────────────
     Log.i(TAG, "╔══════════════════ MICRO BENCHMARK RESULT ══════════════════╗")
+    Log.i(TAG, "║ Mode: ${mode.name}")
     Log.i(TAG, "║ Combined avg: ${combinedAvgNs.formatNs()}/op · Total ops: $totalOps")
     Log.i(TAG, "║ sdp  (bypass): ${sdpAvgNs.formatNs()}/op")
     Log.i(TAG, "║ hdp  (bypass): ${hdpAvgNs.formatNs()}/op")
@@ -137,6 +141,7 @@ suspend fun runMicroBenchmark(
         hdpBypassAvgNs  = hdpAvgNs,
         wdpBypassAvgNs  = wdpAvgNs,
         sdpaCacheAvgNs  = sdpaAvgNs,
-        accumulatorChecksum = checksum
+        accumulatorChecksum = checksum,
+        mode            = mode,
     )
 }

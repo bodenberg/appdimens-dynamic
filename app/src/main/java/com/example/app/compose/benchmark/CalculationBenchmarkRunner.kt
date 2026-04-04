@@ -13,7 +13,6 @@ package com.example.app.compose.benchmark
 
 import android.content.Context
 import android.util.Log
-import com.appdimens.dynamic.code.DimenSdp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -28,12 +27,16 @@ private const val CALLS_PER_BLOCK = 4
  * PT Executa o benchmark de cálculo (teste de caminho misto) fora da thread principal.
  *
  * @param context EN Android context. PT Contexto Android.
+ * @param mode EN Calculation family (default scaled). PT Família de cálculo (padrão scaled).
  * @param onPhaseChange EN Callback for phase transitions. PT Callback para transições de fase.
  */
 suspend fun runCalculationBenchmark(
     context: Context,
+    mode: BenchmarkCalculationMode = BenchmarkCalculationMode.SCALED,
     onPhaseChange: (BenchmarkPhase) -> Unit
 ): CalculationBenchmarkResult = withContext(Dispatchers.Default) {
+
+    val ops = mode.ops()
 
     // ── WARMUP ──────────────────────────────────────────────────────────────
     onPhaseChange(BenchmarkPhase.CALC_WARMUP)
@@ -41,10 +44,10 @@ suspend fun runCalculationBenchmark(
     // EN Brief JIT priming with 1/10th of iterations
     // PT Breve aquecimento do JIT com 1/10 das iterações
     repeat(1000) {
-        DimenSdp.sdp(context, 100)
-        DimenSdp.hdp(context, 50)
-        DimenSdp.wdp(context, 30)
-        DimenSdp.sdpa(context, 40)
+        ops.sdp(context, 100)
+        ops.hdp(context, 50)
+        ops.wdp(context, 30)
+        ops.sdpa(context, 40)
     }
     delay(100) // EN Settling. PT Estabilização.
 
@@ -53,20 +56,19 @@ suspend fun runCalculationBenchmark(
 
     val totalNs = measureNanoTime {
         repeat(REPEAT_COUNT) {
-            // NOTE: sdp/hdp/wdp without AR hit the FAST BYPASS in DimenCache.getOrPut()
-            // (CalcType.SCALED, bit 63 == 0 → bypasses cache entirely ~2 ns raw math).
-            // sdpa (with AR) uses the real cache lookup path (~5–35 ns).
-            DimenSdp.sdp(context, 100)   // bypass (~2 ns)
-            DimenSdp.hdp(context, 50)    // bypass (~2 ns)
-            DimenSdp.wdp(context, 30)    // bypass (~2 ns)
-            DimenSdp.sdpa(context, 40)   // cache  (~35 ns on warm cache)
+            // NOTE: cheap calc types without AR may bypass shard storage in DimenCache.getOrPut;
+            // +AR path typically pays cache / heavier work (see library KDoc).
+            ops.sdp(context, 100)
+            ops.hdp(context, 50)
+            ops.wdp(context, 30)
+            ops.sdpa(context, 40)
         }
     }
 
     val totalOps = REPEAT_COUNT * CALLS_PER_BLOCK
     val avg = totalNs / totalOps
     
-    val throughputStr = "sdp×3 bypass + sdpa×1 cached ($totalOps total)"
+    val throughputStr = "${mode.displayLabel}: sw+h+w (+AR) × $REPEAT_COUNT iters ($totalOps calls)"
     
     // EN Logcat export exactly as requested
     // PT Exportação do Logcat exatamente como solicitado
@@ -76,6 +78,7 @@ suspend fun runCalculationBenchmark(
     CalculationBenchmarkResult(
         avgNsPerRes = avg,
         totalOps    = totalOps,
-        throughput  = throughputStr
+        throughput  = throughputStr,
+        mode        = mode,
     )
 }

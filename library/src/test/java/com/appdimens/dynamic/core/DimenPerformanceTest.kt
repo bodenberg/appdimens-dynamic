@@ -9,8 +9,12 @@ import com.appdimens.dynamic.common.Inverter
 /**
  * JVM-only micro-benchmarks for [DimenCache]. Labels printed to stdout are for human inspection;
  * **do not** interpret `*_no_ar` rows as “cache RAM hits” — [DimenCache.getOrPut] bypasses shard
- * storage for cheap [CalcType.SCALED] keys without aspect ratio (see KDoc on [DimenCache.getOrPut]).
- * Use AR keys (`batchKeysAr`) or non-bypass types to measure actual storage lookup cost.
+ * storage for cheap [CalcType.SCALED] / [CalcType.PERCENT] / [CalcType.DENSITY] keys without
+ * aspect ratio (see KDoc on [DimenCache.getOrPut]). Use AR keys (`batchKeysAr`) or non-bypass
+ * types to measure actual storage lookup cost.
+ *
+ * [benchmarkCacheLookupPerCalcType] repeats the single-key hot loop for every [CalcType] so each
+ * strategy is exercised individually (same structure as the scaled-focused rows in [benchmarkAll]).
  */
 class DimenPerformanceTest {
 
@@ -24,6 +28,22 @@ class DimenPerformanceTest {
     }
     private val batchKeysAr = LongArray(batchSize) { 
         DimenCache.buildKey(10 + it, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.PX)
+    }
+
+    private fun batchKeysForCalcType(calcType: DimenCache.CalcType): Pair<LongArray, LongArray> {
+        val noAr = LongArray(batchSize) {
+            DimenCache.buildKey(
+                10 + it, false, false, calcType,
+                DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.PX
+            )
+        }
+        val ar = LongArray(batchSize) {
+            DimenCache.buildKey(
+                10 + it, false, false, calcType,
+                DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.PX
+            )
+        }
+        return noAr to ar
     }
     
     private val batchValues = FloatArray(batchSize) { (10 + it) * 1.5f }
@@ -241,5 +261,55 @@ class DimenPerformanceTest {
         println("raw_persistence_load: ${timeD}")
         println("checksum_validation: $checksum") 
         println("--- PERFORMANCE_REPORT_END ---")
+    }
+
+    /**
+     * EN One single-key loop per [DimenCache.CalcType] (no-AR vs AR), after isolated prime/clear.
+     * PT Um loop de chave única por [DimenCache.CalcType] (sem AR vs AR), após preparo isolado.
+     */
+    @Test
+    fun benchmarkCacheLookupPerCalcType() {
+        DimenCache.isEnabled = true
+        DimenCache.isInitialized.set(true)
+        DimenCache.isInitializedFast = true
+        checksum = 0f
+
+        println("--- PERFORMANCE_BY_CALC_TYPE_START ---")
+        for (calcType in DimenCache.CalcType.entries) {
+            DimenCache.clearAll()
+            Thread.sleep(50)
+
+            val (batchKeysNoAr, batchKeysAr) = batchKeysForCalcType(calcType)
+            for (i in 0 until batchSize) {
+                DimenCache.getOrPut(batchKeysNoAr[i]) { batchValues[i] }
+                DimenCache.getOrPut(batchKeysAr[i]) { batchValues[i] }
+            }
+
+            val timeNoAr = runWithMin(trials = 3, warmup = 50_000) { count ->
+                measureNanoTime {
+                    var localSum = 0f
+                    for (i in 0 until count) {
+                        localSum += DimenCache.getOrPut(batchKeysNoAr[i % batchSize]) { 0f }
+                    }
+                    checksum += localSum
+                }
+            }
+
+            val timeAr = runWithMin(trials = 3, warmup = 50_000) { count ->
+                measureNanoTime {
+                    var localSum = 0f
+                    for (i in 0 until count) {
+                        localSum += DimenCache.getOrPut(batchKeysAr[i % batchSize]) { 0f }
+                    }
+                    checksum += localSum
+                }
+            }
+
+            println("calc_type_${calcType.name}_single_no_ar_ns: ${timeNoAr / iterations}")
+            println("calc_type_${calcType.name}_single_ar_ns: ${timeAr / iterations}")
+        }
+
+        println("checksum_validation: $checksum")
+        println("--- PERFORMANCE_BY_CALC_TYPE_END ---")
     }
 }

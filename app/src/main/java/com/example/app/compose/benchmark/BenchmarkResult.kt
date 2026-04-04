@@ -35,7 +35,8 @@ data class MicroBenchmarkResult(
     val hdpBypassAvgNs: Long,
     val wdpBypassAvgNs: Long,
     val sdpaCacheAvgNs: Long,
-    val accumulatorChecksum: Float
+    val accumulatorChecksum: Float,
+    val mode: BenchmarkCalculationMode = BenchmarkCalculationMode.SCALED,
 )
 
 /**
@@ -53,7 +54,8 @@ data class MicroBenchmarkResult(
 data class CalculationBenchmarkResult(
     val avgNsPerRes: Long,
     val totalOps: Int,
-    val throughput: String
+    val throughput: String,
+    val mode: BenchmarkCalculationMode = BenchmarkCalculationMode.SCALED,
 )
 
 /**

@@ -4,6 +4,7 @@ import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class DimenCacheTest {
@@ -153,25 +154,32 @@ class DimenCacheTest {
     fun testCacheBypass() {
         DimenCache.clearAll()
         DimenCache.isEnabled = true
-        
-        // AUTO (0) and SCALED (11) are bypassed when Aspect Ratio is inactive (key >= 0)
-        val keyAuto = DimenCache.buildKey(10, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
-        DimenCache.getOrPut(keyAuto) { 10f }
-        assertEquals("AUTO should bypass cache when AR is false", 0, DimenCache.stats().populated)
 
-        val keyScaled = DimenCache.buildKey(10, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
-        DimenCache.getOrPut(keyScaled) { 110f }
-        assertEquals("SCALED should bypass cache when AR is false", 0, DimenCache.stats().populated)
+        // PERCENT, SCALED, DENSITY bypass shard storage when AR is off (see DimenCache.getOrPut KDoc).
+        val keyPercent = DimenCache.buildKey(10, false, false, DimenCache.CalcType.PERCENT, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        assertEquals(7f, DimenCache.getOrPut(keyPercent) { 7f }, 0f)
+        assertNull("PERCENT no-AR bypass: nothing stored", DimenCache.peek(keyPercent))
 
-        // DIAGONAL (1) should still hit cache
-        val keyDiag = DimenCache.buildKey(10, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
-        DimenCache.getOrPut(keyDiag) { 20f }
-        assertEquals("DIAGONAL should hit cache", 1, DimenCache.stats().populated)
+        val keyScaled = DimenCache.buildKey(11, false, false, DimenCache.CalcType.SCALED, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        assertEquals(110f, DimenCache.getOrPut(keyScaled) { 110f }, 0f)
+        assertNull("SCALED no-AR bypass: nothing stored", DimenCache.peek(keyScaled))
 
-        // AUTO with AR (key < 0) should hit cache
-        val keyAutoAr = DimenCache.buildKey(10, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP)
-        DimenCache.getOrPut(keyAutoAr) { 15f }
-        assertEquals("AUTO with AR should hit cache", 2, DimenCache.stats().populated)
+        val keyDensity = DimenCache.buildKey(12, false, false, DimenCache.CalcType.DENSITY, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        assertEquals(14f, DimenCache.getOrPut(keyDensity) { 14f }, 0f)
+        assertNull("DENSITY no-AR bypass: nothing stored", DimenCache.peek(keyDensity))
+
+        // AUTO is not bypassed; value must be readable via peek at its slot.
+        val keyAuto = DimenCache.buildKey(13, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        assertEquals(10f, DimenCache.getOrPut(keyAuto) { 10f }, 0f)
+        assertEquals(10f, DimenCache.peek(keyAuto) ?: -1f, 0f)
+
+        val keyDiag = DimenCache.buildKey(14, false, false, DimenCache.CalcType.DIAGONAL, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        assertEquals(20f, DimenCache.getOrPut(keyDiag) { 20f }, 0f)
+        assertEquals(20f, DimenCache.peek(keyDiag) ?: -1f, 0f)
+
+        val keyAutoAr = DimenCache.buildKey(15, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP)
+        assertEquals(15f, DimenCache.getOrPut(keyAutoAr) { 15f }, 0f)
+        assertEquals(15f, DimenCache.peek(keyAutoAr) ?: -1f, 0f)
     }
 
     @Test
