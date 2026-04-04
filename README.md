@@ -1,7 +1,13 @@
 # AppDimens Dynamic (SDP, HDP, WDP)
 
 <p align="center">
-  <a href="./DOCUMENTATION/README.md"><img src="https://img.shields.io/badge/Full_documentation-4285F4?style=for-the-badge" alt="Full documentation"></a>
+  <a href="./DOCUMENTATION/README.md" title="Strategies, formulas, and when to use each scaling mode">
+    <img src="https://img.shields.io/badge/Docs-Full%20documentation-1d4ed8?style=for-the-badge&logo=gitbook&logoColor=white&labelColor=1e3a8a" alt="Full documentation — guides and strategies">
+  </a>
+  &nbsp;&nbsp;
+  <a href="./DOCUMENTATION/index.md" title="Generated KDoc — packages, types, and members">
+    <img src="https://img.shields.io/badge/KDoc-API%20reference-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white&labelColor=4c1d95" alt="KDoc API reference">
+  </a>
 </p>
 
 ---
