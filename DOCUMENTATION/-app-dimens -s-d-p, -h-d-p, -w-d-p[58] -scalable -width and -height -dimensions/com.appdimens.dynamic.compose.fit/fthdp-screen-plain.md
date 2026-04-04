@@ -1,0 +1,10 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../index.md)/[com.appdimens.dynamic.compose.fit](index.md)/[fthdpScreenPlain](fthdp-screen-plain.md)
+
+# fthdpScreenPlain
+
+[jvm]
+fun <Error class: unknown class>.[fthdpScreenPlain](fthdp-screen-plain.md)(screenValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), uiModeType: [UiModeType](../com.appdimens.dynamic.common/-ui-mode-type/index.md), qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): <Error class: unknown class>
+
+EN Extension for Dp with dynamic scaling based on **Screen Height (hDP)**. Returns the original raw Dp value if the condition is not met. When the device matches [uiModeType](fthdp-screen-plain.md) AND the screen metric for [qualifierType](fthdp-screen-plain.md) is >= [qualifierValue](fthdp-screen-plain.md), it uses [screenValue](fthdp-screen-plain.md) instead.
+
+PT Extensão para Dp com dimensionamento dinâmico baseado na **Altura da Tela (hDP)**. Retorna o valor original de Dp bruto se a condição não for atendida. Quando o dispositivo corresponde ao [uiModeType](fthdp-screen-plain.md) E a métrica de tela para [qualifierType](fthdp-screen-plain.md) é >= [qualifierValue](fthdp-screen-plain.md), usa [screenValue](fthdp-screen-plain.md) no lugar.

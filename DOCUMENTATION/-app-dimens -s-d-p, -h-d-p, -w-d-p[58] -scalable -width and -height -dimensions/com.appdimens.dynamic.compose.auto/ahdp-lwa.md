@@ -1,0 +1,8 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../index.md)/[com.appdimens.dynamic.compose.auto](index.md)/[ahdpLwa](ahdp-lwa.md)
+
+# ahdpLwa
+
+[jvm]
+val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[ahdpLwa](ahdp-lwa.md): <Error class: unknown class>
+
+a variant explicitly with applyAspectRatio

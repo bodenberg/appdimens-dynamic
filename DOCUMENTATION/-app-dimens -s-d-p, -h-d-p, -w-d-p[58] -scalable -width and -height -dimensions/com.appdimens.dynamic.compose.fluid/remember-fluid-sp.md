@@ -1,0 +1,8 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../index.md)/[com.appdimens.dynamic.compose.fluid](index.md)/[rememberFluidSp](remember-fluid-sp.md)
+
+# rememberFluidSp
+
+[jvm]
+internal fun [rememberFluidSp](remember-fluid-sp.md)(cacheKey: [Long](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-long/index.html), spStamp: [Long](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-long/index.html), androidContext: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), density: <Error class: unknown class>, baseValue: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), configuration: [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html), qualifier: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), inverter: [Inverter](../com.appdimens.dynamic.common/-inverter/index.md), fontScale: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html), applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html), customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)?): <Error class: unknown class>
+
+EN remembers the cached TextUnit for [toDynamicFluidSp](to-dynamic-fluid-sp.md) using [cacheKey](remember-fluid-sp.md) and [spStamp](remember-fluid-sp.md). PT remember do TextUnit em cache para [toDynamicFluidSp](to-dynamic-fluid-sp.md) usando [cacheKey](remember-fluid-sp.md) e [spStamp](remember-fluid-sp.md).

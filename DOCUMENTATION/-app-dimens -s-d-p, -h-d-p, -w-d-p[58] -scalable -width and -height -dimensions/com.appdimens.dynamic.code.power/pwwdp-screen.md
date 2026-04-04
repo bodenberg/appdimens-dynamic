@@ -1,0 +1,10 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../index.md)/[com.appdimens.dynamic.code.power](index.md)/[pwwdpScreen](pwwdp-screen.md)
+
+# pwwdpScreen
+
+[jvm]
+fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[pwwdpScreen](pwwdp-screen.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), screenValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), uiModeType: [UiModeType](../com.appdimens.dynamic.common/-ui-mode-type/index.md), qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+
+EN Extension for Int with dynamic scaling based on **Screen Width (wDP)**. Uses the base value by default, but when the device matches [uiModeType](pwwdp-screen.md) AND the screen metric for [qualifierType](pwwdp-screen.md) is >= [qualifierValue](pwwdp-screen.md), it uses [screenValue](pwwdp-screen.md) instead.
+
+PT Extensão para Int com dimensionamento dinâmico baseado na **Largura da Tela (wDP)**. Usa o valor base por padrão, mas quando o dispositivo corresponde ao [uiModeType](pwwdp-screen.md) E a métrica de tela para [qualifierType](pwwdp-screen.md) é >= [qualifierValue](pwwdp-screen.md), usa [screenValue](pwwdp-screen.md) no lugar.

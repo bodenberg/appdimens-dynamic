@@ -1,0 +1,10 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../index.md)/[com.appdimens.dynamic.code.logarithmic](index.md)/[logwdpScreen](logwdp-screen.md)
+
+# logwdpScreen
+
+[jvm]
+fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[logwdpScreen](logwdp-screen.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), screenValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), uiModeType: [UiModeType](../com.appdimens.dynamic.common/-ui-mode-type/index.md), qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+
+EN Extension for Int with dynamic scaling based on **Screen Width (wDP)**. Uses the base value by default, but when the device matches [uiModeType](logwdp-screen.md) AND the screen metric for [qualifierType](logwdp-screen.md) is >= [qualifierValue](logwdp-screen.md), it uses [screenValue](logwdp-screen.md) instead.
+
+PT Extensão para Int com dimensionamento dinâmico baseado na **Largura da Tela (wDP)**. Usa o valor base por padrão, mas quando o dispositivo corresponde ao [uiModeType](logwdp-screen.md) E a métrica de tela para [qualifierType](logwdp-screen.md) é >= [qualifierValue](logwdp-screen.md), usa [screenValue](logwdp-screen.md) no lugar.

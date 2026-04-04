@@ -1,0 +1,8 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../index.md)/[com.appdimens.dynamic.compose.diagonal](index.md)/[wemPh](wem-ph.md)
+
+# wemPh
+
+[jvm]
+val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[wemPh](wem-ph.md): <Error class: unknown class>
+
+EN Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but without respecting the system font scale, and in portrait orientation it acts as **Screen Height (hDP)**. Usage example: `100.wemPh`.

@@ -1,11 +1,15 @@
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
+import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.net.URI
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.vanniktech.maven.publish)
-    // alias(libs.plugins.dokka.jetbrains)
+    alias(libs.plugins.dokka.jetbrains)
 }
 
 val isJitPack = System.getenv("JITPACK") == "true"
@@ -56,11 +60,17 @@ mavenPublishing {
     }
 }
 
-/* dokka {
+dokka {
     dokkaPublications.html {
         moduleName.set("AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions")
-        outputDirectory.set(layout.projectDirectory.dir("${rootDir}\\DOCUMENTATION"))
+        outputDirectory.set(layout.projectDirectory.dir("${rootDir}\\DOCUMENTATION2"))
         suppressInheritedMembers.set(true)
+        // AGP + Android Dokka plugin register overlapping "jvm" and "release" source sets
+        // (same src/main paths). Document only the explicit "main" source set.
+        // https://github.com/Kotlin/dokka/issues/3701
+        dokkaSourceSets.configureEach {
+            suppress.set(name != "main")
+        }
         dokkaSourceSets.register("main") {
             sourceRoots.from(file("src/main/java"), file("src/main/kotlin"))
             documentedVisibilities.set(
@@ -127,7 +137,7 @@ tasks.withType<DokkaGenerateTask>().configureEach {
     doFirst {
         System.setProperty("java.awt.headless", "true")
     }
-} */
+}
 
 android {
     namespace = "com.appdimens.dynamic"
@@ -194,7 +204,7 @@ dependencies {
     implementation(libs.androidx.compose.material.core)
     implementation(libs.androidx.datastore.preferences)
 
-    //dokkaPlugin(libs.android.documentation.plugin)
+    dokkaPlugin(libs.android.documentation.plugin)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)

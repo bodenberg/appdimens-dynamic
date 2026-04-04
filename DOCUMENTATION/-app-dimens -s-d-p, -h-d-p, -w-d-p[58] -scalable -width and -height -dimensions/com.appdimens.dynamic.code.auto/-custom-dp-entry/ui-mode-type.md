@@ -1,0 +1,6 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../../index.md)/[com.appdimens.dynamic.code.auto](../index.md)/[CustomDpEntry](index.md)/[uiModeType](ui-mode-type.md)
+
+# uiModeType
+
+[jvm]
+val [uiModeType](ui-mode-type.md): [UiModeType](../../com.appdimens.dynamic.common/-ui-mode-type/index.md)? = null

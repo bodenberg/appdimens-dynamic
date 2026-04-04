@@ -6,6 +6,8 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 
 **Full Compose API (every `Number` property, facilitators, builders, prefix map):** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md)
 
+**KDoc API reference** (generated from library `/** … */` KDoc — packages, types, members): [index.md](index.md)
+
 ## Summary
 
 | Strategy | Document |
@@ -27,21 +29,22 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 
 ### Quick links
 
-0. [Compose API reference — conventions & scaled catalog](COMPOSE-API-CONVENTIONS.md)  
-1. [Scaled](scaled.md) — recommended starting point  
-2. [Percent](percent.md)  
-3. [Power](power.md)  
-4. [Fluid](fluid.md)  
-5. [Auto](auto.md)  
-6. [Diagonal](diagonal.md)  
-7. [Fill](fill.md)  
-8. [Fit](fit.md)  
-9. [Interpolated](interpolated.md)  
-10. [Logarithmic](logarithmic.md)  
-11. [Perimeter](perimeter.md)  
-12. [Density](density.md)  
-13. [Resize](resize.md)  
-14. [Physical units](physical-units.md)  
+0. [KDoc API — root index](index.md)  
+1. [Compose API reference — conventions & scaled catalog](COMPOSE-API-CONVENTIONS.md)  
+2. [Scaled](scaled.md) — recommended starting point  
+3. [Percent](percent.md)  
+4. [Power](power.md)  
+5. [Fluid](fluid.md)  
+6. [Auto](auto.md)  
+7. [Diagonal](diagonal.md)  
+8. [Fill](fill.md)  
+9. [Fit](fit.md)  
+10. [Interpolated](interpolated.md)  
+11. [Logarithmic](logarithmic.md)  
+12. [Perimeter](perimeter.md)  
+13. [Density](density.md)  
+14. [Resize](resize.md)  
+15. [Physical units](physical-units.md)  
 
 ## Suggested decision flow
 
