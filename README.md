@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <a href="./GUIDE-FOR-BEGINNERS" title="Step-by-step guide for beginners">
+  <a href="./GUIDE-FOR-BEGINNERS.md" title="Step-by-step guide for beginners">
     <img src="https://img.shields.io/badge/Beginner%20guide-Step%20by%20step-f59e0b?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=b45309" alt="Beginner guide">
   </a>
   &nbsp;&nbsp;
