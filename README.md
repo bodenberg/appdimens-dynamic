@@ -74,7 +74,7 @@ One dependency: you write values like `16.sdp` and the library scales them from 
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.1.0")
+    implementation("io.github.bodenberg:appdimens-dynamic:3.1.2")
 }
 ```
 
