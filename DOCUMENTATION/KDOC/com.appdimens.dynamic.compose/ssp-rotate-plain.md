@@ -8,3 +8,5 @@ fun <Error class: unknown class>.[sspRotatePlain](ssp-rotate-plain.md)(rotationV
 EN Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)**. Returns the original raw TextUnit value if the condition is not met. When the device is in the specified [orientation](ssp-rotate-plain.md), it uses [rotationValue](ssp-rotate-plain.md) scaled with the given [finalQualifierResolver](ssp-rotate-plain.md).
 
 PT Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Smallest Width (swDP)**. Retorna o valor original de TextUnit bruto se a condição não for atendida. Quando o dispositivo está na [orientation](ssp-rotate-plain.md) especificada, usa [rotationValue](ssp-rotate-plain.md) escalado com o [finalQualifierResolver](ssp-rotate-plain.md) dado.
+
+**Overload (same name):** `sspRotatePlain(rotation: TextUnit, orientation = …)` — same semantics as `sdpRotatePlain(rotation: Dp)` but for Sp; no second scaling on the plain path. Mirror for `hsp` / `wsp`. See [COMPOSE-API-CONVENTIONS.md](../../COMPOSE-API-CONVENTIONS.md).

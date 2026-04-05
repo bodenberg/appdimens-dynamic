@@ -127,8 +127,10 @@ All functions are **`@Composable`**. They combine a **base** value with **condit
 | `sdpRotatePx` | `Int` | `Float` | Same, px | `80.sdpRotatePx(50)` |
 | `sdpRotate` | `Dp` | `Dp` | **Always** scales the active branch: uses scaled receiver in default orientation, scaled `rotationValue` when `orientation` matches | `30.dp.sdpRotate(50, orientation = Orientation.LANDSCAPE)` |
 | `sdpRotatePx` | `Dp` | `Float` | px variant | `30.dp.sdpRotatePx(50)` |
-| `sdpRotatePlain` | `Dp` | `Dp` | **Plain** fallback: portrait uses raw `Dp` of receiver; landscape scales `rotationValue` | `16.sdp.sdpRotatePlain(50)` |
-| `sdpRotatePlainPx` | `Dp` | `Float` | px | `16.sdp.sdpRotatePlainPx(50)` |
+| `sdpRotatePlain` | `Dp` | `Dp` | **Plain (`Number` alternate):** inactive branch = receiver; active branch scales `rotationValue` (cache + strategy) | `16.sdp.sdpRotatePlain(50)` |
+| `sdpRotatePlain` | `Dp` | `Dp` | **Plain (`Dp` alternate):** only orientation branch; **no** extra scaling — receiver and `rotation` must already be strategy values | `30.sdp.sdpRotatePlain(20.sdp)` |
+| `sdpRotatePlainPx` | `Dp` | `Float` | px variant for **`Number`** alternate | `16.sdp.sdpRotatePlainPx(50)` |
+| `sdpRotatePlainPx` | `Dp` | `Float` | px variant for **`Dp` alternate** | `30.sdp.sdpRotatePlainPx(20.sdp)` |
 
 Repeat the same **name pattern** for **`hdpRotate*`** and **`wdpRotate*`** (defaults: `finalQualifierResolver` = HEIGHT or WIDTH).
 
@@ -138,7 +140,7 @@ Repeat the same **name pattern** for **`hdpRotate*`** and **`wdpRotate*`** (defa
 |----------|----------|---------|
 | `sdpMode` / `sdpModePx` | `Int` | `30.sdpMode(200, UiModeType.TELEVISION)` |
 | `sdpMode` / `sdpModePx` | `Dp` | `30.dp.sdpMode(200, UiModeType.TELEVISION)` |
-| `sdpModePlain` / `sdpModePlainPx` | `Dp` | Plain branch when not in target mode |
+| `sdpModePlain` / `sdpModePlainPx` | `Dp` | Two overloads: alternate **`Number`** (scaled when branch matches) or **`Dp`** (logic only, no scaling) |
 
 Same for **`hdpMode*`**, **`wdpMode*`**.
 
@@ -147,7 +149,7 @@ Same for **`hdpMode*`**, **`wdpMode*`**.
 | Function | Receiver | Example |
 |----------|----------|---------|
 | `sdpQualifier` / `sdpQualifierPx` | `Number` | `60.sdpQualifier(120, DpQualifier.SMALL_WIDTH, 600)` |
-| `sdpQualifier` / `sdpQualifierPx` / `sdpQualifierPlain` / `sdpQualifierPlainPx` | `Dp` | `60.sdp.sdpQualifierPlain(120, DpQualifier.SMALL_WIDTH, 600)` |
+| `sdpQualifier` / `sdpQualifierPx` / `sdpQualifierPlain` / `sdpQualifierPlainPx` | `Dp` | `qualifiedValue: Number` **or** `qualified: Dp` (`qualifierValue` stays the config threshold) |
 
 Same for **`hdpQualifier*`**, **`wdpQualifier*`**.
 
@@ -156,9 +158,11 @@ Same for **`hdpQualifier*`**, **`wdpQualifier*`**.
 | Function | Receiver | Example |
 |----------|----------|---------|
 | `sdpScreen` / `sdpScreenPx` | `Number` | `70.sdpScreen(150, UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600)` |
-| `sdpScreen` / `sdpScreenPx` / `sdpScreenPlain` / `sdpScreenPlainPx` | `Dp` | `70.sdp.sdpScreenPlain(150, UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600)` |
+| `sdpScreen` / `sdpScreenPx` / `sdpScreenPlain` / `sdpScreenPlainPx` | `Dp` | `screenValue: Number` **or** `screen: Dp` for Plain (+ same `UiModeType` / qualifier threshold) |
 
 Same for **`hdpScreen*`**, **`wdpScreen*`**.
+
+**Nested extensions vs `.screen` builder:** Chained facilitators on **`Dp` / `TextUnit`** (e.g. `a.sdpRotatePlain(…).sdpModePlain(…)`) follow **expression nesting** (outside → inside). **`DimenScaled`** / **`scaledDp()`** `.screen(…)` entries use **priority inside the API**, not the same rule as facilitator nesting. Prefer **`Dp` / `TextUnit` Plain** alternates when chaining many facilitators so values are not scaled twice.
 
 **Recommendation:** wrap the tree with `AppDimensProvider` when using mode/fold-related `UiModeType` heavily (see [library/PERFORMANCE.md](../library/PERFORMANCE.md)).
 
@@ -190,7 +194,7 @@ Optional: `fontScale` (default `true`), `ignoreMultiWindows`, `applyAspectRatio`
 
 For **each** axis (`ssp`, `hsp`, `wsp`) the module provides composable extensions on **`TextUnit`**:
 
-- `sspRotate`, `sspRotatePx`, `sspRotatePlain`, `sspRotatePlainPx`
+- `sspRotate`, `sspRotatePx`, `sspRotatePlain`, `sspRotatePlainPx` — `*RotatePlain` / `*RotatePlainPx` mirror **Dp**: alternate **`Number`** (scaled when active) or **`TextUnit`** (logic only).
 - `sspMode`, `sspModePx`, `sspModePlain`, `sspModePlainPx`
 - `sspQualifier`, `sspQualifierPx`, `sspQualifierPlain`, `sspQualifierPlainPx`
 - `sspScreen`, `sspScreenPx`, `sspScreenPlain`, `sspScreenPlainPx`
@@ -198,7 +202,8 @@ For **each** axis (`ssp`, `hsp`, `wsp`) the module provides composable extension
 **Examples:**
 
 ```kotlin
-Text("A", fontSize = 16.ssp.sspRotatePlain(24))
+Text("A", fontSize = 16.ssp.sspRotatePlain(24))           // Number alternate (scaled when branch active)
+Text("A2", fontSize = 16.ssp.sspRotatePlain(12.ssp))       // TextUnit alternate (no second scaling)
 Text("B", fontSize = 16.sspMode(40, UiModeType.TELEVISION))
 Text("C", fontSize = 16.ssp.sspQualifier(24, DpQualifier.SMALL_WIDTH, 600))
 Text("D", fontSize = 16.ssp.sspScreen(32, UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600))

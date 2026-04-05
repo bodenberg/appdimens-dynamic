@@ -7,6 +7,7 @@ package com.example.app.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
@@ -18,7 +19,11 @@ import com.appdimens.dynamic.compose.auto.asdpMode
 import com.appdimens.dynamic.compose.auto.asdpPh
 import com.appdimens.dynamic.compose.auto.asdpQualifier
 import com.appdimens.dynamic.compose.auto.asdpRotate
+import com.appdimens.dynamic.compose.auto.asdpRotatePlain
 import com.appdimens.dynamic.compose.auto.asdpScreen
+import com.appdimens.dynamic.compose.auto.asdpModePlain
+import com.appdimens.dynamic.compose.auto.asdpQualifierPlain
+import com.appdimens.dynamic.compose.auto.asdpScreenPlain
 import com.appdimens.dynamic.compose.auto.ahdp
 import com.appdimens.dynamic.compose.auto.ahdpLw
 import com.appdimens.dynamic.compose.auto.autoDp
@@ -35,7 +40,11 @@ import com.appdimens.dynamic.compose.density.dsdpMode
 import com.appdimens.dynamic.compose.density.dsdpPh
 import com.appdimens.dynamic.compose.density.dsdpQualifier
 import com.appdimens.dynamic.compose.density.dsdpRotate
+import com.appdimens.dynamic.compose.density.dsdpRotatePlain
 import com.appdimens.dynamic.compose.density.dsdpScreen
+import com.appdimens.dynamic.compose.density.dsdpModePlain
+import com.appdimens.dynamic.compose.density.dsdpQualifierPlain
+import com.appdimens.dynamic.compose.density.dsdpScreenPlain
 import com.appdimens.dynamic.compose.density.dwdp
 import com.appdimens.dynamic.compose.density.dwdpLh
 import com.appdimens.dynamic.compose.diagonal.diagonalDp
@@ -49,7 +58,11 @@ import com.appdimens.dynamic.compose.diagonal.dgsdpMode
 import com.appdimens.dynamic.compose.diagonal.dgsdpPh
 import com.appdimens.dynamic.compose.diagonal.dgsdpQualifier
 import com.appdimens.dynamic.compose.diagonal.dgsdpRotate
+import com.appdimens.dynamic.compose.diagonal.dgsdpRotatePlain
 import com.appdimens.dynamic.compose.diagonal.dgsdpScreen
+import com.appdimens.dynamic.compose.diagonal.dgsdpModePlain
+import com.appdimens.dynamic.compose.diagonal.dgsdpQualifierPlain
+import com.appdimens.dynamic.compose.diagonal.dgsdpScreenPlain
 import com.appdimens.dynamic.compose.diagonal.dgwdp
 import com.appdimens.dynamic.compose.diagonal.dgwdpLh
 import com.appdimens.dynamic.compose.fill.fillDp
@@ -63,7 +76,11 @@ import com.appdimens.dynamic.compose.fill.flsdpMode
 import com.appdimens.dynamic.compose.fill.flsdpPh
 import com.appdimens.dynamic.compose.fill.flsdpQualifier
 import com.appdimens.dynamic.compose.fill.flsdpRotate
+import com.appdimens.dynamic.compose.fill.flsdpRotatePlain
 import com.appdimens.dynamic.compose.fill.flsdpScreen
+import com.appdimens.dynamic.compose.fill.flsdpModePlain
+import com.appdimens.dynamic.compose.fill.flsdpQualifierPlain
+import com.appdimens.dynamic.compose.fill.flsdpScreenPlain
 import com.appdimens.dynamic.compose.fill.flwdp
 import com.appdimens.dynamic.compose.fill.flwdpLh
 import com.appdimens.dynamic.compose.fit.fitDp
@@ -77,7 +94,11 @@ import com.appdimens.dynamic.compose.fit.ftsdpMode
 import com.appdimens.dynamic.compose.fit.ftsdpPh
 import com.appdimens.dynamic.compose.fit.ftsdpQualifier
 import com.appdimens.dynamic.compose.fit.ftsdpRotate
+import com.appdimens.dynamic.compose.fit.ftsdpRotatePlain
 import com.appdimens.dynamic.compose.fit.ftsdpScreen
+import com.appdimens.dynamic.compose.fit.ftsdpModePlain
+import com.appdimens.dynamic.compose.fit.ftsdpQualifierPlain
+import com.appdimens.dynamic.compose.fit.ftsdpScreenPlain
 import com.appdimens.dynamic.compose.fit.ftwdp
 import com.appdimens.dynamic.compose.fit.ftwdpLh
 import com.appdimens.dynamic.compose.fluid.fluidDp
@@ -91,7 +112,11 @@ import com.appdimens.dynamic.compose.fluid.fsdpMode
 import com.appdimens.dynamic.compose.fluid.fsdpPh
 import com.appdimens.dynamic.compose.fluid.fsdpQualifier
 import com.appdimens.dynamic.compose.fluid.fsdpRotate
+import com.appdimens.dynamic.compose.fluid.fsdpRotatePlain
 import com.appdimens.dynamic.compose.fluid.fsdpScreen
+import com.appdimens.dynamic.compose.fluid.fsdpModePlain
+import com.appdimens.dynamic.compose.fluid.fsdpQualifierPlain
+import com.appdimens.dynamic.compose.fluid.fsdpScreenPlain
 import com.appdimens.dynamic.compose.fluid.fwdp
 import com.appdimens.dynamic.compose.fluid.fwdpLh
 import com.appdimens.dynamic.compose.interpolated.interpolatedDp
@@ -105,7 +130,11 @@ import com.appdimens.dynamic.compose.interpolated.isdpMode
 import com.appdimens.dynamic.compose.interpolated.isdpPh
 import com.appdimens.dynamic.compose.interpolated.isdpQualifier
 import com.appdimens.dynamic.compose.interpolated.isdpRotate
+import com.appdimens.dynamic.compose.interpolated.isdpRotatePlain
 import com.appdimens.dynamic.compose.interpolated.isdpScreen
+import com.appdimens.dynamic.compose.interpolated.isdpModePlain
+import com.appdimens.dynamic.compose.interpolated.isdpQualifierPlain
+import com.appdimens.dynamic.compose.interpolated.isdpScreenPlain
 import com.appdimens.dynamic.compose.interpolated.iwdp
 import com.appdimens.dynamic.compose.interpolated.iwdpLh
 import com.appdimens.dynamic.compose.logarithmic.logarithmicDp
@@ -119,7 +148,11 @@ import com.appdimens.dynamic.compose.logarithmic.logsdpMode
 import com.appdimens.dynamic.compose.logarithmic.logsdpPh
 import com.appdimens.dynamic.compose.logarithmic.logsdpQualifier
 import com.appdimens.dynamic.compose.logarithmic.logsdpRotate
+import com.appdimens.dynamic.compose.logarithmic.logsdpRotatePlain
 import com.appdimens.dynamic.compose.logarithmic.logsdpScreen
+import com.appdimens.dynamic.compose.logarithmic.logsdpModePlain
+import com.appdimens.dynamic.compose.logarithmic.logsdpQualifierPlain
+import com.appdimens.dynamic.compose.logarithmic.logsdpScreenPlain
 import com.appdimens.dynamic.compose.logarithmic.logwdp
 import com.appdimens.dynamic.compose.logarithmic.logwdpLh
 import com.appdimens.dynamic.compose.percent.percentDp
@@ -133,7 +166,11 @@ import com.appdimens.dynamic.compose.percent.psdpMode
 import com.appdimens.dynamic.compose.percent.psdpPh
 import com.appdimens.dynamic.compose.percent.psdpQualifier
 import com.appdimens.dynamic.compose.percent.psdpRotate
+import com.appdimens.dynamic.compose.percent.psdpRotatePlain
 import com.appdimens.dynamic.compose.percent.psdpScreen
+import com.appdimens.dynamic.compose.percent.psdpModePlain
+import com.appdimens.dynamic.compose.percent.psdpQualifierPlain
+import com.appdimens.dynamic.compose.percent.psdpScreenPlain
 import com.appdimens.dynamic.compose.percent.pwdp
 import com.appdimens.dynamic.compose.percent.pwdpLh
 import com.appdimens.dynamic.compose.perimeter.perimeterDp
@@ -147,7 +184,11 @@ import com.appdimens.dynamic.compose.perimeter.prsdpMode
 import com.appdimens.dynamic.compose.perimeter.prsdpPh
 import com.appdimens.dynamic.compose.perimeter.prsdpQualifier
 import com.appdimens.dynamic.compose.perimeter.prsdpRotate
+import com.appdimens.dynamic.compose.perimeter.prsdpRotatePlain
 import com.appdimens.dynamic.compose.perimeter.prsdpScreen
+import com.appdimens.dynamic.compose.perimeter.prsdpModePlain
+import com.appdimens.dynamic.compose.perimeter.prsdpQualifierPlain
+import com.appdimens.dynamic.compose.perimeter.prsdpScreenPlain
 import com.appdimens.dynamic.compose.perimeter.prwdp
 import com.appdimens.dynamic.compose.perimeter.prwdpLh
 import com.appdimens.dynamic.compose.power.powerDp
@@ -161,10 +202,42 @@ import com.appdimens.dynamic.compose.power.pwsdpMode
 import com.appdimens.dynamic.compose.power.pwsdpPh
 import com.appdimens.dynamic.compose.power.pwsdpQualifier
 import com.appdimens.dynamic.compose.power.pwsdpRotate
+import com.appdimens.dynamic.compose.power.pwsdpRotatePlain
 import com.appdimens.dynamic.compose.power.pwsdpScreen
+import com.appdimens.dynamic.compose.power.pwsdpModePlain
+import com.appdimens.dynamic.compose.power.pwsdpQualifierPlain
+import com.appdimens.dynamic.compose.power.pwsdpScreenPlain
 import com.appdimens.dynamic.compose.power.pwwdp
 import com.appdimens.dynamic.compose.power.pwwdpLh
+import com.appdimens.dynamic.compose.auto.assp
+import com.appdimens.dynamic.compose.auto.sspRotatePlain as stratSspRotatePlainAuto
+import com.appdimens.dynamic.compose.density.dssp
+import com.appdimens.dynamic.compose.density.sspRotatePlain as stratSspRotatePlainDensity
+import com.appdimens.dynamic.compose.diagonal.dgssp
+import com.appdimens.dynamic.compose.diagonal.sspRotatePlain as stratSspRotatePlainDiagonal
+import com.appdimens.dynamic.compose.fill.flssp
+import com.appdimens.dynamic.compose.fill.sspRotatePlain as stratSspRotatePlainFill
+import com.appdimens.dynamic.compose.fit.ftssp
+import com.appdimens.dynamic.compose.fit.sspRotatePlain as stratSspRotatePlainFit
+import com.appdimens.dynamic.compose.fluid.fssp
+import com.appdimens.dynamic.compose.fluid.sspRotatePlain as stratSspRotatePlainFluid
+import com.appdimens.dynamic.compose.interpolated.issp
+import com.appdimens.dynamic.compose.interpolated.sspRotatePlain as stratSspRotatePlainInterpolated
+import com.appdimens.dynamic.compose.logarithmic.logssp
+import com.appdimens.dynamic.compose.logarithmic.sspRotatePlain as stratSspRotatePlainLogarithmic
+import com.appdimens.dynamic.compose.percent.pssp
+import com.appdimens.dynamic.compose.percent.sspRotatePlain as stratSspRotatePlainPercent
+import com.appdimens.dynamic.compose.perimeter.prssp
+import com.appdimens.dynamic.compose.perimeter.sspRotatePlain as stratSspRotatePlainPerimeter
+import com.appdimens.dynamic.compose.power.pwssp
+import com.appdimens.dynamic.compose.power.sspRotatePlain as stratSspRotatePlainPower
+import com.appdimens.dynamic.compose.ssp
+import com.appdimens.dynamic.compose.sspRotatePlain as stratSspRotatePlainScaled
 import com.appdimens.dynamic.compose.sdp
+import com.appdimens.dynamic.compose.sdpRotatePlain
+import com.appdimens.dynamic.compose.sdpModePlain
+import com.appdimens.dynamic.compose.sdpQualifierPlain
+import com.appdimens.dynamic.compose.sdpScreenPlain
 import com.appdimens.dynamic.compose.sdpa
 import com.appdimens.dynamic.compose.hdp
 import com.appdimens.dynamic.compose.hdpLw
@@ -467,6 +540,109 @@ fun Number.demoSdpScreen(
         DemoCalcStrategy.Fit -> this.ftsdpScreen(screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
         DemoCalcStrategy.Fill -> this.flsdpScreen(screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
         DemoCalcStrategy.Density -> this.dsdpScreen(screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    }
+
+@Composable
+fun Dp.demoSdpRotatePlain(rotation: Dp, orientation: Orientation = Orientation.LANDSCAPE): Dp =
+    when (LocalDemoCalcStrategy.current) {
+        DemoCalcStrategy.Scaled -> this.sdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Percent -> this.psdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Power -> this.pwsdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Auto -> this.asdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Logarithmic -> this.logsdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Fluid -> this.fsdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Interpolated -> this.isdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Diagonal -> this.dgsdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Perimeter -> this.prsdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Fit -> this.ftsdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Fill -> this.flsdpRotatePlain(rotation, orientation)
+        DemoCalcStrategy.Density -> this.dsdpRotatePlain(rotation, orientation)
+    }
+
+@Composable
+fun Dp.demoSdpModePlain(mode: Dp, uiModeType: UiModeType): Dp =
+    when (LocalDemoCalcStrategy.current) {
+        DemoCalcStrategy.Scaled -> this.sdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Percent -> this.psdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Power -> this.pwsdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Auto -> this.asdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Logarithmic -> this.logsdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Fluid -> this.fsdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Interpolated -> this.isdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Diagonal -> this.dgsdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Perimeter -> this.prsdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Fit -> this.ftsdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Fill -> this.flsdpModePlain(mode, uiModeType)
+        DemoCalcStrategy.Density -> this.dsdpModePlain(mode, uiModeType)
+    }
+
+@Composable
+fun Dp.demoSdpQualifierPlain(qualified: Dp, qualifierType: DpQualifier, qualifierValue: Number): Dp =
+    when (LocalDemoCalcStrategy.current) {
+        DemoCalcStrategy.Scaled -> this.sdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Percent -> this.psdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Power -> this.pwsdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Auto -> this.asdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Logarithmic -> this.logsdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Fluid -> this.fsdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Interpolated -> this.isdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Diagonal -> this.dgsdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Perimeter -> this.prsdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Fit -> this.ftsdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Fill -> this.flsdpQualifierPlain(qualified, qualifierType, qualifierValue)
+        DemoCalcStrategy.Density -> this.dsdpQualifierPlain(qualified, qualifierType, qualifierValue)
+    }
+
+@Composable
+fun Dp.demoSdpScreenPlain(screen: Dp, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Dp =
+    when (LocalDemoCalcStrategy.current) {
+        DemoCalcStrategy.Scaled -> this.sdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Percent -> this.psdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Power -> this.pwsdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Auto -> this.asdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Logarithmic -> this.logsdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Fluid -> this.fsdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Interpolated -> this.isdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Diagonal -> this.dgsdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Perimeter -> this.prsdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Fit -> this.ftsdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Fill -> this.flsdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+        DemoCalcStrategy.Density -> this.dsdpScreenPlain(screen, uiModeType, qualifierType, qualifierValue)
+    }
+
+@get:Composable
+val Number.demoSsp: TextUnit
+    get() =
+        when (LocalDemoCalcStrategy.current) {
+            DemoCalcStrategy.Scaled -> this.ssp
+            DemoCalcStrategy.Percent -> this.pssp
+            DemoCalcStrategy.Power -> this.pwssp
+            DemoCalcStrategy.Auto -> this.assp
+            DemoCalcStrategy.Logarithmic -> this.logssp
+            DemoCalcStrategy.Fluid -> this.fssp
+            DemoCalcStrategy.Interpolated -> this.issp
+            DemoCalcStrategy.Diagonal -> this.dgssp
+            DemoCalcStrategy.Perimeter -> this.prssp
+            DemoCalcStrategy.Fit -> this.ftssp
+            DemoCalcStrategy.Fill -> this.flssp
+            DemoCalcStrategy.Density -> this.dssp
+        }
+
+@Composable
+fun TextUnit.demoSspRotatePlain(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): TextUnit =
+    when (LocalDemoCalcStrategy.current) {
+        DemoCalcStrategy.Scaled -> this.stratSspRotatePlainScaled(rotation, orientation)
+        DemoCalcStrategy.Percent -> this.stratSspRotatePlainPercent(rotation, orientation)
+        DemoCalcStrategy.Power -> this.stratSspRotatePlainPower(rotation, orientation)
+        DemoCalcStrategy.Auto -> this.stratSspRotatePlainAuto(rotation, orientation)
+        DemoCalcStrategy.Logarithmic -> this.stratSspRotatePlainLogarithmic(rotation, orientation)
+        DemoCalcStrategy.Fluid -> this.stratSspRotatePlainFluid(rotation, orientation)
+        DemoCalcStrategy.Interpolated -> this.stratSspRotatePlainInterpolated(rotation, orientation)
+        DemoCalcStrategy.Diagonal -> this.stratSspRotatePlainDiagonal(rotation, orientation)
+        DemoCalcStrategy.Perimeter -> this.stratSspRotatePlainPerimeter(rotation, orientation)
+        DemoCalcStrategy.Fit -> this.stratSspRotatePlainFit(rotation, orientation)
+        DemoCalcStrategy.Fill -> this.stratSspRotatePlainFill(rotation, orientation)
+        DemoCalcStrategy.Density -> this.stratSspRotatePlainDensity(rotation, orientation)
     }
 
 @Composable

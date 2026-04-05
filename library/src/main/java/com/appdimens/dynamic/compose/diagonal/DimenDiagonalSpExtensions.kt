@@ -281,6 +281,323 @@ fun TextUnit.sspRotatePlainPx(
     }
 }
 
+/**
+ * EN Plain ssp rotation: [rotation] and receiver already scaled; logic only.
+ * PT Rotação ssp Plain: [rotation] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun TextUnit.sspRotatePlain(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): TextUnit {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) rotation else this
+}
+
+/**
+ * EN Pixel variant of [sspRotatePlain] with [rotation] as [TextUnit] (no scaling).
+ * PT Variante em px de [sspRotatePlain] com [rotation] em [TextUnit] (sem escala).
+ */
+@Composable
+fun TextUnit.sspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@sspRotatePlainPx.toPx() }
+}
+
+/**
+ * EN Plain hsp rotation: [rotation] and receiver already scaled; logic only.
+ * PT Rotação hsp Plain: [rotation] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun TextUnit.hspRotatePlain(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): TextUnit {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) rotation else this
+}
+
+/**
+ * EN Pixel variant of [hspRotatePlain] with [rotation] as [TextUnit].
+ * PT Variante em px de [hspRotatePlain] com [rotation] em [TextUnit].
+ */
+@Composable
+fun TextUnit.hspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@hspRotatePlainPx.toPx() }
+}
+
+/**
+ * EN Plain wsp rotation: [rotation] and receiver already scaled; logic only.
+ * PT Rotação wsp Plain: [rotation] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun TextUnit.wspRotatePlain(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): TextUnit {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) rotation else this
+}
+
+/**
+ * EN Pixel variant of [wspRotatePlain] with [rotation] as [TextUnit].
+ * PT Variante em px de [wspRotatePlain] com [rotation] em [TextUnit].
+ */
+@Composable
+fun TextUnit.wspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@wspRotatePlainPx.toPx() }
+}
+
+/**
+ * EN Plain ssp mode: [mode] and receiver already scaled; logic only.
+ * PT Modo ssp Plain: [mode] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun TextUnit.sspModePlain(mode: TextUnit, uiModeType: UiModeType): TextUnit {
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) mode else this
+}
+
+/**
+ * EN Pixel variant of [sspModePlain] with [mode] as [TextUnit].
+ * PT Variante em px de [sspModePlain] com [mode] em [TextUnit].
+ */
+@Composable
+fun TextUnit.sspModePlainPx(mode: TextUnit, uiModeType: UiModeType): Float {
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@sspModePlainPx.toPx() }
+}
+
+/**
+ * EN Plain hsp mode: [mode] and receiver already scaled; logic only.
+ * PT Modo hsp Plain: [mode] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun TextUnit.hspModePlain(mode: TextUnit, uiModeType: UiModeType): TextUnit {
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) mode else this
+}
+
+/**
+ * EN Pixel variant of [hspModePlain] with [mode] as [TextUnit].
+ * PT Variante em px de [hspModePlain] com [mode] em [TextUnit].
+ */
+@Composable
+fun TextUnit.hspModePlainPx(mode: TextUnit, uiModeType: UiModeType): Float {
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@hspModePlainPx.toPx() }
+}
+
+/**
+ * EN Plain wsp mode: [mode] and receiver already scaled; logic only.
+ * PT Modo wsp Plain: [mode] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun TextUnit.wspModePlain(mode: TextUnit, uiModeType: UiModeType): TextUnit {
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) mode else this
+}
+
+/**
+ * EN Pixel variant of [wspModePlain] with [mode] as [TextUnit].
+ * PT Variante em px de [wspModePlain] com [mode] em [TextUnit].
+ */
+@Composable
+fun TextUnit.wspModePlainPx(mode: TextUnit, uiModeType: UiModeType): Float {
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@wspModePlainPx.toPx() }
+}
+
+/**
+ * EN Plain ssp qualifier: [qualified] and receiver already scaled; logic only.
+ * PT Qualificador ssp Plain: [qualified] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.sspQualifierPlain(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) qualified else this
+}
+
+/**
+ * EN Pixel variant of [sspQualifierPlain] with [qualified] as [TextUnit].
+ * PT Variante em px de [sspQualifierPlain] com [qualified] em [TextUnit].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.sspQualifierPlainPx(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@sspQualifierPlainPx.toPx() }
+}
+
+/**
+ * EN Plain hsp qualifier: [qualified] and receiver already scaled; logic only.
+ * PT Qualificador hsp Plain: [qualified] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.hspQualifierPlain(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) qualified else this
+}
+
+/**
+ * EN Pixel variant of [hspQualifierPlain] with [qualified] as [TextUnit].
+ * PT Variante em px de [hspQualifierPlain] com [qualified] em [TextUnit].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.hspQualifierPlainPx(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@hspQualifierPlainPx.toPx() }
+}
+
+/**
+ * EN Plain wsp qualifier: [qualified] and receiver already scaled; logic only.
+ * PT Qualificador wsp Plain: [qualified] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.wspQualifierPlain(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) qualified else this
+}
+
+/**
+ * EN Pixel variant of [wspQualifierPlain] with [qualified] as [TextUnit].
+ * PT Variante em px de [wspQualifierPlain] com [qualified] em [TextUnit].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.wspQualifierPlainPx(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@wspQualifierPlainPx.toPx() }
+}
+
+/**
+ * EN Plain ssp screen: [screen] and receiver already scaled; logic only.
+ * PT Ecrã ssp Plain: [screen] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.sspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+    val configuration = LocalConfiguration.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) screen else this
+}
+
+/**
+ * EN Pixel variant of [sspScreenPlain] with [screen] as [TextUnit].
+ * PT Variante em px de [sspScreenPlain] com [screen] em [TextUnit].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.sspScreenPlainPx(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@sspScreenPlainPx.toPx() }
+}
+
+/**
+ * EN Plain hsp screen: [screen] and receiver already scaled; logic only.
+ * PT Ecrã hsp Plain: [screen] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.hspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+    val configuration = LocalConfiguration.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) screen else this
+}
+
+/**
+ * EN Pixel variant of [hspScreenPlain] with [screen] as [TextUnit].
+ * PT Variante em px de [hspScreenPlain] com [screen] em [TextUnit].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.hspScreenPlainPx(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@hspScreenPlainPx.toPx() }
+}
+
+/**
+ * EN Plain wsp screen: [screen] and receiver already scaled; logic only.
+ * PT Ecrã wsp Plain: [screen] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.wspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+    val configuration = LocalConfiguration.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) screen else this
+}
+
+/**
+ * EN Pixel variant of [wspScreenPlain] with [screen] as [TextUnit].
+ * PT Variante em px de [wspScreenPlain] com [screen] em [TextUnit].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun TextUnit.wspScreenPlainPx(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@wspScreenPlainPx.toPx() }
+}
 // Removed duplicate Int.hspRotate (kept in DimenDiagonalSp.kt)
 
 /**

@@ -279,6 +279,328 @@ fun Dp.dsdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQualif
 
 /**
  * EN
+ * Plain rotation with **already scaled** [rotation] and receiver: no further scaling, only the orientation branch.
+ * Use when both sides come from the same strategy (e.g. `30.dsdp.dsdpRotatePlain(20.dsdp)`).
+ *
+ * PT
+ * Rotação Plain com [rotation] e recetor **já escalados**: sem nova conversão, só o ramo de orientação.
+ * Use quando ambos os lados vêm da mesma estratégia (ex.: `30.dsdp.dsdpRotatePlain(20.dsdp)`).
+ */
+@Composable
+fun Dp.dsdpRotatePlain(rotation: Dp, orientation: Orientation = Orientation.LANDSCAPE): Dp {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) rotation else this
+}
+
+/**
+ * EN Pixel (Float) variant of [dsdpRotatePlain] with [rotation] as [Dp] (no scaling).
+ * PT Variante em Pixel (Float) de [dsdpRotatePlain] com [rotation] em [Dp] (sem escala).
+ */
+@Composable
+fun Dp.dsdpRotatePlainPx(rotation: Dp, orientation: Orientation = Orientation.LANDSCAPE): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@dsdpRotatePlainPx.toPx() }
+}
+
+/**
+ * EN Plain hdp rotation: [rotation] and receiver already scaled; logic only.
+ * PT Rotação hdp Plain: [rotation] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun Dp.dhdpRotatePlain(rotation: Dp, orientation: Orientation = Orientation.LANDSCAPE): Dp {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) rotation else this
+}
+
+/**
+ * EN Pixel variant of [dhdpRotatePlain] with [rotation] as [Dp].
+ * PT Variante em px de [dhdpRotatePlain] com [rotation] em [Dp].
+ */
+@Composable
+fun Dp.dhdpRotatePlainPx(rotation: Dp, orientation: Orientation = Orientation.LANDSCAPE): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@dhdpRotatePlainPx.toPx() }
+}
+
+/**
+ * EN Plain wdp rotation: [rotation] and receiver already scaled; logic only.
+ * PT Rotação wdp Plain: [rotation] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun Dp.dwdpRotatePlain(rotation: Dp, orientation: Orientation = Orientation.LANDSCAPE): Dp {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) rotation else this
+}
+
+/**
+ * EN Pixel variant of [dwdpRotatePlain] with [rotation] as [Dp].
+ * PT Variante em px de [dwdpRotatePlain] com [rotation] em [Dp].
+ */
+@Composable
+fun Dp.dwdpRotatePlainPx(rotation: Dp, orientation: Orientation = Orientation.LANDSCAPE): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@dwdpRotatePlainPx.toPx() }
+}
+
+/**
+ * EN Plain sdp mode: [mode] and receiver already scaled; logic only.
+ * PT Modo sdp Plain: [mode] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun Dp.dsdpModePlain(mode: Dp, uiModeType: UiModeType): Dp {
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) mode else this
+}
+
+/**
+ * EN Pixel variant of [dsdpModePlain] with [mode] as [Dp].
+ * PT Variante em px de [dsdpModePlain] com [mode] em [Dp].
+ */
+@Composable
+fun Dp.dsdpModePlainPx(mode: Dp, uiModeType: UiModeType): Float {
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@dsdpModePlainPx.toPx() }
+}
+
+/**
+ * EN Plain hdp mode: [mode] and receiver already scaled; logic only.
+ * PT Modo hdp Plain: [mode] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun Dp.dhdpModePlain(mode: Dp, uiModeType: UiModeType): Dp {
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) mode else this
+}
+
+/**
+ * EN Pixel variant of [dhdpModePlain] with [mode] as [Dp].
+ * PT Variante em px de [dhdpModePlain] com [mode] em [Dp].
+ */
+@Composable
+fun Dp.dhdpModePlainPx(mode: Dp, uiModeType: UiModeType): Float {
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@dhdpModePlainPx.toPx() }
+}
+
+/**
+ * EN Plain wdp mode: [mode] and receiver already scaled; logic only.
+ * PT Modo wdp Plain: [mode] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun Dp.dwdpModePlain(mode: Dp, uiModeType: UiModeType): Dp {
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) mode else this
+}
+
+/**
+ * EN Pixel variant of [dwdpModePlain] with [mode] as [Dp].
+ * PT Variante em px de [dwdpModePlain] com [mode] em [Dp].
+ */
+@Composable
+fun Dp.dwdpModePlainPx(mode: Dp, uiModeType: UiModeType): Float {
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@dwdpModePlainPx.toPx() }
+}
+
+/**
+ * EN Plain sdp qualifier: [qualified] and receiver already scaled; logic only ([qualifierValue] is config threshold).
+ * PT Qualificador sdp Plain: [qualified] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dsdpQualifierPlain(qualified: Dp, qualifierType: DpQualifier, qualifierValue: Number): Dp {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) qualified else this
+}
+
+/**
+ * EN Pixel variant of [dsdpQualifierPlain] with [qualified] as [Dp].
+ * PT Variante em px de [dsdpQualifierPlain] com [qualified] em [Dp].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dsdpQualifierPlainPx(qualified: Dp, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@dsdpQualifierPlainPx.toPx() }
+}
+
+/**
+ * EN Plain hdp qualifier: [qualified] and receiver already scaled; logic only.
+ * PT Qualificador hdp Plain: [qualified] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dhdpQualifierPlain(qualified: Dp, qualifierType: DpQualifier, qualifierValue: Number): Dp {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) qualified else this
+}
+
+/**
+ * EN Pixel variant of [dhdpQualifierPlain] with [qualified] as [Dp].
+ * PT Variante em px de [dhdpQualifierPlain] com [qualified] em [Dp].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dhdpQualifierPlainPx(qualified: Dp, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@dhdpQualifierPlainPx.toPx() }
+}
+
+/**
+ * EN Plain wdp qualifier: [qualified] and receiver already scaled; logic only.
+ * PT Qualificador wdp Plain: [qualified] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dwdpQualifierPlain(qualified: Dp, qualifierType: DpQualifier, qualifierValue: Number): Dp {
+    val configuration = LocalConfiguration.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) qualified else this
+}
+
+/**
+ * EN Pixel variant of [dwdpQualifierPlain] with [qualified] as [Dp].
+ * PT Variante em px de [dwdpQualifierPlain] com [qualified] em [Dp].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dwdpQualifierPlainPx(qualified: Dp, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@dwdpQualifierPlainPx.toPx() }
+}
+
+/**
+ * EN Plain sdp screen: [screen] and receiver already scaled; logic only (ui mode + qualifier threshold).
+ * PT Ecrã sdp Plain: [screen] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dsdpScreenPlain(screen: Dp, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Dp {
+    val configuration = LocalConfiguration.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) screen else this
+}
+
+/**
+ * EN Pixel variant of [dsdpScreenPlain] with [screen] as [Dp].
+ * PT Variante em px de [dsdpScreenPlain] com [screen] em [Dp].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dsdpScreenPlainPx(screen: Dp, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@dsdpScreenPlainPx.toPx() }
+}
+
+/**
+ * EN Plain hdp screen: [screen] and receiver already scaled; logic only.
+ * PT Ecrã hdp Plain: [screen] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dhdpScreenPlain(screen: Dp, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Dp {
+    val configuration = LocalConfiguration.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) screen else this
+}
+
+/**
+ * EN Pixel variant of [dhdpScreenPlain] with [screen] as [Dp].
+ * PT Variante em px de [dhdpScreenPlain] com [screen] em [Dp].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dhdpScreenPlainPx(screen: Dp, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@dhdpScreenPlainPx.toPx() }
+}
+
+/**
+ * EN Plain wdp screen: [screen] and receiver already scaled; logic only.
+ * PT Ecrã wdp Plain: [screen] e recetor já escalados; só a lógica.
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dwdpScreenPlain(screen: Dp, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Dp {
+    val configuration = LocalConfiguration.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) screen else this
+}
+
+/**
+ * EN Pixel variant of [dwdpScreenPlain] with [screen] as [Dp].
+ * PT Variante em px de [dwdpScreenPlain] com [screen] em [Dp].
+ */
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+fun Dp.dwdpScreenPlainPx(screen: Dp, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val currentUiModeType = getCurrentUiModeType()
+    val uiModeMatch = currentUiModeType == uiModeType
+    val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
+    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@dwdpScreenPlainPx.toPx() }
+}
+/**
+ * EN
  * Extension for Dp with dynamic scaling based on **Screen Height (hDP)**.
  * Uses the base value by default, but when the device is in the specified [orientation],
  * it uses [rotationValue] scaled with the given [finalQualifierResolver].

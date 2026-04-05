@@ -2,6 +2,8 @@
 
 # Package-level declarations
 
+**Plain facilitators:** `*RotatePlain`, `*ModePlain`, `*QualifierPlain`, `*ScreenPlain` (and `*PlainPx`) have overloads with alternates as **`Number`** (scaled when the branch matches) or **`Dp` / `TextUnit`** (condition only — no extra scaling). Other compose strategy packages use the same pattern with their prefixes. Chained `*Plain` calls follow **expression nesting**; `.screen` on `DimenScaled` uses **API-defined priority** — [COMPOSE-API-CONVENTIONS.md](../../COMPOSE-API-CONVENTIONS.md).
+
 ## Types
 
 | Name | Summary |

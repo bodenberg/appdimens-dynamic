@@ -50,6 +50,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.appdimens.dynamic.compose.resize.autoResizeHeightSize
@@ -329,6 +330,47 @@ fun SdpDemoScreen() {
                         boxColor = Color(0xFF78909C)
                     )
 
+                    ExampleCard(
+                        title = "sdpRotatePlain (Dp + Dp, no re-scale)",
+                        description = "80.demoSwDp when not landscape, 50.demoSwDp in landscape — both sides already scaled.",
+                        boxSize = 80.demoSwDp.demoSdpRotatePlain(50.demoSwDp),
+                        boxColor = Color(0xFFFFAB91)
+                    )
+
+                    ExampleCard(
+                        title = "sdpRotatePlain + sdpModePlain (nested)",
+                        description = "Chain: rotate plain then mode plain (TELEVISION → 28.demoSwDp).",
+                        boxSize = 72.demoSwDp
+                            .demoSdpRotatePlain(48.demoSwDp, Orientation.LANDSCAPE)
+                            .demoSdpModePlain(28.demoSwDp, UiModeType.TELEVISION),
+                        boxColor = Color(0xFFFFCC80)
+                    )
+
+                    ExampleCard(
+                        title = "sdpQualifierPlain (Dp threshold branch)",
+                        description = "60.demoSwDp unless sw ≥ 600 → 100.demoSwDp (plain alternativo).",
+                        boxSize = 60.demoSwDp.demoSdpQualifierPlain(
+                            100.demoSwDp,
+                            DpQualifier.SMALL_WIDTH,
+                            600
+                        ),
+                        boxColor = Color(0xFF80DEEA)
+                    )
+
+                    ExampleCard(
+                        title = "sdpScreenPlain (Dp + Dp)",
+                        description = "65.demoSwDp unless TV + sw ≥ 600 → 90.demoSwDp.",
+                        boxSize = 65.demoSwDp.demoSdpScreenPlain(
+                            90.demoSwDp,
+                            UiModeType.TELEVISION,
+                            DpQualifier.SMALL_WIDTH,
+                            600
+                        ),
+                        boxColor = Color(0xFFB0BEC5)
+                    )
+
+                    PlainSpExampleCard()
+
                     // ── 4. DimenScaled BUILDER (Complex Conditions) ────────────
                     SectionTitle("4. DimenScaled Builder")
 
@@ -369,6 +411,39 @@ fun SectionTitle(title: String) {
         textAlign = TextAlign.Start,
         modifier = Modifier.fillMaxWidth()
     )
+}
+
+/**
+ * EN Text sample: Plain [sspRotatePlain] with [demoSsp] on both sides (strategy-routed).
+ * PT Texto de exemplo: [sspRotatePlain] Plain com [demoSsp] nos dois lados (estratégia do menu).
+ */
+@Composable
+fun PlainSpExampleCard() {
+    val fontSize: TextUnit = 16.demoSsp.demoSspRotatePlain(11.demoSsp)
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.demoSwDp),
+            verticalArrangement = Arrangement.spacedBy(10.demoSwDp)
+        ) {
+            Text("sspRotatePlain (Sp + Sp)", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Text(
+                "EN: 16.demoSsp.demoSspRotatePlain(11.demoSsp) — no second scaling on receiver or alternate.\n" +
+                    "PT: Ambos os lados já vêm da estratégia escolhida; só a condição de orientação.",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFF1565C0)
+            )
+            Text(
+                text = "Sample · Plain Sp rotation branch",
+                fontSize = fontSize,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
 }
 
 /**

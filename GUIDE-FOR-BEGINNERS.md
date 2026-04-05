@@ -558,6 +558,20 @@ You still get **responsive** sizing vs the device; you just **don’t** tie this
 
 Many overloads accept **`Int`**, **`Dp`**, or **“plain”** variants — see the main README. **Other strategies** use the same **names** with their **prefix** (e.g. `asdpRotate`, `pwsdpMode`).
 
+**Plain with `Dp` / `TextUnit` (no extra scaling):** When both the base and the alternate are **already** from the same strategy (e.g. `30.sdp` and `20.sdp`), use the overloads that take **`Dp`** or **`TextUnit`** as the alternate — only the branch (orientation, UI mode, qualifier, …) runs:
+
+```kotlin
+// Dp: both sides already scaled
+val side = 30.sdp.sdpRotatePlain(20.sdp)
+
+// Sp: both sides already scaled
+Text("Hi", fontSize = 16.ssp.sspRotatePlain(12.ssp))
+```
+
+**Nested facilitators:** You can chain them; the **effective order** is **how you nest** the expression (evaluate outside → inside). For **long** chains, keep using **`Dp` / `TextUnit` Plain** alternates to avoid scaling the receiver or the alternate more than once.
+
+**Not the same as `.screen`:** `100.scaledDp().screen(…).screen(…).sdp` uses **priorities inside `DimenScaled`** — that order is **not** the same rule as “who is outside” in nested `sdpRotatePlain` / `sdpModePlain` calls. See [COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md).
+
 ---
 
 ## 🧱 Builders — `scaledDp()` / `scaledSp()` (chain many rules)
