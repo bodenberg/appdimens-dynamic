@@ -112,7 +112,9 @@ Above 480 dp:
 
 ---
 
-### **#3. PERCENT (Literal Percentage)**
+### **#3. PERCENT**
+
+#### **A) Screen share (`space*`) — the number *is* the %**
 
 **Code:**
 
@@ -129,12 +131,54 @@ Result = (Percentage / 100) × Screen_Size
 
 **What it means:**
 
-* Always keeps the same **percentage**
+* Always keeps the same **percentage** of the chosen axis
 * Fully proportional layouts
 
 **When to use:**
 ✅ Grids, columns
-✅ Exact percentages
+✅ Exact percentages of width, height, or smallest width
+
+---
+
+#### **B) Tokens like Scaled (`psdp` / `phdp` / `pwdp` / `pssp`) — percent strategy, same naming as `sdp` / `hdp` / `wdp` / `ssp`**
+
+**Code:**
+
+```kotlin
+import com.appdimens.dynamic.compose.percent.psdp
+import com.appdimens.dynamic.compose.percent.phdp
+import com.appdimens.dynamic.compose.percent.pwdp
+import com.appdimens.dynamic.compose.percent.pssp
+
+Modifier.padding(12.psdp)
+Modifier.height(40.phdp)
+Modifier.width(30.pwdp)
+Text("Hi", fontSize = 14.pssp)
+```
+
+| You want              | Typical extension | Idea                                      |
+| --------------------- | ----------------- | ----------------------------------------- |
+| SW-based (like `sdp`) | `16.psdp`         | Design token + **percent** strategy       |
+| Height axis           | `16.phdp`         | Same pattern on height                    |
+| Width axis            | `16.pwdp`         | Same pattern on width                     |
+| Text (like `ssp`)     | `16.pssp`         | Sp on smallest-width axis, percent rules  |
+
+**Formula:**
+
+```
+Without aspect ratio: same proportional idea as SCALED — roughly Value × (Axis / 300)
+With `a`: percent strategy + aspect-ratio correction (library handles the curve)
+```
+
+**What it means:**
+
+* Same **suffix mental model** as **`sdp` / `hdp` / `wdp` / `ssp`** — you keep **design tokens** (e.g. `16`), not “16% of the screen.”
+* For **literal** “10% of width”, use **`space*`** in **A)** above — not `10.psdp`.
+* You can still add **`a`**, **`i`**, **`ia`**, **Px**, and **inverters** like SCALED — see the main README and [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md).
+
+**When to use:**
+✅ You want **percent** scaling rules but **`sdp`-style** names across the codebase  
+✅ Mixing with **`space*`** when some sizes are “% of axis” and others are tokens  
 
 ---
 
@@ -466,28 +510,6 @@ There are also helpers for **width only**, **height only**, and ranges based on 
 
 ---
 
-## 🔢 Percent **with tokens** (`psdp`, `phdp`, `pwdp`) — not only `space*`
-
-You already saw **`spaceW`** / **`spaceSw`** (pure percentage of the screen). The library also offers **percent-style scaling with the same suffix pattern as SCALED**:
-
-| You want              | Typical extension | Idea                          |
-| --------------------- | ----------------- | ----------------------------- |
-| % feel, SW-based name | `16.psdp`         | Like scaled, but **percent** strategy |
-| Height axis           | `16.phdp`         | Same pattern on height        |
-| Width axis            | `16.pwdp`         | Same pattern on width         |
-
-**Mental model:** Think “I want **percent logic** but I still like the **`sdp` / `hdp` / `wdp` naming** I learned above.” Import from `com.appdimens.dynamic.compose.percent` (e.g. `psdp`).
-
-```kotlin
-import com.appdimens.dynamic.compose.percent.psdp
-
-Modifier.padding(12.psdp)
-```
-
-You can still add **`a`**, **`i`**, **`ia`** and **Px** variants the same way as SCALED — see the main README and [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md).
-
----
-
 ## 📏 `…Px` extensions — when you need **pixels**, not `Dp`
 
 **Idea:** `16.sdp` gives a **`Dp`** for layouts. Sometimes you need a **`Float` in px** (Canvas, custom drawing, old interop).
@@ -590,7 +612,7 @@ There are helpers in **`com.appdimens.dynamic.code.units`** for non-Compose code
 | Topic              | Remember |
 | ------------------ | -------- |
 | **Resize**         | Inside `BoxWithConstraints`; “largest size that still fits” |
-| **psdp / phdp / pwdp** | Percent strategy, sdp-like names |
+| **psdp / phdp / pwdp / pssp** | Percent strategy, same naming style as `sdp` / `hdp` / `wdp` / `ssp` (see **#3 B**) |
 | **…Px**            | `Float` pixels for Canvas / custom drawing |
 | **nem / hem / wem** | Screen-scaled Sp **without** following system font scale like `ssp` |
 | **Rotate / Mode / Qualifier / Screen** | One-liner conditional sizing |
