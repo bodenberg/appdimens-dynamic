@@ -2,6 +2,25 @@
 
 This report documents the performance results **after applying the 4 optimization phases** for the current library.
 
+> [!NOTE]
+> **Build variants, R8, and how to read the numbers**
+>
+> With **code shrinking and R8** on **release** builds (`minifyEnabled = true`), benchmark numbers can drop sharply versus **debug** without minify. Example ranges from the project harness:
+>
+> | Harness | Approx. range (release + minify + R8) |
+> | :--- | :--- |
+> | **Calculation Test** (avg) | **~82 ns – ~150 ns** |
+> | **Microbenchmark** | **~125 ns – ~155 ns** |
+> | **Macrobenchmark** (estimated **per-item** cost in that harness under R8—not the scroll-duration / µs-per-row figures in the baseline table below) | **~367 ns – ~380 ns** |
+>
+> **Unless a paragraph explicitly says otherwise**, the benchmarks and tables in this document use **debug** builds **without** minify (e.g. `connectedDebugAndroidTest`, debug APK for `BenchmarkActivity`). See **[R8-PROGUARD.md](./R8-PROGUARD.md)** if you enable **R8 full mode** (`android.enableR8.fullMode=true` in `gradle.properties`).
+
+<p align="center">
+  <img src="IMAGES/screenshot_benchmark.jpg" alt="Benchmark dashboard — AppDimens Dynamic" width="200" />
+  &nbsp;
+  <img src="IMAGES/screenshot_benchmark2.jpg" alt="Benchmark dashboard — additional capture" width="200" />
+</p>
+
 ---
 
 ## 1. Applied Optimizations
@@ -137,6 +156,8 @@ With `ScreenFactors`, the 6 fields + 112-byte padding are isolated in their own 
 | **Micro** | sdpa (cache lookup) | ~35 ns | Hot |
 | **Macro** | Scroll Duration (1k items) | ~996 ms | Fluid |
 | **Macro** | Est. Cost per item | ~996 µs | Fluid |
+
+**Release + minify + R8 (same harness family):** micro combined average **~125 ns – ~155 ns** per cycle (contrast **~260 ns** hot steady-state above on **debug without minify**). Macro **per-item** estimate under R8 **~367 ns – ~380 ns** (see methodology note at the top of this document—distinct from **~996 µs** per row in the debug table, which includes full row composition/layout/draw).
 
 **Steady-state performance:** **~260 ns** combined average per 4-call cycle (hot JIT, dashboard capture · 2026-04-03).
 

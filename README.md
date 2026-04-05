@@ -44,6 +44,20 @@
   </a>
 </p>
 
+<p align="center">
+  <a href="./PERFORMANCE.md" title="Technical performance report">
+    <img src="https://img.shields.io/badge/Performance-Report-0f766e?style=for-the-badge&logo=google-analytics&logoColor=white&labelColor=134e4a" alt="Performance report">
+  </a>
+  &nbsp;&nbsp;
+  <a href="./PERFORMANCE-COMPARATIVE.md" title="Performance after optimization phases — comparative report">
+    <img src="https://img.shields.io/badge/Performance-Comparative-7c3aed?style=for-the-badge&logo=speedtest&logoColor=white&labelColor=5b21b6" alt="Performance comparative">
+  </a>
+  &nbsp;&nbsp;
+  <a href="./R8-PROGUARD.md" title="R8 full mode and ProGuard rules — library, consumer, app">
+    <img src="https://img.shields.io/badge/R8%20%26%20ProGuard-Rules-334155?style=for-the-badge&logo=android&logoColor=white&labelColor=1e293b" alt="R8 and ProGuard rules">
+  </a>
+</p>
+
 ---
 
 ![AppDimens Banner](IMAGES/banner_top.png)

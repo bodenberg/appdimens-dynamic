@@ -2,6 +2,27 @@
 
 This report provides a deep technical analysis of the AppDimens Dynamic library performance, following the **SIMD-friendly Batching**, **Cache Sharding (Padded)**, and **Inlined Hot-Path** optimizations.
 
+> [!NOTE]
+> **Build variants, R8, and how to read the numbers**
+>
+> With **code shrinking and R8** enabled on **release** builds (`minifyEnabled = true`), the library’s hot paths can run **much faster** than in a typical **debug** APK. Example ranges observed on the project benchmark harness (same device class as elsewhere in this report):
+>
+> | Harness | Approx. range (release + minify + R8) |
+> | :--- | :--- |
+> | **Calculation Test** (avg) | **~82 ns – ~150 ns** |
+> | **Microbenchmark** (combined / per-cycle metric as reported by the dashboard) | **~125 ns – ~155 ns** |
+> | **Macrobenchmark** (estimated **per-item** cost under that harness with R8; **not** the same cell as scroll duration in ms / µs below) | **~367 ns – ~380 ns** |
+>
+> **All other tables and figures in this document** were captured on **debug** builds **without** minify (no R8 shrinking/optimization pass on that variant). Treat **debug without minify** vs **release with minify + R8** as **different environments**—do not compare cells across those scenarios without this context.
+>
+> Enabling **R8 full mode** (`android.enableR8.fullMode=true` in `gradle.properties`) makes optimization more aggressive; keep ProGuard/R8 rules correct when you turn it on. See **[R8-PROGUARD.md](./R8-PROGUARD.md)**.
+
+<p align="center">
+  <img src="IMAGES/screenshot_benchmark.jpg" alt="Benchmark dashboard — AppDimens Dynamic" width="200" />
+  &nbsp;
+  <img src="IMAGES/screenshot_benchmark2.jpg" alt="Benchmark dashboard — additional capture" width="200" />
+</p>
+
 ---
 
 ## 1. Architectural Overview
@@ -56,6 +77,8 @@ Stress test executed via the new **Micro + Macro Benchmark Dashboard**. This mea
 | **Macro Scroll (1000 items)** | ~996 ms | **Fluid** |
 | **Est. Cost per item** | ~996 µs | **Zero Jank** for 120 FPS |
 | **Peak UI Load** | **Indistinguishable** | 0% Jank Detected |
+
+The **~260 ns** / **~996 µs** figures above are from **debug without minify**. On **release with minify + R8**, the same dashboard-style harness reports roughly **~125 ns – ~155 ns** (micro combined) and **~367 ns – ~380 ns** for the macro **per-item** estimate under that configuration—see the **Build variants, R8** note at the top of this document.
 
 ---
 
