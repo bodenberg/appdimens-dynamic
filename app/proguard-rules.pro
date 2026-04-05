@@ -1,21 +1,45 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+################################################################################
+# 1. OPTIMIZATIONS
+################################################################################
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+-optimizationpasses 5
+-allowaccessmodification
+-optimizations code/*,method/*,field/*,class/*,library/*
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+################################################################################
+# 2. KEEPS
+################################################################################
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-keepattributes Annotation,Exceptions,LineNumberTable,Signature,InnerClasses,EnclosingMethod,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault
+-keep class kotlin.Metadata { *; }
+
+-keepnames class * implements android.os.Parcelable
+-keepnames interface * implements android.os.Parcelable
+-keepclassmembers class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+-keepnames class * implements java.io.Serializable
+-keepnames interface * implements java.io.Serializable
+
+################################################################################
+# 4. KOTLINX SERIALIZATION
+################################################################################
+
+-keep @kotlinx.serialization.Serializable class **
+-keepclassmembers class ** { @kotlinx.serialization.Serializable *; }
+-keepclassmembers class **$serializer { public static ** INSTANCE; }
+-keepclassmembernames class ** {
+    @kotlinx.serialization.Serializable <fields>;
+}
+
+-keepclasseswithmembernames,includedescriptorclasses class * { native <methods>; }
+-keep class sun.misc.Unsafe.** { *; }
+
+################################################################################
+# 8. LOGS DEBUG
+################################################################################
+-printseeds build/outputs/mapping/release/seeds.txt
+-printmapping build/outputs/mapping/release/mapping.txt
+-printconfiguration build/outputs/mapping/release/configuration.txt
+-printusage build/outputs/mapping/release/usage.txt
+-verbose

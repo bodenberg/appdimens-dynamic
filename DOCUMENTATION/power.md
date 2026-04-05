@@ -31,7 +31,7 @@ Modifier.size(48.pwsdp) // smallest-width axis, power curve
 
 **Code:** `com.appdimens.dynamic.code.power` — mirrored prefixes (`pwsdp`, etc.) on the same pattern.
 
-Artifacts: `DimenPowerDp`, `DimenPowerDpExtensions`, `DimenPowerScaled`, `DimenPowerSp`, …
+Artifacts: `DimenPowerDp`, `DimenPowerDpExtensions`, `DimenPower`, `DimenPowerSp`, …
 
 ## Why use it
 

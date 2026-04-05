@@ -14,7 +14,7 @@ Scaling logic:
 2. 
    If [fontScale](to-dynamic-auto-sp.md) is `true`, the result respects the system font size setting.
 3. 
-   If [fontScale](to-dynamic-auto-sp.md) is `false` (e.g. via .anem), the system font scale is stripped.
+   If [fontScale](to-dynamic-auto-sp.md) is `false` (e.g. via .asem), the system font scale is stripped.
 4. 
    Checks [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md) globally.
 
@@ -27,7 +27,7 @@ Lógica de escalonamento:
 2. 
    Se [fontScale](to-dynamic-auto-sp.md) for `true`, o resultado respeita a configuração de tamanho de fonte do sistema.
 3. 
-   Se [fontScale](to-dynamic-auto-sp.md) for `false` (ex: via .anem), a escala de fonte do sistema é removida.
+   Se [fontScale](to-dynamic-auto-sp.md) for `false` (ex: via .asem), a escala de fonte do sistema é removida.
 4. 
    Consulta o [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md) globalmente.
 

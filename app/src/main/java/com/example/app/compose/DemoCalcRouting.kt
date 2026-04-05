@@ -488,7 +488,7 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .psdp
         DemoCalcStrategy.Power ->
             100.powerDp()
                 .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
@@ -496,7 +496,7 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .pwsdp
         DemoCalcStrategy.Auto ->
             100.autoDp()
                 .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
@@ -504,7 +504,7 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .asdp
         DemoCalcStrategy.Logarithmic ->
             100.logarithmicDp()
                 .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
@@ -512,7 +512,7 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .logsdp
         DemoCalcStrategy.Fluid ->
             100.fluidDp()
                 .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
@@ -520,7 +520,7 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .fsdp
         DemoCalcStrategy.Interpolated ->
             100.interpolatedDp()
                 .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
@@ -528,7 +528,7 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .isdp
         DemoCalcStrategy.Diagonal ->
             100.diagonalDp()
                 .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
@@ -536,7 +536,7 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .dgsdp
         DemoCalcStrategy.Perimeter ->
             100.perimeterDp()
                 .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
@@ -544,7 +544,7 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .prsdp
         DemoCalcStrategy.Fit ->
             100.fitDp()
                 .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
@@ -552,7 +552,7 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .ftsdp
         DemoCalcStrategy.Fill ->
             100.fillDp()
                 .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
@@ -560,7 +560,7 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .flsdp
         DemoCalcStrategy.Density ->
             100.densityDp()
                 .screen(UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600, 250)
@@ -568,6 +568,6 @@ fun demoDimenScaledResultDp(): Dp {
                 .screen(UiModeType.FOLD_OPEN, 200)
                 .screen(DpQualifier.SMALL_WIDTH, 600, 150)
                 .screen(Orientation.LANDSCAPE, 120)
-                .sdp
+                .dsdp
     }
 }

@@ -18,8 +18,27 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            keyAlias = "key"
+            keyPassword = "123456"
+            storePassword = "123456"
+            storeFile = file("${rootDir}\\key_for_tests.jks")
+        }
+    }
+
     buildTypes {
         release {
+            isShrinkResources = true
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        debug {
+            isShrinkResources = false
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -42,9 +61,9 @@ android {
 dependencies {
     api(project(":library"))
 
-    //implementation("io.github.bodenberg:appdimens-dynamic:3.1.0")
+    //implementation("io.github.bodenberg:appdimens-dynamic:3.1.1")
     // or
-    //implementation("com.github.bodenberg.appdimens:appdimens-dynamic:3.1.0")
+    //implementation("com.github.bodenberg.appdimens:appdimens-dynamic:3.1.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -3,13 +3,13 @@
 # interpolatedDp
 
 [jvm]
-fun <Error class: unknown class>.[interpolatedDp](interpolated-dp.md)(): [DimenInterpolatedScaled](-dimen-interpolated-scaled/index.md)
+fun <Error class: unknown class>.[interpolatedDp](interpolated-dp.md)(): [DimenInterpolated](-dimen-interpolated/index.md)
 
-EN Starts the build chain for the custom dimension DimenInterpolatedScaled from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenInterpolatedScaled a partir de um Dp base.
+EN Starts the build chain for the custom dimension DimenInterpolated from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenInterpolated a partir de um Dp base.
 
 [jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[interpolatedDp](interpolated-dp.md)(): [DimenInterpolatedScaled](-dimen-interpolated-scaled/index.md)
+fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[interpolatedDp](interpolated-dp.md)(): [DimenInterpolated](-dimen-interpolated/index.md)
 
-EN Starts the build chain for the custom dimension DimenInterpolatedScaled from a base Int. Usage example: `100.scaled().screen(...)`.
+EN Starts the build chain for the custom dimension DimenInterpolated from a base Int. Usage example: `100.scaled().screen(...)`.
 
-PT Inicia a cadeia de construção para a dimensão customizada DimenInterpolatedScaled a partir de um Int base. Exemplo de uso: `100.scaled().screen(...)`.
+PT Inicia a cadeia de construção para a dimensão customizada DimenInterpolated a partir de um Int base. Exemplo de uso: `100.scaled().screen(...)`.

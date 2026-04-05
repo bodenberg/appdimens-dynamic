@@ -6,7 +6,7 @@
 
 **Scaled** is the **default** AppDimens Dynamic mode: it scales design values around the **300 dp** reference on the chosen axis (**smallest width**, **height**, or **width** of the window). This is the classic SDP / HDP / WDP behavior with cache, qualifiers, and `Configuration` integration.
 
-**Typical usage:** Scaled is the **most widely used** strategy and fits **most apps and screens**. Use it **without** `a` for straightforward linear scaling, or **with** `a` / `ia` when aspect-ratio-aware refinement is needed — both are still Scaled; you only need another strategy when requirements clearly call for a different curve.
+**Typical usage:** Scaled is the **most widely used** strategy and fits **most apps and screens**. Use it **without** `a` for straightforward linear scaling, or **with** `a` / `ia` when aspect-ratio-aware refisement is needed — both are still Scaled; you only need another strategy when requirements clearly call for a different curve.
 
 ## Calculation used
 

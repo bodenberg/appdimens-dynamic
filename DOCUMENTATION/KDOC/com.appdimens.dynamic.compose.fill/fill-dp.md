@@ -3,13 +3,13 @@
 # fillDp
 
 [jvm]
-fun <Error class: unknown class>.[fillDp](fill-dp.md)(): [DimenFillScaled](-dimen-fill-scaled/index.md)
+fun <Error class: unknown class>.[fillDp](fill-dp.md)(): [DimenFill](-dimen-fill/index.md)
 
-EN Starts the build chain for the custom dimension DimenFillScaled from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenFillScaled a partir de um Dp base.
+EN Starts the build chain for the custom dimension DimenFill from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenFill a partir de um Dp base.
 
 [jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[fillDp](fill-dp.md)(): [DimenFillScaled](-dimen-fill-scaled/index.md)
+fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[fillDp](fill-dp.md)(): [DimenFill](-dimen-fill/index.md)
 
-EN Starts the build chain for the custom dimension DimenFillScaled from a base Int. Usage example: `100.scaled().screen(...)`.
+EN Starts the build chain for the custom dimension DimenFill from a base Int. Usage example: `100.scaled().screen(...)`.
 
-PT Inicia a cadeia de construção para a dimensão customizada DimenFillScaled a partir de um Int base. Exemplo de uso: `100.scaled().screen(...)`.
+PT Inicia a cadeia de construção para a dimensão customizada DimenFill a partir de um Int base. Exemplo de uso: `100.scaled().screen(...)`.

@@ -253,7 +253,7 @@ class PercentSp private constructor(
      * EN Resolves pssp, phsp, and pwsp in one pass (single [UiModeType.fromConfiguration] read).
      * PT Resolve pssp, phsp e pwsp numa só passagem.
      */
-    fun sspHspWspPx(context: Context): Triple<Float, Float, Float> {
+    fun psspPhspPwspPx(context: Context): Triple<Float, Float, Float> {
         val configuration = context.resources.configuration
         val currentUiModeType = DimenCache.getCachedUiModeType(context)
         return Triple(
@@ -264,10 +264,10 @@ class PercentSp private constructor(
     }
 
     /**
-     * EN Resolves sei, hei, and wei in one pass (fixed Sp / no font-scale path).
-     * PT Resolve sei, hei e wei numa só passagem (Sp fixo / sem escala de fonte).
+     * EN Resolves psem, phem, and pwem in one pass (fixed Sp / no font-scale path).
+     * PT Resolve psem, phem e pwem numa só passagem (Sp fixo / sem escala de fonte).
      */
-    fun seiHeiWeiPx(context: Context): Triple<Float, Float, Float> {
+    fun psemPhemPwemPx(context: Context): Triple<Float, Float, Float> {
         val configuration = context.resources.configuration
         val currentUiModeType = DimenCache.getCachedUiModeType(context)
         return Triple(
@@ -278,8 +278,8 @@ class PercentSp private constructor(
     }
 
     /**
-     * EN Shared implementation for [resolvePx], [sspHspWspPx], and [seiHeiWeiPx].
-     * PT Implementação compartilhada para [resolvePx], [sspHspWspPx] e [seiHeiWeiPx].
+     * EN Shared implementation for [resolvePx], [psspPhspPwspPx], and [psemPhemPwemPx].
+     * PT Implementação compartilhada para [resolvePx], [psspPhspPwspPx] e [psemPhemPwemPx].
      */
     private fun resolvePxInternal(
         context: Context,
@@ -333,7 +333,7 @@ class PercentSp private constructor(
     fun pwsp(context: Context): Float = resolvePx(context, DpQualifier.WIDTH)
 
     /** EN Resolve final value in pixels (WITHOUT font scale). */
-    fun sei(context: Context): Float = resolvePx(context, DpQualifier.SMALL_WIDTH, fontScaleOverride = false)
-    fun hei(context: Context): Float = resolvePx(context, DpQualifier.HEIGHT, fontScaleOverride = false)
-    fun wei(context: Context): Float = resolvePx(context, DpQualifier.WIDTH, fontScaleOverride = false)
+    fun psem(context: Context): Float = resolvePx(context, DpQualifier.SMALL_WIDTH, fontScaleOverride = false)
+    fun phem(context: Context): Float = resolvePx(context, DpQualifier.HEIGHT, fontScaleOverride = false)
+    fun pwem(context: Context): Float = resolvePx(context, DpQualifier.WIDTH, fontScaleOverride = false)
 }

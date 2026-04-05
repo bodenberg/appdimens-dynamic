@@ -253,7 +253,7 @@ class LogarithmicSp private constructor(
      * EN Resolves logssp, loghsp, and logwsp in one pass (single [UiModeType.fromConfiguration] read).
      * PT Resolve logssp, loghsp e logwsp numa só passagem.
      */
-    fun sspHspWspPx(context: Context): Triple<Float, Float, Float> {
+    fun logsspLoghspLogwspPx(context: Context): Triple<Float, Float, Float> {
         val configuration = context.resources.configuration
         val currentUiModeType = DimenCache.getCachedUiModeType(context)
         return Triple(
@@ -264,10 +264,10 @@ class LogarithmicSp private constructor(
     }
 
     /**
-     * EN Resolves sei, hei, and wei in one pass (fixed Sp / no font-scale path).
-     * PT Resolve sei, hei e wei numa só passagem (Sp fixo / sem escala de fonte).
+     * EN Resolves logsem, loghem, and logwem in one pass (fixed Sp / no font-scale path).
+     * PT Resolve logsem, loghem e logwem numa só passagem (Sp fixo / sem escala de fonte).
      */
-    fun seiHeiWeiPx(context: Context): Triple<Float, Float, Float> {
+    fun logsemLoghemLogwemPx(context: Context): Triple<Float, Float, Float> {
         val configuration = context.resources.configuration
         val currentUiModeType = DimenCache.getCachedUiModeType(context)
         return Triple(
@@ -278,8 +278,8 @@ class LogarithmicSp private constructor(
     }
 
     /**
-     * EN Shared implementation for [resolvePx], [sspHspWspPx], and [seiHeiWeiPx].
-     * PT Implementação compartilhada para [resolvePx], [sspHspWspPx] e [seiHeiWeiPx].
+     * EN Shared implementation for [resolvePx], [logsspLoghspLogwspPx], and [logsemLoghemLogwemPx].
+     * PT Implementação compartilhada para [resolvePx], [logsspLoghspLogwspPx] e [logsemLoghemLogwemPx].
      */
     private fun resolvePxInternal(
         context: Context,
@@ -333,7 +333,7 @@ class LogarithmicSp private constructor(
     fun logwsp(context: Context): Float = resolvePx(context, DpQualifier.WIDTH)
 
     /** EN Resolve final value in pixels (WITHOUT font scale). */
-    fun sei(context: Context): Float = resolvePx(context, DpQualifier.SMALL_WIDTH, fontScaleOverride = false)
-    fun hei(context: Context): Float = resolvePx(context, DpQualifier.HEIGHT, fontScaleOverride = false)
-    fun wei(context: Context): Float = resolvePx(context, DpQualifier.WIDTH, fontScaleOverride = false)
+    fun logsem(context: Context): Float = resolvePx(context, DpQualifier.SMALL_WIDTH, fontScaleOverride = false)
+    fun loghem(context: Context): Float = resolvePx(context, DpQualifier.HEIGHT, fontScaleOverride = false)
+    fun logwem(context: Context): Float = resolvePx(context, DpQualifier.WIDTH, fontScaleOverride = false)
 }

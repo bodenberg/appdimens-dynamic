@@ -3,13 +3,13 @@
 # percentDp
 
 [jvm]
-fun <Error class: unknown class>.[percentDp](percent-dp.md)(): [DimenPercentScaled](-dimen-percent-scaled/index.md)
+fun <Error class: unknown class>.[percentDp](percent-dp.md)(): [DimenPercent](-dimen-percent/index.md)
 
-EN Starts the build chain for the custom dimension DimenPercentScaled from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenPercentScaled a partir de um Dp base.
+EN Starts the build chain for the custom dimension DimenPercent from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenPercent a partir de um Dp base.
 
 [jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[percentDp](percent-dp.md)(): [DimenPercentScaled](-dimen-percent-scaled/index.md)
+fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[percentDp](percent-dp.md)(): [DimenPercent](-dimen-percent/index.md)
 
-EN Starts the build chain for the custom dimension DimenPercentScaled from a base Int. Usage example: `100.scaled().screen(...)`.
+EN Starts the build chain for the custom dimension DimenPercent from a base Int. Usage example: `100.scaled().screen(...)`.
 
-PT Inicia a cadeia de construção para a dimensão customizada DimenPercentScaled a partir de um Int base. Exemplo de uso: `100.scaled().screen(...)`.
+PT Inicia a cadeia de construção para a dimensão customizada DimenPercent a partir de um Int base. Exemplo de uso: `100.scaled().screen(...)`.

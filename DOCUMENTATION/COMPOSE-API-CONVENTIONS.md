@@ -90,20 +90,22 @@ Replace the **bold** stem to get the same API shape in another package:
 
 | Strategy | Package | Dp stem (SW / H / W) | Sp stem (scaled font) | “Fixed” Sp (no font scale) |
 |----------|---------|----------------------|------------------------|-----------------------------|
-| **scaled** | `compose` | `sdp` / `hdp` / `wdp` | `ssp` / `hsp` / `wsp` | `nem` / `hem` / `wem` |
-| **percent** | `compose.percent` | `psdp` / `phdp` / `pwdp` | `pssp` / `phsp` / `pwsp` | `pnem` / `phem` / `pwem` |
-| **power** | `compose.power` | `pwsdp` / `pwhdp` / `pwwdp` | `pwssp` / `pwhsp` / `pwwsp` | `pwnem` / `pwhem` / `pwwem` |
-| **fluid** | `compose.fluid` | `fsdp` / `fhdp` / `fwdp` | `fssp` / `fhsp` / `fwsp` | `fnem` / `fhem` / `fwem` |
-| **auto** | `compose.auto` | `asdp` / `ahdp` / `awdp` | `assp` / `ahsp` / `awsp` | `anem` / `ahem` / `awem` |
-| **diagonal** | `compose.diagonal` | `dgsdp` / `dghdp` / `dgwdp` | `dgssp` / `dghsp` / `dgwsp` | `dgnem` / `dghem` / `dgwem` |
-| **fill** | `compose.fill` | `flsdp` / `flhdp` / `flwdp` | `flssp` / `flhsp` / `flwsp` | `flnem` / `flhem` / `flwem` |
-| **fit** | `compose.fit` | `ftsdp` / `fthdp` / `ftwdp` | `ftssp` / `fthsp` / `ftwsp` | `ftnem` / `fthem` / `ftwem` |
-| **interpolated** | `compose.interpolated` | `isdp` / `ihdp` / `iwdp` | `issp` / `ihsp` / `iwsp` | `inem` / `ihem` / `iwem` |
-| **logarithmic** | `compose.logarithmic` | `logsdp` / `loghdp` / `logwdp` | `logssp` / `loghsp` / `logwsp` | `lognem` / `loghem` / `logwem` |
-| **perimeter** | `compose.perimeter` | `prsdp` / `prhdp` / `prwdp` | `prssp` / `prhsp` / `prwsp` | `prnem` / `prhem` / `prwem` |
-| **density** | `compose.density` | `dsdp` / `dhdp` / `dwdp` | `dssp` / `dhsp` / `dwsp` | `dnem` / `dhem` / `dwem` |
+| **scaled** | `compose` | `sdp` / `hdp` / `wdp` | `ssp` / `hsp` / `wsp` | `sem` / `hem` / `wem` |
+| **percent** | `compose.percent` | `psdp` / `phdp` / `pwdp` | `pssp` / `phsp` / `pwsp` | `psem` / `phem` / `pwem` |
+| **power** | `compose.power` | `pwsdp` / `pwhdp` / `pwwdp` | `pwssp` / `pwhsp` / `pwwsp` | `pwsem` / `pwhem` / `pwwem` |
+| **fluid** | `compose.fluid` | `fsdp` / `fhdp` / `fwdp` | `fssp` / `fhsp` / `fwsp` | `fsem` / `fhem` / `fwem` |
+| **auto** | `compose.auto` | `asdp` / `ahdp` / `awdp` | `assp` / `ahsp` / `awsp` | `asem` / `ahem` / `awem` |
+| **diagonal** | `compose.diagonal` | `dgsdp` / `dghdp` / `dgwdp` | `dgssp` / `dghsp` / `dgwsp` | `dgsem` / `dghem` / `dgwem` |
+| **fill** | `compose.fill` | `flsdp` / `flhdp` / `flwdp` | `flssp` / `flhsp` / `flwsp` | `flsem` / `flhem` / `flwem` |
+| **fit** | `compose.fit` | `ftsdp` / `fthdp` / `ftwdp` | `ftssp` / `fthsp` / `ftwsp` | `ftsem` / `fthem` / `ftwem` |
+| **interpolated** | `compose.interpolated` | `isdp` / `ihdp` / `iwdp` | `issp` / `ihsp` / `iwsp` | `isem` / `ihem` / `iwem` |
+| **logarithmic** | `compose.logarithmic` | `logsdp` / `loghdp` / `logwdp` | `logssp` / `loghsp` / `logwsp` | `logsem` / `loghem` / `logwem` |
+| **perimeter** | `compose.perimeter` | `prsdp` / `prhdp` / `prwdp` | `prssp` / `prhsp` / `prwsp` | `prsem` / `prhem` / `prwem` |
+| **density** | `compose.density` | `dsdp` / `dhdp` / `dwdp` | `dssp` / `dhsp` / `dwsp` | `dsem` / `dhem` / `dwem` |
 
 **Recommendation:** learn **scaled** first; for other strategies, keep the **same suffix pattern** (`a`, `i`, `ia`, `Px`, `Ph`, …) and only change the prefix column.
+
+**Builder classes (Compose + `code`)** use the same prefixed names for terminal accessors (e.g. density builder ends with `.dsdp` / `.dssp` / `.dsem`, not `.sdp`). On the **`code`** module, JVM static entry points live in **`Dimen{Strategy}Dp`** objects (e.g. `DimenAutoDp.asdp`); the **custom-dimension builder** type is **`Dimen{Strategy}`** (e.g. `DimenAuto`). The **scaled** strategy keeps **`DimenScaled`** and **`DimenSdp`** / **`DimenSsp`** unchanged.
 
 ---
 
@@ -373,14 +375,14 @@ The following tables list **every** `Number` extension property in **scaled** mo
 | `sspPxa` | `Float` | `val px = 16.sspPxa` |
 | `sspPxi` | `Float` | `val px = 16.sspPxi` |
 | `sspPxia` | `Float` | `val px = 16.sspPxia` |
-| `nem` | `TextUnit` | `Text("Hi", fontSize = 16.nem)` |
-| `nema` | `TextUnit` | `Text("Hi", fontSize = 16.nema)` |
-| `nemi` | `TextUnit` | `Text("Hi", fontSize = 16.nemi)` |
-| `nemia` | `TextUnit` | `Text("Hi", fontSize = 16.nemia)` |
-| `nemPx` | `Float` | `val px = 16.nemPx` |
-| `nemPxa` | `Float` | `val px = 16.nemPxa` |
-| `nemPxi` | `Float` | `val px = 16.nemPxi` |
-| `nemPxia` | `Float` | `val px = 16.nemPxia` |
+| `sem` | `TextUnit` | `Text("Hi", fontSize = 16.sem)` |
+| `sema` | `TextUnit` | `Text("Hi", fontSize = 16.sema)` |
+| `semi` | `TextUnit` | `Text("Hi", fontSize = 16.semi)` |
+| `semia` | `TextUnit` | `Text("Hi", fontSize = 16.semia)` |
+| `semPx` | `Float` | `val px = 16.semPx` |
+| `semPxa` | `Float` | `val px = 16.semPxa` |
+| `semPxi` | `Float` | `val px = 16.semPxi` |
+| `semPxia` | `Float` | `val px = 16.semPxia` |
 | `sspPh` | `TextUnit` | `Text("Hi", fontSize = 16.sspPh)` |
 | `sspPha` | `TextUnit` | `Text("Hi", fontSize = 16.sspPha)` |
 | `sspPhi` | `TextUnit` | `Text("Hi", fontSize = 16.sspPhi)` |

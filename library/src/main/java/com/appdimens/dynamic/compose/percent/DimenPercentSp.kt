@@ -237,33 +237,33 @@ val Number.sspPxia: Float get() = this.toDynamicPercentPx(DpQualifier.SMALL_WIDT
  * EN
  * Extension for Int with dynamic scaling based on the **Smallest Width (swDP)**, but
  * without respecting the system font scale.
- * Usage example: `16.pnem`.
+ * Usage example: `16.psem`.
  *
  * PT
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**,
  * mas sem respeitar a escala de fonte do sistema.
- * Exemplo de uso: `16.pnem`.
+ * Exemplo de uso: `16.psem`.
  */
 @get:Composable
-val Number.pnem: TextUnit get() = this.toDynamicPercentSp(DpQualifier.SMALL_WIDTH, fontScale = false)
+val Number.psem: TextUnit get() = this.toDynamicPercentSp(DpQualifier.SMALL_WIDTH, fontScale = false)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.nema: TextUnit get() = this.toDynamicPercentSp(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
+val Number.psema: TextUnit get() = this.toDynamicPercentSp(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.nemi: TextUnit get() = this.toDynamicPercentSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
+val Number.psemi: TextUnit get() = this.toDynamicPercentSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.nemia: TextUnit get() = this.toDynamicPercentSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.psemia: TextUnit get() = this.toDynamicPercentSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.nemPx: Float get() = this.toDynamicPercentPx(DpQualifier.SMALL_WIDTH, fontScale = false)
+val Number.psemPx: Float get() = this.toDynamicPercentPx(DpQualifier.SMALL_WIDTH, fontScale = false)
 @get:Composable
-val Number.nemPxa: Float get() = this.toDynamicPercentPx(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
+val Number.psemPxa: Float get() = this.toDynamicPercentPx(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
 @get:Composable
-val Number.nemPxi: Float get() = this.toDynamicPercentPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
+val Number.psemPxi: Float get() = this.toDynamicPercentPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
 @get:Composable
-val Number.nemPxia: Float get() = this.toDynamicPercentPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.psemPxia: Float get() = this.toDynamicPercentPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -622,7 +622,7 @@ val Number.wemPxiaPh: Float get() = this.toDynamicPercentPx(DpQualifier.WIDTH, f
  * Scaling logic:
  * 1. Builds a 64-bit packed cache key.
  * 2. If [fontScale] is `true`, the result respects the system font size setting.
- * 3. If [fontScale] is `false` (e.g. via [.pnem]), the system font scale is stripped.
+ * 3. If [fontScale] is `false` (e.g. via [.psem]), the system font scale is stripped.
  * 4. Checks [DimenCache] globally.
  *
  * PT
@@ -631,7 +631,7 @@ val Number.wemPxiaPh: Float get() = this.toDynamicPercentPx(DpQualifier.WIDTH, f
  * Lógica de escalonamento:
  * 1. Constrói uma chave de cache de 64 bits.
  * 2. Se [fontScale] for `true`, o resultado respeita a configuração de tamanho de fonte do sistema.
- * 3. Se [fontScale] for `false` (ex: via [.pnem]), a escala de fonte do sistema é removida.
+ * 3. Se [fontScale] for `false` (ex: via [.psem]), a escala de fonte do sistema é removida.
  * 4. Consulta o [DimenCache] globalmente.
  *
  * @param qualifier    Screen dimension qualifier.

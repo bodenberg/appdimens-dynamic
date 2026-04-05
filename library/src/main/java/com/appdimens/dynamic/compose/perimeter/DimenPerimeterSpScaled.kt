@@ -520,7 +520,7 @@ class PerimeterSp private constructor(
      * PT O valor final TextUnit (Sp) resolvido usando Smallest Width (SEM ESCALA DE FONTE).
      */
     @get:Composable
-    val sem: TextUnit get() = resolveNoFontScale(DpQualifier.SMALL_WIDTH)
+    val prsem: TextUnit get() = resolveNoFontScale(DpQualifier.SMALL_WIDTH)
 
     /**
      * EN The final TextUnit (Sp) value resolved using Screen Height (WITHOUT FONT SCALE).
@@ -541,40 +541,40 @@ class PerimeterSp private constructor(
      * PT O valor final em Pixels (Float) resolvido usando Smallest Width (COM escala de fonte).
      */
     @get:Composable
-    val sspPx: Float get() = resolvePx(DpQualifier.SMALL_WIDTH)
+    val prsspPx: Float get() = resolvePx(DpQualifier.SMALL_WIDTH)
 
     /**
      * EN The final Pixel (Float) value resolved using Screen Height (WITH font scale).
      * PT O valor final em Pixels (Float) resolvido usando Altura da Tela (COM escala de fonte).
      */
     @get:Composable
-    val hspPx: Float get() = resolvePx(DpQualifier.HEIGHT)
+    val prhspPx: Float get() = resolvePx(DpQualifier.HEIGHT)
 
     /**
      * EN The final Pixel (Float) value resolved using Screen Width (WITH font scale).
      * PT O valor final em Pixels (Float) resolvido usando Largura da Tela (COM escala de fonte).
      */
     @get:Composable
-    val wspPx: Float get() = resolvePx(DpQualifier.WIDTH)
+    val prwspPx: Float get() = resolvePx(DpQualifier.WIDTH)
 
     /**
      * EN The final Pixel (Float) value resolved using Smallest Width (WITHOUT FONT SCALE).
      * PT O valor final em Pixels (Float) resolvido usando Smallest Width (SEM ESCALA DE FONTE).
      */
     @get:Composable
-    val semPx: Float get() = resolveNoFontScalePx(DpQualifier.SMALL_WIDTH)
+    val prsemPx: Float get() = resolveNoFontScalePx(DpQualifier.SMALL_WIDTH)
 
     /**
      * EN The final Pixel (Float) value resolved using Screen Height (WITHOUT FONT SCALE).
      * PT O valor final em Pixels (Float) resolvido usando Altura da Tela (SEM ESCALA DE FONTE).
      */
     @get:Composable
-    val hemPx: Float get() = resolveNoFontScalePx(DpQualifier.HEIGHT)
+    val prhemPx: Float get() = resolveNoFontScalePx(DpQualifier.HEIGHT)
 
     /**
      * EN The final Pixel (Float) value resolved using Screen Width (WITHOUT FONT SCALE).
      * PT O valor final em Pixels (Float) resolvido usando Largura da Tela (SEM ESCALA DE FONTE).
      */
     @get:Composable
-    val wemPx: Float get() = resolveNoFontScalePx(DpQualifier.WIDTH)
+    val prwemPx: Float get() = resolveNoFontScalePx(DpQualifier.WIDTH)
 }

@@ -571,8 +571,8 @@ fun AutoResizeExamplesCard() {
  */
 @Composable
 fun DimenScaledExampleCard() {
-    // EN Same builder chain per strategy (scaledDp / percentDp / …), terminal .sdp on each builder type.
-    // PT Mesma cadeia por estratégia (scaledDp / percentDp / …), terminal .sdp em cada builder.
+    // EN Same builder chain per strategy (scaledDp / percentDp / …), terminal axis accessor matches that strategy (.sdp, .psdp, .asdp, …).
+    // PT Mesma cadeia por estratégia (scaledDp / percentDp / …), acessível final com o prefixo da estratégia (.sdp, .psdp, .asdp, …).
     val dynamicDp = demoDimenScaledResultDp()
 
     Card(
@@ -592,7 +592,7 @@ fun DimenScaledExampleCard() {
             )
             Text(
                 buildString {
-                    appendLine("100 × strategy builder + .screen(...) chain + .sdp")
+                    appendLine("100 × strategy builder + .screen(...) chain + .sdp / .psdp / .asdp / …")
                     appendLine("  .screen(TV + sw>=600 → 250)")
                     appendLine("  .screen(TV → 500)")
                     appendLine("  .screen(FOLD_OPEN → 200)")

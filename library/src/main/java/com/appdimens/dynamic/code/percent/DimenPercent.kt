@@ -27,368 +27,297 @@ package com.appdimens.dynamic.code.percent
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
-import android.content.res.Resources
-import android.util.TypedValue
 import com.appdimens.dynamic.common.DpQualifier
+import com.appdimens.dynamic.common.DpQualifierEntry
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.core.DimenCache
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * EN
- * Utility object for handling SDP (Scalable Dp) dimensions from Java.
+ * Represents a custom dimension entry with qualifiers and priority.
+ * Used by the DimenPercent class to define specific values for screen conditions.
  *
  * PT
- * Objeto utilitário para manipulação de dimensões SDP (Scalable Dp) no Java.
+ * Representa uma entrada de dimensão customizada com qualificadores e prioridade.
+ * Usada pela classe DimenPercent para definir valores específicos para condições de tela.
  */
-object DimenPercent {
+data class CustomDpEntry(
+    val uiModeType: UiModeType? = null,
+    val dpQualifierEntry: DpQualifierEntry? = null,
+    val orientation: Orientation? = Orientation.DEFAULT,
+    val customValue: Float, // Representing DP
+    val finalQualifierResolver: DpQualifier? = null,
+    val priority: Int,
+    val inverter: Inverter? = Inverter.DEFAULT
+)
+
+// EN Methods for creating the DimenPercent class.
+// PT Métodos de criação da classe DimenPercent.
+
+/**
+ * EN Starts the build chain for the custom dimension DimenPercent from a base Float (Dp).
+ * PT Inicia a cadeia de construção para a dimensão customizada DimenPercent a partir de um Float (Dp) base.
+ */
+fun Float.percentScaledDp(): DimenPercent = DimenPercent(this)
+
+/**
+ * EN Starts the build chain for the custom dimension DimenPercent from a base Int (Dp).
+ * PT Inicia a cadeia de construção para a dimensão customizada DimenPercent a partir de um Int (Dp) base.
+ */
+fun Number.percentScaledDp(): DimenPercent = this.toFloat().percentScaledDp()
+
+/**
+ * EN
+ * A class that allows defining custom dimensions
+ * based on screen qualifiers (UiModeType, Width, Height, Smallest Width).
+ *
+ * The value is resolved using a Context and uses the base value or a
+ * custom value, applying dynamic scaling at the end.
+ *
+ * PT
+ * Classe que permite a definição de dimensões customizadas
+ * baseadas em qualificadores de tela (UiModeType, Largura, Altura, Smallest Width).
+ */
+class DimenPercent private constructor(
+    private val initialBaseDp: Float,
+    private val sortedCustomEntries: List<CustomDpEntry> = emptyList(),
+    private val ignoreMultiWindows: Boolean = false,
+    private val applyAspectRatio: Boolean = false,
+    private val customSensitivityK: Float? = null
+) {
+
+    // EN Main constructor to start the chain.
+    constructor(initialBaseDp: Float) : this(initialBaseDp, emptyList(), false, false, null)
+
 
     /**
-     * EN Eagerly initializes [DimenCache] (persistence / DataStore) so the first resolution on a hot path avoids lazy-init work.
-     * PT Inicializa o [DimenCache] antecipadamente para evitar custo lazy no primeiro uso.
+     * EN Allow applying aspect ratio based constraint scaling.
+     * PT Permite aplicar o escalonamento restrito baseado na proporção da tela (aspect ratio).
      */
-    @JvmStatic
-    fun warmupCache(context: Context) {
-        DimenCache.init(context)
+    @JvmOverloads
+    fun applyAspectRatio(apply: Boolean = true): DimenPercent {
+        return DimenPercent(initialBaseDp, sortedCustomEntries, ignoreMultiWindows, apply, customSensitivityK)
     }
 
     /**
-     * EN Quick resolution for Smallest Width (sdp).
-     * PT Resolução rápida para Smallest Width (sdp).
+     * EN Allow ignoring the constraint scaling based on multi-window resizing properties.
+     * PT Permite ignorar o escalonamento restrito baseado nas propriedades de redimensionamento de multi-janelas.
      */
-    @JvmStatic
-    fun psdp(context: Context, value: Int): Float = value.psdp(context)
-
-    /**
-     * EN Quick resolution for Smallest Width (sdpa) with aspect ratio.
-     * PT Resolução rápida para Smallest Width (sdpa) com proporção de tela.
-     */
-    @JvmStatic
-    fun psdpa(context: Context, value: Int): Float = value.psdpa(context)
-
-    /**
-     * EN Quick resolution for Smallest Width (sdpi) ignoring multi-windows.
-     * PT Resolução rápida para Smallest Width (sdpi) ignorando janelas múltiplas.
-     */
-    @JvmStatic
-    fun psdpi(context: Context, value: Int): Float = value.psdpi(context)
-
-    /**
-     * EN Quick resolution for Smallest Width (sdpia) ignoring multi-windows and with aspect ratio.
-     * PT Resolução rápida para Smallest Width (sdpia) ignorando janelas múltiplas e com proporção.
-     */
-    @JvmStatic
-    fun psdpia(context: Context, value: Int): Float = value.psdpia(context)
-
-    /**
-     * EN Quick resolution for Smallest Width (sdp), but in portrait orientation it acts as Screen Height (hdp).
-     * PT Resolução rápida para Smallest Width (sdp), mas na orientação retrato atua como Altura da Tela (hdp).
-     */
-    @JvmStatic
-    fun psdpPh(context: Context, value: Int): Float = value.psdpPh(context)
-
-    @JvmStatic
-    fun psdpPha(context: Context, value: Int): Float = value.psdpPha(context)
-
-    @JvmStatic
-    fun psdpPhi(context: Context, value: Int): Float = value.psdpPhi(context)
-
-    @JvmStatic
-    fun psdpPhia(context: Context, value: Int): Float = value.psdpPhia(context)
-
-    /**
-     * EN Quick resolution for Smallest Width (sdp), but in landscape orientation it acts as Screen Height (hdp).
-     * PT Resolução rápida para Smallest Width (sdp), mas na orientação paisagem atua como Altura da Tela (hdp).
-     */
-    @JvmStatic
-    fun psdpLh(context: Context, value: Int): Float = value.psdpLh(context)
-
-    @JvmStatic
-    fun psdpLha(context: Context, value: Int): Float = value.psdpLha(context)
-
-    @JvmStatic
-    fun psdpLhi(context: Context, value: Int): Float = value.psdpLhi(context)
-
-    @JvmStatic
-    fun psdpLhia(context: Context, value: Int): Float = value.psdpLhia(context)
-
-    /**
-     * EN Quick resolution for Smallest Width (sdp), but in portrait orientation it acts as Screen Width (wdp).
-     * PT Resolução rápida para Smallest Width (sdp), mas na orientação retrato atua como Largura da Tela (wdp).
-     */
-    @JvmStatic
-    fun psdpPw(context: Context, value: Int): Float = value.psdpPw(context)
-
-    @JvmStatic
-    fun psdpPwa(context: Context, value: Int): Float = value.psdpPwa(context)
-
-    @JvmStatic
-    fun psdpPwi(context: Context, value: Int): Float = value.psdpPwi(context)
-
-    @JvmStatic
-    fun psdpPwia(context: Context, value: Int): Float = value.psdpPwia(context)
-
-    /**
-     * EN Quick resolution for Smallest Width (sdp), but in landscape orientation it acts as Screen Width (wdp).
-     * PT Resolução rápida para Smallest Width (sdp), mas na orientação paisagem atua como Largura da Tela (wdp).
-     */
-    @JvmStatic
-    fun psdpLw(context: Context, value: Int): Float = value.psdpLw(context)
-
-    @JvmStatic
-    fun psdpLwa(context: Context, value: Int): Float = value.psdpLwa(context)
-
-    @JvmStatic
-    fun psdpLwi(context: Context, value: Int): Float = value.psdpLwi(context)
-
-    @JvmStatic
-    fun psdpLwia(context: Context, value: Int): Float = value.psdpLwia(context)
-
-    /**
-     * EN Quick resolution for Screen Height (hdp).
-     * PT Resolução rápida para Altura da Tela (hdp).
-     */
-    @JvmStatic
-    fun phdp(context: Context, value: Int): Float = value.phdp(context)
-
-    @JvmStatic
-    fun phdpa(context: Context, value: Int): Float = value.phdpa(context)
-
-    @JvmStatic
-    fun phdpi(context: Context, value: Int): Float = value.phdpi(context)
-
-    @JvmStatic
-    fun phdpia(context: Context, value: Int): Float = value.phdpia(context)
-
-    /**
-     * EN Quick resolution for Screen Height (hdp), but in landscape orientation it acts as Screen Width (wdp).
-     */
-    @JvmStatic
-    fun phdpLw(context: Context, value: Int): Float = value.phdpLw(context)
-
-    @JvmStatic
-    fun phdpLwa(context: Context, value: Int): Float = value.phdpLwa(context)
-
-    @JvmStatic
-    fun phdpLwi(context: Context, value: Int): Float = value.phdpLwi(context)
-
-    @JvmStatic
-    fun phdpLwia(context: Context, value: Int): Float = value.phdpLwia(context)
-
-    /**
-     * EN Quick resolution for Screen Height (hdp), but in portrait orientation it acts as Screen Width (wdp).
-     */
-    @JvmStatic
-    fun phdpPw(context: Context, value: Int): Float = value.phdpPw(context)
-
-    @JvmStatic
-    fun phdpPwa(context: Context, value: Int): Float = value.phdpPwa(context)
-
-    @JvmStatic
-    fun phdpPwi(context: Context, value: Int): Float = value.phdpPwi(context)
-
-    @JvmStatic
-    fun phdpPwia(context: Context, value: Int): Float = value.phdpPwia(context)
-
-    /**
-     * EN Quick resolution for Screen Width (wdp).
-     * PT Resolução rápida para Largura da Tela (wdp).
-     */
-    @JvmStatic
-    fun pwdp(context: Context, value: Int): Float = value.pwdp(context)
-
-    @JvmStatic
-    fun pwdpa(context: Context, value: Int): Float = value.pwdpa(context)
-
-    @JvmStatic
-    fun pwdpi(context: Context, value: Int): Float = value.pwdpi(context)
-
-    @JvmStatic
-    fun pwdpia(context: Context, value: Int): Float = value.pwdpia(context)
-
-    /**
-     * EN Quick resolution for Screen Width (wdp), but in landscape orientation it acts as Screen Height (hdp).
-     */
-    @JvmStatic
-    fun pwdpLh(context: Context, value: Int): Float = value.pwdpLh(context)
-
-    @JvmStatic
-    fun pwdpLha(context: Context, value: Int): Float = value.pwdpLha(context)
-
-    @JvmStatic
-    fun pwdpLhi(context: Context, value: Int): Float = value.pwdpLhi(context)
-
-    @JvmStatic
-    fun pwdpLhia(context: Context, value: Int): Float = value.pwdpLhia(context)
-
-    /**
-     * EN Quick resolution for Screen Width (wdp), but in portrait orientation it acts as Screen Height (hdp).
-     */
-    @JvmStatic
-    fun pwdpPh(context: Context, value: Int): Float = value.pwdpPh(context)
-
-    @JvmStatic
-    fun pwdpPha(context: Context, value: Int): Float = value.pwdpPha(context)
-
-    @JvmStatic
-    fun pwdpPhi(context: Context, value: Int): Float = value.pwdpPhi(context)
-
-    @JvmStatic
-    fun pwdpPhia(context: Context, value: Int): Float = value.pwdpPhia(context)
-
-    // EN Qualifier-based conditional dynamic scaling.
-    // PT Escalonamento condicional baseado em qualificador.
-
-    /**
-     * EN Quick resolution for Smallest Width (swDP) conditional scaling.
-     */
-    @JvmStatic
     @JvmOverloads
-    fun psdpQualifier(context: Context, value: Int, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.psdpQualifier(context, qualifiedValue, qualifierType, qualifierValue, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun ignoreMultiWindows(ignore: Boolean = true): DimenPercent {
+        return DimenPercent(initialBaseDp, sortedCustomEntries, ignore, applyAspectRatio, customSensitivityK)
+    }
+
+    private fun reorderEntries(newEntry: CustomDpEntry): List<CustomDpEntry> {
+        return (sortedCustomEntries + newEntry).sortedWith(
+            compareBy<CustomDpEntry> { it.priority }
+                .thenByDescending { it.dpQualifierEntry?.value?.toFloat() ?: 0f }
+        )
+    }
+
+    // EN Builder methods.
+
+    @JvmOverloads
+    fun screen(
+        uiModeType: UiModeType,
+        qualifierType: DpQualifier,
+        qualifierValue: Number,
+        orientation: Orientation? = Orientation.DEFAULT,
+        customValue: Float,
+        finalQualifierResolver: DpQualifier? = null,
+        inverter: Inverter? = Inverter.DEFAULT
+    ): DimenPercent {
+        val entry = CustomDpEntry(
+            uiModeType = uiModeType,
+            dpQualifierEntry = DpQualifierEntry(qualifierType, qualifierValue),
+            orientation = orientation,
+            customValue = customValue,
+            finalQualifierResolver = finalQualifierResolver,
+            priority = 1,
+            inverter = inverter
+        )
+        return DimenPercent(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    }
+
+    @JvmOverloads
+    fun screen(
+        uiModeType: UiModeType,
+        qualifierType: DpQualifier,
+        qualifierValue: Number,
+        customValue: Number,
+        finalQualifierResolver: DpQualifier? = null,
+        orientation: Orientation? = Orientation.DEFAULT,
+        inverter: Inverter? = Inverter.DEFAULT
+    ): DimenPercent = screen(uiModeType, qualifierType, qualifierValue, orientation, customValue.toFloat(), finalQualifierResolver, inverter)
+
+    @JvmOverloads
+    fun screen(
+        type: UiModeType,
+        customValue: Float,
+        finalQualifierResolver: DpQualifier? = null,
+        orientation: Orientation? = Orientation.DEFAULT,
+        inverter: Inverter? = Inverter.DEFAULT
+    ): DimenPercent {
+        val entry = CustomDpEntry(
+            uiModeType = type,
+            orientation = orientation,
+            customValue = customValue,
+            finalQualifierResolver = finalQualifierResolver,
+            priority = 2,
+            inverter = inverter
+        )
+        return DimenPercent(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    }
+
+    @JvmOverloads
+    fun screen(
+        type: UiModeType,
+        customValue: Number,
+        finalQualifierResolver: DpQualifier? = null,
+        orientation: Orientation? = Orientation.DEFAULT,
+        inverter: Inverter? = Inverter.DEFAULT
+    ): DimenPercent = screen(type, customValue.toFloat(), finalQualifierResolver, orientation, inverter)
+
+    @JvmOverloads
+    fun screen(
+        type: DpQualifier,
+        value: Int,
+        customValue: Float,
+        finalQualifierResolver: DpQualifier? = null,
+        orientation: Orientation? = Orientation.DEFAULT,
+        inverter: Inverter? = Inverter.DEFAULT
+    ): DimenPercent {
+        val entry = CustomDpEntry(
+            dpQualifierEntry = DpQualifierEntry(type, value),
+            orientation = orientation,
+            customValue = customValue,
+            finalQualifierResolver = finalQualifierResolver,
+            priority = 3,
+            inverter = inverter
+        )
+        return DimenPercent(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    }
+
+    @JvmOverloads
+    fun screen(
+        type: DpQualifier,
+        value: Int,
+        customValue: Number,
+        finalQualifierResolver: DpQualifier? = null,
+        orientation: Orientation? = Orientation.DEFAULT,
+        inverter: Inverter? = Inverter.DEFAULT
+    ): DimenPercent = screen(type, value, customValue.toFloat(), finalQualifierResolver, orientation, inverter)
+
+    @JvmOverloads
+    fun screen(
+        orientation: Orientation = Orientation.DEFAULT,
+        customValue: Float,
+        finalQualifierResolver: DpQualifier? = null,
+        inverter: Inverter? = Inverter.DEFAULT
+    ): DimenPercent {
+        val entry = CustomDpEntry(
+            orientation = orientation,
+            customValue = customValue,
+            finalQualifierResolver = finalQualifierResolver,
+            priority = 4,
+            inverter = inverter
+        )
+        return DimenPercent(initialBaseDp, reorderEntries(entry), ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    }
+
+    @JvmOverloads
+    fun screen(
+        orientation: Orientation = Orientation.DEFAULT,
+        customValue: Number,
+        finalQualifierResolver: DpQualifier? = null,
+        inverter: Inverter? = Inverter.DEFAULT
+    ): DimenPercent = screen(orientation, customValue.toFloat(), finalQualifierResolver, inverter)
+
+    // EN Resolution logic.
+
+    private fun resolveDp(context: Context, qualifier: DpQualifier): Float {
+        val configuration = context.resources.configuration
+        val currentUiModeType = DimenCache.getCachedUiModeType(context)
+        return resolveDpInternal(context, qualifier, configuration, currentUiModeType)
+    }
 
     /**
-     * EN Quick resolution for Screen Height (hDP) conditional scaling.
+     * EN Resolves psdp, phdp, and pwdp in one pass (single [UiModeType.fromConfiguration] and config read).
+     * PT Resolve psdp, phdp e pwdp numa só passagem.
      */
-    @JvmStatic
-    @JvmOverloads
-    fun phdpQualifier(context: Context, value: Int, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.phdpQualifier(context, qualifiedValue, qualifierType, qualifierValue, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun psdpPhdpPwdpPx(context: Context): Triple<Float, Float, Float> {
+        val configuration = context.resources.configuration
+        val currentUiModeType = DimenCache.getCachedUiModeType(context)
+        val density = context.resources.displayMetrics.density
+        val psdp = resolveDpInternal(context, DpQualifier.SMALL_WIDTH, configuration, currentUiModeType) * density
+        val phdp = resolveDpInternal(context, DpQualifier.HEIGHT, configuration, currentUiModeType) * density
+        val pwdp = resolveDpInternal(context, DpQualifier.WIDTH, configuration, currentUiModeType) * density
+        return Triple(psdp, phdp, pwdp)
+    }
 
-    /**
-     * EN Quick resolution for Screen Width (wDP) conditional scaling.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun pwdpQualifier(context: Context, value: Int, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.pwdpQualifier(context, qualifiedValue, qualifierType, qualifierValue, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-
-    // EN UiModeType + DpQualifier combined facilitator extensions.
-    // PT Extensões facilitadoras combinadas UiModeType + DpQualifier.
-
-    /**
-     * EN Quick resolution for Smallest Width (swDP) context conditional scaling.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun psdpScreen(context: Context, value: Int, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.psdpScreen(context, screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-
-    /**
-     * EN Quick resolution for Screen Height (hDP) context conditional scaling.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun phdpScreen(context: Context, value: Int, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.phdpScreen(context, screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-
-    /**
-     * EN Quick resolution for Screen Width (wDP) context conditional scaling.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun pwdpScreen(context: Context, value: Int, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.pwdpScreen(context, screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-
-    /**
-     * EN Generic scaling function for Java.
-     * PT Função de escala genérica para Java.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun getDimensionInPx(
+    private fun resolveDpInternal(
         context: Context,
         qualifier: DpQualifier,
-        value: Int,
-        inverter: Inverter = Inverter.DEFAULT,
-        ignoreMultiWindows: Boolean = false,
-        applyAspectRatio: Boolean = false,
-        customSensitivityK: Float? = null
-    ): Float = value.toDynamicPercentPx(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        configuration: Configuration,
+        currentUiModeType: UiModeType
+    ): Float {
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+        val foundEntry = sortedCustomEntries.firstOrNull { entry ->
+            val qualifierEntry = entry.dpQualifierEntry
+            val uiModeMatch = entry.uiModeType == null || entry.uiModeType == currentUiModeType
+            val orientationMatch = when (entry.orientation) {
+                Orientation.LANDSCAPE -> isLandscape
+                Orientation.PORTRAIT -> isPortrait
+                else -> true
+            }
+
+            if (qualifierEntry != null) {
+                val qualifierMatch = getQualifierValue(qualifierEntry.type, configuration) >= qualifierEntry.value.toFloat()
+                if (entry.priority == 1 && uiModeMatch && qualifierMatch && orientationMatch) return@firstOrNull true
+                if (entry.priority == 3 && qualifierMatch && orientationMatch) return@firstOrNull true
+                false
+            } else {
+                if (entry.priority == 2 && uiModeMatch && orientationMatch) return@firstOrNull true
+                if (entry.priority == 4 && orientationMatch) return@firstOrNull true
+                false
+            }
+        }
+
+        val dpToUse = foundEntry?.customValue ?: initialBaseDp
+        val finalQualifier = foundEntry?.finalQualifierResolver ?: qualifier
+
+        return dpToUse.toDynamicPercentDp(
+            context,
+            finalQualifier,
+            foundEntry?.inverter ?: Inverter.DEFAULT,
+            ignoreMultiWindows,
+            applyAspectRatio,
+            customSensitivityK
+        )
+    }
 
     /**
-     * EN Generic DP scaling function for Java.
-     * PT Função de escala DP genérica para Java.
+     * EN Resolves the final value in pixels (Float).
      */
-    @JvmStatic
-    @JvmOverloads
-    fun getDimensionInDp(
-        context: Context,
-        qualifier: DpQualifier,
-        value: Int,
-        inverter: Inverter = Inverter.DEFAULT,
-        ignoreMultiWindows: Boolean = false,
-        applyAspectRatio: Boolean = false,
-        customSensitivityK: Float? = null
-    ): Float = value.toDynamicPercentDp(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun px(context: Context, qualifier: DpQualifier): Float {
+        val configuration = context.resources.configuration
+        val currentUiModeType = DimenCache.getCachedUiModeType(context)
+        val dpValue = resolveDpInternal(context, qualifier, configuration, currentUiModeType)
+        return dpValue * context.resources.displayMetrics.density
+    }
 
-    /**
-     * EN Starts the build chain for the custom dimension DimenPercentScaled from a base Int.
-     * PT Inicia a cadeia de construção para a dimensão customizada DimenPercentScaled a partir de um Int base.
-     */
-    @JvmStatic
-    fun scaled(initialBaseValue: Int): DimenPercentScaled = DimenPercentScaled(initialBaseValue.toFloat())
+    // EN Convenience properties/methods similar to Compose version.
 
-    /**
-     * EN Starts the build chain for the custom dimension DimenPercentScaled from a base Float.
-     */
-    @JvmStatic
-    fun scaled(initialBaseValue: Float): DimenPercentScaled = DimenPercentScaled(initialBaseValue)
+    fun psdp(context: Context): Float = px(context, DpQualifier.SMALL_WIDTH)
+    fun phdp(context: Context): Float = px(context, DpQualifier.HEIGHT)
+    fun pwdp(context: Context): Float = px(context, DpQualifier.WIDTH)
 
-    // EN Rotation facilitator functions for Java.
-    // PT Funções facilitadoras de rotação para Java.
-
-    /**
-     * EN Facilitator for Smallest Width (sdp) with rotation override.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun psdpRotate(context: Context, value: Int, rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.psdpRotate(context, rotationValue, finalQualifierResolver, orientation, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-
-    /**
-     * EN Facilitator for Screen Height (hdp) with rotation override.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun phdpRotate(context: Context, value: Int, rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.phdpRotate(context, rotationValue, finalQualifierResolver, orientation, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-
-    /**
-     * EN Facilitator for Screen Width (wdp) with rotation override.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun pwdpRotate(context: Context, value: Int, rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.pwdpRotate(context, rotationValue, finalQualifierResolver, orientation, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-
-    // EN UiModeType facilitator functions for Java.
-    // PT Funções facilitadoras de UiModeType para Java.
-
-    /**
-     * EN Facilitator for Smallest Width (sdp) with UiModeType override.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun psdpMode(context: Context, value: Int, modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.psdpMode(context, modeValue, uiModeType, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-
-    /**
-     * EN Facilitator for Screen Height (hdp) with UiModeType override.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun phdpMode(context: Context, value: Int, modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.phdpMode(context, modeValue, uiModeType, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
-
-    /**
-     * EN Facilitator for Screen Width (wdp) with UiModeType override.
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun pwdpMode(context: Context, value: Int, modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.pwdpMode(context, modeValue, uiModeType, finalQualifierResolver, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    /** EN Get the resolved value in DP (as Float). */
+    fun psdpBase(context: Context): Float = resolveDp(context, DpQualifier.SMALL_WIDTH)
+    fun phdpBase(context: Context): Float = resolveDp(context, DpQualifier.HEIGHT)
+    fun pwdpBase(context: Context): Float = resolveDp(context, DpQualifier.WIDTH)
 }

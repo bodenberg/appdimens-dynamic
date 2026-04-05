@@ -8,17 +8,17 @@ package com.example.app.compose.benchmark
 
 import android.content.Context
 import com.appdimens.dynamic.code.DimenSdp
-import com.appdimens.dynamic.code.auto.DimenAuto
-import com.appdimens.dynamic.code.density.DimenDensity
-import com.appdimens.dynamic.code.diagonal.DimenDiagonal
-import com.appdimens.dynamic.code.fill.DimenFill
-import com.appdimens.dynamic.code.fit.DimenFit
-import com.appdimens.dynamic.code.fluid.DimenFluid
-import com.appdimens.dynamic.code.interpolated.DimenInterpolated
-import com.appdimens.dynamic.code.logarithmic.DimenLogarithmic
-import com.appdimens.dynamic.code.percent.DimenPercent
-import com.appdimens.dynamic.code.perimeter.DimenPerimeter
-import com.appdimens.dynamic.code.power.DimenPower
+import com.appdimens.dynamic.code.auto.DimenAutoDp
+import com.appdimens.dynamic.code.density.DimenDensityDp
+import com.appdimens.dynamic.code.diagonal.DimenDiagonalDp
+import com.appdimens.dynamic.code.fill.DimenFillDp
+import com.appdimens.dynamic.code.fit.DimenFitDp
+import com.appdimens.dynamic.code.fluid.DimenFluidDp
+import com.appdimens.dynamic.code.interpolated.DimenInterpolatedDp
+import com.appdimens.dynamic.code.logarithmic.DimenLogarithmicDp
+import com.appdimens.dynamic.code.percent.DimenPercentDp
+import com.appdimens.dynamic.code.perimeter.DimenPerimeterDp
+import com.appdimens.dynamic.code.power.DimenPowerDp
 
 /**
  * EN Which AppDimens calculation family drives Micro + Calculation benchmarks.
@@ -70,25 +70,25 @@ internal fun BenchmarkCalculationMode.ops(): BenchmarkDimenOps = when (this) {
     BenchmarkCalculationMode.SCALED ->
         BenchmarkDimenOps(DimenSdp::sdp, DimenSdp::hdp, DimenSdp::wdp, DimenSdp::sdpa)
     BenchmarkCalculationMode.DENSITY ->
-        BenchmarkDimenOps(DimenDensity::dsdp, DimenDensity::dhdp, DimenDensity::dwdp, DimenDensity::dsdpa)
+        BenchmarkDimenOps(DimenDensityDp::dsdp, DimenDensityDp::dhdp, DimenDensityDp::dwdp, DimenDensityDp::dsdpa)
     BenchmarkCalculationMode.FILL ->
-        BenchmarkDimenOps(DimenFill::flsdp, DimenFill::flhdp, DimenFill::flwdp, DimenFill::flsdpa)
+        BenchmarkDimenOps(DimenFillDp::flsdp, DimenFillDp::flhdp, DimenFillDp::flwdp, DimenFillDp::flsdpa)
     BenchmarkCalculationMode.FIT ->
-        BenchmarkDimenOps(DimenFit::ftsdp, DimenFit::fthdp, DimenFit::ftwdp, DimenFit::ftsdpa)
+        BenchmarkDimenOps(DimenFitDp::ftsdp, DimenFitDp::fthdp, DimenFitDp::ftwdp, DimenFitDp::ftsdpa)
     BenchmarkCalculationMode.FLUID ->
-        BenchmarkDimenOps(DimenFluid::fsdp, DimenFluid::fhdp, DimenFluid::fwdp, DimenFluid::fsdpa)
+        BenchmarkDimenOps(DimenFluidDp::fsdp, DimenFluidDp::fhdp, DimenFluidDp::fwdp, DimenFluidDp::fsdpa)
     BenchmarkCalculationMode.DIAGONAL ->
-        BenchmarkDimenOps(DimenDiagonal::dgsdp, DimenDiagonal::dghdp, DimenDiagonal::dgwdp, DimenDiagonal::dgsdpa)
+        BenchmarkDimenOps(DimenDiagonalDp::dgsdp, DimenDiagonalDp::dghdp, DimenDiagonalDp::dgwdp, DimenDiagonalDp::dgsdpa)
     BenchmarkCalculationMode.INTERPOLATED ->
-        BenchmarkDimenOps(DimenInterpolated::isdp, DimenInterpolated::ihdp, DimenInterpolated::iwdp, DimenInterpolated::isdpa)
+        BenchmarkDimenOps(DimenInterpolatedDp::isdp, DimenInterpolatedDp::ihdp, DimenInterpolatedDp::iwdp, DimenInterpolatedDp::isdpa)
     BenchmarkCalculationMode.LOGARITHMIC ->
-        BenchmarkDimenOps(DimenLogarithmic::logsdp, DimenLogarithmic::loghdp, DimenLogarithmic::logwdp, DimenLogarithmic::logsdpa)
+        BenchmarkDimenOps(DimenLogarithmicDp::logsdp, DimenLogarithmicDp::loghdp, DimenLogarithmicDp::logwdp, DimenLogarithmicDp::logsdpa)
     BenchmarkCalculationMode.PERCENT ->
-        BenchmarkDimenOps(DimenPercent::psdp, DimenPercent::phdp, DimenPercent::pwdp, DimenPercent::psdpa)
+        BenchmarkDimenOps(DimenPercentDp::psdp, DimenPercentDp::phdp, DimenPercentDp::pwdp, DimenPercentDp::psdpa)
     BenchmarkCalculationMode.PERIMETER ->
-        BenchmarkDimenOps(DimenPerimeter::prsdp, DimenPerimeter::prhdp, DimenPerimeter::prwdp, DimenPerimeter::prsdpa)
+        BenchmarkDimenOps(DimenPerimeterDp::prsdp, DimenPerimeterDp::prhdp, DimenPerimeterDp::prwdp, DimenPerimeterDp::prsdpa)
     BenchmarkCalculationMode.POWER ->
-        BenchmarkDimenOps(DimenPower::pwsdp, DimenPower::pwhdp, DimenPower::pwwdp, DimenPower::pwsdpa)
+        BenchmarkDimenOps(DimenPowerDp::pwsdp, DimenPowerDp::pwhdp, DimenPowerDp::pwwdp, DimenPowerDp::pwsdpa)
     BenchmarkCalculationMode.AUTO ->
-        BenchmarkDimenOps(DimenAuto::asdp, DimenAuto::ahdp, DimenAuto::awdp, DimenAuto::asdpa)
+        BenchmarkDimenOps(DimenAutoDp::asdp, DimenAutoDp::ahdp, DimenAutoDp::awdp, DimenAutoDp::asdpa)
 }

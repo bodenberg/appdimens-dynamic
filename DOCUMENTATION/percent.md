@@ -26,7 +26,7 @@ Modifier.padding(12.psdp)
 Modifier.width(10.spaceW) // 10% of Configuration.screenWidthDp
 ```
 
-**Code:** `com.appdimens.dynamic.code.percent` — mirrors extensions and `DimenPercent` / `DimenPercentSp` for px and dp.
+**Code:** `com.appdimens.dynamic.code.percent` — mirrors extensions and `DimenPercentDp` / `DimenPercentSp` for px and dp.
 
 Use **`space*`** when you need a **literal screen percentage**; use **`psdp`…** when you want the same design “token” as other strategies but with a 1/300-style law on the axis (and optional AR).
 

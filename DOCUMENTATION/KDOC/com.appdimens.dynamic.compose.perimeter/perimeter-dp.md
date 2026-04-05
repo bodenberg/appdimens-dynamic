@@ -3,13 +3,13 @@
 # perimeterDp
 
 [jvm]
-fun <Error class: unknown class>.[perimeterDp](perimeter-dp.md)(): [DimenPerimeterScaled](-dimen-perimeter-scaled/index.md)
+fun <Error class: unknown class>.[perimeterDp](perimeter-dp.md)(): [DimenPerimeter](-dimen-perimeter/index.md)
 
-EN Starts the build chain for the custom dimension DimenPerimeterScaled from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenPerimeterScaled a partir de um Dp base.
+EN Starts the build chain for the custom dimension DimenPerimeter from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenPerimeter a partir de um Dp base.
 
 [jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[perimeterDp](perimeter-dp.md)(): [DimenPerimeterScaled](-dimen-perimeter-scaled/index.md)
+fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[perimeterDp](perimeter-dp.md)(): [DimenPerimeter](-dimen-perimeter/index.md)
 
-EN Starts the build chain for the custom dimension DimenPerimeterScaled from a base Int. Usage example: `100.scaled().screen(...)`.
+EN Starts the build chain for the custom dimension DimenPerimeter from a base Int. Usage example: `100.scaled().screen(...)`.
 
-PT Inicia a cadeia de construção para a dimensão customizada DimenPerimeterScaled a partir de um Int base. Exemplo de uso: `100.scaled().screen(...)`.
+PT Inicia a cadeia de construção para a dimensão customizada DimenPerimeter a partir de um Int base. Exemplo de uso: `100.scaled().screen(...)`.

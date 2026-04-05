@@ -237,33 +237,33 @@ val Number.sspPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_
  * EN
  * Extension for Int with dynamic scaling based on the **Smallest Width (swDP)**, but
  * without respecting the system font scale.
- * Usage example: `16.lognem`.
+ * Usage example: `16.logsem`.
  *
  * PT
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**,
  * mas sem respeitar a escala de fonte do sistema.
- * Exemplo de uso: `16.lognem`.
+ * Exemplo de uso: `16.logsem`.
  */
 @get:Composable
-val Number.lognem: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = false)
+val Number.logsem: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = false)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.nema: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
+val Number.logsema: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.nemi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
+val Number.logsemi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.nemia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsemia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.nemPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = false)
+val Number.logsemPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = false)
 @get:Composable
-val Number.nemPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
+val Number.logsemPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = false, applyAspectRatio = true)
 @get:Composable
-val Number.nemPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
+val Number.logsemPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true)
 @get:Composable
-val Number.nemPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsemPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -622,7 +622,7 @@ val Number.wemPxiaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDT
  * Scaling logic:
  * 1. Builds a 64-bit packed cache key.
  * 2. If [fontScale] is `true`, the result respects the system font size setting.
- * 3. If [fontScale] is `false` (e.g. via [.lognem]), the system font scale is stripped.
+ * 3. If [fontScale] is `false` (e.g. via [.logsem]), the system font scale is stripped.
  * 4. Checks [DimenCache] globally.
  *
  * PT
@@ -631,7 +631,7 @@ val Number.wemPxiaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDT
  * Lógica de escalonamento:
  * 1. Constrói uma chave de cache de 64 bits.
  * 2. Se [fontScale] for `true`, o resultado respeita a configuração de tamanho de fonte do sistema.
- * 3. Se [fontScale] for `false` (ex: via [.lognem]), a escala de fonte do sistema é removida.
+ * 3. Se [fontScale] for `false` (ex: via [.logsem]), a escala de fonte do sistema é removida.
  * 4. Consulta o [DimenCache] globalmente.
  *
  * @param qualifier    Screen dimension qualifier.

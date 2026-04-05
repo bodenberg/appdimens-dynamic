@@ -78,6 +78,7 @@ dependencies {
 | **`hdp`** | Screen height | Row height |
 | **`wdp`** | Screen width | Column width |
 | **`ssp`** | Same idea as `sdp`, for text | `fontSize` |
+| **`sem`** | Same idea as `sdp`, for text | `fontSize ignore system font scale` |
 
 ```kotlin
 import com.appdimens.dynamic.compose.*
@@ -96,7 +97,7 @@ Box(
 
 ## Compose — setup before advanced APIs
 
-**If you only use `sdp` / `hdp` / `wdp` / `ssp` (and variants like `sdpa`), you can skip this block.**
+**If you only use `sdp` / `hdp` / `wdp` / `ssp` / `hsp` / `wsp`/ `sem` / `hem` / `wem` (and variants like `sdpa`), you can skip this block.**
 
 ### `AppDimensProvider`
 
@@ -161,7 +162,7 @@ You only get `onConfigurationChanged` if the Activity lists `android:configChang
 Text("Scaled (sw)", fontSize = 16.ssp)
 Text("Scaled (height)", fontSize = 20.hsp)
 Text("Scaled (width)", fontSize = 18.wsp)
-Text("No system font scale (sw)", fontSize = 16.nem)   // nem / hem / wem
+Text("No system font scale (sw)", fontSize = 16.sem)   // sem / hem / wem
 ```
 
 ### Orientation inverters (examples)

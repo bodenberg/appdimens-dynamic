@@ -4,9 +4,9 @@
 
 data class [CustomDpEntry](index.md)(val uiModeType: [UiModeType](../../com.appdimens.dynamic.common/-ui-mode-type/index.md)? = null, val dpQualifierEntry: [DpQualifierEntry](../../com.appdimens.dynamic.common/-dp-qualifier-entry/index.md)? = null, val orientation: [Orientation](../../com.appdimens.dynamic.common/-orientation/index.md)? = Orientation.DEFAULT, val customValue: <Error class: unknown class>, val finalQualifierResolver: [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, val priority: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html), val inverter: [Inverter](../../com.appdimens.dynamic.common/-inverter/index.md)? = Inverter.DEFAULT)
 
-EN Represents a custom dimension entry with qualifiers and priority. Used by the DimenDiagonalScaled class to define specific values for screen conditions.
+EN Represents a custom dimension entry with qualifiers and priority. Used by the DimenDiagonal class to define specific values for screen conditions.
 
-PT Representa uma entrada de dimensão customizada com qualificadores e prioridade. Usada pela classe DimenDiagonalScaled para definir valores específicos para condições de tela.
+PT Representa uma entrada de dimensão customizada com qualificadores e prioridade. Usada pela classe DimenDiagonal para definir valores específicos para condições de tela.
 
 #### Parameters
 

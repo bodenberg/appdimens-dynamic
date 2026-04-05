@@ -3,11 +3,11 @@
 # fillScaledDp
 
 [jvm]
-fun [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html).[fillScaledDp](fill-scaled-dp.md)(): [DimenFillScaled](-dimen-fill-scaled/index.md)
+fun [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html).[fillScaledDp](fill-scaled-dp.md)(): [DimenFill](-dimen-fill/index.md)
 
-EN Starts the build chain for the custom dimension DimenFillScaled from a base Float (Dp). PT Inicia a cadeia de construção para a dimensão customizada DimenFillScaled a partir de um Float (Dp) base.
+EN Starts the build chain for the custom dimension DimenFill from a base Float (Dp). PT Inicia a cadeia de construção para a dimensão customizada DimenFill a partir de um Float (Dp) base.
 
 [jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[fillScaledDp](fill-scaled-dp.md)(): [DimenFillScaled](-dimen-fill-scaled/index.md)
+fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[fillScaledDp](fill-scaled-dp.md)(): [DimenFill](-dimen-fill/index.md)
 
-EN Starts the build chain for the custom dimension DimenFillScaled from a base Int (Dp). PT Inicia a cadeia de construção para a dimensão customizada DimenFillScaled a partir de um Int (Dp) base.
+EN Starts the build chain for the custom dimension DimenFill from a base Int (Dp). PT Inicia a cadeia de construção para a dimensão customizada DimenFill a partir de um Int (Dp) base.

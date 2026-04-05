@@ -56,7 +56,7 @@ Each `calculate*Dp` function reads the pre-computed factor from `ScreenFactors` 
 
 ## Consumer R8/ProGuard rules
 
-`consumer-rules.pro` keeps the public API surface while allowing R8 to inline and remove internal helpers (padding fields, shards, etc.) via `-allowoptimization`.
+`consumer-rules.pro` keeps the public API surface (`code`, `compose`, `common`, and the listed `core` types). The rest of `core` is not blanket-kept, so R8 may still shrink, obfuscate, and inline internal helpers where no other rule forbids it. (ProGuard’s `-allowoptimization` is not valid for R8 and was removed.)
 
 ## Persistence
 
