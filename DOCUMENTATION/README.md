@@ -2,6 +2,8 @@
 
 This folder goes deeper into each **scaling strategy** in [AppDimens Dynamic](../README.md): what it is, the formula, how to import it, and when to pick each mode. Each strategy’s code lives in `com.appdimens.dynamic.compose.<strategy>` and `com.appdimens.dynamic.code.<strategy>` with **no cross-imports** between strategies.
 
+**Product docs:** [PRD.md](PRD.md) (product requirements) · [PDR.md](PDR.md) (technical design, development plan, prompt requirements, traceability matrix) · [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) (formulas, constants, and calculation kernels).
+
 For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../library/PERFORMANCE.md).
 
 **Naming parity (`compose` vs `code`):** In `library/src/main/java/com/appdimens/dynamic/`, each strategy folder pairs **`Dimen<Strategy>DpExtensions.kt`** (layout facilitators → `Float` px + `Context`) with **`Dimen<Strategy>SpExtensions.kt`** where Sp facilitators exist — the same filenames as under `compose/<strategy>/`, so it is easy to jump between UI toolkits. **Scaled** uses **`DimenSdpExtensions.kt`** and **`DimenSspExtensions.kt`** inside the `scaled/` subfolder (packages stay top-level `compose` / `code`). **Plain** View helpers remain in **`Dimen<Strategy>PlainPx.kt`** per strategy plus shared logic in **`com.appdimens.dynamic.code.plain`**.
@@ -18,6 +20,7 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 
 | Strategy | Document |
 |----------|----------|
+| **Unified math (all strategies)** | [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) |
 | Scaled (default SDP / HDP / WDP) | [scaled.md](scaled.md) |
 | Percent (linear 1/300 + `space*`) | [percent.md](percent.md) |
 | Power (sublinear) | [power.md](power.md) |
@@ -35,7 +38,10 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 
 ### Quick links
 
+- [PRD.md](PRD.md) · [PDR.md](PDR.md)
+
 0. [KDoc API — root index](index.md)  
+0b. [Mathematics & calculus — formal reference](MATHEMATICS-AND-CALCULUS.md)  
 1. [Compose API reference — conventions & scaled catalog](COMPOSE-API-CONVENTIONS.md)  
 2. [Scaled](scaled.md) — recommended starting point  
 3. [Percent](percent.md)  
@@ -51,6 +57,7 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 13. [Density](density.md)  
 14. [Resize](resize.md)  
 15. [Physical units](physical-units.md)  
+16. [Mathematics & calculus](MATHEMATICS-AND-CALCULUS.md)  
 
 ## Suggested decision flow
 

@@ -66,7 +66,7 @@ One dependency: you write values like `16.sdp` and the library scales them from 
 
 **New here?** Use **Quick start** below, then [**GUIDE-FOR-BEGINNERS**](./GUIDE-FOR-BEGINNERS) for every strategy in plain language.
 
-**All 14 modes** (scaled, percent, power, fluid, …): [DOCUMENTATION/README.md](DOCUMENTATION/README.md) · [KDoc (hosted)](https://appdimens3.web.app/)
+**All 14 modes** (scaled, percent, power, fluid, …): [DOCUMENTATION/README.md](DOCUMENTATION/README.md) · [KDoc (hosted)](https://appdimens3.web.app/) · **Product / engineering:** [DOCUMENTATION/PRD.md](DOCUMENTATION/PRD.md) · [DOCUMENTATION/PDR.md](DOCUMENTATION/PDR.md) · [DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md](DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md)
 
 ---
 

@@ -2,6 +2,17 @@
 
 # AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions
 
+Generated **KDoc package index** below. For product scope, architecture, and formal math, see also:
+
+| Document | Description |
+|----------|-------------|
+| [PRD.md](PRD.md) | Product requirements (FR/NFR) |
+| [PDR.md](PDR.md) | Technical design, development plan, traceability matrix, AI prompt rules |
+| [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) | Formulas, constants, `ScreenFactors`, and per-strategy calculation kernels |
+| [**Skill** — `appdimens-library-workflow`](../skills/3.1.3/SKILL.md) | Agent workflow for AppDimens integration/migration (Compose vs `code`, scaling vs resize, preflight); companion [reference.md](../skills/3.1.3/reference.md) (package map, strategy → doc links at Git ref `3.1.3`) |
+
+Narrative strategy guides and the full doc hub: [README.md](README.md).
+
 ## Packages
 
 | Name |
