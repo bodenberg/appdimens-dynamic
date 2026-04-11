@@ -2,5 +2,4 @@
 
 # INCH
 
-[jvm]
 [INCH](index.md)

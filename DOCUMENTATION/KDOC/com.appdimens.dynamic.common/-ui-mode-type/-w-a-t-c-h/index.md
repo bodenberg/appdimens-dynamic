@@ -2,7 +2,6 @@
 
 # WATCH
 
-[jvm]
 [WATCH](index.md)
 
 EN Watch (Wear OS).

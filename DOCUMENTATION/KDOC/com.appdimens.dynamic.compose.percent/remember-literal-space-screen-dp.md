@@ -2,5 +2,4 @@
 
 # rememberLiteralSpaceScreenDp
 
-[jvm]
-private fun [rememberLiteralSpaceScreenDp](remember-literal-space-screen-dp.md)(percent: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), qualifier: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)): <Error class: unknown class>
+private fun [rememberLiteralSpaceScreenDp](remember-literal-space-screen-dp.md)(percent: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), qualifier: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)): ERROR CLASS: Symbol not found for Dp

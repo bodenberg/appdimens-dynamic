@@ -6,11 +6,18 @@
 
 | Name | Summary |
 |---|---|
-| [DimenResize](-dimen-resize/index.md) | [jvm] object [DimenResize](-dimen-resize/index.md) |
-| [ResizeFitPredicate](-resize-fit-predicate/index.md) | [jvm] fun interface [ResizeFitPredicate](-resize-fit-predicate/index.md) |
+| [DimenResize](-dimen-resize/index.md) |  |
+| [ResizeFitPredicate](-resize-fit-predicate/index.md) |  |
+
 
 ## Functions
 
 | Name | Summary |
 |---|---|
-| [fittingPx](fitting-px.md) | [jvm] fun [ResizeRangePx](../com.appdimens.dynamic.core/-resize-range-px/index.md).[fittingPx](fitting-px.md)(fits: (candidatePx: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)) -> [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html) |
+| [fittingPx](fitting-px.md) |  |
+| [percentOfBoxToFactor](percent-of-box-to-factor.md) |  |
+| [requireFiniteBox](require-finite-box.md) |  |
+| [requireFiniteRange](require-finite-range.md) |  |
+| [resolveAutoResizeMaxLines](resolve-auto-resize-max-lines.md) |  |
+| [resolveAutoResizeTextForMeasure](resolve-auto-resize-text-for-measure.md) |  |
+| [textFitsInnerBox](text-fits-inner-box.md) |  |

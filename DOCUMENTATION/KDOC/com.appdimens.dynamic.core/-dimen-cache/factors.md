@@ -2,9 +2,4 @@
 
 # factors
 
-[jvm]
-@[PublishedApi](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-published-api/index.html)
-
-@[JvmField](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)
-
-internal val [factors](factors.md): [DimenCache.ScreenFactors](-screen-factors/index.md)
+@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [factors](factors.md): [DimenCache.ScreenFactors](-screen-factors/index.md)

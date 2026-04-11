@@ -2,7 +2,6 @@
 
 # dhem
 
-[jvm]
-val [dhem](dhem.md): <Error class: unknown class>
+val [dhem](dhem.md): ERROR CLASS: Symbol not found for TextUnit
 
 EN The final TextUnit (Sp) value resolved using Screen Height (WITHOUT FONT SCALE). PT O valor final TextUnit (Sp) resolvido usando Altura da Tela (SEM ESCALA DE FONTE).

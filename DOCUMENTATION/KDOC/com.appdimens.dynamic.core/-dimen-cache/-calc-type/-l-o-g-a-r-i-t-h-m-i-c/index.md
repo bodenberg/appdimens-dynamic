@@ -2,5 +2,4 @@
 
 # LOGARITHMIC
 
-[jvm]
 [LOGARITHMIC](index.md)

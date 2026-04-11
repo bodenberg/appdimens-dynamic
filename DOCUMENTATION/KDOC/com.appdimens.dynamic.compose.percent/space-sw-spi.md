@@ -2,5 +2,4 @@
 
 # spaceSwSpi
 
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[spaceSwSpi](space-sw-spi.md)(fontScale: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = true): <Error class: unknown class>
+fun [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[spaceSwSpi](space-sw-spi.md)(fontScale: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = true): ERROR CLASS: Symbol not found for TextUnit

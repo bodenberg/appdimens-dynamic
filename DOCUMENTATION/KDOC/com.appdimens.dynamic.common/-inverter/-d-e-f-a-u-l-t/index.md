@@ -2,7 +2,6 @@
 
 # DEFAULT
 
-[jvm]
 [DEFAULT](index.md)
 
 EN Default behavior, no inversion is applied. PT Comportamento padrão, nenhuma inversão é aplicada.

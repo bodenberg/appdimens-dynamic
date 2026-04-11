@@ -2,5 +2,4 @@
 
 # type
 
-[jvm]
 val [type](type.md): [DpQualifier](../-dp-qualifier/index.md)

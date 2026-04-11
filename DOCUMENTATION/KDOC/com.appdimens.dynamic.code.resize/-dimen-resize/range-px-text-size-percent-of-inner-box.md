@@ -1,0 +1,7 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../../index.md)/[com.appdimens.dynamic.code.resize](../index.md)/[DimenResize](index.md)/[rangePxTextSizePercentOfInnerBox](range-px-text-size-percent-of-inner-box.md)
+
+# rangePxTextSizePercentOfInnerBox
+
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [rangePxTextSizePercentOfInnerBox](range-px-text-size-percent-of-inner-box.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), basis: [AutoResizePercentBasis](../../com.appdimens.dynamic.core/-auto-resize-percent-basis/index.md), minPercent: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html), maxPercent: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html), stepSp: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), innerWidthPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), innerHeightPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [ResizeRangePx](../../com.appdimens.dynamic.core/-resize-range-px/index.md)
+
+EN Font-size range: min/max in px from **0–100** % of inner edge ([basis](range-px-text-size-percent-of-inner-box.md)); step from **sp** (density + font scale). PT Tamanho de texto: min/max em px por % da aresta interna; passo em **sp**.

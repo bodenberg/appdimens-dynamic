@@ -2,8 +2,7 @@
 
 # convertInchToCm
 
-[jvm]
-fun [convertInchToCm](convert-inch-to-cm.md)(inch: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+fun [convertInchToCm](convert-inch-to-cm.md)(inch: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 EN Converts Inches (Inch) to Centimeters (CM).
 

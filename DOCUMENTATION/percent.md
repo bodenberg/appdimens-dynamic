@@ -14,7 +14,7 @@
 
 Suffixes **`a`**, **`i`**, **`ia`** and **inverters** follow the global library pattern.
 
-**Mirrored Compose surface:** every `sdp` / `hdp` / `wdp` / `ssp`… name becomes `psdp` / `phdp` / `pwdp` / `pssp`… with the **same** suffix rules (`a`, `i`, `ia`, `Px`, `Ph`, …). See the prefix column in [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled) and facilitators `p*Rotate`, `p*Mode`, `p*Qualifier`, `p*Screen` in the percent packages (`DimenPercentDpExtensions.kt`, `DimenPercentSpExtensions.kt`).
+**Mirrored Compose surface:** every `sdp` / `hdp` / `wdp` / `ssp`… name becomes `psdp` / `phdp` / `pwdp` / `pssp`… with the **same** suffix rules (`a`, `i`, `ia`, `Px`, `Ph`, …). See the prefix column in [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled) and facilitators `p*Rotate`, `p*Mode`, `p*Qualifier`, `p*Screen` in **`compose.percent`** and **`code.percent`** (`DimenPercentDpExtensions.kt`, `DimenPercentSpExtensions.kt`).
 
 ## How to use
 

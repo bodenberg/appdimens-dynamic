@@ -2,7 +2,6 @@
 
 # CAR
 
-[jvm]
 [CAR](index.md)
 
 EN Car.

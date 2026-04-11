@@ -2,8 +2,9 @@
 
 # dghdpQualifierPlain
 
-[jvm]
-fun <Error class: unknown class>.[dghdpQualifierPlain](dghdp-qualifier-plain.md)(qualifiedValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): <Error class: unknown class>
+fun ERROR CLASS: Symbol not found for Dp.[dghdpQualifierPlain](dghdp-qualifier-plain.md)(qualified: ERROR CLASS: Symbol not found for Dp, qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html)): ERROR CLASS: Symbol not found for Dp
+
+EN Plain hdp qualifier: [qualified](dghdp-qualifier-plain.md) and receiver already scaled; logic only. PT Qualificador hdp Plain: [qualified](dghdp-qualifier-plain.md) e recetor já escalados; só a lógica.
 
 EN Extension for Dp with dynamic scaling based on **Screen Height (hDP)**. Returns the original raw Dp value if the condition is not met. When the screen metric for [qualifierType](dghdp-qualifier-plain.md) is >= [qualifierValue](dghdp-qualifier-plain.md), it uses [qualifiedValue](dghdp-qualifier-plain.md) instead.
 

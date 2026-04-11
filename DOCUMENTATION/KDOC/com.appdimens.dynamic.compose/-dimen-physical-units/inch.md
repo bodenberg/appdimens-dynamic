@@ -2,16 +2,12 @@
 
 # inch
 
-[jvm]
-val [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html).[inch](inch.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+val [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html).[inch](inch.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-EN Float extension to convert Inch to PX.
+EN Float extension to convert Inch to Dp.
 
-PT Extensão de Float para converter Inch para PX.
+PT Extensão de Float para converter Inch para Dp.
 
-[jvm]
-val [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html).[inch](inch.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+EN Int extension to convert Inch to Dp.
 
-EN Int extension to convert Inch to PX.
-
-PT Extensão de Int para converter Inch para PX.
+PT Extensão de Int para converter Inch para Dp.

@@ -2,13 +2,6 @@
 
 # customValue
 
-[jvm]
-val [customValue](custom-value.md): [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html)
+val [customValue](custom-value.md): [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html)
 
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| customValue | The base Int Sp value to be used if the condition is met. |
+The base Int Sp value to be used if the condition is met.

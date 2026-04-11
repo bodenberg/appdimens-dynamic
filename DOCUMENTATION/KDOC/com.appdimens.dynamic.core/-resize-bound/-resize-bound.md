@@ -2,5 +2,4 @@
 
 # ResizeBound
 
-[jvm]
 protected constructor()

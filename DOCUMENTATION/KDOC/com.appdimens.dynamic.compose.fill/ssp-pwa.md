@@ -2,7 +2,6 @@
 
 # sspPwa
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[sspPwa](ssp-pwa.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[sspPwa](ssp-pwa.md): ERROR CLASS: Symbol not found for TextUnit
 
 a variant explicitly with applyAspectRatio

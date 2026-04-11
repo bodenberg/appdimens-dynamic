@@ -2,8 +2,9 @@
 
 # ftwdpQualifierPlain
 
-[jvm]
-fun <Error class: unknown class>.[ftwdpQualifierPlain](ftwdp-qualifier-plain.md)(qualifiedValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): <Error class: unknown class>
+fun ERROR CLASS: Symbol not found for Dp.[ftwdpQualifierPlain](ftwdp-qualifier-plain.md)(qualified: ERROR CLASS: Symbol not found for Dp, qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html)): ERROR CLASS: Symbol not found for Dp
+
+EN Plain wdp qualifier: [qualified](ftwdp-qualifier-plain.md) and receiver already scaled; logic only. PT Qualificador wdp Plain: [qualified](ftwdp-qualifier-plain.md) e recetor já escalados; só a lógica.
 
 EN Extension for Dp with dynamic scaling based on **Screen Width (wDP)**. Returns the original raw Dp value if the condition is not met. When the screen metric for [qualifierType](ftwdp-qualifier-plain.md) is >= [qualifierValue](ftwdp-qualifier-plain.md), it uses [qualifiedValue](ftwdp-qualifier-plain.md) instead.
 

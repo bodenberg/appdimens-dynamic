@@ -2,5 +2,4 @@
 
 # serializeToByteArray
 
-[jvm]
-internal fun [serializeToByteArray](serialize-to-byte-array.md)(): [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-byte-array/index.html)
+internal fun [serializeToByteArray](serialize-to-byte-array.md)(): [ByteArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html)

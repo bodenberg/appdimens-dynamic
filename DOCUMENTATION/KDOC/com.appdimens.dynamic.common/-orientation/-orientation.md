@@ -2,5 +2,4 @@
 
 # Orientation
 
-[jvm]
 private constructor()

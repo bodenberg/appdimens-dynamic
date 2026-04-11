@@ -2,5 +2,4 @@
 
 # ValueType
 
-[jvm]
 private constructor()

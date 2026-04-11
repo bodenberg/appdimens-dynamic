@@ -2,22 +2,14 @@
 
 # toMm
 
-[jvm]
-fun [toMm](to-mm.md)(mm: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), resources: [Resources](https://developer.android.com/reference/kotlin/android/content/res/Resources.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+fun [toMm](to-mm.md)(mm: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), resources: [Resources](https://developer.android.com/reference/kotlin/android/content/res/Resources.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 EN Converts a value in millimeters (mm) to its equivalent in Dp.
 
 PT Converte um valor em milímetros (mm) para o seu equivalente em Dp.
 
-#### Return
-
 The value in Dp.
 
-#### Parameters
+The value in millimeters.
 
-jvm
-
-| | |
-|---|---|
-| mm | The value in millimeters. |
-| resources | The resources to get the display metrics. |
+The resources to get the display metrics.

@@ -2,8 +2,9 @@
 
 # flhdpRotatePlain
 
-[jvm]
-fun <Error class: unknown class>.[flhdpRotatePlain](flhdp-rotate-plain.md)(rotationValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md) = DpQualifier.HEIGHT, orientation: [Orientation](../com.appdimens.dynamic.common/-orientation/index.md) = Orientation.LANDSCAPE, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): <Error class: unknown class>
+fun ERROR CLASS: Symbol not found for Dp.[flhdpRotatePlain](flhdp-rotate-plain.md)(rotation: ERROR CLASS: Symbol not found for Dp, orientation: [Orientation](../com.appdimens.dynamic.common/-orientation/index.md) = Orientation.LANDSCAPE): ERROR CLASS: Symbol not found for Dp
+
+EN Plain hdp rotation: [rotation](flhdp-rotate-plain.md) and receiver already scaled; logic only. PT Rotação hdp Plain: [rotation](flhdp-rotate-plain.md) e recetor já escalados; só a lógica.
 
 EN Extension for Dp with dynamic scaling based on **Screen Height (hDP)**. Returns the original raw Dp value if the condition is not met. When the device is in the specified [orientation](flhdp-rotate-plain.md), it uses [rotationValue](flhdp-rotate-plain.md) scaled with the given [finalQualifierResolver](flhdp-rotate-plain.md).
 

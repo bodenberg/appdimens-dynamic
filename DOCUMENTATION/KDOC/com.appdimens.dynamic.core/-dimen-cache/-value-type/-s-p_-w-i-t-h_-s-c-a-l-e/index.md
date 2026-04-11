@@ -2,5 +2,4 @@
 
 # SP_WITH_SCALE
 
-[jvm]
 [SP_WITH_SCALE](index.md)

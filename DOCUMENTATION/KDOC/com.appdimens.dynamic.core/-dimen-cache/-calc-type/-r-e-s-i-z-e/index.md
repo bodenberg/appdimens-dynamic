@@ -2,5 +2,4 @@
 
 # RESIZE
 
-[jvm]
 [RESIZE](index.md)

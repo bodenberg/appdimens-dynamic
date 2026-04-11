@@ -2,5 +2,4 @@
 
 # PX
 
-[jvm]
 [PX](index.md)

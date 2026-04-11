@@ -2,16 +2,12 @@
 
 # cm
 
-[jvm]
-val [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html).[cm](cm.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+val [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html).[cm](cm.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-EN Float extension to convert CM to PX.
+EN Float extension to convert CM to Dp.
 
-PT Extensão de Float para converter CM para PX.
+PT Extensão de Float para converter CM para Dp.
 
-[jvm]
-val [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html).[cm](cm.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+EN Int extension to convert CM to Dp.
 
-EN Int extension to convert CM to PX.
-
-PT Extensão de Int para converter CM para PX.
+PT Extensão de Int para converter CM para Dp.

@@ -2,7 +2,6 @@
 
 # flhsp
 
-[jvm]
-val [flhsp](flhsp.md): <Error class: unknown class>
+val [flhsp](flhsp.md): ERROR CLASS: Symbol not found for TextUnit
 
 EN The final TextUnit (Sp) value resolved using Screen Height (WITH font scale). PT O valor final TextUnit (Sp) resolvido usando Altura da Tela (COM escala de fonte).

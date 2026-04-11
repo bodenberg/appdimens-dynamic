@@ -2,8 +2,7 @@
 
 # convertMmToInch
 
-[jvm]
-fun [convertMmToInch](convert-mm-to-inch.md)(mm: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+fun [convertMmToInch](convert-mm-to-inch.md)(mm: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 EN Converts Millimeters (MM) to Inches (Inch).
 

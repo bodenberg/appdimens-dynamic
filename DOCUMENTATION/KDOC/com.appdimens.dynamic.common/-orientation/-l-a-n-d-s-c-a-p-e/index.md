@@ -2,5 +2,4 @@
 
 # LANDSCAPE
 
-[jvm]
 [LANDSCAPE](index.md)

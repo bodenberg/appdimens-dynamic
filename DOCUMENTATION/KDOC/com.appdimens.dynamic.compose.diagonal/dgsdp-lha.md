@@ -2,7 +2,6 @@
 
 # dgsdpLha
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[dgsdpLha](dgsdp-lha.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[dgsdpLha](dgsdp-lha.md): ERROR CLASS: Symbol not found for Dp
 
 a variant explicitly with applyAspectRatio

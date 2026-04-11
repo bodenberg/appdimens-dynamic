@@ -2,5 +2,4 @@
 
 # SCALED
 
-[jvm]
 [SCALED](index.md)

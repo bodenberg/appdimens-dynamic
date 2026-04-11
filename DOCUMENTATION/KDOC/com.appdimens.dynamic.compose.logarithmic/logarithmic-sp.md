@@ -2,15 +2,11 @@
 
 # logarithmicSp
 
-[jvm]
-fun <Error class: unknown class>.[logarithmicSp](logarithmic-sp.md)(): [LogarithmicSp](-logarithmic-sp/index.md)
+fun ERROR CLASS: Symbol not found for TextUnit.[logarithmicSp](logarithmic-sp.md)(): [LogarithmicSp](-logarithmic-sp/index.md)
 
 EN Starts the build chain for LogarithmicSp from a base TextUnit (Sp). Usage example: `16.sp.logarithmicSp().screen(...)`.
 
 PT Inicia a cadeia de construção para LogarithmicSp a partir de um TextUnit (Sp) base. Exemplo de uso: `16.sp.logarithmicSp().screen(...)`.
-
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[logarithmicSp](logarithmic-sp.md)(): [LogarithmicSp](-logarithmic-sp/index.md)
 
 EN Starts the build chain for LogarithmicSp from a base Int (treated as sp). Usage example: `16.logarithmicSp().screen(...)`.
 

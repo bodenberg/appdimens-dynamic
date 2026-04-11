@@ -2,7 +2,4 @@
 
 # spacePxi
 
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[spacePxi](space-pxi.md)(reference: <Error class: unknown class>): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
-
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[spacePxi](space-pxi.md)(reference: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html)): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+fun [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[spacePxi](space-pxi.md)(reference: ERROR CLASS: Symbol not found for Dp): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

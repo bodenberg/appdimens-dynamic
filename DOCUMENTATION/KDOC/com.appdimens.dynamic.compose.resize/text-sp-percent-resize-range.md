@@ -2,7 +2,6 @@
 
 # textSpPercentResizeRange
 
-[jvm]
-private fun <Error class: unknown class>.[textSpPercentResizeRange](text-sp-percent-resize-range.md)(minPercent: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), maxPercent: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), stepSp: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), percentBasis: [AutoResizePercentBasis](-auto-resize-percent-basis/index.md), contentPadding: <Error class: unknown class>): [ResizeRangePx](../com.appdimens.dynamic.core/-resize-range-px/index.md)
+private fun ERROR CLASS: Symbol not found for BoxWithConstraintsScope.[textSpPercentResizeRange](text-sp-percent-resize-range.md)(minPercent: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html), maxPercent: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html), stepSp: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html), percentBasis: [AutoResizePercentBasis](../com.appdimens.dynamic.core/-auto-resize-percent-basis/index.md), contentPadding: ERROR CLASS: Symbol not found for PaddingValues): [ResizeRangePx](../com.appdimens.dynamic.core/-resize-range-px/index.md)
 
 EN [ResizeRangePx](../com.appdimens.dynamic.core/-resize-range-px/index.md) for text: min/max in px from % of inner box; step from sp.

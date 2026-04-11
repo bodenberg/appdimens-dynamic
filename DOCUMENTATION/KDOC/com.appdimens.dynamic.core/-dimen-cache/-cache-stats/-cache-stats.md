@@ -2,5 +2,4 @@
 
 # CacheStats
 
-[jvm]
-constructor(capacity: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html), populated: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html), fillRatio: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html))
+constructor(capacity: [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html), populated: [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html), fillRatio: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), hits: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html) = 0, misses: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html) = 0, evictions: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html) = 0, hitRate: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html) = 0.0f)

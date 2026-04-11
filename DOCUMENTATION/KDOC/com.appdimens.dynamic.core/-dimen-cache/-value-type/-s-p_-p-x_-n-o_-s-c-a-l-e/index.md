@@ -2,5 +2,4 @@
 
 # SP_PX_NO_SCALE
 
-[jvm]
 [SP_PX_NO_SCALE](index.md)

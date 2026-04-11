@@ -2,5 +2,4 @@
 
 # PORTRAIT
 
-[jvm]
 [PORTRAIT](index.md)

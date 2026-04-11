@@ -2,5 +2,4 @@
 
 # saveFlow
 
-[jvm]
 private val [saveFlow](save-flow.md): MutableSharedFlow<[Context](https://developer.android.com/reference/kotlin/android/content/Context.html)>

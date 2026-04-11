@@ -2,7 +2,4 @@
 
 # spaceSwDp
 
-[jvm]
-@[JvmOverloads](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html)
-
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[spaceSwDp](space-sw-dp.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+@[JvmOverloads](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html)fun [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[spaceSwDp](space-sw-dp.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = false): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

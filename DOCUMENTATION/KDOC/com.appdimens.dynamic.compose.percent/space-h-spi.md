@@ -2,5 +2,4 @@
 
 # spaceHSpi
 
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[spaceHSpi](space-h-spi.md)(fontScale: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = true): <Error class: unknown class>
+fun [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[spaceHSpi](space-h-spi.md)(fontScale: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = true): ERROR CLASS: Symbol not found for TextUnit

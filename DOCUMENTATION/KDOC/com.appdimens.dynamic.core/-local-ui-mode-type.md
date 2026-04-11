@@ -2,7 +2,6 @@
 
 # LocalUiModeType
 
-[jvm]
-val [LocalUiModeType](-local-ui-mode-type.md): <Error class: unknown class>
+val [LocalUiModeType](-local-ui-mode-type.md): ERROR CLASS: Unresolved name: compositionLocalOf
 
 EN CompositionLocal for the current UiModeType. PT CompositionLocal para o UiModeType atual.

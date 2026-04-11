@@ -2,5 +2,4 @@
 
 # inverter
 
-[jvm]
 val [inverter](inverter.md): [Inverter](../../com.appdimens.dynamic.common/-inverter/index.md)?

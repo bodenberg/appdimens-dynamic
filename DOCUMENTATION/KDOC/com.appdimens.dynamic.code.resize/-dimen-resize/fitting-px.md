@@ -2,7 +2,4 @@
 
 # fittingPx
 
-[jvm]
-@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
-
-fun [fittingPx](fitting-px.md)(range: [ResizeRangePx](../../com.appdimens.dynamic.core/-resize-range-px/index.md), predicate: [ResizeFitPredicate](../-resize-fit-predicate/index.md)): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [fittingPx](fitting-px.md)(range: [ResizeRangePx](../../com.appdimens.dynamic.core/-resize-range-px/index.md), predicate: [ResizeFitPredicate](../-resize-fit-predicate/index.md)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

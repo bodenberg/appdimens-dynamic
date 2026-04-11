@@ -2,5 +2,4 @@
 
 # UNITIES
 
-[jvm]
 [UNITIES](index.md)

@@ -1,0 +1,7 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../../index.md)/[com.appdimens.dynamic.compose.interpolated](../index.md)/[DimenInterpolated](index.md)/[isdpPx](isdp-px.md)
+
+# isdpPx
+
+val [isdpPx](isdp-px.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+
+EN The final Pixel (Float) value resolved in Compose (Smallest Width). PT O valor final em Pixels (Float) resolvido no Compose (Smallest Width).

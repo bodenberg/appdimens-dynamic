@@ -2,5 +2,4 @@
 
 # CM
 
-[jvm]
 [CM](index.md)

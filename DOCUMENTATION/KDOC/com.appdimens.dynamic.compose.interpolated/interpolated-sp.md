@@ -2,15 +2,11 @@
 
 # interpolatedSp
 
-[jvm]
-fun <Error class: unknown class>.[interpolatedSp](interpolated-sp.md)(): [InterpolatedSp](-interpolated-sp/index.md)
+fun ERROR CLASS: Symbol not found for TextUnit.[interpolatedSp](interpolated-sp.md)(): [InterpolatedSp](-interpolated-sp/index.md)
 
 EN Starts the build chain for InterpolatedSp from a base TextUnit (Sp). Usage example: `16.sp.interpolatedSp().screen(...)`.
 
 PT Inicia a cadeia de construção para InterpolatedSp a partir de um TextUnit (Sp) base. Exemplo de uso: `16.sp.interpolatedSp().screen(...)`.
-
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[interpolatedSp](interpolated-sp.md)(): [InterpolatedSp](-interpolated-sp/index.md)
 
 EN Starts the build chain for InterpolatedSp from a base Int (treated as sp). Usage example: `16.interpolatedSp().screen(...)`.
 

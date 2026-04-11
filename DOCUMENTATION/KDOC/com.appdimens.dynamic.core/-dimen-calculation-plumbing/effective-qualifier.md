@@ -2,5 +2,4 @@
 
 # effectiveQualifier
 
-[jvm]
-fun [effectiveQualifier](effective-qualifier.md)(qualifier: [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md), inverter: [Inverter](../../com.appdimens.dynamic.common/-inverter/index.md), isLandscape: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html), isPortrait: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)): [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)
+fun [effectiveQualifier](effective-qualifier.md)(qualifier: [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md), inverter: [Inverter](../../com.appdimens.dynamic.common/-inverter/index.md), isLandscape: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), isPortrait: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)): [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)

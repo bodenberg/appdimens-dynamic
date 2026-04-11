@@ -2,5 +2,4 @@
 
 # ScreenFactors
 
-[jvm]
 constructor()

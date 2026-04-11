@@ -2,5 +2,4 @@
 
 # lowPx
 
-[jvm]
-val [lowPx](low-px.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+val [lowPx](low-px.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

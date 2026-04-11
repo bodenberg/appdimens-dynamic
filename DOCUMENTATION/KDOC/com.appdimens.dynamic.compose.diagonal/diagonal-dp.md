@@ -2,13 +2,9 @@
 
 # diagonalDp
 
-[jvm]
-fun <Error class: unknown class>.[diagonalDp](diagonal-dp.md)(): [DimenDiagonal](-dimen-diagonal/index.md)
+fun ERROR CLASS: Symbol not found for Dp.[diagonalDp](diagonal-dp.md)(): [DimenDiagonal](-dimen-diagonal/index.md)
 
 EN Starts the build chain for the custom dimension DimenDiagonal from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenDiagonal a partir de um Dp base.
-
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[diagonalDp](diagonal-dp.md)(): [DimenDiagonal](-dimen-diagonal/index.md)
 
 EN Starts the build chain for the custom dimension DimenDiagonal from a base Int. Usage example: `100.scaled().screen(...)`.
 

@@ -2,5 +2,4 @@
 
 # PERIMETER
 
-[jvm]
 [PERIMETER](index.md)

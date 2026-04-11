@@ -2,5 +2,4 @@
 
 # DpQualifier
 
-[jvm]
 private constructor()

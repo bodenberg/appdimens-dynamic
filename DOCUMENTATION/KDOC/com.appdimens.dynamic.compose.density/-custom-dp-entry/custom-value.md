@@ -2,13 +2,6 @@
 
 # customValue
 
-[jvm]
-val [customValue](custom-value.md): <Error class: unknown class>
+val [customValue](custom-value.md): ERROR CLASS: Symbol not found for Dp
 
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| customValue | The Dp value to be used if the condition is met. |
+The Dp value to be used if the condition is met.

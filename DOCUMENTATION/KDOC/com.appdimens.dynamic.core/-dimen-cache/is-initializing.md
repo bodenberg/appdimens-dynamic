@@ -2,5 +2,4 @@
 
 # isInitializing
 
-[jvm]
 internal val [isInitializing](is-initializing.md): [AtomicBoolean](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicBoolean.html)

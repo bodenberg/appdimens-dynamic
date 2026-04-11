@@ -2,5 +2,4 @@
 
 # DEFAULT
 
-[jvm]
 [DEFAULT](index.md)

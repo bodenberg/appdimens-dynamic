@@ -2,5 +2,4 @@
 
 # UiModeType
 
-[jvm]
-private constructor(configValue: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html))
+private constructor(configValue: [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html))

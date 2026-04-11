@@ -2,5 +2,4 @@
 
 # rememberResizeRangePx
 
-[jvm]
 private fun [rememberResizeRangePx](remember-resize-range-px.md)(min: [ResizeBound](../com.appdimens.dynamic.core/-resize-bound/index.md), max: [ResizeBound](../com.appdimens.dynamic.core/-resize-bound/index.md), step: [ResizeBound](../com.appdimens.dynamic.core/-resize-bound/index.md)): [ResizeRangePx](../com.appdimens.dynamic.core/-resize-range-px/index.md)

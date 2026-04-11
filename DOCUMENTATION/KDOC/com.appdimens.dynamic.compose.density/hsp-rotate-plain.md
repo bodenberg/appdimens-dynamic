@@ -2,8 +2,9 @@
 
 # hspRotatePlain
 
-[jvm]
-fun <Error class: unknown class>.[hspRotatePlain](hsp-rotate-plain.md)(rotationValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md) = DpQualifier.HEIGHT, orientation: [Orientation](../com.appdimens.dynamic.common/-orientation/index.md) = Orientation.LANDSCAPE, fontScale: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = true, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): <Error class: unknown class>
+fun ERROR CLASS: Symbol not found for TextUnit.[hspRotatePlain](hsp-rotate-plain.md)(rotation: ERROR CLASS: Symbol not found for TextUnit, orientation: [Orientation](../com.appdimens.dynamic.common/-orientation/index.md) = Orientation.LANDSCAPE): ERROR CLASS: Symbol not found for TextUnit
+
+EN Plain hsp rotation: [rotation](hsp-rotate-plain.md) and receiver already scaled; logic only. PT Rotação hsp Plain: [rotation](hsp-rotate-plain.md) e recetor já escalados; só a lógica.
 
 EN Extension for TextUnit (Sp) with dynamic scaling based on **Screen Height (hDP)**. Returns the original raw TextUnit value if the condition is not met. When the device is in the specified [orientation](hsp-rotate-plain.md), it uses [rotationValue](hsp-rotate-plain.md) scaled with the given [finalQualifierResolver](hsp-rotate-plain.md).
 

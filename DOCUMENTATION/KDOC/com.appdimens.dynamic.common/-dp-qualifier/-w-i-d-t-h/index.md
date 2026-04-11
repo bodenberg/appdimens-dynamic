@@ -2,5 +2,4 @@
 
 # WIDTH
 
-[jvm]
 [WIDTH](index.md)

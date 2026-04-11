@@ -2,13 +2,9 @@
 
 # percentDp
 
-[jvm]
-fun <Error class: unknown class>.[percentDp](percent-dp.md)(): [DimenPercent](-dimen-percent/index.md)
+fun ERROR CLASS: Symbol not found for Dp.[percentDp](percent-dp.md)(): [DimenPercent](-dimen-percent/index.md)
 
 EN Starts the build chain for the custom dimension DimenPercent from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenPercent a partir de um Dp base.
-
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[percentDp](percent-dp.md)(): [DimenPercent](-dimen-percent/index.md)
 
 EN Starts the build chain for the custom dimension DimenPercent from a base Int. Usage example: `100.scaled().screen(...)`.
 

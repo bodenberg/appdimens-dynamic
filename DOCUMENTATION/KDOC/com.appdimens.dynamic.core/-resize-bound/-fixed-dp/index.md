@@ -2,17 +2,21 @@
 
 # FixedDp
 
-[jvm]
-data class [FixedDp](index.md)(val dp: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)) : [ResizeBound](../index.md)
+data class [FixedDp](index.md)(val dp: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)) : [ResizeBound](../index.md)
+
+constructor(dp: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html))
+
+val [dp](dp.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 ## Constructors
 
-| | |
+| Name | Summary |
 |---|---|
-| [FixedDp](-fixed-dp.md) | [jvm] constructor(dp: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)) |
+| [FixedDp](-fixed-dp.md) |  |
+
 
 ## Properties
 
 | Name | Summary |
 |---|---|
-| [dp](dp.md) | [jvm] val [dp](dp.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html) |
+| [dp](dp.md) |  |

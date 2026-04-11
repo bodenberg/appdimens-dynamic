@@ -31,7 +31,7 @@ Modifier.size(48.pwsdp) // smallest-width axis, power curve
 
 **Code:** `com.appdimens.dynamic.code.power` — mirrored prefixes (`pwsdp`, etc.) on the same pattern.
 
-Artifacts: `DimenPowerDp`, `DimenPowerDpExtensions`, `DimenPower`, `DimenPowerSp`, …
+Artifacts: `DimenPowerDp`, `DimenPower`, `DimenPowerSp`, `PowerSp`, … Kotlin facilitators: `DimenPowerDpExtensions.kt`, `DimenPowerSpExtensions.kt`; Plain (Views): `DimenPowerPlainPx.kt`.
 
 ## Why use it
 

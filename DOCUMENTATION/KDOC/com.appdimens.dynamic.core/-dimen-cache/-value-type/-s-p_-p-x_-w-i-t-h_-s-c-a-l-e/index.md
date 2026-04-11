@@ -2,5 +2,4 @@
 
 # SP_PX_WITH_SCALE
 
-[jvm]
 [SP_PX_WITH_SCALE](index.md)

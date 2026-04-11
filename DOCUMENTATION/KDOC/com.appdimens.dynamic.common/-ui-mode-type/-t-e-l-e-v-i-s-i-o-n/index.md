@@ -2,7 +2,6 @@
 
 # TELEVISION
 
-[jvm]
 [TELEVISION](index.md)
 
 EN Television.

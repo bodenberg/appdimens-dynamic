@@ -2,17 +2,10 @@
 
 # resolve
 
-[jvm]
-private fun [resolve](resolve.md)(qualifier: [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)): <Error class: unknown class>
+private fun [resolve](resolve.md)(qualifier: [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)): ERROR CLASS: Symbol not found for Dp
 
 EN Resolves the final dimension. This is the Composable part that reads the current configuration and decides which Dp to use.
 
 PT Resolve a dimensão final. Esta é a parte Composable que lê a configuração atual e decide qual Dp usar.
 
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| qualifier | The dynamic scaling qualifier that will be applied at the end (SMALL_WIDTH, HEIGHT, or WIDTH), determined by the access property (.sdp, .hdp, .wdp). |
+The dynamic scaling qualifier that will be applied at the end (SMALL_WIDTH, HEIGHT, or WIDTH), determined by the access property (.asdp, .ahdp, .awdp).

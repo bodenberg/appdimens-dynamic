@@ -2,5 +2,4 @@
 
 # value
 
-[jvm]
-val [value](value.md): [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html)
+val [value](value.md): [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html)

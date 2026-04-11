@@ -2,13 +2,6 @@
 
 # inverter
 
-[jvm]
 val [inverter](inverter.md): [Inverter](../../com.appdimens.dynamic.common/-inverter/index.md)
 
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| inverter | The inverter type to adapt scaling on rotation changes. |
+The inverter type to adapt scaling on rotation changes.

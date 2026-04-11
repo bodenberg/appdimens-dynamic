@@ -2,7 +2,6 @@
 
 # FLIP_CLOSED
 
-[jvm]
 [FLIP_CLOSED](index.md)
 
 EN Flip Device (Closed state). PT Dispositivo Dobrável tipo Flip (Estado fechado).

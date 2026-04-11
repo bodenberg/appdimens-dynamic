@@ -7,7 +7,9 @@
  */
 package com.example.app.kotlin
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.TextPaint
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.appdimens.dynamic.code.DimenSdp
@@ -18,6 +20,7 @@ import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.code.units.DimenPhysicalUnits
 import com.appdimens.dynamic.code.resize.DimenResize
+import com.appdimens.dynamic.core.AutoResizePercentBasis
 import com.appdimens.dynamic.core.resizeFixedDp
 import com.appdimens.dynamic.core.resizeFixedSp
 import com.appdimens.dynamic.core.resizePercentSw
@@ -211,6 +214,64 @@ class ExampleActivity : AppCompatActivity() {
         )
         val mixedPx = DimenResize.fittingPx(mixedRange) { it <= containerPx }
         Log.d(TAG, "6. Resize mixed — max %sw… picked px=$mixedPx")
+
+        // EN Inner box + % of inner (Compose autoResize*Percent / padding twin)
+        // PT Caixa interna + % da área útil (equivalente ao Compose com padding)
+        val boxWpx = 360f * density
+        val boxHpx = 240f * density
+        val padPx = 12f * density
+        val (innerW, innerH) = DimenResize.innerMaxDimensionsPx(
+            boxWpx, boxHpx, padPx, padPx, padPx, padPx,
+        )
+        val pctBarRange = DimenResize.rangePxPercentOfInnerBox(
+            this,
+            AutoResizePercentBasis.WIDTH,
+            minPercent = 5,
+            maxPercent = 50,
+            stepDp = 2f,
+            innerWidthPx = innerW,
+            innerHeightPx = innerH,
+        )
+        val barPx = DimenResize.fittingInnerWidthPx(
+            pctBarRange, boxWpx, boxHpx, padPx, padPx, padPx, padPx,
+        )
+        Log.d(TAG, "6. Resize % of inner width — bar px=$barPx (innerW=${innerW}px)")
+
+        val slotSquarePx = DimenResize.fittingInnerSquareSidePx(
+            squareRange, boxWpx, boxHpx, padPx, padPx, padPx, padPx,
+        )
+        Log.d(TAG, "6. Resize square in padded box — side px=$slotSquarePx")
+
+        val titlePaint = TextPaint().apply {
+            isAntiAlias = true
+            typeface = Typeface.DEFAULT_BOLD
+        }
+        val titlePx = DimenResize.fittingTextSpPx(
+            context = this,
+            text = "Example title that scales to the inner box",
+            min = resizeFixedSp(10f),
+            max = resizeFixedSp(40f),
+            innerWidthPx = innerW,
+            innerHeightPx = innerH,
+            textPaint = titlePaint,
+            step = resizeFixedSp(1f),
+            maxLines = 2,
+        )
+        Log.d(TAG, "6. Resize text (StaticLayout) — title px=$titlePx")
+
+        val titlePercentPx = DimenResize.fittingTextSpPercentPx(
+            context = this,
+            text = "Percent-based title",
+            basis = AutoResizePercentBasis.MIN_SIDE,
+            minPercent = 4,
+            maxPercent = 22,
+            stepSp = 1f,
+            innerWidthPx = innerW,
+            innerHeightPx = innerH,
+            textPaint = titlePaint,
+            maxLines = 1,
+        )
+        Log.d(TAG, "6. Resize text % of min inner side — px=$titlePercentPx")
 
         // ╔══════════════════════════════════════════════════════════════╗
         // ║ 7. PHYSICAL UNITS — DimenPhysicalUnits                     ║

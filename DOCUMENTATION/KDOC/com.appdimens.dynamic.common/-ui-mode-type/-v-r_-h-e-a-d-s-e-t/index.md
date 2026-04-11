@@ -2,10 +2,7 @@
 
 # VR_HEADSET
 
-[jvm]
-@[RequiresApi](https://developer.android.com/reference/kotlin/androidx/annotation/RequiresApi.html)(value = 26)
-
-[VR_HEADSET](index.md)
+@[RequiresApi](https://developer.android.com/reference/kotlin/androidx/annotation/RequiresApi.html)(value = 26)[VR_HEADSET](index.md)
 
 EN Virtual Reality (VR) Device.
 

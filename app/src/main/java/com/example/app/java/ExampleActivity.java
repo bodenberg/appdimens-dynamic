@@ -7,7 +7,9 @@
  */
 package com.example.app.java;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.TextPaint;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import com.appdimens.dynamic.code.DimenSdp;
 import com.appdimens.dynamic.code.DimenScaled;
 import com.appdimens.dynamic.code.DimenSsp;
 import com.appdimens.dynamic.code.resize.DimenResize;
+import com.appdimens.dynamic.core.AutoResizePercentBasis;
 import com.appdimens.dynamic.core.ResizeBound;
 import com.appdimens.dynamic.core.ResizeRangePx;
 import com.appdimens.dynamic.common.DpQualifier;
@@ -202,6 +205,72 @@ public class ExampleActivity extends AppCompatActivity {
         );
         float mixedPx = DimenResize.fittingPx(mixedRange, candidate -> candidate <= containerPx);
         Log.d(TAG, "6. Resize mixed — max %sw… picked px=" + mixedPx);
+
+        float boxWpx = 360f * density;
+        float boxHpx = 240f * density;
+        float padPx = 12f * density;
+        kotlin.Pair<Float, Float> inner = DimenResize.innerMaxDimensionsPx(
+            boxWpx, boxHpx, padPx, padPx, padPx, padPx
+        );
+        float innerW = inner.getFirst();
+        float innerH = inner.getSecond();
+
+        ResizeRangePx pctBarRange = DimenResize.rangePxPercentOfInnerBox(
+            this,
+            AutoResizePercentBasis.WIDTH,
+            5f,
+            50f,
+            2f,
+            innerW,
+            innerH
+        );
+        float barPx = DimenResize.fittingInnerWidthPx(
+            pctBarRange, boxWpx, boxHpx, padPx, padPx, padPx, padPx
+        );
+        Log.d(TAG, "6. Resize % of inner width — bar px=" + barPx + " (innerW=" + innerW + "px)");
+
+        float slotSquarePx = DimenResize.fittingInnerSquareSidePx(
+            squareRange, boxWpx, boxHpx, padPx, padPx, padPx, padPx
+        );
+        Log.d(TAG, "6. Resize square in padded box — side px=" + slotSquarePx);
+
+        TextPaint titlePaint = new TextPaint();
+        titlePaint.setAntiAlias(true);
+        titlePaint.setTypeface(Typeface.DEFAULT_BOLD);
+        float titlePx = DimenResize.fittingTextSpPx(
+            this,
+            "Example title that scales to the inner box",
+            new ResizeBound.FixedSp(10f),
+            new ResizeBound.FixedSp(40f),
+            innerW,
+            innerH,
+            titlePaint,
+            new ResizeBound.FixedSp(1f),
+            2,
+            null,
+            true,
+            android.text.Layout.Alignment.ALIGN_NORMAL,
+            true
+        );
+        Log.d(TAG, "6. Resize text (StaticLayout) — title px=" + titlePx);
+
+        float titlePercentPx = DimenResize.fittingTextSpPercentPx(
+            this,
+            "Percent-based title",
+            AutoResizePercentBasis.MIN_SIDE,
+            4f,
+            22f,
+            1f,
+            innerW,
+            innerH,
+            titlePaint,
+            1,
+            null,
+            true,
+            android.text.Layout.Alignment.ALIGN_NORMAL,
+            true
+        );
+        Log.d(TAG, "6. Resize text % of min inner side — px=" + titlePercentPx);
 
         // ╔══════════════════════════════════════════════════════════════╗
         // ║ 7. PHYSICAL UNITS — DimenPhysicalUnits                     ║

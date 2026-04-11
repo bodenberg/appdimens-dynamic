@@ -2,7 +2,6 @@
 
 # phem
 
-[jvm]
-val [phem](phem.md): <Error class: unknown class>
+val [phem](phem.md): ERROR CLASS: Symbol not found for TextUnit
 
 EN The final TextUnit (Sp) value resolved using Screen Height (WITHOUT FONT SCALE). PT O valor final TextUnit (Sp) resolvido usando Altura da Tela (SEM ESCALA DE FONTE).

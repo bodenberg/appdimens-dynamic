@@ -2,5 +2,4 @@
 
 # minPx
 
-[jvm]
-val [minPx](min-px.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+val [minPx](min-px.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

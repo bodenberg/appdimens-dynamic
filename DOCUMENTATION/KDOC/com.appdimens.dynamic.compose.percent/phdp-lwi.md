@@ -2,7 +2,6 @@
 
 # phdpLwi
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[phdpLwi](phdp-lwi.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[phdpLwi](phdp-lwi.md): ERROR CLASS: Symbol not found for Dp
 
 i variant explicitly with ignoreMultiWindows

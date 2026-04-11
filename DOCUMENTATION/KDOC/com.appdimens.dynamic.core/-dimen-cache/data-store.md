@@ -2,5 +2,4 @@
 
 # dataStore
 
-[jvm]
-internal val [Context](https://developer.android.com/reference/kotlin/android/content/Context.html).[dataStore](data-store.md): <Error class: unknown class><<Error class: unknown class>>
+internal val [Context](https://developer.android.com/reference/kotlin/android/content/Context.html).[dataStore](data-store.md): ERROR CLASS: Symbol not found for DataStore<ERROR CLASS: Symbol not found for Preferences>

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.appdimens.dynamic.core.AutoResizePercentBasis
 import com.appdimens.dynamic.core.ResizeBound
 import com.appdimens.dynamic.core.ResizeRangePx
 import com.appdimens.dynamic.core.layoutRememberStamp
@@ -32,21 +33,6 @@ import com.appdimens.dynamic.core.resolveToPx
 import com.appdimens.dynamic.core.resizeFixedDp
 import com.appdimens.dynamic.core.resizeFixedSp
 import kotlin.math.roundToInt
-
-/**
- * EN Which inner box dimension scales [autoResizeTextSpPercent] min/max (0–100).
- * PT Qual dimensão interna define o % min/max do texto.
- */
-enum class AutoResizePercentBasis {
-    /** EN Inner content height (after padding). PT Altura útil. */
-    HEIGHT,
-
-    /** EN Inner content width. PT Largura útil. */
-    WIDTH,
-
-    /** EN `min(inner width, inner height)`. PT Mínimo entre largura e altura úteis. */
-    MIN_SIDE,
-}
 
 private fun Dp.toResizeDpBound(): ResizeBound = ResizeBound.FixedDp(this.value)
 

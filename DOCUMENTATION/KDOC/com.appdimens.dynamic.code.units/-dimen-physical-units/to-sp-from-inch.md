@@ -2,24 +2,6 @@
 
 # toSpFromInch
 
-[jvm]
-@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [toSpFromInch](to-sp-from-inch.md)(inch: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), resources: [Resources](https://developer.android.com/reference/kotlin/android/content/res/Resources.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-fun [toSpFromInch](to-sp-from-inch.md)(inch: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), resources: [Resources](https://developer.android.com/reference/kotlin/android/content/res/Resources.html)): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
-
-EN Converts inches to SP.
-
-#### Return
-
-The value in SP. PT Converte polegadas para SP.
-
-O valor em SP.
-
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| inch | O valor em polegadas. |
-| resources | Os Resources do Context. |
+EN Converts inches to SP. PT Converte polegadas para SP.

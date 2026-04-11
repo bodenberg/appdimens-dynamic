@@ -344,7 +344,7 @@ fun WidthHeightBarsSample() {
 
 ### Percent-of-box text
 
-Font size range expressed as **0–100%** of the inner box edge (see [AutoResizePercentBasis](#autoresizepercentbasis-composeresize) below):
+Font size range expressed as **0–100%** of the inner box edge (see [AutoResizePercentBasis](#autoresizepercentbasis-core) below):
 
 ```kotlin
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -355,7 +355,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.appdimens.dynamic.compose.resize.AutoResizePercentBasis
+import com.appdimens.dynamic.core.AutoResizePercentBasis
 import com.appdimens.dynamic.compose.resize.autoResizeTextSpPercent
 
 @Composable
@@ -407,9 +407,11 @@ autoResizeTextSp(
 
 ---
 
-## `AutoResizePercentBasis` (`compose.resize`)
+## `AutoResizePercentBasis` (`core`)
 
-Used by **`autoResizeTextSpPercent`** to choose which **inner** box edge defines 0–100%:
+The enum lives in **`com.appdimens.dynamic.core.AutoResizePercentBasis`** — that is the type to import.
+
+Used by **`autoResizeTextSpPercent`** (Compose) and **`DimenResize.rangePxPercentOfInnerBox`** / **`fittingTextSpPercentPx`** (Views/code) to choose which **inner** box edge defines 0–100%:
 
 | Enum | Basis |
 |------|--------|

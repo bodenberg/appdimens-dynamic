@@ -2,7 +2,6 @@
 
 # flwem
 
-[jvm]
-val [flwem](flwem.md): <Error class: unknown class>
+val [flwem](flwem.md): ERROR CLASS: Symbol not found for TextUnit
 
 EN The final TextUnit (Sp) value resolved using Screen Width (WITHOUT FONT SCALE). PT O valor final TextUnit (Sp) resolvido usando Largura da Tela (SEM ESCALA DE FONTE).

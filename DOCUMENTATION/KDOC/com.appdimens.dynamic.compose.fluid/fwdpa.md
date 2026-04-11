@@ -2,7 +2,6 @@
 
 # fwdpa
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[fwdpa](fwdpa.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[fwdpa](fwdpa.md): ERROR CLASS: Symbol not found for Dp
 
 a variant explicitly with applyAspectRatio

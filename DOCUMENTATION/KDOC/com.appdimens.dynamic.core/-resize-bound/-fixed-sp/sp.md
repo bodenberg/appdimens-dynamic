@@ -2,5 +2,4 @@
 
 # sp
 
-[jvm]
-val [sp](sp.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+val [sp](sp.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

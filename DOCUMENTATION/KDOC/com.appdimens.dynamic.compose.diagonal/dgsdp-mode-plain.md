@@ -2,8 +2,9 @@
 
 # dgsdpModePlain
 
-[jvm]
-fun <Error class: unknown class>.[dgsdpModePlain](dgsdp-mode-plain.md)(modeValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), uiModeType: [UiModeType](../com.appdimens.dynamic.common/-ui-mode-type/index.md), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): <Error class: unknown class>
+fun ERROR CLASS: Symbol not found for Dp.[dgsdpModePlain](dgsdp-mode-plain.md)(mode: ERROR CLASS: Symbol not found for Dp, uiModeType: [UiModeType](../com.appdimens.dynamic.common/-ui-mode-type/index.md)): ERROR CLASS: Symbol not found for Dp
+
+EN Plain sdp mode: [mode](dgsdp-mode-plain.md) and receiver already scaled; logic only. PT Modo sdp Plain: [mode](dgsdp-mode-plain.md) e recetor já escalados; só a lógica.
 
 EN Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**. Returns the original raw Dp value if the condition is not met. When the device matches the specified [uiModeType](dgsdp-mode-plain.md), it uses [modeValue](dgsdp-mode-plain.md) instead.
 

@@ -2,7 +2,6 @@
 
 # ResizeAxisQualifier
 
-[jvm]
 typealias [ResizeAxisQualifier](index.md) = [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)
 
 EN Screen metric used to resolve Percent bounds (matches sdp / wdp / hdp axes).

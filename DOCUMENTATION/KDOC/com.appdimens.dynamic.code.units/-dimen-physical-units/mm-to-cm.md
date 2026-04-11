@@ -2,9 +2,6 @@
 
 # mmToCm
 
-[jvm]
-@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
-
-fun [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html).[mmToCm](mm-to-cm.md)(): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html).[mmToCm](mm-to-cm.md)(): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 EN Float extension to convert MM to CM. PT Extensão de Float para converter MM para CM.

@@ -2,7 +2,6 @@
 
 # wdp
 
-[jvm]
-val [wdp](wdp.md): <Error class: unknown class>
+val [wdp](wdp.md): ERROR CLASS: Symbol not found for Dp
 
 EN The final Dp value resolved in Compose (Screen Width). PT O valor final Dp resolvido no Compose (Largura da Tela).

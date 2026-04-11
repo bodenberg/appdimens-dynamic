@@ -2,7 +2,6 @@
 
 # sdp
 
-[jvm]
-val [sdp](sdp.md): <Error class: unknown class>
+val [sdp](sdp.md): ERROR CLASS: Symbol not found for Dp
 
 EN The final Dp value resolved in Compose (Smallest Width). PT O valor final Dp resolvido no Compose (Smallest Width).

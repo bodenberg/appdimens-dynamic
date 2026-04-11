@@ -2,7 +2,6 @@
 
 # sspLhi
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[sspLhi](ssp-lhi.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[sspLhi](ssp-lhi.md): ERROR CLASS: Symbol not found for TextUnit
 
 i variant explicitly with ignoreMultiWindows

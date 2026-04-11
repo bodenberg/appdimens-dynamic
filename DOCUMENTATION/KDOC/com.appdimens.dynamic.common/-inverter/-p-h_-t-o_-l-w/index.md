@@ -2,7 +2,6 @@
 
 # PH_TO_LW
 
-[jvm]
 [PH_TO_LW](index.md)
 
 EN Maps Portrait Height to Landscape Width. PT Mapeia a Altura em Retrato para a Largura em Paisagem.

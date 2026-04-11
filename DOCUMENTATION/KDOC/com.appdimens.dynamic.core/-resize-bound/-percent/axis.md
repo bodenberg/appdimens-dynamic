@@ -2,5 +2,4 @@
 
 # axis
 
-[jvm]
 val [axis](axis.md): [ResizeAxisQualifier](../../-resize-axis-qualifier/index.md)

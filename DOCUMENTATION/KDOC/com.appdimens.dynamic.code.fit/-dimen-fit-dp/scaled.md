@@ -1,17 +1,9 @@
-//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../../index.md)/[com.appdimens.dynamic.code.fit](../index.md)/[DimenFit](index.md)/[scaled](scaled.md)
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../../index.md)/[com.appdimens.dynamic.code.fit](../index.md)/[DimenFitDp](index.md)/[scaled](scaled.md)
 
 # scaled
 
-[jvm]
-@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
-
-fun [scaled](scaled.md)(initialBaseValue: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html)): [DimenFit](../-dimen-fit/index.md)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [scaled](scaled.md)(initialBaseValue: [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)): [DimenFit](../-dimen-fit/index.md)
 
 EN Starts the build chain for the custom dimension DimenFit from a base Int. PT Inicia a cadeia de construção para a dimensão customizada DimenFit a partir de um Int base.
-
-[jvm]
-@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
-
-fun [scaled](scaled.md)(initialBaseValue: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)): [DimenFit](../-dimen-fit/index.md)
 
 EN Starts the build chain for the custom dimension DimenFit from a base Float.

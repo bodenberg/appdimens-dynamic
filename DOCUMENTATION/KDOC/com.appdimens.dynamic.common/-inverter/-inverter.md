@@ -2,5 +2,4 @@
 
 # Inverter
 
-[jvm]
 private constructor()

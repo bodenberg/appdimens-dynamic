@@ -2,5 +2,4 @@
 
 # POWER
 
-[jvm]
 [POWER](index.md)

@@ -2,5 +2,4 @@
 
 # AUTO
 
-[jvm]
 [AUTO](index.md)

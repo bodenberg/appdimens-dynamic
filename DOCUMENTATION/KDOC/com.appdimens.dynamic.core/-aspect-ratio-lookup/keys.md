@@ -2,5 +2,4 @@
 
 # keys
 
-[jvm]
-private val [keys](keys.md): [FloatArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float-array/index.html)
+private val [keys](keys.md): [FloatArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float-array/index.html)

@@ -2,7 +2,6 @@
 
 # wspPx
 
-[jvm]
-val [wspPx](wsp-px.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+val [wspPx](wsp-px.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 EN The final Pixel (Float) value resolved using Screen Width (WITH font scale). PT O valor final em Pixels (Float) resolvido usando Largura da Tela (COM escala de fonte).

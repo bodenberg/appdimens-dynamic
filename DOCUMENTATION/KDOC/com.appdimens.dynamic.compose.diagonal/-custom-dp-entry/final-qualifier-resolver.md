@@ -2,13 +2,6 @@
 
 # finalQualifierResolver
 
-[jvm]
-val [finalQualifierResolver](final-qualifier-resolver.md): [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null
+val [finalQualifierResolver](final-qualifier-resolver.md): [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)?
 
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| finalQualifierResolver | Optional dimension qualifier (e.g., HEIGHT) to be applied at resolution time. |
+Optional dimension qualifier (e.g., HEIGHT) to be applied at resolution time.

@@ -2,5 +2,4 @@
 
 # steps
 
-[jvm]
-val [steps](steps.md): [FloatArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float-array/index.html)
+val [steps](steps.md): [FloatArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float-array/index.html)

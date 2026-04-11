@@ -2,5 +2,4 @@
 
 # updateFactors
 
-[jvm]
 private fun [updateFactors](update-factors.md)(config: [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html))

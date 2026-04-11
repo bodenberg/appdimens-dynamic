@@ -1,0 +1,13 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../../index.md)/[com.appdimens.dynamic.code.resize](../index.md)/[DimenResize](index.md)/[fittingTextSpPx](fitting-text-sp-px.md)
+
+# fittingTextSpPx
+
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[JvmOverloads](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html)fun [fittingTextSpPx](fitting-text-sp-px.md)(text: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), range: [ResizeRangePx](../../com.appdimens.dynamic.core/-resize-range-px/index.md), innerWidthPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), innerHeightPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), textPaint: [TextPaint](https://developer.android.com/reference/kotlin/android/text/TextPaint.html), maxLines: [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)? = null, maxLength: [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)? = null, softWrap: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = true, alignment: [Layout.Alignment](https://developer.android.com/reference/kotlin/android/text/Layout.Alignment.html) = Layout.Alignment.ALIGN_NORMAL, includePad: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = true): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+
+EN Largest font size (px) in [range](fitting-text-sp-px.md) so [text](fitting-text-sp-px.md) fits in the inner box (same idea as autoResizeTextSp). PT Maior tamanho de fonte em px para o texto caber na área útil.
+
+EN Configure [textPaint](fitting-text-sp-px.md) (typeface, flags, letterSpacing, etc.) like the target [android.widget.TextView](https://developer.android.com/reference/kotlin/android/widget/TextView.html). PT Configure [textPaint](fitting-text-sp-px.md) como no [android.widget.TextView](https://developer.android.com/reference/kotlin/android/widget/TextView.html) de destino.
+
+EN Twin of autoResizeTextSp with min/max/step as **sp** ([Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html) overload in Compose). PT Equivalente a autoResizeTextSp com min/max/step em **sp**.
+
+EN Same as [fittingTextSpPx](fitting-text-sp-px.md) but builds [range](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.text/index.html) from [ResizeBound](../../com.appdimens.dynamic.core/-resize-bound/index.md)s via [rangePx](range-px.md). PT Idem, construindo o intervalo com [rangePx](range-px.md).

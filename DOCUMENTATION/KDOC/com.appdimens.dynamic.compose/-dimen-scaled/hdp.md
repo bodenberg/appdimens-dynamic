@@ -2,7 +2,6 @@
 
 # hdp
 
-[jvm]
-val [hdp](hdp.md): <Error class: unknown class>
+val [hdp](hdp.md): ERROR CLASS: Symbol not found for Dp
 
 EN The final Dp value resolved in Compose (Screen Height). PT O valor final Dp resolvido no Compose (Altura da Tela).

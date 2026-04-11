@@ -2,5 +2,4 @@
 
 # PERCENT
 
-[jvm]
 [PERCENT](index.md)

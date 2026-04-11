@@ -2,5 +2,4 @@
 
 # KEY_SW_DP
 
-[jvm]
-internal val [KEY_SW_DP](-k-e-y_-s-w_-d-p.md): <Error class: unknown class>
+internal val [KEY_SW_DP](-k-e-y_-s-w_-d-p.md): ERROR CLASS: Unresolved name: intPreferencesKey

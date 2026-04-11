@@ -2,18 +2,24 @@
 
 # Percent
 
-[jvm]
-data class [Percent](index.md)(val value: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), val axis: [ResizeAxisQualifier](../../-resize-axis-qualifier/index.md)) : [ResizeBound](../index.md)
+data class [Percent](index.md)(val value: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), val axis: [ResizeAxisQualifier](../../-resize-axis-qualifier/index.md)) : [ResizeBound](../index.md)
+
+constructor(value: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), axis: [ResizeAxisQualifier](../../-resize-axis-qualifier/index.md))
+
+val [axis](axis.md): [ResizeAxisQualifier](../../-resize-axis-qualifier/index.md)
+
+val [value](value.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 ## Constructors
 
-| | |
+| Name | Summary |
 |---|---|
-| [Percent](-percent.md) | [jvm] constructor(value: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), axis: [ResizeAxisQualifier](../../-resize-axis-qualifier/index.md)) |
+| [Percent](-percent.md) |  |
+
 
 ## Properties
 
 | Name | Summary |
 |---|---|
-| [axis](axis.md) | [jvm] val [axis](axis.md): [ResizeAxisQualifier](../../-resize-axis-qualifier/index.md) |
-| [value](value.md) | [jvm] val [value](value.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html) |
+| [axis](axis.md) |  |
+| [value](value.md) |  |

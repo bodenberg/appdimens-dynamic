@@ -2,5 +2,4 @@
 
 # FLUID
 
-[jvm]
 [FLUID](index.md)

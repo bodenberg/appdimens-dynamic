@@ -2,13 +2,6 @@
 
 # dpQualifierEntry
 
-[jvm]
-val [dpQualifierEntry](dp-qualifier-entry.md): [DpQualifierEntry](../../com.appdimens.dynamic.common/-dp-qualifier-entry/index.md)? = null
+val [dpQualifierEntry](dp-qualifier-entry.md): [DpQualifierEntry](../../com.appdimens.dynamic.common/-dp-qualifier-entry/index.md)?
 
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| dpQualifierEntry | The Dp qualifier entry (type and value, e.g., SMALL_WIDTH > 600). Null if only UI mode is used. |
+The Dp qualifier entry (type and value, e.g., SMALL_WIDTH > 600). Null if only UI mode is used.

@@ -2,7 +2,6 @@
 
 # FLIP_OPEN
 
-[jvm]
 [FLIP_OPEN](index.md)
 
 EN Flip Device (Open state). PT Dispositivo Dobrável tipo Flip (Estado aberto).

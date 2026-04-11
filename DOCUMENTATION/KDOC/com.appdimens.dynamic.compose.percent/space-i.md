@@ -2,7 +2,4 @@
 
 # spaceI
 
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[spaceI](space-i.md)(reference: <Error class: unknown class>): <Error class: unknown class>
-
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[spaceI](space-i.md)(reference: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html)): <Error class: unknown class>
+fun [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[spaceI](space-i.md)(reference: ERROR CLASS: Symbol not found for Dp): ERROR CLASS: Symbol not found for Dp

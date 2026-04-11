@@ -2,7 +2,6 @@
 
 # logsdpLhia
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[logsdpLhia](logsdp-lhia.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[logsdpLhia](logsdp-lhia.md): ERROR CLASS: Symbol not found for Dp
 
 ia variant explicitly with both

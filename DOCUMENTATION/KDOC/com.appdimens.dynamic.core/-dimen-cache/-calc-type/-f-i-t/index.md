@@ -2,5 +2,4 @@
 
 # FIT
 
-[jvm]
 [FIT](index.md)

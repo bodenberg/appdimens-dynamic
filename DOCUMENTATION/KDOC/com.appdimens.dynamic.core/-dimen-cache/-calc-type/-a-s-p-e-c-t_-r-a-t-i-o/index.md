@@ -2,5 +2,4 @@
 
 # ASPECT_RATIO
 
-[jvm]
 [ASPECT_RATIO](index.md)

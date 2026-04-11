@@ -2,5 +2,4 @@
 
 # DIAGONAL
 
-[jvm]
 [DIAGONAL](index.md)

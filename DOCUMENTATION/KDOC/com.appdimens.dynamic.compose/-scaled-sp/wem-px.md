@@ -2,7 +2,6 @@
 
 # wemPx
 
-[jvm]
-val [wemPx](wem-px.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+val [wemPx](wem-px.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 EN The final Pixel (Float) value resolved using Screen Width (WITHOUT FONT SCALE). PT O valor final em Pixels (Float) resolvido usando Largura da Tela (SEM ESCALA DE FONTE).

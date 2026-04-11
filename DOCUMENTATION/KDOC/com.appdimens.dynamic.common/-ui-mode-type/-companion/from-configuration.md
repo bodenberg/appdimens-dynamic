@@ -2,18 +2,12 @@
 
 # fromConfiguration
 
-[jvm]
-fun [fromConfiguration](from-configuration.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), foldingFeature: <Error class: unknown class>? = null): [UiModeType](../index.md)
+fun [fromConfiguration](from-configuration.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), foldingFeature: ERROR CLASS: Symbol not found for androidx.window.layout.FoldingFeature?? = null): [UiModeType](../index.md)
 
 EN Returns the UiModeType corresponding to the Configuration.uiMode value, taking into account physical foldable features using Jetpack WindowManager.
 
 PT Retorna o UiModeType correspondente ao valor de Configuration.uiMode, levando em conta características físicas de dispositivos dobráveis usando Jetpack WindowManager.
 
-#### Parameters
+Application context.
 
-jvm
-
-| | |
-|---|---|
-| context | Application context. |
-| foldingFeature | Optional FoldingFeature obtained from WindowInfoTracker to dynamically adapt. |
+Optional FoldingFeature obtained from WindowInfoTracker to dynamically adapt.

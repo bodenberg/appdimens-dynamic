@@ -2,7 +2,6 @@
 
 # wemPhi
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[wemPhi](wem-phi.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[wemPhi](wem-phi.md): ERROR CLASS: Symbol not found for TextUnit
 
 i variant explicitly with ignoreMultiWindows

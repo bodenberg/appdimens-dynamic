@@ -2,7 +2,6 @@
 
 # SW_TO_PW
 
-[jvm]
 [SW_TO_PW](index.md)
 
 EN Maps Smallest Width to Portrait Width. PT Mapeia a Smallest Width para a Largura em Retrato.

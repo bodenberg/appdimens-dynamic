@@ -2,5 +2,4 @@
 
 # maxPx
 
-[jvm]
-val [maxPx](max-px.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+val [maxPx](max-px.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

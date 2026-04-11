@@ -2,5 +2,4 @@
 
 # CIRCUMFERENCE_FACTOR
 
-[jvm]
-private const val [CIRCUMFERENCE_FACTOR](-c-i-r-c-u-m-f-e-r-e-n-c-e_-f-a-c-t-o-r.md): [Double](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-double/index.html)
+private const val [CIRCUMFERENCE_FACTOR](-c-i-r-c-u-m-f-e-r-e-n-c-e_-f-a-c-t-o-r.md): [Double](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-double/index.html)

@@ -2,8 +2,9 @@
 
 # wdpRotatePlain
 
-[jvm]
-fun <Error class: unknown class>.[wdpRotatePlain](wdp-rotate-plain.md)(rotationValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md) = DpQualifier.WIDTH, orientation: [Orientation](../com.appdimens.dynamic.common/-orientation/index.md) = Orientation.LANDSCAPE, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): <Error class: unknown class>
+fun ERROR CLASS: Symbol not found for Dp.[wdpRotatePlain](wdp-rotate-plain.md)(rotation: ERROR CLASS: Symbol not found for Dp, orientation: [Orientation](../com.appdimens.dynamic.common/-orientation/index.md) = Orientation.LANDSCAPE): ERROR CLASS: Symbol not found for Dp
+
+EN Plain wdp rotation: [rotation](wdp-rotate-plain.md) and receiver already scaled; logic only. PT Rotação wdp Plain: [rotation](wdp-rotate-plain.md) e recetor já escalados; só a lógica.
 
 EN Extension for Dp with dynamic scaling based on **Screen Width (wDP)**. Returns the original raw Dp value if the condition is not met. When the device is in the specified [orientation](wdp-rotate-plain.md), it uses [rotationValue](wdp-rotate-plain.md) scaled with the given [finalQualifierResolver](wdp-rotate-plain.md).
 

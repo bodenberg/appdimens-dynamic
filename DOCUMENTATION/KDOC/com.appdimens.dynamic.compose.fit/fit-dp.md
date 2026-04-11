@@ -2,13 +2,9 @@
 
 # fitDp
 
-[jvm]
-fun <Error class: unknown class>.[fitDp](fit-dp.md)(): [DimenFit](-dimen-fit/index.md)
+fun ERROR CLASS: Symbol not found for Dp.[fitDp](fit-dp.md)(): [DimenFit](-dimen-fit/index.md)
 
 EN Starts the build chain for the custom dimension DimenFit from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenFit a partir de um Dp base.
-
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[fitDp](fit-dp.md)(): [DimenFit](-dimen-fit/index.md)
 
 EN Starts the build chain for the custom dimension DimenFit from a base Int. Usage example: `100.scaled().screen(...)`.
 

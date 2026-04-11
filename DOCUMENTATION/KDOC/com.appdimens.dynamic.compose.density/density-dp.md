@@ -2,13 +2,9 @@
 
 # densityDp
 
-[jvm]
-fun <Error class: unknown class>.[densityDp](density-dp.md)(): [DimenDensity](-dimen-density/index.md)
+fun ERROR CLASS: Symbol not found for Dp.[densityDp](density-dp.md)(): [DimenDensity](-dimen-density/index.md)
 
 EN Starts the build chain for the custom dimension DimenDensity from a base Dp. PT Inicia a cadeia de construção para a dimensão customizada DimenDensity a partir de um Dp base.
-
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[densityDp](density-dp.md)(): [DimenDensity](-dimen-density/index.md)
 
 EN Starts the build chain for the custom dimension DimenDensity from a base Int. Usage example: `100.scaled().screen(...)`.
 

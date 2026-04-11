@@ -2,5 +2,4 @@
 
 # resizeFixedSp
 
-[jvm]
-fun [resizeFixedSp](resize-fixed-sp.md)(sp: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)): [ResizeBound](-resize-bound/index.md)
+fun [resizeFixedSp](resize-fixed-sp.md)(sp: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [ResizeBound](-resize-bound/index.md)

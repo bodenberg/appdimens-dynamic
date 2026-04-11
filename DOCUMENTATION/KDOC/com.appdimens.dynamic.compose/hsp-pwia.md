@@ -2,7 +2,6 @@
 
 # hspPwia
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[hspPwia](hsp-pwia.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[hspPwia](hsp-pwia.md): ERROR CLASS: Symbol not found for TextUnit
 
 ia variant explicitly with both

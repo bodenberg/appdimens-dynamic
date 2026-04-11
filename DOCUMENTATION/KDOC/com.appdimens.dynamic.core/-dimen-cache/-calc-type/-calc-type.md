@@ -2,5 +2,4 @@
 
 # CalcType
 
-[jvm]
 private constructor()

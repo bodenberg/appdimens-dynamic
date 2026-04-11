@@ -2,7 +2,6 @@
 
 # dsemia
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[dsemia](dsemia.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[dsemia](dsemia.md): ERROR CLASS: Symbol not found for TextUnit
 
 ia variant explicitly with both

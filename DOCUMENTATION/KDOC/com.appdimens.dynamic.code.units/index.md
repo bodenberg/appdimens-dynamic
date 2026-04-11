@@ -6,4 +6,4 @@
 
 | Name | Summary |
 |---|---|
-| [DimenPhysicalUnits](-dimen-physical-units/index.md) | [jvm] object [DimenPhysicalUnits](-dimen-physical-units/index.md) EN Utility class for physical unit conversions. PT Classe utilitária para conversões de unidades físicas. |
+| [DimenPhysicalUnits](-dimen-physical-units/index.md) |  |

@@ -2,5 +2,4 @@
 
 # rememberLiteralSpaceReferenceSp
 
-[jvm]
-private fun [rememberLiteralSpaceReferenceSp](remember-literal-space-reference-sp.md)(percent: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), referenceDp: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), fontScale: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)): <Error class: unknown class>
+private fun [rememberLiteralSpaceReferenceSp](remember-literal-space-reference-sp.md)(percent: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), referenceDp: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), fontScale: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)): ERROR CLASS: Symbol not found for TextUnit

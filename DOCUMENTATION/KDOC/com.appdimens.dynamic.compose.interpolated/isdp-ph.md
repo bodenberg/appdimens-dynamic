@@ -2,8 +2,7 @@
 
 # isdpPh
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[isdpPh](isdp-ph.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[isdpPh](isdp-ph.md): ERROR CLASS: Symbol not found for Dp
 
 EN Extension for Dp with dynamic scaling based on **Smallest Width (swDP)**, but in portrait orientation it acts as **Screen Height (hDP)**. Usage example: `32.sdpPh`.
 

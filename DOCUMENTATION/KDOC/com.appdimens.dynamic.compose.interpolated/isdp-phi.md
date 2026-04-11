@@ -2,7 +2,6 @@
 
 # isdpPhi
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[isdpPhi](isdp-phi.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[isdpPhi](isdp-phi.md): ERROR CLASS: Symbol not found for Dp
 
 i variant explicitly with ignoreMultiWindows

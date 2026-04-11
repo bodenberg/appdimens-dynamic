@@ -2,8 +2,7 @@
 
 # reorderEntries
 
-[jvm]
-private fun [reorderEntries](reorder-entries.md)(newEntry: [CustomDpEntry](../-custom-dp-entry/index.md)): [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)<[CustomDpEntry](../-custom-dp-entry/index.md)>
+private fun [reorderEntries](reorder-entries.md)(newEntry: [CustomDpEntry](../-custom-dp-entry/index.md)): [List](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html)<[CustomDpEntry](../-custom-dp-entry/index.md)>
 
 EN Adds a new entry and re-sorts the list. Sorting is crucial: first by priority (ascending), and then by dpQualifierEntry.value (descending) so that larger qualifiers (e.g., sw600dp) are checked before smaller qualifiers (e.g., sw320dp).
 

@@ -180,7 +180,7 @@
 }
 
 # AutoResizePercentBasis — full keep (Kotlin private $VALUES + R8 member rules).
--keep class com.appdimens.dynamic.compose.resize.AutoResizePercentBasis { *; }
+-keep class com.appdimens.dynamic.core.AutoResizePercentBasis { *; }
 
 
 ################################################################################

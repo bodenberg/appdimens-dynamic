@@ -2,5 +2,4 @@
 
 # UnitType
 
-[jvm]
 private constructor()

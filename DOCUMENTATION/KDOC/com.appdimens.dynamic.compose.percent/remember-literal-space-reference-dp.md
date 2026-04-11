@@ -2,5 +2,4 @@
 
 # rememberLiteralSpaceReferenceDp
 
-[jvm]
-private fun [rememberLiteralSpaceReferenceDp](remember-literal-space-reference-dp.md)(percent: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), referenceDp: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)): <Error class: unknown class>
+private fun [rememberLiteralSpaceReferenceDp](remember-literal-space-reference-dp.md)(percent: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), referenceDp: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)): ERROR CLASS: Symbol not found for Dp

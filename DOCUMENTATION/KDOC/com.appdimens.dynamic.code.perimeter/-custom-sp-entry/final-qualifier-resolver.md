@@ -2,13 +2,6 @@
 
 # finalQualifierResolver
 
-[jvm]
-val [finalQualifierResolver](final-qualifier-resolver.md): [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null
+val [finalQualifierResolver](final-qualifier-resolver.md): [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)?
 
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| finalQualifierResolver | Optional override for the scaling qualifier at resolution time. |
+Optional override for the scaling qualifier at resolution time.

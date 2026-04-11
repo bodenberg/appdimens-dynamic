@@ -89,7 +89,7 @@
 }
 
 # Ordinals used in resize math — full keep so private enum synthetics survive.
--keep class com.appdimens.dynamic.compose.resize.AutoResizePercentBasis { *; }
+-keep class com.appdimens.dynamic.core.AutoResizePercentBasis { *; }
 
 
 ################################################################################

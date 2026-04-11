@@ -2,10 +2,7 @@
 
 # getBatch
 
-[jvm]
-@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
-
-fun [getBatch](get-batch.md)(keys: [LongArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-long-array/index.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null, compute: ([Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html)) -> [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)): [FloatArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float-array/index.html)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [getBatch](get-batch.md)(keys: [LongArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long-array/index.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null, compute: ([Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)) -> [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [FloatArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float-array/index.html)
 
 EN SIMD-friendly batch resolution.
 
@@ -15,16 +12,10 @@ This is a **public** API — callers outside the library can use it to batch-res
 
 PT Resolução em lote amigável ao SIMD / JIT auto-vetorização. API pública — pode ser chamada por código fora da biblioteca.
 
-#### Return
+[FloatArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float-array/index.html) of resolved values in the same order as [keys](get-batch.md)
 
-[FloatArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float-array/index.html) of resolved values in the same order as [keys](get-batch.md)
+Array of 64-bit keys built via [buildKey](build-key.md)
 
-#### Parameters
+Optional context used for lazy init and persistence
 
-jvm
-
-| | |
-|---|---|
-| keys | Array of 64-bit keys built via [buildKey](build-key.md) |
-| context | Optional context used for lazy init and persistence |
-| compute | Lambda `(index: Int) -> Float` called on cache miss |
+Lambda `(index: Int) -> Float` called on cache miss

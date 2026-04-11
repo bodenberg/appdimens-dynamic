@@ -2,15 +2,11 @@
 
 # fillSp
 
-[jvm]
-fun <Error class: unknown class>.[fillSp](fill-sp.md)(): [FillSp](-fill-sp/index.md)
+fun ERROR CLASS: Symbol not found for TextUnit.[fillSp](fill-sp.md)(): [FillSp](-fill-sp/index.md)
 
 EN Starts the build chain for FillSp from a base TextUnit (Sp). Usage example: `16.sp.fillSp().screen(...)`.
 
 PT Inicia a cadeia de construção para FillSp a partir de um TextUnit (Sp) base. Exemplo de uso: `16.sp.fillSp().screen(...)`.
-
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[fillSp](fill-sp.md)(): [FillSp](-fill-sp/index.md)
 
 EN Starts the build chain for FillSp from a base Int (treated as sp). Usage example: `16.fillSp().screen(...)`.
 

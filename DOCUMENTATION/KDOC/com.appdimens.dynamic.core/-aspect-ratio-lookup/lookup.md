@@ -2,19 +2,10 @@
 
 # lookup
 
-[jvm]
-fun [lookup](lookup.md)(normalizedAr: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)?
+fun [lookup](lookup.md)(normalizedAr: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)?
 
-Binary search with tolerance.  O(log n) ≈ 7 comparisons for 130 entries.
-
-#### Return
+Binary search with tolerance. O(log n) ≈ 7 comparisons for 111 entries.
 
 `ln(normalizedAr)` from the table, or `null` if not within tolerance.
 
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| normalizedAr | `currentAr / 1.78f` |
+`currentAr / 1.78f`

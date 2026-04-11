@@ -2,5 +2,4 @@
 
 # INTERPOLATED
 
-[jvm]
 [INTERPOLATED](index.md)

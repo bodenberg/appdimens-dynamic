@@ -1,0 +1,7 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../../index.md)/[com.appdimens.dynamic.code.resize](../index.md)/[DimenResize](index.md)/[innerMaxDimensionsPx](inner-max-dimensions-px.md)
+
+# innerMaxDimensionsPx
+
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[JvmOverloads](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html)fun [innerMaxDimensionsPx](inner-max-dimensions-px.md)(boxWidthPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), boxHeightPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), paddingLeftPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html) = 0.0f, paddingRightPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html) = 0.0f, paddingTopPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html) = 0.0f, paddingBottomPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html) = 0.0f): [Pair](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-pair/index.html)<[Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)>
+
+EN Inner width × height (px) after subtracting padding; each dimension is at least **1** px (matches Compose). PT Largura e altura úteis após padding; cada valor ≥ **1** px.

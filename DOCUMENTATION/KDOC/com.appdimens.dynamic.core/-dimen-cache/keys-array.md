@@ -2,10 +2,7 @@
 
 # keysArray
 
-[jvm]
-@[PublishedApi](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-published-api/index.html)
-
-internal val [keysArray](keys-array.md): [Array](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-array/index.html)<[AtomicLongArray](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicLongArray.html)>
+@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [keysArray](keys-array.md): [Array](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html)<[AtomicLongArray](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicLongArray.html)>
 
 EN Backward-compatible accessors — still referenced by DimenCacheTest. These are thin aliases into [shards](shards.md); no extra memory is allocated.
 

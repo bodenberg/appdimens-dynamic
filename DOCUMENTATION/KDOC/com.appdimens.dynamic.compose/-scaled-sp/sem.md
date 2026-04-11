@@ -2,7 +2,6 @@
 
 # sem
 
-[jvm]
-val [sem](sem.md): <Error class: unknown class>
+val [sem](sem.md): ERROR CLASS: Symbol not found for TextUnit
 
 EN The final TextUnit (Sp) value resolved using Smallest Width (WITHOUT FONT SCALE). PT O valor final TextUnit (Sp) resolvido usando Smallest Width (SEM ESCALA DE FONTE).

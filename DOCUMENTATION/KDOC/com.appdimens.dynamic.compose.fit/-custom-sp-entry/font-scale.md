@@ -2,13 +2,6 @@
 
 # fontScale
 
-[jvm]
-val [fontScale](font-scale.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = true
+val [fontScale](font-scale.md): [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)
 
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| fontScale | Whether to respect the system font scale (default true). |
+Whether to respect the system font scale (default true).

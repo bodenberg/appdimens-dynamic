@@ -2,5 +2,4 @@
 
 # DpQualifierEntry
 
-[jvm]
-constructor(type: [DpQualifier](../-dp-qualifier/index.md), value: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html))
+constructor(type: [DpQualifier](../-dp-qualifier/index.md), value: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html))

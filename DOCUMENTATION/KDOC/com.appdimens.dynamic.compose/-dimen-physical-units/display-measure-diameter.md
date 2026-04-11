@@ -2,8 +2,7 @@
 
 # displayMeasureDiameter
 
-[jvm]
-fun [displayMeasureDiameter](display-measure-diameter.md)(diameter: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), isCircumference: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+fun [displayMeasureDiameter](display-measure-diameter.md)(diameter: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), isCircumference: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 EN Adjusts a diameter value to Circumference if requested.
 

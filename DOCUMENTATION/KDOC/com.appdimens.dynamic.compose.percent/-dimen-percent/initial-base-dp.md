@@ -2,5 +2,4 @@
 
 # initialBaseDp
 
-[jvm]
-private val [initialBaseDp](initial-base-dp.md): <Error class: unknown class>
+private val [initialBaseDp](initial-base-dp.md): ERROR CLASS: Symbol not found for Dp

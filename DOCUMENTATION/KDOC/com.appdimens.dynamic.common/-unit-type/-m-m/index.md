@@ -2,5 +2,4 @@
 
 # MM
 
-[jvm]
 [MM](index.md)

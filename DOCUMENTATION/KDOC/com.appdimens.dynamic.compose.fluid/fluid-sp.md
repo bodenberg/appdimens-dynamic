@@ -2,15 +2,11 @@
 
 # fluidSp
 
-[jvm]
-fun <Error class: unknown class>.[fluidSp](fluid-sp.md)(): [FluidSp](-fluid-sp/index.md)
+fun ERROR CLASS: Symbol not found for TextUnit.[fluidSp](fluid-sp.md)(): [FluidSp](-fluid-sp/index.md)
 
 EN Starts the build chain for FluidSp from a base TextUnit (Sp). Usage example: `16.sp.fluidSp().screen(...)`.
 
 PT Inicia a cadeia de construção para FluidSp a partir de um TextUnit (Sp) base. Exemplo de uso: `16.sp.fluidSp().screen(...)`.
-
-[jvm]
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[fluidSp](fluid-sp.md)(): [FluidSp](-fluid-sp/index.md)
 
 EN Starts the build chain for FluidSp from a base Int (treated as sp). Usage example: `16.fluidSp().screen(...)`.
 

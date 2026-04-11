@@ -2,7 +2,6 @@
 
 # SW_TO_LW
 
-[jvm]
 [SW_TO_LW](index.md)
 
 EN Maps Smallest Width to Landscape Width. PT Mapeia a Smallest Width para a Largura em Paisagem.

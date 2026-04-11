@@ -2,7 +2,4 @@
 
 # ADJUSTMENT_SCALE
 
-[jvm]
-@[PublishedApi](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-published-api/index.html)
-
-internal const val [ADJUSTMENT_SCALE](-a-d-j-u-s-t-m-e-n-t_-s-c-a-l-e.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [ADJUSTMENT_SCALE](-a-d-j-u-s-t-m-e-n-t_-s-c-a-l-e.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

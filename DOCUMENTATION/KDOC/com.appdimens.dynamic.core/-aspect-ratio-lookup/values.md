@@ -2,5 +2,4 @@
 
 # values
 
-[jvm]
-private val [values](values.md): [FloatArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float-array/index.html)
+private val [values](values.md): [FloatArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float-array/index.html)

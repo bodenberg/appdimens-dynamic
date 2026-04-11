@@ -2,13 +2,6 @@
 
 # orientation
 
-[jvm]
 val [orientation](orientation.md): [Orientation](../../com.appdimens.dynamic.common/-orientation/index.md)
 
-#### Parameters
-
-jvm
-
-| | |
-|---|---|
-| orientation | The screen orientation (LANDSCAPE, PORTRAIT, DEFAULT). |
+The screen orientation (LANDSCAPE, PORTRAIT, DEFAULT).

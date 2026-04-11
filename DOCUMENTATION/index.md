@@ -17,8 +17,10 @@
 | [com.appdimens.dynamic.code.logarithmic](KDOC/com.appdimens.dynamic.code.logarithmic/index.md) |
 | [com.appdimens.dynamic.code.percent](KDOC/com.appdimens.dynamic.code.percent/index.md) |
 | [com.appdimens.dynamic.code.perimeter](KDOC/com.appdimens.dynamic.code.perimeter/index.md) |
+| [com.appdimens.dynamic.code.plain](KDOC/com.appdimens.dynamic.code.plain/index.md) |
 | [com.appdimens.dynamic.code.power](KDOC/com.appdimens.dynamic.code.power/index.md) |
 | [com.appdimens.dynamic.code.resize](KDOC/com.appdimens.dynamic.code.resize/index.md) |
+| [com.appdimens.dynamic.code.scaled](KDOC/com.appdimens.dynamic.code.scaled/index.md) |
 | [com.appdimens.dynamic.code.units](KDOC/com.appdimens.dynamic.code.units/index.md) |
 | [com.appdimens.dynamic.common](KDOC/com.appdimens.dynamic.common/index.md) |
 | [com.appdimens.dynamic.compose](KDOC/com.appdimens.dynamic.compose/index.md) |

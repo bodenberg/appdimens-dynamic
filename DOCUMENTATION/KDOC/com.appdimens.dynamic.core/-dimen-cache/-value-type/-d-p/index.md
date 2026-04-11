@@ -2,5 +2,4 @@
 
 # DP
 
-[jvm]
 [DP](index.md)

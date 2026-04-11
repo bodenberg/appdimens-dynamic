@@ -2,7 +2,8 @@
 
 # pwdpRotatePlainPx
 
-[jvm]
-fun <Error class: unknown class>.[pwdpRotatePlainPx](pwdp-rotate-plain-px.md)(rotationValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md) = DpQualifier.WIDTH, orientation: [Orientation](../com.appdimens.dynamic.common/-orientation/index.md) = Orientation.LANDSCAPE, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+fun ERROR CLASS: Symbol not found for Dp.[pwdpRotatePlainPx](pwdp-rotate-plain-px.md)(rotation: ERROR CLASS: Symbol not found for Dp, orientation: [Orientation](../com.appdimens.dynamic.common/-orientation/index.md) = Orientation.LANDSCAPE): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+
+EN Pixel variant of [pwdpRotatePlain](pwdp-rotate-plain.md) with [rotation](pwdp-rotate-plain-px.md) as Dp. PT Variante em px de [pwdpRotatePlain](pwdp-rotate-plain.md) com [rotation](pwdp-rotate-plain-px.md) em Dp.
 
 EN Pixel (Float) variant of wdpRotatePlain. PT Variante em Pixel (Float) de wdpRotatePlain.

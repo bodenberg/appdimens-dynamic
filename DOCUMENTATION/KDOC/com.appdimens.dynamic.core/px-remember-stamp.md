@@ -2,7 +2,6 @@
 
 # pxRememberStamp
 
-[jvm]
-internal fun [pxRememberStamp](px-remember-stamp.md)(layoutStamp: [Long](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-long/index.html), density: <Error class: unknown class>): [Long](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-long/index.html)
+internal fun [pxRememberStamp](px-remember-stamp.md)(layoutStamp: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html), density: ERROR CLASS: Symbol not found for Density): [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html)
 
 EN [layoutRememberStamp](layout-remember-stamp.md) xor raw bits of Density.density and Density.fontScale for Px composable paths. PT [layoutRememberStamp](layout-remember-stamp.md) xor bits brutos de densidade e escala de fonte para caminhos Px.

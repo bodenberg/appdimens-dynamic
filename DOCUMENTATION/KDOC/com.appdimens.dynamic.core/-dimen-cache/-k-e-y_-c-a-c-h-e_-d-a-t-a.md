@@ -2,5 +2,4 @@
 
 # KEY_CACHE_DATA
 
-[jvm]
-internal val [KEY_CACHE_DATA](-k-e-y_-c-a-c-h-e_-d-a-t-a.md): <Error class: unknown class>
+internal val [KEY_CACHE_DATA](-k-e-y_-c-a-c-h-e_-d-a-t-a.md): ERROR CLASS: Unresolved name: byteArrayPreferencesKey

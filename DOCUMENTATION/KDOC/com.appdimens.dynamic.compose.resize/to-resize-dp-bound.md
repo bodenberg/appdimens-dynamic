@@ -2,5 +2,4 @@
 
 # toResizeDpBound
 
-[jvm]
-private fun <Error class: unknown class>.[toResizeDpBound](to-resize-dp-bound.md)(): [ResizeBound](../com.appdimens.dynamic.core/-resize-bound/index.md)
+private fun ERROR CLASS: Symbol not found for Dp.[toResizeDpBound](to-resize-dp-bound.md)(): [ResizeBound](../com.appdimens.dynamic.core/-resize-bound/index.md)

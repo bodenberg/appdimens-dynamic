@@ -2,7 +2,8 @@
 
 # hdpQualifierPlainPx
 
-[jvm]
-fun <Error class: unknown class>.[hdpQualifierPlainPx](hdp-qualifier-plain-px.md)(qualifiedValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+fun ERROR CLASS: Symbol not found for Dp.[hdpQualifierPlainPx](hdp-qualifier-plain-px.md)(qualified: ERROR CLASS: Symbol not found for Dp, qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+
+EN Pixel variant of [hdpQualifierPlain](hdp-qualifier-plain.md) with [qualified](hdp-qualifier-plain-px.md) as Dp. PT Variante em px de [hdpQualifierPlain](hdp-qualifier-plain.md) com [qualified](hdp-qualifier-plain-px.md) em Dp.
 
 EN Pixel (Float) variant of [hdpQualifierPlain](hdp-qualifier-plain.md). PT Variante em Pixel (Float) de [hdpQualifierPlain](hdp-qualifier-plain.md).

@@ -2,7 +2,6 @@
 
 # FOLD_OPEN
 
-[jvm]
 [FOLD_OPEN](index.md)
 
 EN Foldable Device (Open state). PT Dispositivo Dobrável tipo Fold (Estado aberto).

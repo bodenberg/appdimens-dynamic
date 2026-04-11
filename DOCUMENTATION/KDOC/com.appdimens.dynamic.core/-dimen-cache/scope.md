@@ -2,5 +2,4 @@
 
 # scope
 
-[jvm]
 internal val [scope](scope.md): CoroutineScope

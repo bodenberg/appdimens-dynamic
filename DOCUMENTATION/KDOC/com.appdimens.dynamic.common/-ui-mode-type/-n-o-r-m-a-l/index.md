@@ -2,7 +2,6 @@
 
 # NORMAL
 
-[jvm]
 [NORMAL](index.md)
 
 EN Default Phone/Tablet.

@@ -2,8 +2,7 @@
 
 # values
 
-[jvm]
-fun [values](values.md)(): [Array](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-array/index.html)<[Inverter](index.md)>
+fun [values](values.md)(): [Array](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html)<[Inverter](index.md)>
 
 Returns an array containing the constants of this enum type, in the order they're declared.
 

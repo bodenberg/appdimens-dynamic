@@ -2,8 +2,7 @@
 
 # prwdp
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[prwdp](prwdp.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[prwdp](prwdp.md): ERROR CLASS: Symbol not found for Dp
 
 EN Extension for Dp with dynamic scaling based on the **Screen Width (wDP)**. Usage example: `100.wdp`.
 

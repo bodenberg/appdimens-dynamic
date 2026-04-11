@@ -2,16 +2,12 @@
 
 # mm
 
-[jvm]
-val [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html).[mm](mm.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+val [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html).[mm](mm.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-EN Float extension to convert MM to PX.
+EN Float extension to convert MM to Dp.
 
-PT Extensão de Float para converter MM para PX.
+PT Extensão de Float para converter MM para Dp.
 
-[jvm]
-val [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html).[mm](mm.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+EN Int extension to convert MM to Dp.
 
-EN Int extension to convert MM to PX.
-
-PT Extensão de Int para converter MM para PX.
+PT Extensão de Int para converter MM para Dp.

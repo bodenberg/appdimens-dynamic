@@ -2,5 +2,4 @@
 
 # defaultFontScale
 
-[jvm]
-private val [defaultFontScale](default-font-scale.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = true
+private val [defaultFontScale](default-font-scale.md): [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)

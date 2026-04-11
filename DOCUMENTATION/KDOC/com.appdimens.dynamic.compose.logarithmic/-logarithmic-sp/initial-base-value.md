@@ -2,5 +2,4 @@
 
 # initialBaseValue
 
-[jvm]
-private val [initialBaseValue](initial-base-value.md): [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html)
+private val [initialBaseValue](initial-base-value.md): [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html)

@@ -2,8 +2,7 @@
 
 # flssp
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[flssp](flssp.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[flssp](flssp.md): ERROR CLASS: Symbol not found for TextUnit
 
 EN Extension for Int with dynamic scaling based on the **Smallest Width (swDP)**. Usage example: `16.flssp`.
 

@@ -2,8 +2,7 @@
 
 # flsdp
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[flsdp](flsdp.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[flsdp](flsdp.md): ERROR CLASS: Symbol not found for Dp
 
 EN Extension for Dp with dynamic scaling based on the **Smallest Width (swDP)**. Usage example: `16.sdp`.
 

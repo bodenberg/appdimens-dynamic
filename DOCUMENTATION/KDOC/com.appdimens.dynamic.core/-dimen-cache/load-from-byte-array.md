@@ -2,5 +2,4 @@
 
 # loadFromByteArray
 
-[jvm]
-internal fun [loadFromByteArray](load-from-byte-array.md)(data: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-byte-array/index.html))
+internal fun [loadFromByteArray](load-from-byte-array.md)(data: [ByteArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html))

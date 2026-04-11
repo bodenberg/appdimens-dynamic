@@ -2,8 +2,7 @@
 
 # MM_TO_CM_FACTOR
 
-[jvm]
-private const val [MM_TO_CM_FACTOR](-m-m_-t-o_-c-m_-f-a-c-t-o-r.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html) = 10.0f
+private const val [MM_TO_CM_FACTOR](-m-m_-t-o_-c-m_-f-a-c-t-o-r.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html) = 10.0f
 
 EN Constants for Physical Unit Conversion.
 

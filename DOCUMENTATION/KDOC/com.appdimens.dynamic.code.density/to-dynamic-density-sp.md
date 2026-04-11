@@ -2,29 +2,24 @@
 
 # toDynamicDensitySp
 
-[jvm]
-@[JvmOverloads](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html)
-
-fun [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[toDynamicDensitySp](to-dynamic-density-sp.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), qualifier: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), fontScale: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = true, inverter: [Inverter](../com.appdimens.dynamic.common/-inverter/index.md) = Inverter.DEFAULT, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+@[JvmOverloads](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html)fun [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[toDynamicDensitySp](to-dynamic-density-sp.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), qualifier: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), fontScale: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = true, inverter: [Inverter](../com.appdimens.dynamic.common/-inverter/index.md) = Inverter.DEFAULT, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)? = null): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 EN Converts an Int (base Sp) to a dynamically scaled Sp value (as Float).
 
-#### Return
-
-The scaled Sp value as [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html).
+The scaled Sp value as [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html).
 
 **Bulk / init:** see [toDynamicDensitySpPx](to-dynamic-density-sp-px.md) for [DimenCache.getBatch](../com.appdimens.dynamic.core/-dimen-cache/get-batch.md) and [DimenDensitySp.warmupCache](-dimen-density-sp/warmup-cache.md).
 
-#### Parameters
+The Android context to access configuration and density.
 
-jvm
+The screen qualifier used for scaling (sw, h, w).
 
-| | |
-|---|---|
-| context | The Android context to access configuration and density. |
-| qualifier | The screen qualifier used for scaling (sw, h, w). |
-| fontScale | Whether to respect the system font scale. |
-| inverter | The inverter logic to apply. |
-| ignoreMultiWindows | Whether to ignore multi-window mode. |
-| applyAspectRatio | If `true`, applies the aspect-ratio multiplier. |
-| customSensitivityK | Override for the AR sensitivity constant (null = library default). |
+Whether to respect the system font scale.
+
+The inverter logic to apply.
+
+Whether to ignore multi-window mode.
+
+If `true`, applies the aspect-ratio multiplier.
+
+Override for the AR sensitivity constant (null = library default).

@@ -2,5 +2,4 @@
 
 # ResizeRangePx
 
-[jvm]
-constructor(minPx: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), maxPx: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), stepPx: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html))
+constructor(minPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), maxPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), stepPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html))

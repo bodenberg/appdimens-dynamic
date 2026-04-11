@@ -2,7 +2,8 @@
 
 # layoutRememberStamp
 
-[jvm]
-internal fun [layoutRememberStamp](layout-remember-stamp.md)(configuration: [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)): [Long](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-long/index.html)
+internal fun [layoutRememberStamp](layout-remember-stamp.md)(configuration: [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)): [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html)
 
-EN Layout + [Context](https://developer.android.com/reference/kotlin/android/content/Context.html) identity for [com.appdimens.dynamic.compose.toDynamicScaledDp](../com.appdimens.dynamic.compose/to-dynamic-scaled-dp.md) / cache paths that keyed [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html) metrics and androidContext. PT Layout + identidade de [Context](https://developer.android.com/reference/kotlin/android/content/Context.html) para caminhos que usavam métricas de [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html) e androidContext.
+EN Layout stamp for androidx.compose.runtime.remember keys. Uses [Configuration.hashCode](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html#hashcode) which reflects actual content (densityDpi, locale, fontScale, orientation, etc.), ensuring correct recomposition when any configuration field changes.
+
+PT Carimbo de layout para chaves de remember. Usa [Configuration.hashCode](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html#hashcode) que reflete o conteúdo real, garantindo recomposição correta quando qualquer campo da configuração muda.

@@ -2,5 +2,4 @@
 
 # DENSITY
 
-[jvm]
 [DENSITY](index.md)

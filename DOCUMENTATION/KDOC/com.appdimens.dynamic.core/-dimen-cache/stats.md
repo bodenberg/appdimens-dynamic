@@ -2,7 +2,4 @@
 
 # stats
 
-[jvm]
-@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
-
-fun [stats](stats.md)(): [DimenCache.CacheStats](-cache-stats/index.md)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [stats](stats.md)(): [DimenCache.CacheStats](-cache-stats/index.md)

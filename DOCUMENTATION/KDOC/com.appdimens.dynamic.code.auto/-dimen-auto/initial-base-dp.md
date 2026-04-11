@@ -2,5 +2,4 @@
 
 # initialBaseDp
 
-[jvm]
-private val [initialBaseDp](initial-base-dp.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+private val [initialBaseDp](initial-base-dp.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

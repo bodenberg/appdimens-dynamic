@@ -2,5 +2,4 @@
 
 # SP_NO_SCALE
 
-[jvm]
 [SP_NO_SCALE](index.md)

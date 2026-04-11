@@ -2,7 +2,6 @@
 
 # loghsp
 
-[jvm]
-val [loghsp](loghsp.md): <Error class: unknown class>
+val [loghsp](loghsp.md): ERROR CLASS: Symbol not found for TextUnit
 
 EN The final TextUnit (Sp) value resolved using Screen Height (WITH font scale). PT O valor final TextUnit (Sp) resolvido usando Altura da Tela (COM escala de fonte).

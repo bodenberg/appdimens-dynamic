@@ -2,5 +2,4 @@
 
 # toSpFloat
 
-[jvm]
-private fun <Error class: unknown class>.[toSpFloat](to-sp-float.md)(): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+private fun ERROR CLASS: Symbol not found for TextUnit.[toSpFloat](to-sp-float.md)(): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

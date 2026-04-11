@@ -2,5 +2,4 @@
 
 # SP
 
-[jvm]
 [SP](index.md)

@@ -2,5 +2,4 @@
 
 # orientation
 
-[jvm]
 val [orientation](orientation.md): [Orientation](../../com.appdimens.dynamic.common/-orientation/index.md)?

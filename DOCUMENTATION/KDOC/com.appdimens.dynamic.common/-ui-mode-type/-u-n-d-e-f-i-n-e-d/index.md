@@ -2,7 +2,6 @@
 
 # UNDEFINED
 
-[jvm]
 [UNDEFINED](index.md)
 
 EN Any unspecified/other UI mode.

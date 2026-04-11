@@ -2,7 +2,6 @@
 
 # APPLIANCE
 
-[jvm]
 [APPLIANCE](index.md)
 
 EN Projection Device (e.g., Android Auto, Cast).

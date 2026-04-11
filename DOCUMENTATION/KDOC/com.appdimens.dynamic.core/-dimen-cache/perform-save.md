@@ -2,5 +2,4 @@
 
 # performSave
 
-[jvm]
 private suspend fun [performSave](perform-save.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html))

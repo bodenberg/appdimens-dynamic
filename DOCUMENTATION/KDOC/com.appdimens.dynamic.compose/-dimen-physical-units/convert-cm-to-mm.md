@@ -2,8 +2,7 @@
 
 # convertCmToMm
 
-[jvm]
-fun [convertCmToMm](convert-cm-to-mm.md)(cm: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+fun [convertCmToMm](convert-cm-to-mm.md)(cm: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 EN Converts Centimeters (CM) to Millimeters (MM).
 

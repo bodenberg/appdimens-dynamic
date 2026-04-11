@@ -2,5 +2,4 @@
 
 # FILL
 
-[jvm]
 [FILL](index.md)

@@ -2,5 +2,4 @@
 
 # customSensitivityK
 
-[jvm]
-private val [customSensitivityK](custom-sensitivity-k.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null
+private val [customSensitivityK](custom-sensitivity-k.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)?

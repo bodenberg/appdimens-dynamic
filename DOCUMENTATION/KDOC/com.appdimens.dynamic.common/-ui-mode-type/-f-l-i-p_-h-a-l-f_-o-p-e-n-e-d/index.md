@@ -2,7 +2,6 @@
 
 # FLIP_HALF_OPENED
 
-[jvm]
 [FLIP_HALF_OPENED](index.md)
 
 EN Flip Device (Half-opened state). PT Dispositivo Dobrável tipo Flip (Estado semiaberto).

@@ -2,7 +2,6 @@
 
 # DESK
 
-[jvm]
 [DESK](index.md)
 
 EN Desk Device (Docked).

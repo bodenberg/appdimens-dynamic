@@ -2,7 +2,6 @@
 
 # localBoxResizeRangePx
 
-[jvm]
-private fun [localBoxResizeRangePx](local-box-resize-range-px.md)(minPx: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), maxPx: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html), stepPx: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)): [ResizeRangePx](../com.appdimens.dynamic.core/-resize-range-px/index.md)
+private fun [localBoxResizeRangePx](local-box-resize-range-px.md)(minPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), maxPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), stepPx: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [ResizeRangePx](../com.appdimens.dynamic.core/-resize-range-px/index.md)
 
 EN Build [ResizeRangePx](../com.appdimens.dynamic.core/-resize-range-px/index.md) from local box px (not screen %). PT Intervalo em px da caixa local.

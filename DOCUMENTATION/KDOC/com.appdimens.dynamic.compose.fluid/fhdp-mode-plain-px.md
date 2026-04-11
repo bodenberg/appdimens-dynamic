@@ -2,7 +2,8 @@
 
 # fhdpModePlainPx
 
-[jvm]
-fun <Error class: unknown class>.[fhdpModePlainPx](fhdp-mode-plain-px.md)(modeValue: [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html), uiModeType: [UiModeType](../com.appdimens.dynamic.common/-ui-mode-type/index.md), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)? = null): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html)
+fun ERROR CLASS: Symbol not found for Dp.[fhdpModePlainPx](fhdp-mode-plain-px.md)(mode: ERROR CLASS: Symbol not found for Dp, uiModeType: [UiModeType](../com.appdimens.dynamic.common/-ui-mode-type/index.md)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+
+EN Pixel variant of [fhdpModePlain](fhdp-mode-plain.md) with [mode](fhdp-mode-plain-px.md) as Dp. PT Variante em px de [fhdpModePlain](fhdp-mode-plain.md) com [mode](fhdp-mode-plain-px.md) em Dp.
 
 EN Pixel (Float) variant of hdpModePlain. PT Variante em Pixel (Float) de hdpModePlain.

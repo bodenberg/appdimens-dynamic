@@ -2,7 +2,6 @@
 
 # FOLD_CLOSED
 
-[jvm]
 [FOLD_CLOSED](index.md)
 
 EN Foldable Device (Closed state). PT Dispositivo Dobrável tipo Fold (Estado fechado).

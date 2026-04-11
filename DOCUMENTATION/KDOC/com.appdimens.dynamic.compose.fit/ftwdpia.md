@@ -2,7 +2,6 @@
 
 # ftwdpia
 
-[jvm]
-val [Number](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-number/index.html).[ftwdpia](ftwdpia.md): <Error class: unknown class>
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[ftwdpia](ftwdpia.md): ERROR CLASS: Symbol not found for Dp
 
 ia variant explicitly with both

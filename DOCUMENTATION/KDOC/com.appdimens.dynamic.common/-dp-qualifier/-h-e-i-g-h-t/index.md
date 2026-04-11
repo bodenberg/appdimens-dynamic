@@ -2,5 +2,4 @@
 
 # HEIGHT
 
-[jvm]
 [HEIGHT](index.md)
