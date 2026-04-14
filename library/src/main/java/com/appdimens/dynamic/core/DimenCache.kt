@@ -183,6 +183,15 @@ object DimenCache {
     @Volatile
     private var lastConfiguration: Configuration? = null
 
+    private fun snapshotConfig(src: Configuration): Configuration =
+        Configuration().apply {
+            screenWidthDp = src.screenWidthDp
+            screenHeightDp = src.screenHeightDp
+            smallestScreenWidthDp = src.smallestScreenWidthDp
+            densityDpi = src.densityDpi
+            fontScale = src.fontScale
+        }
+
     @JvmField @Volatile
     internal var cachedUiMode: UiModeType = UiModeType.UNDEFINED
 
@@ -522,7 +531,7 @@ object DimenCache {
 
         updateFactors(config)
         factors.smallestWidthDp = currentSw
-        lastConfiguration = Configuration(config)
+        lastConfiguration = snapshotConfig(config)
         isInitializedFast = true
 
         scope.launch {
@@ -534,6 +543,7 @@ object DimenCache {
                 if (savedSw != currentSw || rawData == null) {
                     if (savedSw != 0 && savedSw != currentSw) {
                         clearAll()
+                        lastConfiguration = snapshotConfig(config)
                         appContext.dataStore.edit { it.clear() }
                     }
                 } else {
@@ -837,12 +847,13 @@ object DimenCache {
     @JvmStatic
     fun invalidateOnConfigChange(new: Configuration) {
         val old = lastConfiguration
-        lastConfiguration = Configuration(new)
+        val snapshot = snapshotConfig(new)
 
         if (old == null) {
             updateFactors(new)
             factors.smallestWidthDp = new.smallestScreenWidthDp
             clearAll()
+            lastConfiguration = snapshot
             return
         }
 
@@ -867,6 +878,7 @@ object DimenCache {
             }
             clearAll()
         }
+        lastConfiguration = snapshot
         // Orientation-only: keys encode isLandscape bit → natural miss, no clear needed.
     }
 
@@ -942,6 +954,7 @@ object DimenCache {
     @JvmStatic
     @JvmOverloads
     fun clearAll(context: Context? = null) {
+        lastConfiguration = null
         for (s in 0 until SHARD_COUNT) {
             val shard = shards[s]
             val keys  = shard.keys
