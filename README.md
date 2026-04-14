@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/bodenberg/appdimens-dynamic/releases" title="Releases">
-    <img src="https://img.shields.io/badge/version-3.1.5-blue.svg" alt="Version 3.1.5">
+    <img src="https://img.shields.io/badge/version-3.1.4-blue.svg" alt="Version 3.1.4">
   </a>
   &nbsp;
   <a href="LICENSE" title="Apache License 2.0">
@@ -74,7 +74,7 @@ One dependency: you write values like `16.sdp` and the library scales them from 
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.1.5")
+    implementation("io.github.bodenberg:appdimens-dynamic:3.1.4")
 }
 ```
 

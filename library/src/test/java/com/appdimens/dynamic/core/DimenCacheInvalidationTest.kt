@@ -2,7 +2,6 @@ package com.appdimens.dynamic.core
 
 import android.content.res.Configuration
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -20,6 +19,8 @@ class DimenCacheInvalidationTest {
             screenWidthDp = w
             screenHeightDp = h
             densityDpi = dpi
+            // Constructor uses unset() → fontScale 0; keep explicit for clarity.
+            fontScale = 0f
         }
 
     @Test
@@ -62,8 +63,8 @@ class DimenCacheInvalidationTest {
 
     @Test
     fun invalidate_nothingChanged_doesNotClear() {
-        val old = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(old)
+        val before = config(sw = 400, w = 400, h = 800)
+        DimenCache.invalidateOnConfigChange(before)
 
         val key = DimenCache.buildKey(
             30f, false, false, DimenCache.CalcType.POWER,
@@ -73,8 +74,10 @@ class DimenCacheInvalidationTest {
         DimenCache.getOrPut(key) { 77f }
         assertEquals(77f, DimenCache.peek(key) ?: -1f, 0f)
 
-        val new = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(new)
+        // Configuration(Configuration) runs setTo on the source (e.g. fixUpLocaleList).
+        // Compare against a copy of the same instance so lastConfiguration matches the
+        // incoming snapshot field-for-field on the fields DimenCache checks.
+        DimenCache.invalidateOnConfigChange(Configuration(before))
 
         assertEquals(77f, DimenCache.peek(key) ?: -1f, 0f)
     }

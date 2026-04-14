@@ -1,7 +1,7 @@
 # Project Design Document (PDR) — AppDimens Dynamic
 
 > [!NOTE]
-> **Product Alignment:** `io.github.bodenberg:appdimens-dynamic:3.1.5`
+> **Product Alignment:** `io.github.bodenberg:appdimens-dynamic:3.1.4`
 > **Associated Documents:** [PRD (Requirements)](PRD.md) | [Mathematics](MATHEMATICS-AND-CALCULUS.md) | [Performance Specs](../library/PERFORMANCE.md)
 
 This internal architecture document mandates the precise structural logic, technical dependencies, caching behaviors, and quality integration required by the AppDimens Dynamic `library` package.
