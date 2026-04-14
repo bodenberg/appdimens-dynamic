@@ -11638,7 +11638,7 @@ $dokka.location:com.appdimens.dynamic.core/DimenCache/getOrPutAspectRatio/#kotli
 $dokka.location:com.appdimens.dynamic.core/DimenCache/getOrPutInternal/#kotlin.Long#android.content.Context?#kotlin.Function0[kotlin.Float]/PointingToDeclaration/KDOC/com.appdimens.dynamic.core/-dimen-cache/get-or-put-internal.md
 $dokka.location:com.appdimens.dynamic.core/DimenCache/hitCount/#/PointingToDeclaration/KDOC/com.appdimens.dynamic.core/-dimen-cache/hit-count.md
 $dokka.location:com.appdimens.dynamic.core/DimenCache/init/#android.content.Context/PointingToDeclaration/KDOC/com.appdimens.dynamic.core/-dimen-cache/init.md
-$dokka.location:com.appdimens.dynamic.core/DimenCache/invalidateOnConfigChange/#android.content.res.Configuration?#android.content.res.Configuration/PointingToDeclaration/KDOC/com.appdimens.dynamic.core/-dimen-cache/invalidate-on-config-change.md
+$dokka.location:com.appdimens.dynamic.core/DimenCache/invalidateOnConfigChange/#android.content.res.Configuration/PointingToDeclaration/KDOC/com.appdimens.dynamic.core/-dimen-cache/invalidate-on-config-change.md
 $dokka.location:com.appdimens.dynamic.core/DimenCache/isEnabled/#/PointingToDeclaration/KDOC/com.appdimens.dynamic.core/-dimen-cache/is-enabled.md
 $dokka.location:com.appdimens.dynamic.core/DimenCache/isInitialized/#/PointingToDeclaration/KDOC/com.appdimens.dynamic.core/-dimen-cache/is-initialized.md
 $dokka.location:com.appdimens.dynamic.core/DimenCache/isInitializedFast/#/PointingToDeclaration/KDOC/com.appdimens.dynamic.core/-dimen-cache/is-initialized-fast.md

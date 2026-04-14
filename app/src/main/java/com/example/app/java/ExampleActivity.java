@@ -33,6 +33,19 @@ public class ExampleActivity extends AppCompatActivity {
 
     private ActivitySdpBinding binding;
 
+    // EN Uncomment when this Activity declares android:configChanges="orientation|screenSize|density|..."
+    //    in AndroidManifest.xml, so the system does NOT recreate it on configuration changes.
+    //    DimenCache tracks the previous Configuration internally — just pass the new one.
+    // PT Descomente quando esta Activity declarar android:configChanges="orientation|screenSize|density|..."
+    //    no AndroidManifest.xml, para que o sistema NÃO a recrie em mudanças de configuração.
+    //    O DimenCache rastreia a Configuration anterior internamente — basta passar a nova.
+    //
+    // @Override
+    // public void onConfigurationChanged(@NonNull android.content.res.Configuration newConfig) {
+    //     super.onConfigurationChanged(newConfig);
+    //     com.appdimens.dynamic.core.DimenCache.invalidateOnConfigChange(newConfig);
+    // }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

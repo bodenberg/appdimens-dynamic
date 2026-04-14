@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/bodenberg/appdimens-dynamic/releases" title="Releases">
-    <img src="https://img.shields.io/badge/version-3.1.3-blue.svg" alt="Version 3.1.3">
+    <img src="https://img.shields.io/badge/version-3.1.4-blue.svg" alt="Version 3.1.4">
   </a>
   &nbsp;
   <a href="LICENSE" title="Apache License 2.0">
@@ -74,7 +74,7 @@ One dependency: you write values like `16.sdp` and the library scales them from 
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.1.3")
+    implementation("io.github.bodenberg:appdimens-dynamic:3.1.4")
 }
 ```
 
@@ -135,21 +135,14 @@ setContent {
 
 Call this when the **same Activity** stays alive across **rotation, split-screen, or density/font changes** and sizes look **stale**. If the Activity is **recreated** on config change (default), you often don’t need it. Details: [library/PERFORMANCE.md](library/PERFORMANCE.md).
 
+The previous `Configuration` is tracked internally by `DimenCache` — callers only need to pass the new one.
+
 ```kotlin
-import android.content.res.Configuration
 import com.appdimens.dynamic.core.DimenCache
 
-private var lastConfiguration: Configuration? = null
-
-override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    lastConfiguration = Configuration(resources.configuration)
-}
-
 override fun onConfigurationChanged(newConfig: Configuration) {
-    DimenCache.invalidateOnConfigChange(lastConfiguration, newConfig)
-    lastConfiguration = Configuration(newConfig)
     super.onConfigurationChanged(newConfig)
+    DimenCache.invalidateOnConfigChange(newConfig)
 }
 ```
 

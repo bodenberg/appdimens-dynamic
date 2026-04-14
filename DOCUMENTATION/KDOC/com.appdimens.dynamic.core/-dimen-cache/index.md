@@ -182,9 +182,9 @@ EN Non-inline core logic for [getOrPut](get-or-put.md). Separated so that the pu
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [init](init.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html))
 
-@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [invalidateOnConfigChange](invalidate-on-config-change.md)(old: [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html)?, new: [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html))
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [invalidateOnConfigChange](invalidate-on-config-change.md)(new: [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html))
 
-EN Selectively invalidates the cache based on what actually changed in [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html).
+EN Selectively invalidates the cache based on what actually changed in [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html). The previous configuration is tracked internally.
 
 private fun [launchSaveCollector](launch-save-collector.md)(target: CoroutineScope)
 

@@ -5,26 +5,26 @@ description: Use this skill for any Android responsive layout or scaling questio
 
 # AppDimens Dynamic — project workflow
 
-**Library:** `io.github.bodenberg:appdimens-dynamic:3.1.3`
+**Library:** `io.github.bodenberg:appdimens-dynamic:3.1.4`
 
-> **DOC_REF (maintainers):** bump every `3.1.3` URL in this skill and in `references/` together with the coordinate above on future releases.
+> **DOC_REF (maintainers):** bump every `3.1.4` URL in this skill and in `library-map.md` / `reference.md` together with the coordinate above on future releases.
 
-**Authoritative GitHub docs (ref `3.1.3`):**
-- [README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/README.md) — install, `AppDimensProvider`, `DimenCache.invalidateOnConfigChange`
-- [DOCUMENTATION/README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/DOCUMENTATION/README.md) — all strategies, decision flow
-- [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) — Compose naming, facilitators, Plain chains, `code` parity
-- [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/DOCUMENTATION/resize.md) — `compose.resize` / `code.resize`
-- [GUIDE-FOR-BEGINNERS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/GUIDE-FOR-BEGINNERS.md) — narrative walkthrough
-- Examples: [Compose](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/app/src/main/java/com/example/app/compose/ExampleActivity.kt) · [Kotlin Views](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/app/src/main/java/com/example/app/kotlin/ExampleActivity.kt) · [Java](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/app/src/main/java/com/example/app/java/ExampleActivity.java)
+**Authoritative GitHub docs (ref `3.1.4`):**
+- [README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/README.md) — install, `AppDimensProvider`, `DimenCache.invalidateOnConfigChange`
+- [DOCUMENTATION/README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/DOCUMENTATION/README.md) — all strategies, decision flow
+- [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) — Compose naming, facilitators, Plain chains, `code` parity
+- [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/DOCUMENTATION/resize.md) — `compose.resize` / `code.resize`
+- [GUIDE-FOR-BEGINNERS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/GUIDE-FOR-BEGINNERS.md) — narrative walkthrough
+- Examples: [Compose](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/app/src/main/java/com/example/app/compose/ExampleActivity.kt) · [Kotlin Views](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/app/src/main/java/com/example/app/kotlin/ExampleActivity.kt) · [Java](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/app/src/main/java/com/example/app/java/ExampleActivity.java)
 
-**Package map and strategy → doc index:** [references/library-map.md](references/library-map.md)
+**Package map and strategy → doc index:** [library-map.md](library-map.md)
 
 ---
 
 ## Agent Preflight (run before any non-trivial edit)
 
-1. Read [references/library-map.md](references/library-map.md) for package layout and strategy ↔ doc mapping.
-2. For the **specific packages/symbols** you'll touch: browse [`library/src/main/java/com/appdimens/dynamic/`](https://github.com/bodenberg/appdimens-dynamic/tree/3.1.3/library/src/main/java/com/appdimens/dynamic) on GitHub at `3.1.3`, **or** use IDE "Download Sources" / "Navigate to Declaration" on the Maven artifact. For API detail, see [DOCUMENTATION/index.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/DOCUMENTATION/index.md) and per-package pages under [`DOCUMENTATION/KDOC/`](https://github.com/bodenberg/appdimens-dynamic/tree/3.1.3/DOCUMENTATION/KDOC). Do not rely on memory.
+1. Read [library-map.md](library-map.md) for package layout and strategy ↔ doc mapping.
+2. For the **specific packages/symbols** you'll touch: browse [`library/src/main/java/com/appdimens/dynamic/`](https://github.com/bodenberg/appdimens-dynamic/tree/3.1.4/library/src/main/java/com/appdimens/dynamic) on GitHub at `3.1.4`, **or** use IDE "Download Sources" / "Navigate to Declaration" on the Maven artifact. For API detail, see [DOCUMENTATION/index.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/DOCUMENTATION/index.md) and per-package pages under [`DOCUMENTATION/KDOC/`](https://github.com/bodenberg/appdimens-dynamic/tree/3.1.4/DOCUMENTATION/KDOC). Do not rely on memory.
 3. Skim the upstream example that matches the user's stack (links above). Restrict deep reading to **relevant packages and call sites** — full module audits only when explicitly requested.
 
 **Hard rule:** never surface `ignoreMultiWindows`, `*i`, or `*ia` suffixes to users.
@@ -43,7 +43,7 @@ Which surface is in scope?
 |--------|---------------|----------|
 | **Jetpack Compose** | `com.appdimens.dynamic.compose.*` | `16.sdp`, `scaledDp { }`; needs `AppDimensProvider` for facilitators |
 | **Kotlin (Views)** | `com.appdimens.dynamic.code.*` | `DimenSdp.sdp(context, 16)`; outputs px for layout |
-| **Java (Views)** | same `code.*` entry points | see [ExampleActivity.java](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/app/src/main/java/com/example/app/java/ExampleActivity.java) |
+| **Java (Views)** | same `code.*` entry points | see [ExampleActivity.java](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/app/src/main/java/com/example/app/java/ExampleActivity.java) |
 
 Record: drives imports, `AppDimensProvider` need, and whether resize runs in `compose.resize` or `code.resize`.
 
@@ -54,7 +54,7 @@ Record: drives imports, `AppDimensProvider` need, and whether resize runs in `co
 Which axis should `DpQualifier`-aware APIs use? (Affects `.sdpQualifier`, `.sdpScreen`, `.sspRotate`, power/screen branches, and their `code` mirrors.)
 
 - **`SMALL_WIDTH` (default)** — smallest-width (swDP) baseline; correct for most phone/tablet layouts.
-- **Explicit `WIDTH` / `HEIGHT` (or per-call-site mix)** — when design requires width-dp or height-dp branching. Read [COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) and `DpQualifier` KDoc before proposing thresholds.
+- **Explicit `WIDTH` / `HEIGHT` (or per-call-site mix)** — when design requires width-dp or height-dp branching. Read [COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) and `DpQualifier` KDoc before proposing thresholds.
 
 Record before suggesting any `.screen`, `.qualifier`, rotate, or power-curve APIs.
 
@@ -110,7 +110,7 @@ In **automatic mode**: propose per screen, confirm before bulk edits.
 
 ### Other Strategies
 
-Use only when requirements or QA justify leaving scaled. **Before recommending any strategy below**, read its matching doc in `DOCUMENTATION/` — see [references/library-map.md](references/library-map.md) § "Strategy → doc". Pull trade-offs from that doc, not from memory.
+Use only when requirements or QA justify leaving scaled. **Before recommending any strategy below**, read its matching doc in `DOCUMENTATION/` — see [library-map.md](library-map.md) § "Strategy → doc". Pull trade-offs from that doc, not from memory.
 
 | Strategy | Role | Typically when | Not ideal when |
 |----------|------|----------------|----------------|
@@ -154,7 +154,7 @@ Ask in order, waiting for each answer before continuing:
 4. **Bounds semantics** — clarify `ResizeBound.FixedDp` / `FixedSp` / `Percent` (sw/w/h axis). For percent-in-container resize, clarify `AutoResizePercentBasis` (min/max side, width, height) and use `autoResizeTextSpPercent` (Compose) or `fittingTextSpPercentPx` (code). Remind: `resolveToPx` requires `density > 0`; invalid inputs are clamped (library KDoc).
 5. **Approach check** — global proportional sizing across the screen is usually scaled/percent/fluid, not resize. Reserve resize for fit-to-container problems.
 
-Reference: [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.3/DOCUMENTATION/resize.md)
+Reference: [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/DOCUMENTATION/resize.md)
 
 ---
 

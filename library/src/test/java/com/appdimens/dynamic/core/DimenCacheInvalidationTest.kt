@@ -25,7 +25,7 @@ class DimenCacheInvalidationTest {
     @Test
     fun invalidate_screenWidthChange_clearsCache() {
         val old = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(null, old)
+        DimenCache.invalidateOnConfigChange(old)
 
         val key = DimenCache.buildKey(
             10f, false, false, DimenCache.CalcType.AUTO,
@@ -36,7 +36,7 @@ class DimenCacheInvalidationTest {
         assertEquals(42f, DimenCache.peek(key) ?: -1f, 0f)
 
         val new = config(sw = 400, w = 300, h = 800)
-        DimenCache.invalidateOnConfigChange(old, new)
+        DimenCache.invalidateOnConfigChange(new)
 
         assertEquals(null, DimenCache.peek(key))
     }
@@ -44,7 +44,7 @@ class DimenCacheInvalidationTest {
     @Test
     fun invalidate_screenHeightChange_clearsCache() {
         val old = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(null, old)
+        DimenCache.invalidateOnConfigChange(old)
 
         val key = DimenCache.buildKey(
             20f, false, false, DimenCache.CalcType.AUTO,
@@ -55,7 +55,7 @@ class DimenCacheInvalidationTest {
         assertEquals(55f, DimenCache.peek(key) ?: -1f, 0f)
 
         val new = config(sw = 400, w = 400, h = 600)
-        DimenCache.invalidateOnConfigChange(old, new)
+        DimenCache.invalidateOnConfigChange(new)
 
         assertEquals(null, DimenCache.peek(key))
     }
@@ -63,7 +63,7 @@ class DimenCacheInvalidationTest {
     @Test
     fun invalidate_nothingChanged_doesNotClear() {
         val old = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(null, old)
+        DimenCache.invalidateOnConfigChange(old)
 
         val key = DimenCache.buildKey(
             30f, false, false, DimenCache.CalcType.POWER,
@@ -74,7 +74,7 @@ class DimenCacheInvalidationTest {
         assertEquals(77f, DimenCache.peek(key) ?: -1f, 0f)
 
         val new = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(old, new)
+        DimenCache.invalidateOnConfigChange(new)
 
         assertEquals(77f, DimenCache.peek(key) ?: -1f, 0f)
     }
@@ -82,7 +82,7 @@ class DimenCacheInvalidationTest {
     @Test
     fun invalidate_orientationSwap_clearsCache() {
         val old = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(null, old)
+        DimenCache.invalidateOnConfigChange(old)
 
         val key = DimenCache.buildKey(
             31f, false, false, DimenCache.CalcType.POWER,
@@ -92,7 +92,7 @@ class DimenCacheInvalidationTest {
         DimenCache.getOrPut(key) { 88f }
 
         val new = config(sw = 400, w = 800, h = 400)
-        DimenCache.invalidateOnConfigChange(old, new)
+        DimenCache.invalidateOnConfigChange(new)
 
         assertEquals(null, DimenCache.peek(key))
     }
@@ -100,7 +100,7 @@ class DimenCacheInvalidationTest {
     @Test
     fun invalidate_dpiChange_clearsCache() {
         val old = config(dpi = 420)
-        DimenCache.invalidateOnConfigChange(null, old)
+        DimenCache.invalidateOnConfigChange(old)
 
         val key = DimenCache.buildKey(
             40f, false, false, DimenCache.CalcType.AUTO,
@@ -110,7 +110,7 @@ class DimenCacheInvalidationTest {
         DimenCache.getOrPut(key) { 99f }
 
         val new = config(dpi = 320)
-        DimenCache.invalidateOnConfigChange(old, new)
+        DimenCache.invalidateOnConfigChange(new)
 
         assertEquals(null, DimenCache.peek(key))
     }

@@ -180,6 +180,9 @@ object DimenCache {
     // [FASE 5] CACHED UiModeType — avoids SensorManager + WindowMetrics per call
     // ─────────────────────────────────────────────────────────────────────────
 
+    @Volatile
+    private var lastConfiguration: Configuration? = null
+
     @JvmField @Volatile
     internal var cachedUiMode: UiModeType = UiModeType.UNDEFINED
 
@@ -519,6 +522,7 @@ object DimenCache {
 
         updateFactors(config)
         factors.smallestWidthDp = currentSw
+        lastConfiguration = Configuration(config)
         isInitializedFast = true
 
         scope.launch {
@@ -831,7 +835,10 @@ object DimenCache {
      * PT Invalida seletivamente o cache baseado no que mudou na [Configuration].
      */
     @JvmStatic
-    fun invalidateOnConfigChange(old: Configuration?, new: Configuration) {
+    fun invalidateOnConfigChange(new: Configuration) {
+        val old = lastConfiguration
+        lastConfiguration = Configuration(new)
+
         if (old == null) {
             updateFactors(new)
             factors.smallestWidthDp = new.smallestScreenWidthDp

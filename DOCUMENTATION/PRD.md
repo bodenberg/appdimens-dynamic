@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD) — AppDimens Dynamic
 
 > [!NOTE]
-> **Product Alignment:** `io.github.bodenberg:appdimens-dynamic:3.1.3`
+> **Product Alignment:** `io.github.bodenberg:appdimens-dynamic:3.1.4`
 > **Primary Module:** `library`
 > **Associated Documents:** [PDR (Design)](PDR.md) | [Mathematics](MATHEMATICS-AND-CALCULUS.md) | [API Conventions](COMPOSE-API-CONVENTIONS.md)
 
