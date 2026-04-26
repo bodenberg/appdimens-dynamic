@@ -51,7 +51,7 @@ Record: drives imports, `AppDimensProvider` need, and whether resize runs in `co
 
 ### 0.2 Screen Metric Qualifier (`DpQualifier`)
 
-Which axis should `DpQualifier`-aware APIs use? (Affects `.sdpQualifier`, `.sdpScreen`, `.sspRotate`, power/screen branches, and their `code` mirrors.)
+Which axis should `DpQualifier`-aware APIs use? (Affects `.sdpQualifier`, `.sdpScreen`, scaled `.sspRotate` vs strategy-prefixed Sp rotates such as `.asspRotate`, and their `code` mirrors.)
 
 - **`SMALL_WIDTH` (default)** — smallest-width (swDP) baseline; correct for most phone/tablet layouts.
 - **Explicit `WIDTH` / `HEIGHT` (or per-call-site mix)** — when design requires width-dp or height-dp branching. Read [COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.4/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) and `DpQualifier` KDoc before proposing thresholds.

@@ -53,7 +53,7 @@ import com.appdimens.dynamic.core.pxRememberStamp
  * it uses [rotationValue] scaled with the given [finalQualifierResolver].
  */
 @Composable
-fun Number.sspRotate(
+fun Number.fsspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -80,7 +80,7 @@ fun Number.sspRotate(
  * Extension for Int with dynamic scaling based on **Screen Height (hDP)**.
  */
 @Composable
-fun Number.hspRotate(
+fun Number.fhspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -107,7 +107,7 @@ fun Number.hspRotate(
  * Extension for Int with dynamic scaling based on **Screen Width (wDP)**.
  */
 @Composable
-fun Number.wspRotate(
+fun Number.fwspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -139,7 +139,7 @@ fun Number.wspRotate(
  * it uses [modeValue] instead.
  */
 @Composable
-fun Number.sspMode(
+fun Number.fsspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -161,7 +161,7 @@ fun Number.sspMode(
  * Extension for Int with dynamic scaling based on **Screen Height (hDP)**.
  */
 @Composable
-fun Number.hspMode(
+fun Number.fhspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -183,7 +183,7 @@ fun Number.hspMode(
  * Extension for Int with dynamic scaling based on **Screen Width (wDP)**.
  */
 @Composable
-fun Number.wspMode(
+fun Number.fwspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -216,22 +216,22 @@ fun Number.wspMode(
 val Number.fssp: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.fsspa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.fsspi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fsspia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPx: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true)
+val Number.fsspPx: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true)
 @get:Composable
-val Number.sspPxa: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.fsspPxa: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxi: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.fsspPxi: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxia: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fsspPxia: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -241,7 +241,7 @@ val Number.sspPxia: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH,
  *
  * PT
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**,
- * mas sem respeitar a escala de fonte do sistema.
+ * mas fsem respeitar a escala de fonte do sistema.
  * Exemplo de uso: `16.fsem`.
  */
 @get:Composable
@@ -269,109 +269,109 @@ val Number.fsemPxia: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.sspPh`.
+ * Usage example: `32.fsspPh`.
  */
 @get:Composable
-val Number.sspPh: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
+val Number.fsspPh: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspPha: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
+val Number.fsspPha: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspPhi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
+val Number.fsspPhi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspPhia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fsspPhia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxPh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
+val Number.fsspPxPh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
 @get:Composable
-val Number.sspPxaPh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
+val Number.fsspPxaPh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiPh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
+val Number.fsspPxiPh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaPh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fsspPxiaPh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in landscape orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.sspLh`.
+ * Usage example: `32.fsspLh`.
  */
 @get:Composable
-val Number.sspLh: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
+val Number.fsspLh: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspLha: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
+val Number.fsspLha: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspLhi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
+val Number.fsspLhi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspLhia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fsspLhia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxLh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
+val Number.fsspPxLh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
 @get:Composable
-val Number.sspPxaLh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
+val Number.fsspPxaLh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiLh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
+val Number.fsspPxiLh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaLh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fsspPxiaLh: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in portrait orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.sspPw`.
+ * Usage example: `32.fsspPw`.
  */
 @get:Composable
-val Number.sspPw: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
+val Number.fsspPw: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspPwa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
+val Number.fsspPwa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspPwi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
+val Number.fsspPwi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspPwia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fsspPwia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxPw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
+val Number.fsspPxPw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
 @get:Composable
-val Number.sspPxaPw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
+val Number.fsspPxaPw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiPw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
+val Number.fsspPxiPw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaPw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fsspPxiaPw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in landscape orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.sspLw`.
+ * Usage example: `32.fsspLw`.
  */
 @get:Composable
-val Number.sspLw: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
+val Number.fsspLw: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspLwa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
+val Number.fsspLwa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspLwi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
+val Number.fsspLwi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspLwia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fsspLwia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxLw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
+val Number.fsspPxLw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
 @get:Composable
-val Number.sspPxaLw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
+val Number.fsspPxaLw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiLw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
+val Number.fsspPxiLw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaLw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fsspPxiaLw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -382,22 +382,22 @@ val Number.sspPxiaLw: Float get() = this.toDynamicFluidPx(DpQualifier.SMALL_WIDT
 val Number.fhsp: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hspa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
+val Number.fhspa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hspi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
+val Number.fhspi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hspia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fhspia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hspPx: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true)
+val Number.fhspPx: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true)
 @get:Composable
-val Number.hspPxa: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
+val Number.fhspPxa: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Number.hspPxi: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
+val Number.fhspPxi: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Number.hspPxia: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fhspPxia: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -409,76 +409,76 @@ val Number.hspPxia: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, font
 val Number.fhem: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = false)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hema: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
+val Number.fhema: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hemi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
+val Number.fhemi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hemia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fhemia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hemPx: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = false)
+val Number.fhemPx: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = false)
 @get:Composable
-val Number.hemPxa: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
+val Number.fhemPxa: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
 @get:Composable
-val Number.hemPxi: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
+val Number.fhemPxi: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
 @get:Composable
-val Number.hemPxia: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fhemPxia: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
  * in landscape orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.hspLw`.
+ * Usage example: `32.fhspLw`.
  */
 @get:Composable
-val Number.hspLw: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
+val Number.fhspLw: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hspLwa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
+val Number.fhspLwa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hspLwi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
+val Number.fhspLwi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hspLwia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fhspLwia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hspPxLw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
+val Number.fhspPxLw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
 @get:Composable
-val Number.hspPxaLw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
+val Number.fhspPxaLw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
 @get:Composable
-val Number.hspPxiLw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
+val Number.fhspPxiLw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
 @get:Composable
-val Number.hspPxiaLw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fhspPxiaLw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
  * in portrait orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.hspPw`.
+ * Usage example: `32.fhspPw`.
  */
 @get:Composable
-val Number.hspPw: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
+val Number.fhspPw: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hspPwa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
+val Number.fhspPwa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hspPwi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
+val Number.fhspPwi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hspPwia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fhspPwia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hspPxPw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
+val Number.fhspPxPw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
 @get:Composable
-val Number.hspPxaPw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
+val Number.fhspPxaPw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
 @get:Composable
-val Number.hspPxiPw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
+val Number.fhspPxiPw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
 @get:Composable
-val Number.hspPxiaPw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fhspPxiaPw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -489,22 +489,22 @@ val Number.hspPxiaPw: Float get() = this.toDynamicFluidPx(DpQualifier.HEIGHT, fo
 val Number.fwsp: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wspa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.fwspa: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wspi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.fwspi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wspia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fwspia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wspPx: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true)
+val Number.fwspPx: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true)
 @get:Composable
-val Number.wspPxa: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.fwspPxa: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Number.wspPxi: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.fwspPxi: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Number.wspPxia: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fwspPxia: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -516,104 +516,104 @@ val Number.wspPxia: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontS
 val Number.fwem: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wema: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
+val Number.fwema: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wemi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
+val Number.fwemi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wemia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fwemia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wemPx: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false)
+val Number.fwemPx: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false)
 @get:Composable
-val Number.wemPxa: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
+val Number.fwemPxa: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
 @get:Composable
-val Number.wemPxi: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
+val Number.fwemPxi: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
 @get:Composable
-val Number.wemPxia: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fwemPxia: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * in landscape orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wspLh`.
+ * Usage example: `100.fwspLh`.
  */
 @get:Composable
-val Number.wspLh: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
+val Number.fwspLh: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wspLha: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
+val Number.fwspLha: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wspLhi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
+val Number.fwspLhi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wspLhia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fwspLhia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wspPxLh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
+val Number.fwspPxLh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
 @get:Composable
-val Number.wspPxaLh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
+val Number.fwspPxaLh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
 @get:Composable
-val Number.wspPxiLh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
+val Number.fwspPxiLh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
 @get:Composable
-val Number.wspPxiaLh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fwspPxiaLh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wspPh`.
+ * Usage example: `100.fwspPh`.
  */
 @get:Composable
-val Number.wspPh: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
+val Number.fwspPh: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wspPha: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.fwspPha: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wspPhi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.fwspPhi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wspPhia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fwspPhia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wspPxPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
+val Number.fwspPxPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
 @get:Composable
-val Number.wspPxaPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.fwspPxaPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 @get:Composable
-val Number.wspPxiPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.fwspPxiPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 @get:Composable
-val Number.wspPxiaPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fwspPxiaPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * without respecting the system font scale, and
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wemPh`.
+ * Usage example: `100.fwemPh`.
  */
 @get:Composable
-val Number.wemPh: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
+val Number.fwemPh: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wemPha: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.fwemPha: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wemPhi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.fwemPhi: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wemPhia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fwemPhia: TextUnit get() = this.toDynamicFluidSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wemPxPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
+val Number.fwemPxPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
 @get:Composable
-val Number.wemPxaPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.fwemPxaPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 @get:Composable
-val Number.wemPxiPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.fwemPxiPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 @get:Composable
-val Number.wemPxiaPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.fwemPxiaPh: Float get() = this.toDynamicFluidPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -713,13 +713,13 @@ internal fun rememberFluidSp(
 }
 
 /**
- * EN [remember]s the cached px [Float] for [toDynamicFluidPx] using [cacheKey] and [sspPxStamp].
- * PT [remember] do [Float] em px para [toDynamicFluidPx] usando [cacheKey] e [sspPxStamp].
+ * EN [remember]s the cached px [Float] for [toDynamicFluidPx] using [cacheKey] and [fsspPxStamp].
+ * PT [remember] do [Float] em px para [toDynamicFluidPx] usando [cacheKey] e [fsspPxStamp].
  */
 @Composable
 internal fun rememberFluidSpPx(
     cacheKey: Long,
-    sspPxStamp: Long,
+    fsspPxStamp: Long,
     androidContext: android.content.Context,
     density: Density,
     baseValue: Float,
@@ -730,7 +730,7 @@ internal fun rememberFluidSpPx(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): Float = remember(cacheKey, sspPxStamp) {
+): Float = remember(cacheKey, fsspPxStamp) {
     DimenCache.getOrPut(cacheKey, androidContext) {
         val scaledVal = calculateFluidSpValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
         val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
@@ -783,10 +783,10 @@ fun Number.toDynamicFluidPx(
         valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val fsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
     return rememberFluidSpPx(
-        cacheKey, sspPxStamp, androidContext, density, this.toFloat(), configuration,
+        cacheKey, fsspPxStamp, androidContext, density, this.toFloat(), configuration,
         qualifier, inverter, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }

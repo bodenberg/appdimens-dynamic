@@ -1,0 +1,5 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../index.md)/[com.appdimens.dynamic.compose.fill](index.md)/[flwemPxia](wem-pxia.md)
+
+# flwemPxia
+
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[flwemPxia](wem-pxia.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)

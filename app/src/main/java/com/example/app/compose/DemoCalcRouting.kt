@@ -210,27 +210,27 @@ import com.appdimens.dynamic.compose.power.pwsdpScreenPlain
 import com.appdimens.dynamic.compose.power.pwwdp
 import com.appdimens.dynamic.compose.power.pwwdpLh
 import com.appdimens.dynamic.compose.auto.assp
-import com.appdimens.dynamic.compose.auto.sspRotatePlain as stratSspRotatePlainAuto
+import com.appdimens.dynamic.compose.auto.asspRotatePlain as stratSspRotatePlainAuto
 import com.appdimens.dynamic.compose.density.dssp
-import com.appdimens.dynamic.compose.density.sspRotatePlain as stratSspRotatePlainDensity
+import com.appdimens.dynamic.compose.density.dsspRotatePlain as stratSspRotatePlainDensity
 import com.appdimens.dynamic.compose.diagonal.dgssp
-import com.appdimens.dynamic.compose.diagonal.sspRotatePlain as stratSspRotatePlainDiagonal
+import com.appdimens.dynamic.compose.diagonal.dgsspRotatePlain as stratSspRotatePlainDiagonal
 import com.appdimens.dynamic.compose.fill.flssp
-import com.appdimens.dynamic.compose.fill.sspRotatePlain as stratSspRotatePlainFill
+import com.appdimens.dynamic.compose.fill.flsspRotatePlain as stratSspRotatePlainFill
 import com.appdimens.dynamic.compose.fit.ftssp
-import com.appdimens.dynamic.compose.fit.sspRotatePlain as stratSspRotatePlainFit
+import com.appdimens.dynamic.compose.fit.ftsspRotatePlain as stratSspRotatePlainFit
 import com.appdimens.dynamic.compose.fluid.fssp
-import com.appdimens.dynamic.compose.fluid.sspRotatePlain as stratSspRotatePlainFluid
+import com.appdimens.dynamic.compose.fluid.fsspRotatePlain as stratSspRotatePlainFluid
 import com.appdimens.dynamic.compose.interpolated.issp
-import com.appdimens.dynamic.compose.interpolated.sspRotatePlain as stratSspRotatePlainInterpolated
+import com.appdimens.dynamic.compose.interpolated.isspRotatePlain as stratSspRotatePlainInterpolated
 import com.appdimens.dynamic.compose.logarithmic.logssp
-import com.appdimens.dynamic.compose.logarithmic.sspRotatePlain as stratSspRotatePlainLogarithmic
+import com.appdimens.dynamic.compose.logarithmic.logsspRotatePlain as stratSspRotatePlainLogarithmic
 import com.appdimens.dynamic.compose.percent.pssp
-import com.appdimens.dynamic.compose.percent.sspRotatePlain as stratSspRotatePlainPercent
+import com.appdimens.dynamic.compose.percent.psspRotatePlain as stratSspRotatePlainPercent
 import com.appdimens.dynamic.compose.perimeter.prssp
-import com.appdimens.dynamic.compose.perimeter.sspRotatePlain as stratSspRotatePlainPerimeter
+import com.appdimens.dynamic.compose.perimeter.prsspRotatePlain as stratSspRotatePlainPerimeter
 import com.appdimens.dynamic.compose.power.pwssp
-import com.appdimens.dynamic.compose.power.sspRotatePlain as stratSspRotatePlainPower
+import com.appdimens.dynamic.compose.power.pwsspRotatePlain as stratSspRotatePlainPower
 import com.appdimens.dynamic.compose.ssp
 import com.appdimens.dynamic.compose.sspRotatePlain as stratSspRotatePlainScaled
 import com.appdimens.dynamic.compose.sdp

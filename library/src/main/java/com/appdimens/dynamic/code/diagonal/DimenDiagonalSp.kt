@@ -61,73 +61,73 @@ object DimenDiagonalSp {
     fun dgssp(context: Context, value: Int): Float = value.dgssp(context)
 
     @JvmStatic
-    fun sspa(context: Context, value: Int): Float = value.sspa(context)
+    fun dgsspa(context: Context, value: Int): Float = value.dgsspa(context)
 
     @JvmStatic
-    fun sspi(context: Context, value: Int): Float = value.sspi(context)
+    fun dgsspi(context: Context, value: Int): Float = value.dgsspi(context)
 
     @JvmStatic
-    fun sspia(context: Context, value: Int): Float = value.sspia(context)
+    fun dgsspia(context: Context, value: Int): Float = value.dgsspia(context)
 
     /**
      * EN Quick resolution for Smallest Width (dgssp), but in portrait orientation it acts as Screen Height (dghsp).
      */
     @JvmStatic
-    fun sspPh(context: Context, value: Int): Float = value.sspPh(context)
+    fun dgsspPh(context: Context, value: Int): Float = value.dgsspPh(context)
 
     @JvmStatic
-    fun sspPha(context: Context, value: Int): Float = value.sspPha(context)
+    fun dgsspPha(context: Context, value: Int): Float = value.dgsspPha(context)
 
     @JvmStatic
-    fun sspPhi(context: Context, value: Int): Float = value.sspPhi(context)
+    fun dgsspPhi(context: Context, value: Int): Float = value.dgsspPhi(context)
 
     @JvmStatic
-    fun sspPhia(context: Context, value: Int): Float = value.sspPhia(context)
+    fun dgsspPhia(context: Context, value: Int): Float = value.dgsspPhia(context)
 
     /**
      * EN Quick resolution for Smallest Width (dgssp), but in landscape orientation it acts as Screen Height (dghsp).
      */
     @JvmStatic
-    fun sspLh(context: Context, value: Int): Float = value.sspLh(context)
+    fun dgsspLh(context: Context, value: Int): Float = value.dgsspLh(context)
 
     @JvmStatic
-    fun sspLha(context: Context, value: Int): Float = value.sspLha(context)
+    fun dgsspLha(context: Context, value: Int): Float = value.dgsspLha(context)
 
     @JvmStatic
-    fun sspLhi(context: Context, value: Int): Float = value.sspLhi(context)
+    fun dgsspLhi(context: Context, value: Int): Float = value.dgsspLhi(context)
 
     @JvmStatic
-    fun sspLhia(context: Context, value: Int): Float = value.sspLhia(context)
+    fun dgsspLhia(context: Context, value: Int): Float = value.dgsspLhia(context)
 
     /**
      * EN Quick resolution for Smallest Width (dgssp), but in portrait orientation it acts as Screen Width (dgwsp).
      */
     @JvmStatic
-    fun sspPw(context: Context, value: Int): Float = value.sspPw(context)
+    fun dgsspPw(context: Context, value: Int): Float = value.dgsspPw(context)
 
     @JvmStatic
-    fun sspPwa(context: Context, value: Int): Float = value.sspPwa(context)
+    fun dgsspPwa(context: Context, value: Int): Float = value.dgsspPwa(context)
 
     @JvmStatic
-    fun sspPwi(context: Context, value: Int): Float = value.sspPwi(context)
+    fun dgsspPwi(context: Context, value: Int): Float = value.dgsspPwi(context)
 
     @JvmStatic
-    fun sspPwia(context: Context, value: Int): Float = value.sspPwia(context)
+    fun dgsspPwia(context: Context, value: Int): Float = value.dgsspPwia(context)
 
     /**
      * EN Quick resolution for Smallest Width (dgssp), but in landscape orientation it acts as Screen Width (dgwsp).
      */
     @JvmStatic
-    fun sspLw(context: Context, value: Int): Float = value.sspLw(context)
+    fun dgsspLw(context: Context, value: Int): Float = value.dgsspLw(context)
 
     @JvmStatic
-    fun sspLwa(context: Context, value: Int): Float = value.sspLwa(context)
+    fun dgsspLwa(context: Context, value: Int): Float = value.dgsspLwa(context)
 
     @JvmStatic
-    fun sspLwi(context: Context, value: Int): Float = value.sspLwi(context)
+    fun dgsspLwi(context: Context, value: Int): Float = value.dgsspLwi(context)
 
     @JvmStatic
-    fun sspLwia(context: Context, value: Int): Float = value.sspLwia(context)
+    fun dgsspLwia(context: Context, value: Int): Float = value.dgsspLwia(context)
 
     /**
      * EN Quick resolution for Screen Height (dghsp).
@@ -137,43 +137,43 @@ object DimenDiagonalSp {
     fun dghsp(context: Context, value: Int): Float = value.dghsp(context)
 
     @JvmStatic
-    fun hspa(context: Context, value: Int): Float = value.hspa(context)
+    fun dghspa(context: Context, value: Int): Float = value.dghspa(context)
 
     @JvmStatic
-    fun hspi(context: Context, value: Int): Float = value.hspi(context)
+    fun dghspi(context: Context, value: Int): Float = value.dghspi(context)
 
     @JvmStatic
-    fun hspia(context: Context, value: Int): Float = value.hspia(context)
+    fun dghspia(context: Context, value: Int): Float = value.dghspia(context)
 
     /**
      * EN Quick resolution for Screen Height (dghsp), but in landscape orientation it acts as Screen Width (dgwsp).
      */
     @JvmStatic
-    fun hspLw(context: Context, value: Int): Float = value.hspLw(context)
+    fun dghspLw(context: Context, value: Int): Float = value.dghspLw(context)
 
     @JvmStatic
-    fun hspLwa(context: Context, value: Int): Float = value.hspLwa(context)
+    fun dghspLwa(context: Context, value: Int): Float = value.dghspLwa(context)
 
     @JvmStatic
-    fun hspLwi(context: Context, value: Int): Float = value.hspLwi(context)
+    fun dghspLwi(context: Context, value: Int): Float = value.dghspLwi(context)
 
     @JvmStatic
-    fun hspLwia(context: Context, value: Int): Float = value.hspLwia(context)
+    fun dghspLwia(context: Context, value: Int): Float = value.dghspLwia(context)
 
     /**
      * EN Quick resolution for Screen Height (dghsp), but in portrait orientation it acts as Screen Width (dgwsp).
      */
     @JvmStatic
-    fun hspPw(context: Context, value: Int): Float = value.hspPw(context)
+    fun dghspPw(context: Context, value: Int): Float = value.dghspPw(context)
 
     @JvmStatic
-    fun hspPwa(context: Context, value: Int): Float = value.hspPwa(context)
+    fun dghspPwa(context: Context, value: Int): Float = value.dghspPwa(context)
 
     @JvmStatic
-    fun hspPwi(context: Context, value: Int): Float = value.hspPwi(context)
+    fun dghspPwi(context: Context, value: Int): Float = value.dghspPwi(context)
 
     @JvmStatic
-    fun hspPwia(context: Context, value: Int): Float = value.hspPwia(context)
+    fun dghspPwia(context: Context, value: Int): Float = value.dghspPwia(context)
 
     /**
      * EN Quick resolution for Screen Width (dgwsp).
@@ -183,43 +183,43 @@ object DimenDiagonalSp {
     fun dgwsp(context: Context, value: Int): Float = value.dgwsp(context)
 
     @JvmStatic
-    fun wspa(context: Context, value: Int): Float = value.wspa(context)
+    fun dgwspa(context: Context, value: Int): Float = value.dgwspa(context)
 
     @JvmStatic
-    fun wspi(context: Context, value: Int): Float = value.wspi(context)
+    fun dgwspi(context: Context, value: Int): Float = value.dgwspi(context)
 
     @JvmStatic
-    fun wspia(context: Context, value: Int): Float = value.wspia(context)
+    fun dgwspia(context: Context, value: Int): Float = value.dgwspia(context)
 
     /**
      * EN Quick resolution for Screen Width (dgwsp), but in landscape orientation it acts as Screen Height (dghsp).
      */
     @JvmStatic
-    fun wspLh(context: Context, value: Int): Float = value.wspLh(context)
+    fun dgwspLh(context: Context, value: Int): Float = value.dgwspLh(context)
 
     @JvmStatic
-    fun wspLha(context: Context, value: Int): Float = value.wspLha(context)
+    fun dgwspLha(context: Context, value: Int): Float = value.dgwspLha(context)
 
     @JvmStatic
-    fun wspLhi(context: Context, value: Int): Float = value.wspLhi(context)
+    fun dgwspLhi(context: Context, value: Int): Float = value.dgwspLhi(context)
 
     @JvmStatic
-    fun wspLhia(context: Context, value: Int): Float = value.wspLhia(context)
+    fun dgwspLhia(context: Context, value: Int): Float = value.dgwspLhia(context)
 
     /**
      * EN Quick resolution for Screen Width (dgwsp), but in portrait orientation it acts as Screen Height (dghsp).
      */
     @JvmStatic
-    fun wspPh(context: Context, value: Int): Float = value.wspPh(context)
+    fun dgwspPh(context: Context, value: Int): Float = value.dgwspPh(context)
 
     @JvmStatic
-    fun wspPha(context: Context, value: Int): Float = value.wspPha(context)
+    fun dgwspPha(context: Context, value: Int): Float = value.dgwspPha(context)
 
     @JvmStatic
-    fun wspPhi(context: Context, value: Int): Float = value.wspPhi(context)
+    fun dgwspPhi(context: Context, value: Int): Float = value.dgwspPhi(context)
 
     @JvmStatic
-    fun wspPhia(context: Context, value: Int): Float = value.wspPhia(context)
+    fun dgwspPhia(context: Context, value: Int): Float = value.dgwspPhia(context)
 
 
     // EN WITHOUT FONT SCALE variants
@@ -380,16 +380,16 @@ object DimenDiagonalSp {
      * EN Quick resolution for Screen Width without font scale, portrait is Screen Height.
      */
     @JvmStatic
-    fun wemPh(context: Context, value: Int): Float = value.wemPh(context)
+    fun dgwemPh(context: Context, value: Int): Float = value.dgwemPh(context)
 
     @JvmStatic
-    fun wemPha(context: Context, value: Int): Float = value.wemPha(context)
+    fun dgwemPha(context: Context, value: Int): Float = value.dgwemPha(context)
 
     @JvmStatic
-    fun wemPhi(context: Context, value: Int): Float = value.wemPhi(context)
+    fun dgwemPhi(context: Context, value: Int): Float = value.dgwemPhi(context)
 
     @JvmStatic
-    fun wemPhia(context: Context, value: Int): Float = value.wemPhia(context)
+    fun dgwemPhia(context: Context, value: Int): Float = value.dgwemPhia(context)
 
     /**
      * EN Generic scaling function for Java (PX).
@@ -447,24 +447,24 @@ object DimenDiagonalSp {
      */
     @JvmStatic
     @JvmOverloads
-    fun sspQualifier(context: Context, value: Int, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.sspQualifier(context, qualifiedValue, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dgsspQualifier(context: Context, value: Int, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dgsspQualifier(context, qualifiedValue, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Quick resolution for Screen Height (hSP) conditional scaling.
      */
     @JvmStatic
     @JvmOverloads
-    fun hspQualifier(context: Context, value: Int, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.hspQualifier(context, qualifiedValue, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dghspQualifier(context: Context, value: Int, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dghspQualifier(context, qualifiedValue, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Quick resolution for Screen Width (wSP) conditional scaling.
      */
     @JvmStatic
     @JvmOverloads
-    fun wspQualifier(context: Context, value: Int, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.wspQualifier(context, qualifiedValue, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dgwspQualifier(context: Context, value: Int, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dgwspQualifier(context, qualifiedValue, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     // EN UiModeType + DpQualifier combined facilitator extensions for Sp.
     // PT Extensões facilitadoras combinadas UiModeType + DpQualifier para Sp.
@@ -474,24 +474,24 @@ object DimenDiagonalSp {
      */
     @JvmStatic
     @JvmOverloads
-    fun sspScreen(context: Context, value: Int, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.sspScreen(context, screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dgsspScreen(context: Context, value: Int, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dgsspScreen(context, screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Quick resolution for Screen Height (hSP) context conditional scaling.
      */
     @JvmStatic
     @JvmOverloads
-    fun hspScreen(context: Context, value: Int, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.hspScreen(context, screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dghspScreen(context: Context, value: Int, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dghspScreen(context, screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Quick resolution for Screen Width (wSP) context conditional scaling.
      */
     @JvmStatic
     @JvmOverloads
-    fun wspScreen(context: Context, value: Int, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.wspScreen(context, screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dgwspScreen(context: Context, value: Int, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dgwspScreen(context, screenValue, uiModeType, qualifierType, qualifierValue, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     // EN Rotation facilitator functions for Java.
     // PT Funções facilitadoras de rotação para Java.
@@ -501,24 +501,24 @@ object DimenDiagonalSp {
      */
     @JvmStatic
     @JvmOverloads
-    fun sspRotate(context: Context, value: Int, rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.sspRotate(context, rotationValue, finalQualifierResolver, orientation, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dgsspRotate(context: Context, value: Int, rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH, orientation: Orientation = Orientation.LANDSCAPE, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dgsspRotate(context, rotationValue, finalQualifierResolver, orientation, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Facilitator for Screen Height (dghsp) with rotation override.
      */
     @JvmStatic
     @JvmOverloads
-    fun hspRotate(context: Context, value: Int, rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.hspRotate(context, rotationValue, finalQualifierResolver, orientation, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dghspRotate(context: Context, value: Int, rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT, orientation: Orientation = Orientation.LANDSCAPE, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dghspRotate(context, rotationValue, finalQualifierResolver, orientation, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Facilitator for Screen Width (dgwsp) with rotation override.
      */
     @JvmStatic
     @JvmOverloads
-    fun wspRotate(context: Context, value: Int, rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.wspRotate(context, rotationValue, finalQualifierResolver, orientation, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dgwspRotate(context: Context, value: Int, rotationValue: Number, finalQualifierResolver: DpQualifier = DpQualifier.WIDTH, orientation: Orientation = Orientation.LANDSCAPE, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dgwspRotate(context, rotationValue, finalQualifierResolver, orientation, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     // EN UiModeType facilitator functions for Java.
     // PT Funções facilitadoras de UiModeType para Java.
@@ -528,22 +528,22 @@ object DimenDiagonalSp {
      */
     @JvmStatic
     @JvmOverloads
-    fun sspMode(context: Context, value: Int, modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.sspMode(context, modeValue, uiModeType, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dgsspMode(context: Context, value: Int, modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dgsspMode(context, modeValue, uiModeType, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Facilitator for Screen Height (dghsp) with UiModeType override.
      */
     @JvmStatic
     @JvmOverloads
-    fun hspMode(context: Context, value: Int, modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.hspMode(context, modeValue, uiModeType, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dghspMode(context: Context, value: Int, modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dghspMode(context, modeValue, uiModeType, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
     /**
      * EN Facilitator for Screen Width (dgwsp) with UiModeType override.
      */
     @JvmStatic
     @JvmOverloads
-    fun wspMode(context: Context, value: Int, modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
-        value.wspMode(context, modeValue, uiModeType, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+    fun dgwspMode(context: Context, value: Int, modeValue: Number, uiModeType: UiModeType, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float =
+        value.dgwspMode(context, modeValue, uiModeType, finalQualifierResolver, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 }

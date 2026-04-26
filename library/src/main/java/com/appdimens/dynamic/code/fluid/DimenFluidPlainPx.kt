@@ -61,44 +61,44 @@ fun Float.fwdpQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierTy
 fun Float.fwdpScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainScreenPx(context, this, screenPx, uiModeType, qualifierType, qualifierValue)
 
-fun Float.sspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
+fun Float.fsspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
     plainRotatePx(context, this, rotationPx, orientation)
 
-fun Float.sspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
+fun Float.fsspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
     plainModePx(context, this, modePx, uiModeType)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.sspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.fsspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainQualifierPx(context, this, qualifiedPx, qualifierType, qualifierValue)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.sspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.fsspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainScreenPx(context, this, screenPx, uiModeType, qualifierType, qualifierValue)
 
-fun Float.hspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
+fun Float.fhspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
     plainRotatePx(context, this, rotationPx, orientation)
 
-fun Float.hspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
+fun Float.fhspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
     plainModePx(context, this, modePx, uiModeType)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.hspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.fhspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainQualifierPx(context, this, qualifiedPx, qualifierType, qualifierValue)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.hspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.fhspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainScreenPx(context, this, screenPx, uiModeType, qualifierType, qualifierValue)
 
-fun Float.wspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
+fun Float.fwspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
     plainRotatePx(context, this, rotationPx, orientation)
 
-fun Float.wspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
+fun Float.fwspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
     plainModePx(context, this, modePx, uiModeType)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.wspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.fwspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainQualifierPx(context, this, qualifiedPx, qualifierType, qualifierValue)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.wspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.fwspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainScreenPx(context, this, screenPx, uiModeType, qualifierType, qualifierValue)

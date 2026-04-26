@@ -53,7 +53,7 @@ import com.appdimens.dynamic.core.pxRememberStamp
  * it uses [rotationValue] scaled with the given [finalQualifierResolver].
  */
 @Composable
-fun Number.sspRotate(
+fun Number.prsspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -80,7 +80,7 @@ fun Number.sspRotate(
  * Extension for Int with dynamic scaling based on **Screen Height (hDP)**.
  */
 @Composable
-fun Number.hspRotate(
+fun Number.prhspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -107,7 +107,7 @@ fun Number.hspRotate(
  * Extension for Int with dynamic scaling based on **Screen Width (wDP)**.
  */
 @Composable
-fun Number.wspRotate(
+fun Number.prwspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -139,7 +139,7 @@ fun Number.wspRotate(
  * it uses [modeValue] instead.
  */
 @Composable
-fun Number.sspMode(
+fun Number.prsspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -161,7 +161,7 @@ fun Number.sspMode(
  * Extension for Int with dynamic scaling based on **Screen Height (hDP)**.
  */
 @Composable
-fun Number.hspMode(
+fun Number.prhspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -183,7 +183,7 @@ fun Number.hspMode(
  * Extension for Int with dynamic scaling based on **Screen Width (wDP)**.
  */
 @Composable
-fun Number.wspMode(
+fun Number.prwspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -216,22 +216,22 @@ fun Number.wspMode(
 val Number.prssp: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.prsspa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.prsspi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prsspia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPx: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true)
+val Number.prsspPx: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true)
 @get:Composable
-val Number.sspPxa: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.prsspPxa: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxi: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.prsspPxi: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prsspPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -241,7 +241,7 @@ val Number.sspPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WI
  *
  * PT
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**,
- * mas sem respeitar a escala de fonte do sistema.
+ * mas prsem respeitar a escala de fonte do sistema.
  * Exemplo de uso: `16.prsem`.
  */
 @get:Composable
@@ -269,109 +269,109 @@ val Number.prsemPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.sspPh`.
+ * Usage example: `32.prsspPh`.
  */
 @get:Composable
-val Number.sspPh: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
+val Number.prsspPh: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspPha: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
+val Number.prsspPha: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspPhi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
+val Number.prsspPhi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspPhia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prsspPhia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
+val Number.prsspPxPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
 @get:Composable
-val Number.sspPxaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
+val Number.prsspPxaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
+val Number.prsspPxiPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prsspPxiaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in landscape orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.sspLh`.
+ * Usage example: `32.prsspLh`.
  */
 @get:Composable
-val Number.sspLh: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
+val Number.prsspLh: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspLha: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
+val Number.prsspLha: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspLhi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
+val Number.prsspLhi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspLhia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prsspLhia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
+val Number.prsspPxLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
 @get:Composable
-val Number.sspPxaLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
+val Number.prsspPxaLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
+val Number.prsspPxiLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prsspPxiaLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in portrait orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.sspPw`.
+ * Usage example: `32.prsspPw`.
  */
 @get:Composable
-val Number.sspPw: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
+val Number.prsspPw: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspPwa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
+val Number.prsspPwa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspPwi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
+val Number.prsspPwi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspPwia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prsspPwia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
+val Number.prsspPxPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
 @get:Composable
-val Number.sspPxaPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
+val Number.prsspPxaPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
+val Number.prsspPxiPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prsspPxiaPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in landscape orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.sspLw`.
+ * Usage example: `32.prsspLw`.
  */
 @get:Composable
-val Number.sspLw: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
+val Number.prsspLw: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspLwa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
+val Number.prsspLwa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspLwi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
+val Number.prsspLwi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspLwia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prsspLwia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
+val Number.prsspPxLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
 @get:Composable
-val Number.sspPxaLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
+val Number.prsspPxaLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
+val Number.prsspPxiLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prsspPxiaLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -382,22 +382,22 @@ val Number.sspPxiaLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.SMALL_
 val Number.prhsp: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hspa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
+val Number.prhspa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hspi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
+val Number.prhspi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hspia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prhspia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hspPx: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true)
+val Number.prhspPx: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true)
 @get:Composable
-val Number.hspPxa: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
+val Number.prhspPxa: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Number.hspPxi: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
+val Number.prhspPxi: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Number.hspPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prhspPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -409,76 +409,76 @@ val Number.hspPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, 
 val Number.prhem: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = false)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hema: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
+val Number.prhema: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hemi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
+val Number.prhemi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hemia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prhemia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hemPx: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = false)
+val Number.prhemPx: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = false)
 @get:Composable
-val Number.hemPxa: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
+val Number.prhemPxa: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
 @get:Composable
-val Number.hemPxi: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
+val Number.prhemPxi: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
 @get:Composable
-val Number.hemPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prhemPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
  * in landscape orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.hspLw`.
+ * Usage example: `32.prhspLw`.
  */
 @get:Composable
-val Number.hspLw: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
+val Number.prhspLw: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hspLwa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
+val Number.prhspLwa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hspLwi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
+val Number.prhspLwi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hspLwia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prhspLwia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hspPxLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
+val Number.prhspPxLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
 @get:Composable
-val Number.hspPxaLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
+val Number.prhspPxaLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
 @get:Composable
-val Number.hspPxiLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
+val Number.prhspPxiLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
 @get:Composable
-val Number.hspPxiaLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prhspPxiaLw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
  * in portrait orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.hspPw`.
+ * Usage example: `32.prhspPw`.
  */
 @get:Composable
-val Number.hspPw: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
+val Number.prhspPw: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hspPwa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
+val Number.prhspPwa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hspPwi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
+val Number.prhspPwi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hspPwia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prhspPwia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hspPxPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
+val Number.prhspPxPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
 @get:Composable
-val Number.hspPxaPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
+val Number.prhspPxaPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
 @get:Composable
-val Number.hspPxiPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
+val Number.prhspPxiPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
 @get:Composable
-val Number.hspPxiaPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prhspPxiaPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -489,22 +489,22 @@ val Number.hspPxiaPw: Float get() = this.toDynamicPerimeterPx(DpQualifier.HEIGHT
 val Number.prwsp: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wspa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.prwspa: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wspi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.prwspi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wspia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prwspia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wspPx: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true)
+val Number.prwspPx: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true)
 @get:Composable
-val Number.wspPxa: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.prwspPxa: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Number.wspPxi: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.prwspPxi: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Number.wspPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prwspPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -516,104 +516,104 @@ val Number.wspPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, f
 val Number.prwem: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wema: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
+val Number.prwema: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wemi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
+val Number.prwemi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wemia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prwemia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wemPx: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false)
+val Number.prwemPx: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false)
 @get:Composable
-val Number.wemPxa: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
+val Number.prwemPxa: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
 @get:Composable
-val Number.wemPxi: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
+val Number.prwemPxi: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
 @get:Composable
-val Number.wemPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prwemPxia: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * in landscape orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wspLh`.
+ * Usage example: `100.prwspLh`.
  */
 @get:Composable
-val Number.wspLh: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
+val Number.prwspLh: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wspLha: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
+val Number.prwspLha: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wspLhi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
+val Number.prwspLhi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wspLhia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prwspLhia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wspPxLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
+val Number.prwspPxLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
 @get:Composable
-val Number.wspPxaLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
+val Number.prwspPxaLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
 @get:Composable
-val Number.wspPxiLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
+val Number.prwspPxiLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
 @get:Composable
-val Number.wspPxiaLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prwspPxiaLh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wspPh`.
+ * Usage example: `100.prwspPh`.
  */
 @get:Composable
-val Number.wspPh: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
+val Number.prwspPh: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wspPha: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.prwspPha: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wspPhi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.prwspPhi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wspPhia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prwspPhia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wspPxPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
+val Number.prwspPxPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
 @get:Composable
-val Number.wspPxaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.prwspPxaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 @get:Composable
-val Number.wspPxiPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.prwspPxiPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 @get:Composable
-val Number.wspPxiaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prwspPxiaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * without respecting the system font scale, and
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wemPh`.
+ * Usage example: `100.prwemPh`.
  */
 @get:Composable
-val Number.wemPh: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
+val Number.prwemPh: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wemPha: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.prwemPha: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wemPhi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.prwemPhi: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wemPhia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prwemPhia: TextUnit get() = this.toDynamicPerimeterSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wemPxPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
+val Number.prwemPxPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
 @get:Composable
-val Number.wemPxaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.prwemPxaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 @get:Composable
-val Number.wemPxiPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.prwemPxiPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 @get:Composable
-val Number.wemPxiaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.prwemPxiaPh: Float get() = this.toDynamicPerimeterPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -713,13 +713,13 @@ internal fun rememberPerimeterSp(
 }
 
 /**
- * EN [remember]s the cached px [Float] for [toDynamicPerimeterPx] using [cacheKey] and [sspPxStamp].
- * PT [remember] do [Float] em px para [toDynamicPerimeterPx] usando [cacheKey] e [sspPxStamp].
+ * EN [remember]s the cached px [Float] for [toDynamicPerimeterPx] using [cacheKey] and [prsspPxStamp].
+ * PT [remember] do [Float] em px para [toDynamicPerimeterPx] usando [cacheKey] e [prsspPxStamp].
  */
 @Composable
 internal fun rememberPerimeterSpPx(
     cacheKey: Long,
-    sspPxStamp: Long,
+    prsspPxStamp: Long,
     androidContext: android.content.Context,
     density: Density,
     baseValue: Float,
@@ -730,7 +730,7 @@ internal fun rememberPerimeterSpPx(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): Float = remember(cacheKey, sspPxStamp) {
+): Float = remember(cacheKey, prsspPxStamp) {
     DimenCache.getOrPut(cacheKey, androidContext) {
         val scaledVal = calculatePerimeterSpValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
         val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
@@ -783,10 +783,10 @@ fun Number.toDynamicPerimeterPx(
         valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, this.toFloat(), configuration,
+        cacheKey, prsspPxStamp, androidContext, density, this.toFloat(), configuration,
         qualifier, inverter, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }

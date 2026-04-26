@@ -43,14 +43,14 @@ import com.appdimens.dynamic.core.pxRememberStamp
 // EN Rotation facilitator extensions for Sp.
 // PT Extensões facilitadoras para rotação (Sp).
 
-// Removed duplicate Int.sspRotate (kept in DimenPerimeterSp.kt)
+// Removed duplicate Int.prsspRotate (kept in DimenPerimeterSp.kt)
 
 /**
- * EN Pixel (Float) variant of [sspRotate].
- * PT Variante em Pixel (Float) de [sspRotate].
+ * EN Pixel (Float) variant of [prsspRotate].
+ * PT Variante em Pixel (Float) de [prsspRotate].
  */
 @Composable
-fun Number.sspRotatePx(
+fun Number.prsspRotatePx(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -81,9 +81,9 @@ fun Number.sspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -102,7 +102,7 @@ fun Number.sspRotatePx(
  * escalado com o [finalQualifierResolver] dado.
  */
 @Composable
-fun TextUnit.sspRotate(
+fun TextUnit.prsspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -138,11 +138,11 @@ fun TextUnit.sspRotate(
 }
 
 /**
- * EN Pixel (Float) variant of [sspRotate].
- * PT Variante em Pixel (Float) de [sspRotate].
+ * EN Pixel (Float) variant of [prsspRotate].
+ * PT Variante em Pixel (Float) de [prsspRotate].
  */
 @Composable
-fun TextUnit.sspRotatePx(
+fun TextUnit.prsspRotatePx(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -173,9 +173,9 @@ fun TextUnit.sspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -194,7 +194,7 @@ fun TextUnit.sspRotatePx(
  * escalado com o [finalQualifierResolver] dado.
  */
 @Composable
-fun TextUnit.sspRotatePlain(
+fun TextUnit.prsspRotatePlain(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -234,11 +234,11 @@ fun TextUnit.sspRotatePlain(
 }
 
 /**
- * EN Pixel (Float) variant of [sspRotatePlain].
- * PT Variante em Pixel (Float) de [sspRotatePlain].
+ * EN Pixel (Float) variant of [prsspRotatePlain].
+ * PT Variante em Pixel (Float) de [prsspRotatePlain].
  */
 @Composable
-fun TextUnit.sspRotatePlainPx(
+fun TextUnit.prsspRotatePlainPx(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -270,23 +270,23 @@ fun TextUnit.sspRotatePlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@sspRotatePlainPx.toPx() }
+        density.run { this@prsspRotatePlainPx.toPx() }
     }
 }
 
 /**
- * EN Plain ssp rotation: [rotation] and receiver already scaled; logic only.
- * PT Rotação ssp Plain: [rotation] e recetor já escalados; só a lógica.
+ * EN Plain prssp rotation: [rotation] and receiver already scaled; logic only.
+ * PT Rotação prssp Plain: [rotation] e recetor já escalados; só a lógica.
  */
 @Composable
-fun TextUnit.sspRotatePlain(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): TextUnit {
+fun TextUnit.prsspRotatePlain(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): TextUnit {
     val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -297,11 +297,11 @@ fun TextUnit.sspRotatePlain(rotation: TextUnit, orientation: Orientation = Orien
 }
 
 /**
- * EN Pixel variant of [sspRotatePlain] with [rotation] as [TextUnit] (no scaling).
- * PT Variante em px de [sspRotatePlain] com [rotation] em [TextUnit] (sem escala).
+ * EN Pixel variant of [prsspRotatePlain] with [rotation] as [TextUnit] (no scaling).
+ * PT Variante em px de [prsspRotatePlain] com [rotation] em [TextUnit] (prsem escala).
  */
 @Composable
-fun TextUnit.sspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): Float {
+fun TextUnit.prsspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): Float {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val isTargetOrientation = when (orientation) {
@@ -309,46 +309,15 @@ fun TextUnit.sspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Ori
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@sspRotatePlainPx.toPx() }
+    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@prsspRotatePlainPx.toPx() }
 }
 
 /**
- * EN Plain hsp rotation: [rotation] and receiver already scaled; logic only.
- * PT Rotação hsp Plain: [rotation] e recetor já escalados; só a lógica.
+ * EN Plain prhsp rotation: [rotation] and receiver already scaled; logic only.
+ * PT Rotação prhsp Plain: [rotation] e recetor já escalados; só a lógica.
  */
 @Composable
-fun TextUnit.hspRotatePlain(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): TextUnit {
-    val configuration = LocalConfiguration.current
-    val isTargetOrientation = when (orientation) {
-        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-        else -> false
-    }
-    return if (isTargetOrientation) rotation else this
-}
-
-/**
- * EN Pixel variant of [hspRotatePlain] with [rotation] as [TextUnit].
- * PT Variante em px de [hspRotatePlain] com [rotation] em [TextUnit].
- */
-@Composable
-fun TextUnit.hspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): Float {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
-    val isTargetOrientation = when (orientation) {
-        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-        else -> false
-    }
-    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@hspRotatePlainPx.toPx() }
-}
-
-/**
- * EN Plain wsp rotation: [rotation] and receiver already scaled; logic only.
- * PT Rotação wsp Plain: [rotation] e recetor já escalados; só a lógica.
- */
-@Composable
-fun TextUnit.wspRotatePlain(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): TextUnit {
+fun TextUnit.prhspRotatePlain(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): TextUnit {
     val configuration = LocalConfiguration.current
     val isTargetOrientation = when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -359,11 +328,11 @@ fun TextUnit.wspRotatePlain(rotation: TextUnit, orientation: Orientation = Orien
 }
 
 /**
- * EN Pixel variant of [wspRotatePlain] with [rotation] as [TextUnit].
- * PT Variante em px de [wspRotatePlain] com [rotation] em [TextUnit].
+ * EN Pixel variant of [prhspRotatePlain] with [rotation] as [TextUnit].
+ * PT Variante em px de [prhspRotatePlain] com [rotation] em [TextUnit].
  */
 @Composable
-fun TextUnit.wspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): Float {
+fun TextUnit.prhspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): Float {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val isTargetOrientation = when (orientation) {
@@ -371,154 +340,185 @@ fun TextUnit.wspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Ori
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@wspRotatePlainPx.toPx() }
+    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@prhspRotatePlainPx.toPx() }
 }
 
 /**
- * EN Plain ssp mode: [mode] and receiver already scaled; logic only.
- * PT Modo ssp Plain: [mode] e recetor já escalados; só a lógica.
+ * EN Plain prwsp rotation: [rotation] and receiver already scaled; logic only.
+ * PT Rotação prwsp Plain: [rotation] e recetor já escalados; só a lógica.
  */
 @Composable
-fun TextUnit.sspModePlain(mode: TextUnit, uiModeType: UiModeType): TextUnit {
+fun TextUnit.prwspRotatePlain(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): TextUnit {
+    val configuration = LocalConfiguration.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) rotation else this
+}
+
+/**
+ * EN Pixel variant of [prwspRotatePlain] with [rotation] as [TextUnit].
+ * PT Variante em px de [prwspRotatePlain] com [rotation] em [TextUnit].
+ */
+@Composable
+fun TextUnit.prwspRotatePlainPx(rotation: TextUnit, orientation: Orientation = Orientation.LANDSCAPE): Float {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val isTargetOrientation = when (orientation) {
+        Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        else -> false
+    }
+    return if (isTargetOrientation) density.run { rotation.toPx() } else density.run { this@prwspRotatePlainPx.toPx() }
+}
+
+/**
+ * EN Plain prssp mode: [mode] and receiver already scaled; logic only.
+ * PT Modo prssp Plain: [mode] e recetor já escalados; só a lógica.
+ */
+@Composable
+fun TextUnit.prsspModePlain(mode: TextUnit, uiModeType: UiModeType): TextUnit {
     val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) mode else this
 }
 
 /**
- * EN Pixel variant of [sspModePlain] with [mode] as [TextUnit].
- * PT Variante em px de [sspModePlain] com [mode] em [TextUnit].
+ * EN Pixel variant of [prsspModePlain] with [mode] as [TextUnit].
+ * PT Variante em px de [prsspModePlain] com [mode] em [TextUnit].
  */
 @Composable
-fun TextUnit.sspModePlainPx(mode: TextUnit, uiModeType: UiModeType): Float {
+fun TextUnit.prsspModePlainPx(mode: TextUnit, uiModeType: UiModeType): Float {
     val density = LocalDensity.current
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@sspModePlainPx.toPx() }
+    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@prsspModePlainPx.toPx() }
 }
 
 /**
- * EN Plain hsp mode: [mode] and receiver already scaled; logic only.
- * PT Modo hsp Plain: [mode] e recetor já escalados; só a lógica.
+ * EN Plain prhsp mode: [mode] and receiver already scaled; logic only.
+ * PT Modo prhsp Plain: [mode] e recetor já escalados; só a lógica.
  */
 @Composable
-fun TextUnit.hspModePlain(mode: TextUnit, uiModeType: UiModeType): TextUnit {
+fun TextUnit.prhspModePlain(mode: TextUnit, uiModeType: UiModeType): TextUnit {
     val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) mode else this
 }
 
 /**
- * EN Pixel variant of [hspModePlain] with [mode] as [TextUnit].
- * PT Variante em px de [hspModePlain] com [mode] em [TextUnit].
+ * EN Pixel variant of [prhspModePlain] with [mode] as [TextUnit].
+ * PT Variante em px de [prhspModePlain] com [mode] em [TextUnit].
  */
 @Composable
-fun TextUnit.hspModePlainPx(mode: TextUnit, uiModeType: UiModeType): Float {
+fun TextUnit.prhspModePlainPx(mode: TextUnit, uiModeType: UiModeType): Float {
     val density = LocalDensity.current
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@hspModePlainPx.toPx() }
+    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@prhspModePlainPx.toPx() }
 }
 
 /**
- * EN Plain wsp mode: [mode] and receiver already scaled; logic only.
- * PT Modo wsp Plain: [mode] e recetor já escalados; só a lógica.
+ * EN Plain prwsp mode: [mode] and receiver already scaled; logic only.
+ * PT Modo prwsp Plain: [mode] e recetor já escalados; só a lógica.
  */
 @Composable
-fun TextUnit.wspModePlain(mode: TextUnit, uiModeType: UiModeType): TextUnit {
+fun TextUnit.prwspModePlain(mode: TextUnit, uiModeType: UiModeType): TextUnit {
     val currentUiModeType = getCurrentUiModeType()
     return if (currentUiModeType == uiModeType) mode else this
 }
 
 /**
- * EN Pixel variant of [wspModePlain] with [mode] as [TextUnit].
- * PT Variante em px de [wspModePlain] com [mode] em [TextUnit].
+ * EN Pixel variant of [prwspModePlain] with [mode] as [TextUnit].
+ * PT Variante em px de [prwspModePlain] com [mode] em [TextUnit].
  */
 @Composable
-fun TextUnit.wspModePlainPx(mode: TextUnit, uiModeType: UiModeType): Float {
+fun TextUnit.prwspModePlainPx(mode: TextUnit, uiModeType: UiModeType): Float {
     val density = LocalDensity.current
     val currentUiModeType = getCurrentUiModeType()
-    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@wspModePlainPx.toPx() }
+    return if (currentUiModeType == uiModeType) density.run { mode.toPx() } else density.run { this@prwspModePlainPx.toPx() }
 }
 
 /**
- * EN Plain ssp qualifier: [qualified] and receiver already scaled; logic only.
- * PT Qualificador ssp Plain: [qualified] e recetor já escalados; só a lógica.
+ * EN Plain prssp qualifier: [qualified] and receiver already scaled; logic only.
+ * PT Qualificador prssp Plain: [qualified] e recetor já escalados; só a lógica.
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.sspQualifierPlain(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+fun TextUnit.prsspQualifierPlain(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
     val configuration = LocalConfiguration.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) qualified else this
 }
 
 /**
- * EN Pixel variant of [sspQualifierPlain] with [qualified] as [TextUnit].
- * PT Variante em px de [sspQualifierPlain] com [qualified] em [TextUnit].
+ * EN Pixel variant of [prsspQualifierPlain] with [qualified] as [TextUnit].
+ * PT Variante em px de [prsspQualifierPlain] com [qualified] em [TextUnit].
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.sspQualifierPlainPx(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): Float {
+fun TextUnit.prsspQualifierPlainPx(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): Float {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@sspQualifierPlainPx.toPx() }
+    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@prsspQualifierPlainPx.toPx() }
 }
 
 /**
- * EN Plain hsp qualifier: [qualified] and receiver already scaled; logic only.
- * PT Qualificador hsp Plain: [qualified] e recetor já escalados; só a lógica.
+ * EN Plain prhsp qualifier: [qualified] and receiver already scaled; logic only.
+ * PT Qualificador prhsp Plain: [qualified] e recetor já escalados; só a lógica.
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.hspQualifierPlain(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+fun TextUnit.prhspQualifierPlain(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
     val configuration = LocalConfiguration.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) qualified else this
 }
 
 /**
- * EN Pixel variant of [hspQualifierPlain] with [qualified] as [TextUnit].
- * PT Variante em px de [hspQualifierPlain] com [qualified] em [TextUnit].
+ * EN Pixel variant of [prhspQualifierPlain] with [qualified] as [TextUnit].
+ * PT Variante em px de [prhspQualifierPlain] com [qualified] em [TextUnit].
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.hspQualifierPlainPx(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): Float {
+fun TextUnit.prhspQualifierPlainPx(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): Float {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@hspQualifierPlainPx.toPx() }
+    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@prhspQualifierPlainPx.toPx() }
 }
 
 /**
- * EN Plain wsp qualifier: [qualified] and receiver already scaled; logic only.
- * PT Qualificador wsp Plain: [qualified] e recetor já escalados; só a lógica.
+ * EN Plain prwsp qualifier: [qualified] and receiver already scaled; logic only.
+ * PT Qualificador prwsp Plain: [qualified] e recetor já escalados; só a lógica.
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.wspQualifierPlain(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+fun TextUnit.prwspQualifierPlain(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
     val configuration = LocalConfiguration.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) qualified else this
 }
 
 /**
- * EN Pixel variant of [wspQualifierPlain] with [qualified] as [TextUnit].
- * PT Variante em px de [wspQualifierPlain] com [qualified] em [TextUnit].
+ * EN Pixel variant of [prwspQualifierPlain] with [qualified] as [TextUnit].
+ * PT Variante em px de [prwspQualifierPlain] com [qualified] em [TextUnit].
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.wspQualifierPlainPx(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): Float {
+fun TextUnit.prwspQualifierPlainPx(qualified: TextUnit, qualifierType: DpQualifier, qualifierValue: Number): Float {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@wspQualifierPlainPx.toPx() }
+    return if (qualifierMatch) density.run { qualified.toPx() } else density.run { this@prwspQualifierPlainPx.toPx() }
 }
 
 /**
- * EN Plain ssp screen: [screen] and receiver already scaled; logic only.
- * PT Ecrã ssp Plain: [screen] e recetor já escalados; só a lógica.
+ * EN Plain prssp screen: [screen] and receiver already scaled; logic only.
+ * PT Ecrã prssp Plain: [screen] e recetor já escalados; só a lógica.
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.sspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+fun TextUnit.prsspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
     val configuration = LocalConfiguration.current
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
@@ -527,27 +527,27 @@ fun TextUnit.sspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierT
 }
 
 /**
- * EN Pixel variant of [sspScreenPlain] with [screen] as [TextUnit].
- * PT Variante em px de [sspScreenPlain] com [screen] em [TextUnit].
+ * EN Pixel variant of [prsspScreenPlain] with [screen] as [TextUnit].
+ * PT Variante em px de [prsspScreenPlain] com [screen] em [TextUnit].
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.sspScreenPlainPx(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
+fun TextUnit.prsspScreenPlainPx(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@sspScreenPlainPx.toPx() }
+    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@prsspScreenPlainPx.toPx() }
 }
 
 /**
- * EN Plain hsp screen: [screen] and receiver already scaled; logic only.
- * PT Ecrã hsp Plain: [screen] e recetor já escalados; só a lógica.
+ * EN Plain prhsp screen: [screen] and receiver already scaled; logic only.
+ * PT Ecrã prhsp Plain: [screen] e recetor já escalados; só a lógica.
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.hspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+fun TextUnit.prhspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
     val configuration = LocalConfiguration.current
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
@@ -556,27 +556,27 @@ fun TextUnit.hspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierT
 }
 
 /**
- * EN Pixel variant of [hspScreenPlain] with [screen] as [TextUnit].
- * PT Variante em px de [hspScreenPlain] com [screen] em [TextUnit].
+ * EN Pixel variant of [prhspScreenPlain] with [screen] as [TextUnit].
+ * PT Variante em px de [prhspScreenPlain] com [screen] em [TextUnit].
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.hspScreenPlainPx(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
+fun TextUnit.prhspScreenPlainPx(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@hspScreenPlainPx.toPx() }
+    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@prhspScreenPlainPx.toPx() }
 }
 
 /**
- * EN Plain wsp screen: [screen] and receiver already scaled; logic only.
- * PT Ecrã wsp Plain: [screen] e recetor já escalados; só a lógica.
+ * EN Plain prwsp screen: [screen] and receiver already scaled; logic only.
+ * PT Ecrã prwsp Plain: [screen] e recetor já escalados; só a lógica.
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.wspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
+fun TextUnit.prwspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): TextUnit {
     val configuration = LocalConfiguration.current
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
@@ -585,27 +585,27 @@ fun TextUnit.wspScreenPlain(screen: TextUnit, uiModeType: UiModeType, qualifierT
 }
 
 /**
- * EN Pixel variant of [wspScreenPlain] with [screen] as [TextUnit].
- * PT Variante em px de [wspScreenPlain] com [screen] em [TextUnit].
+ * EN Pixel variant of [prwspScreenPlain] with [screen] as [TextUnit].
+ * PT Variante em px de [prwspScreenPlain] com [screen] em [TextUnit].
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun TextUnit.wspScreenPlainPx(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
+fun TextUnit.prwspScreenPlainPx(screen: TextUnit, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val currentUiModeType = getCurrentUiModeType()
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@wspScreenPlainPx.toPx() }
+    return if (uiModeMatch && qualifierMatch) density.run { screen.toPx() } else density.run { this@prwspScreenPlainPx.toPx() }
 }
-// Removed duplicate Int.hspRotate (kept in DimenPerimeterSp.kt)
+// Removed duplicate Int.prhspRotate (kept in DimenPerimeterSp.kt)
 
 /**
- * EN Pixel (Float) variant of [hspRotate].
- * PT Variante em Pixel (Float) de [hspRotate].
+ * EN Pixel (Float) variant of [prhspRotate].
+ * PT Variante em Pixel (Float) de [prhspRotate].
  */
 @Composable
-fun Number.hspRotatePx(
+fun Number.prhspRotatePx(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -636,9 +636,9 @@ fun Number.hspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -657,7 +657,7 @@ fun Number.hspRotatePx(
  * escalado com o [finalQualifierResolver] dado.
  */
 @Composable
-fun TextUnit.hspRotate(
+fun TextUnit.prhspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -693,11 +693,11 @@ fun TextUnit.hspRotate(
 }
 
 /**
- * EN Pixel (Float) variant of [hspRotate].
- * PT Variante em Pixel (Float) de [hspRotate].
+ * EN Pixel (Float) variant of [prhspRotate].
+ * PT Variante em Pixel (Float) de [prhspRotate].
  */
 @Composable
-fun TextUnit.hspRotatePx(
+fun TextUnit.prhspRotatePx(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -728,9 +728,9 @@ fun TextUnit.hspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -749,7 +749,7 @@ fun TextUnit.hspRotatePx(
  * escalado com o [finalQualifierResolver] dado.
  */
 @Composable
-fun TextUnit.hspRotatePlain(
+fun TextUnit.prhspRotatePlain(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -789,11 +789,11 @@ fun TextUnit.hspRotatePlain(
 }
 
 /**
- * EN Pixel (Float) variant of [hspRotatePlain].
- * PT Variante em Pixel (Float) de [hspRotatePlain].
+ * EN Pixel (Float) variant of [prhspRotatePlain].
+ * PT Variante em Pixel (Float) de [prhspRotatePlain].
  */
 @Composable
-fun TextUnit.hspRotatePlainPx(
+fun TextUnit.prhspRotatePlainPx(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -825,25 +825,25 @@ fun TextUnit.hspRotatePlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@hspRotatePlainPx.toPx() }
+        density.run { this@prhspRotatePlainPx.toPx() }
     }
 }
 
-// Removed duplicate Int.wspRotate (kept in DimenPerimeterSp.kt)
+// Removed duplicate Int.prwspRotate (kept in DimenPerimeterSp.kt)
 
 /**
- * EN Pixel (Float) variant of [wspRotate].
- * PT Variante em Pixel (Float) de [wspRotate].
+ * EN Pixel (Float) variant of [prwspRotate].
+ * PT Variante em Pixel (Float) de [prwspRotate].
  */
 @Composable
-fun Number.wspRotatePx(
+fun Number.prwspRotatePx(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -874,9 +874,9 @@ fun Number.wspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -895,7 +895,7 @@ fun Number.wspRotatePx(
  * escalado com o [finalQualifierResolver] dado.
  */
 @Composable
-fun TextUnit.wspRotate(
+fun TextUnit.prwspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -931,11 +931,11 @@ fun TextUnit.wspRotate(
 }
 
 /**
- * EN Pixel (Float) variant of [wspRotate].
- * PT Variante em Pixel (Float) de [wspRotate].
+ * EN Pixel (Float) variant of [prwspRotate].
+ * PT Variante em Pixel (Float) de [prwspRotate].
  */
 @Composable
-fun TextUnit.wspRotatePx(
+fun TextUnit.prwspRotatePx(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -966,9 +966,9 @@ fun TextUnit.wspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -987,7 +987,7 @@ fun TextUnit.wspRotatePx(
  * escalado com o [finalQualifierResolver] dado.
  */
 @Composable
-fun TextUnit.wspRotatePlain(
+fun TextUnit.prwspRotatePlain(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -1027,11 +1027,11 @@ fun TextUnit.wspRotatePlain(
 }
 
 /**
- * EN Pixel (Float) variant of [wspRotatePlain].
- * PT Variante em Pixel (Float) de [wspRotatePlain].
+ * EN Pixel (Float) variant of [prwspRotatePlain].
+ * PT Variante em Pixel (Float) de [prwspRotatePlain].
  */
 @Composable
-fun TextUnit.wspRotatePlainPx(
+fun TextUnit.prwspRotatePlainPx(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -1063,14 +1063,14 @@ fun TextUnit.wspRotatePlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@wspRotatePlainPx.toPx() }
+        density.run { this@prwspRotatePlainPx.toPx() }
     }
 }
 
@@ -1078,15 +1078,15 @@ fun TextUnit.wspRotatePlainPx(
 // EN UiModeType facilitator extensions for Sp.
 // PT Extensões facilitadoras para UiModeType (Sp).
 
-// Removed duplicate Int.sspMode (kept in DimenPerimeterSp.kt)
+// Removed duplicate Int.prsspMode (kept in DimenPerimeterSp.kt)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
- * EN Pixel (Float) variant of [sspMode].
- * PT Variante em Pixel (Float) de [sspMode].
+ * EN Pixel (Float) variant of [prsspMode].
+ * PT Variante em Pixel (Float) de [prsspMode].
  */
 @Composable
-fun Number.sspModePx(
+fun Number.prsspModePx(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1115,9 +1115,9 @@ fun Number.sspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -1134,7 +1134,7 @@ fun Number.sspModePx(
  * Quando o dispositivo corresponde ao [uiModeType] especificado, usa [modeValue] no lugar.
  */
 @Composable
-fun TextUnit.sspMode(
+fun TextUnit.prsspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1167,11 +1167,11 @@ fun TextUnit.sspMode(
 }
 
 /**
- * EN Pixel (Float) variant of [sspMode].
- * PT Variante em Pixel (Float) de [sspMode].
+ * EN Pixel (Float) variant of [prsspMode].
+ * PT Variante em Pixel (Float) de [prsspMode].
  */
 @Composable
-fun TextUnit.sspModePx(
+fun TextUnit.prsspModePx(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1199,9 +1199,9 @@ fun TextUnit.sspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -1218,7 +1218,7 @@ fun TextUnit.sspModePx(
  * Quando o dispositivo corresponde ao [uiModeType] especificado, usa [modeValue] no lugar.
  */
 @Composable
-fun TextUnit.sspModePlain(
+fun TextUnit.prsspModePlain(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1255,7 +1255,7 @@ fun TextUnit.sspModePlain(
 }
 
 @Composable
-fun TextUnit.sspModePlainPx(
+fun TextUnit.prsspModePlainPx(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1284,26 +1284,26 @@ fun TextUnit.sspModePlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@sspModePlainPx.toPx() }
+        density.run { this@prsspModePlainPx.toPx() }
     }
 }
 
-// Removed duplicate Int.hspMode (kept in DimenPerimeterSp.kt)
+// Removed duplicate Int.prhspMode (kept in DimenPerimeterSp.kt)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
- * EN Pixel (Float) variant of [hspMode].
- * PT Variante em Pixel (Float) de [hspMode].
+ * EN Pixel (Float) variant of [prhspMode].
+ * PT Variante em Pixel (Float) de [prhspMode].
  */
 @Composable
-fun Number.hspModePx(
+fun Number.prhspModePx(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1332,9 +1332,9 @@ fun Number.hspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -1351,7 +1351,7 @@ fun Number.hspModePx(
  * Quando o dispositivo corresponde ao [uiModeType] especificado, usa [modeValue] no lugar.
  */
 @Composable
-fun TextUnit.hspMode(
+fun TextUnit.prhspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1384,11 +1384,11 @@ fun TextUnit.hspMode(
 }
 
 /**
- * EN Pixel (Float) variant of [hspMode].
- * PT Variante em Pixel (Float) de [hspMode].
+ * EN Pixel (Float) variant of [prhspMode].
+ * PT Variante em Pixel (Float) de [prhspMode].
  */
 @Composable
-fun TextUnit.hspModePx(
+fun TextUnit.prhspModePx(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1416,9 +1416,9 @@ fun TextUnit.hspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -1435,7 +1435,7 @@ fun TextUnit.hspModePx(
  * Quando o dispositivo corresponde ao [uiModeType] especificado, usa [modeValue] no lugar.
  */
 @Composable
-fun TextUnit.hspModePlain(
+fun TextUnit.prhspModePlain(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1472,7 +1472,7 @@ fun TextUnit.hspModePlain(
 }
 
 @Composable
-fun TextUnit.hspModePlainPx(
+fun TextUnit.prhspModePlainPx(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1501,26 +1501,26 @@ fun TextUnit.hspModePlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@hspModePlainPx.toPx() }
+        density.run { this@prhspModePlainPx.toPx() }
     }
 }
 
-// Removed duplicate Int.wspMode (kept in DimenPerimeterSp.kt)
+// Removed duplicate Int.prwspMode (kept in DimenPerimeterSp.kt)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
- * EN Pixel (Float) variant of [wspMode].
- * PT Variante em Pixel (Float) de [wspMode].
+ * EN Pixel (Float) variant of [prwspMode].
+ * PT Variante em Pixel (Float) de [prwspMode].
  */
 @Composable
-fun Number.wspModePx(
+fun Number.prwspModePx(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1549,9 +1549,9 @@ fun Number.wspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -1568,7 +1568,7 @@ fun Number.wspModePx(
  * Quando o dispositivo corresponde ao [uiModeType] especificado, usa [modeValue] no lugar.
  */
 @Composable
-fun TextUnit.wspMode(
+fun TextUnit.prwspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1601,11 +1601,11 @@ fun TextUnit.wspMode(
 }
 
 /**
- * EN Pixel (Float) variant of [wspMode].
- * PT Variante em Pixel (Float) de [wspMode].
+ * EN Pixel (Float) variant of [prwspMode].
+ * PT Variante em Pixel (Float) de [prwspMode].
  */
 @Composable
-fun TextUnit.wspModePx(
+fun TextUnit.prwspModePx(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1633,9 +1633,9 @@ fun TextUnit.wspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -1652,7 +1652,7 @@ fun TextUnit.wspModePx(
  * Quando o dispositivo corresponde ao [uiModeType] especificado, usa [modeValue] no lugar.
  */
 @Composable
-fun TextUnit.wspModePlain(
+fun TextUnit.prwspModePlain(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1689,7 +1689,7 @@ fun TextUnit.wspModePlain(
 }
 
 @Composable
-fun TextUnit.wspModePlainPx(
+fun TextUnit.prwspModePlainPx(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -1718,14 +1718,14 @@ fun TextUnit.wspModePlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@wspModePlainPx.toPx() }
+        density.run { this@prwspModePlainPx.toPx() }
     }
 }
 
@@ -1737,7 +1737,7 @@ fun TextUnit.wspModePlainPx(
  * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)**.
  * Uses the base value by default, but when the screen metric for [qualifierType]
  * is >= [qualifierValue], it uses [qualifiedValue] instead.
- * Usage example: `30.sspQualifier(50, DpQualifier.SMALL_WIDTH, 600)`
+ * Usage example: `30.prsspQualifier(50, DpQualifier.SMALL_WIDTH, 600)`
  * → 30.prssp by default, 50.prssp when smallestScreenWidthDp >= 600.
  *
  * PT
@@ -1747,7 +1747,7 @@ fun TextUnit.wspModePlainPx(
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun Number.sspQualifier(
+fun Number.prsspQualifier(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -1781,11 +1781,11 @@ fun Number.sspQualifier(
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
- * EN Pixel (Float) variant of [sspQualifier].
- * PT Variante em Pixel (Float) de [sspQualifier].
+ * EN Pixel (Float) variant of [prsspQualifier].
+ * PT Variante em Pixel (Float) de [prsspQualifier].
  */
 @Composable
-fun Number.sspQualifierPx(
+fun Number.prsspQualifierPx(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -1813,9 +1813,9 @@ fun Number.sspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -1832,7 +1832,7 @@ fun Number.sspQualifierPx(
  * Quando a métrica de tela para [qualifierType] é >= [qualifierValue], usa [qualifiedValue] no lugar.
  */
 @Composable
-fun TextUnit.sspQualifier(
+fun TextUnit.prsspQualifier(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -1865,11 +1865,11 @@ fun TextUnit.sspQualifier(
 }
 
 /**
- * EN Pixel (Float) variant of [sspQualifier].
- * PT Variante em Pixel (Float) de [sspQualifier].
+ * EN Pixel (Float) variant of [prsspQualifier].
+ * PT Variante em Pixel (Float) de [prsspQualifier].
  */
 @Composable
-fun TextUnit.sspQualifierPx(
+fun TextUnit.prsspQualifierPx(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -1897,9 +1897,9 @@ fun TextUnit.sspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -1916,7 +1916,7 @@ fun TextUnit.sspQualifierPx(
  * Quando a métrica de tela para [qualifierType] é >= [qualifierValue], usa [qualifiedValue] no lugar.
  */
 @Composable
-fun TextUnit.sspQualifierPlain(
+fun TextUnit.prsspQualifierPlain(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -1953,11 +1953,11 @@ fun TextUnit.sspQualifierPlain(
 }
 
 /**
- * EN Pixel (Float) variant of [sspQualifierPlain].
- * PT Variante em Pixel (Float) de [sspQualifierPlain].
+ * EN Pixel (Float) variant of [prsspQualifierPlain].
+ * PT Variante em Pixel (Float) de [prsspQualifierPlain].
  */
 @Composable
-fun TextUnit.sspQualifierPlainPx(
+fun TextUnit.prsspQualifierPlainPx(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -1986,14 +1986,14 @@ fun TextUnit.sspQualifierPlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@sspQualifierPlainPx.toPx() }
+        density.run { this@prsspQualifierPlainPx.toPx() }
     }
 }
 
@@ -2002,7 +2002,7 @@ fun TextUnit.sspQualifierPlainPx(
  * Extension for TextUnit (Sp) with dynamic scaling based on **Screen Height (hDP)**.
  * Uses the base value by default, but when the screen metric for [qualifierType]
  * is >= [qualifierValue], it uses [qualifiedValue] instead.
- * Usage example: `30.hspQualifier(50, DpQualifier.HEIGHT, 800)`
+ * Usage example: `30.prhspQualifier(50, DpQualifier.HEIGHT, 800)`
  * → 30.prhsp by default, 50.prhsp when screenHeightDp >= 800.
  *
  * PT
@@ -2010,7 +2010,7 @@ fun TextUnit.sspQualifierPlainPx(
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun Number.hspQualifier(
+fun Number.prhspQualifier(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2044,11 +2044,11 @@ fun Number.hspQualifier(
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
- * EN Pixel (Float) variant of [hspQualifier].
- * PT Variante em Pixel (Float) de [hspQualifier].
+ * EN Pixel (Float) variant of [prhspQualifier].
+ * PT Variante em Pixel (Float) de [prhspQualifier].
  */
 @Composable
-fun Number.hspQualifierPx(
+fun Number.prhspQualifierPx(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2076,9 +2076,9 @@ fun Number.hspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -2095,7 +2095,7 @@ fun Number.hspQualifierPx(
  * Quando a métrica de tela para [qualifierType] é >= [qualifierValue], usa [qualifiedValue] no lugar.
  */
 @Composable
-fun TextUnit.hspQualifier(
+fun TextUnit.prhspQualifier(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2128,11 +2128,11 @@ fun TextUnit.hspQualifier(
 }
 
 /**
- * EN Pixel (Float) variant of [hspQualifier].
- * PT Variante em Pixel (Float) de [hspQualifier].
+ * EN Pixel (Float) variant of [prhspQualifier].
+ * PT Variante em Pixel (Float) de [prhspQualifier].
  */
 @Composable
-fun TextUnit.hspQualifierPx(
+fun TextUnit.prhspQualifierPx(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2160,9 +2160,9 @@ fun TextUnit.hspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -2179,7 +2179,7 @@ fun TextUnit.hspQualifierPx(
  * Quando a métrica de tela para [qualifierType] é >= [qualifierValue], usa [qualifiedValue] no lugar.
  */
 @Composable
-fun TextUnit.hspQualifierPlain(
+fun TextUnit.prhspQualifierPlain(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2216,11 +2216,11 @@ fun TextUnit.hspQualifierPlain(
 }
 
 /**
- * EN Pixel (Float) variant of [hspQualifierPlain].
- * PT Variante em Pixel (Float) de [hspQualifierPlain].
+ * EN Pixel (Float) variant of [prhspQualifierPlain].
+ * PT Variante em Pixel (Float) de [prhspQualifierPlain].
  */
 @Composable
-fun TextUnit.hspQualifierPlainPx(
+fun TextUnit.prhspQualifierPlainPx(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2249,14 +2249,14 @@ fun TextUnit.hspQualifierPlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@hspQualifierPlainPx.toPx() }
+        density.run { this@prhspQualifierPlainPx.toPx() }
     }
 }
 
@@ -2265,7 +2265,7 @@ fun TextUnit.hspQualifierPlainPx(
  * Extension for TextUnit (Sp) with dynamic scaling based on **Screen Width (wDP)**.
  * Uses the base value by default, but when the screen metric for [qualifierType]
  * is >= [qualifierValue], it uses [qualifiedValue] instead.
- * Usage example: `30.wspQualifier(50, DpQualifier.WIDTH, 600)`
+ * Usage example: `30.prwspQualifier(50, DpQualifier.WIDTH, 600)`
  * → 30.prwsp by default, 50.prwsp when screenWidthDp >= 600.
  *
  * PT
@@ -2273,7 +2273,7 @@ fun TextUnit.hspQualifierPlainPx(
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun Number.wspQualifier(
+fun Number.prwspQualifier(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2307,11 +2307,11 @@ fun Number.wspQualifier(
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
- * EN Pixel (Float) variant of [wspQualifier].
- * PT Variante em Pixel (Float) de [wspQualifier].
+ * EN Pixel (Float) variant of [prwspQualifier].
+ * PT Variante em Pixel (Float) de [prwspQualifier].
  */
 @Composable
-fun Number.wspQualifierPx(
+fun Number.prwspQualifierPx(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2339,9 +2339,9 @@ fun Number.wspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -2358,7 +2358,7 @@ fun Number.wspQualifierPx(
  * Quando a métrica de tela para [qualifierType] é >= [qualifierValue], usa [qualifiedValue] no lugar.
  */
 @Composable
-fun TextUnit.wspQualifier(
+fun TextUnit.prwspQualifier(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2391,11 +2391,11 @@ fun TextUnit.wspQualifier(
 }
 
 /**
- * EN Pixel (Float) variant of [wspQualifier].
- * PT Variante em Pixel (Float) de [wspQualifier].
+ * EN Pixel (Float) variant of [prwspQualifier].
+ * PT Variante em Pixel (Float) de [prwspQualifier].
  */
 @Composable
-fun TextUnit.wspQualifierPx(
+fun TextUnit.prwspQualifierPx(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2423,9 +2423,9 @@ fun TextUnit.wspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -2442,7 +2442,7 @@ fun TextUnit.wspQualifierPx(
  * Quando a métrica de tela para [qualifierType] é >= [qualifierValue], usa [qualifiedValue] no lugar.
  */
 @Composable
-fun TextUnit.wspQualifierPlain(
+fun TextUnit.prwspQualifierPlain(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2479,11 +2479,11 @@ fun TextUnit.wspQualifierPlain(
 }
 
 /**
- * EN Pixel (Float) variant of [wspQualifierPlain].
- * PT Variante em Pixel (Float) de [wspQualifierPlain].
+ * EN Pixel (Float) variant of [prwspQualifierPlain].
+ * PT Variante em Pixel (Float) de [prwspQualifierPlain].
  */
 @Composable
-fun TextUnit.wspQualifierPlainPx(
+fun TextUnit.prwspQualifierPlainPx(
     qualifiedValue: Number,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -2512,14 +2512,14 @@ fun TextUnit.wspQualifierPlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@wspQualifierPlainPx.toPx() }
+        density.run { this@prwspQualifierPlainPx.toPx() }
     }
 }
 
@@ -2531,7 +2531,7 @@ fun TextUnit.wspQualifierPlainPx(
  * Extension for TextUnit (Sp) with dynamic scaling based on **Smallest Width (swDP)**.
  * Uses the base value by default, but when the device matches [uiModeType] AND
  * the screen metric for [qualifierType] is >= [qualifierValue], it uses [screenValue] instead.
- * Usage example: `30.sspScreen(50, UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600)`
+ * Usage example: `30.prsspScreen(50, UiModeType.TELEVISION, DpQualifier.SMALL_WIDTH, 600)`
  * → 30.prssp by default, 50.prssp on television with sw >= 600.
  *
  * PT
@@ -2541,7 +2541,7 @@ fun TextUnit.wspQualifierPlainPx(
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun Number.sspScreen(
+fun Number.prsspScreen(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -2579,11 +2579,11 @@ fun Number.sspScreen(
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
- * EN Pixel (Float) variant of [sspScreen].
- * PT Variante em Pixel (Float) de [sspScreen].
+ * EN Pixel (Float) variant of [prsspScreen].
+ * PT Variante em Pixel (Float) de [prsspScreen].
  */
 @Composable
-fun Number.sspScreenPx(
+fun Number.prsspScreenPx(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -2615,9 +2615,9 @@ fun Number.sspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -2636,7 +2636,7 @@ fun Number.sspScreenPx(
  * [qualifierType] é >= [qualifierValue], usa [screenValue] no lugar.
  */
 @Composable
-fun TextUnit.sspScreen(
+fun TextUnit.prsspScreen(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -2673,11 +2673,11 @@ fun TextUnit.sspScreen(
 }
 
 /**
- * EN Pixel (Float) variant of [sspScreen].
- * PT Variante em Pixel (Float) de [sspScreen].
+ * EN Pixel (Float) variant of [prsspScreen].
+ * PT Variante em Pixel (Float) de [prsspScreen].
  */
 @Composable
-fun TextUnit.sspScreenPx(
+fun TextUnit.prsspScreenPx(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -2709,9 +2709,9 @@ fun TextUnit.sspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -2730,7 +2730,7 @@ fun TextUnit.sspScreenPx(
  * [qualifierType] é >= [qualifierValue], usa [screenValue] no lugar.
  */
 @Composable
-fun TextUnit.sspScreenPlain(
+fun TextUnit.prsspScreenPlain(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -2771,11 +2771,11 @@ fun TextUnit.sspScreenPlain(
 }
 
 /**
- * EN Pixel (Float) variant of [sspScreenPlain].
- * PT Variante em Pixel (Float) de [sspScreenPlain].
+ * EN Pixel (Float) variant of [prsspScreenPlain].
+ * PT Variante em Pixel (Float) de [prsspScreenPlain].
  */
 @Composable
-fun TextUnit.sspScreenPlainPx(
+fun TextUnit.prsspScreenPlainPx(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -2808,14 +2808,14 @@ fun TextUnit.sspScreenPlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@sspScreenPlainPx.toPx() }
+        density.run { this@prsspScreenPlainPx.toPx() }
     }
 }
 
@@ -2824,7 +2824,7 @@ fun TextUnit.sspScreenPlainPx(
  * Extension for TextUnit (Sp) with dynamic scaling based on **Screen Height (hDP)**.
  * Uses the base value by default, but when the device matches [uiModeType] AND
  * the screen metric for [qualifierType] is >= [qualifierValue], it uses [screenValue] instead.
- * Usage example: `30.hspScreen(50, UiModeType.TELEVISION, DpQualifier.HEIGHT, 800)`
+ * Usage example: `30.prhspScreen(50, UiModeType.TELEVISION, DpQualifier.HEIGHT, 800)`
  * → 30.prhsp by default, 50.prhsp on television with height >= 800.
  *
  * PT
@@ -2832,7 +2832,7 @@ fun TextUnit.sspScreenPlainPx(
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun Number.hspScreen(
+fun Number.prhspScreen(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -2870,11 +2870,11 @@ fun Number.hspScreen(
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
- * EN Pixel (Float) variant of [hspScreen].
- * PT Variante em Pixel (Float) de [hspScreen].
+ * EN Pixel (Float) variant of [prhspScreen].
+ * PT Variante em Pixel (Float) de [prhspScreen].
  */
 @Composable
-fun Number.hspScreenPx(
+fun Number.prhspScreenPx(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -2906,9 +2906,9 @@ fun Number.hspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -2927,7 +2927,7 @@ fun Number.hspScreenPx(
  * [qualifierType] é >= [qualifierValue], usa [screenValue] no lugar.
  */
 @Composable
-fun TextUnit.hspScreen(
+fun TextUnit.prhspScreen(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -2964,11 +2964,11 @@ fun TextUnit.hspScreen(
 }
 
 /**
- * EN Pixel (Float) variant of [hspScreen].
- * PT Variante em Pixel (Float) de [hspScreen].
+ * EN Pixel (Float) variant of [prhspScreen].
+ * PT Variante em Pixel (Float) de [prhspScreen].
  */
 @Composable
-fun TextUnit.hspScreenPx(
+fun TextUnit.prhspScreenPx(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -3000,9 +3000,9 @@ fun TextUnit.hspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -3021,7 +3021,7 @@ fun TextUnit.hspScreenPx(
  * [qualifierType] é >= [qualifierValue], usa [screenValue] no lugar.
  */
 @Composable
-fun TextUnit.hspScreenPlain(
+fun TextUnit.prhspScreenPlain(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -3062,11 +3062,11 @@ fun TextUnit.hspScreenPlain(
 }
 
 /**
- * EN Pixel (Float) variant of [hspScreenPlain].
- * PT Variante em Pixel (Float) de [hspScreenPlain].
+ * EN Pixel (Float) variant of [prhspScreenPlain].
+ * PT Variante em Pixel (Float) de [prhspScreenPlain].
  */
 @Composable
-fun TextUnit.hspScreenPlainPx(
+fun TextUnit.prhspScreenPlainPx(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -3099,14 +3099,14 @@ fun TextUnit.hspScreenPlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@hspScreenPlainPx.toPx() }
+        density.run { this@prhspScreenPlainPx.toPx() }
     }
 }
 
@@ -3115,7 +3115,7 @@ fun TextUnit.hspScreenPlainPx(
  * Extension for TextUnit (Sp) with dynamic scaling based on **Screen Width (wDP)**.
  * Uses the base value by default, but when the device matches [uiModeType] AND
  * the screen metric for [qualifierType] is >= [qualifierValue], it uses [screenValue] instead.
- * Usage example: `30.wspScreen(50, UiModeType.TELEVISION, DpQualifier.WIDTH, 600)`
+ * Usage example: `30.prwspScreen(50, UiModeType.TELEVISION, DpQualifier.WIDTH, 600)`
  * → 30.prwsp by default, 50.prwsp on television with width >= 600.
  *
  * PT
@@ -3123,7 +3123,7 @@ fun TextUnit.hspScreenPlainPx(
  */
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun Number.wspScreen(
+fun Number.prwspScreen(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -3161,11 +3161,11 @@ fun Number.wspScreen(
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 /**
- * EN Pixel (Float) variant of [wspScreen].
- * PT Variante em Pixel (Float) de [wspScreen].
+ * EN Pixel (Float) variant of [prwspScreen].
+ * PT Variante em Pixel (Float) de [prwspScreen].
  */
 @Composable
-fun Number.wspScreenPx(
+fun Number.prwspScreenPx(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -3197,9 +3197,9 @@ fun Number.wspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -3218,7 +3218,7 @@ fun Number.wspScreenPx(
  * [qualifierType] é >= [qualifierValue], usa [screenValue] no lugar.
  */
 @Composable
-fun TextUnit.wspScreen(
+fun TextUnit.prwspScreen(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -3255,11 +3255,11 @@ fun TextUnit.wspScreen(
 }
 
 /**
- * EN Pixel (Float) variant of [wspScreen].
- * PT Variante em Pixel (Float) de [wspScreen].
+ * EN Pixel (Float) variant of [prwspScreen].
+ * PT Variante em Pixel (Float) de [prwspScreen].
  */
 @Composable
-fun TextUnit.wspScreenPx(
+fun TextUnit.prwspScreenPx(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -3291,9 +3291,9 @@ fun TextUnit.wspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val prsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberPerimeterSpPx(
-        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }
@@ -3312,7 +3312,7 @@ fun TextUnit.wspScreenPx(
  * [qualifierType] é >= [qualifierValue], usa [screenValue] no lugar.
  */
 @Composable
-fun TextUnit.wspScreenPlain(
+fun TextUnit.prwspScreenPlain(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -3353,11 +3353,11 @@ fun TextUnit.wspScreenPlain(
 }
 
 /**
- * EN Pixel (Float) variant of [wspScreenPlain].
- * PT Variante em Pixel (Float) de [wspScreenPlain].
+ * EN Pixel (Float) variant of [prwspScreenPlain].
+ * PT Variante em Pixel (Float) de [prwspScreenPlain].
  */
 @Composable
-fun TextUnit.wspScreenPlainPx(
+fun TextUnit.prwspScreenPlainPx(
     screenValue: Number,
     uiModeType: UiModeType,
     qualifierType: DpQualifier,
@@ -3390,13 +3390,13 @@ fun TextUnit.wspScreenPlainPx(
             valueType = valueType,
             customSensitivityK = customSensitivityK
         )
-        val sspPxStamp =
+        val prsspPxStamp =
             pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
         rememberPerimeterSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+            cacheKey, prsspPxStamp, androidContext, density, baseValue, configuration,
             resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
         )
     } else {
-        density.run { this@wspScreenPlainPx.toPx() }
+        density.run { this@prwspScreenPlainPx.toPx() }
     }
 }

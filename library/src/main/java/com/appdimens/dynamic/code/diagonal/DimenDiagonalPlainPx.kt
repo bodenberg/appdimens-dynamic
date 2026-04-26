@@ -2,7 +2,7 @@
  * EN View **Plain** helpers (`Float` px + [Context]): same **logic-only** branching as Compose `Dp`/`TextUnit` Plain pairs
  * in `*DpExtensions` / `*SpExtensions` (no extra scaling of receiver or alternate).
  * PT Helpers **Plain** para Views (`Float` px + [Context]): mesma ramificação **só lógica** que os pares Plain `Dp`/`TextUnit`
- * em `*DpExtensions` / `*SpExtensions` (sem nova escala do recetor nem do alternativo).
+ * em `*DpExtensions` / `*SpExtensions` (dgsem nova escala do recetor nem do alternativo).
  *
  * EN Shared implementation: `com.appdimens.dynamic.code.plain` (`DimenPlainBranch.kt`): `plainRotatePx`, `plainModePx`, `plainQualifierPx`, `plainScreenPx`.
  * PT Implementação partilhada: `com.appdimens.dynamic.code.plain` (`DimenPlainBranch.kt`): `plainRotatePx`, `plainModePx`, `plainQualifierPx`, `plainScreenPx`.
@@ -61,44 +61,44 @@ fun Float.dgwdpQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierT
 fun Float.dgwdpScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainScreenPx(context, this, screenPx, uiModeType, qualifierType, qualifierValue)
 
-fun Float.sspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
+fun Float.dgsspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
     plainRotatePx(context, this, rotationPx, orientation)
 
-fun Float.sspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
+fun Float.dgsspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
     plainModePx(context, this, modePx, uiModeType)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.sspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.dgsspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainQualifierPx(context, this, qualifiedPx, qualifierType, qualifierValue)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.sspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.dgsspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainScreenPx(context, this, screenPx, uiModeType, qualifierType, qualifierValue)
 
-fun Float.hspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
+fun Float.dghspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
     plainRotatePx(context, this, rotationPx, orientation)
 
-fun Float.hspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
+fun Float.dghspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
     plainModePx(context, this, modePx, uiModeType)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.hspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.dghspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainQualifierPx(context, this, qualifiedPx, qualifierType, qualifierValue)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.hspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.dghspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainScreenPx(context, this, screenPx, uiModeType, qualifierType, qualifierValue)
 
-fun Float.wspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
+fun Float.dgwspRotatePlainPx(context: Context, rotationPx: Float, orientation: Orientation = Orientation.LANDSCAPE): Float =
     plainRotatePx(context, this, rotationPx, orientation)
 
-fun Float.wspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
+fun Float.dgwspModePlainPx(context: Context, modePx: Float, uiModeType: UiModeType): Float =
     plainModePx(context, this, modePx, uiModeType)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.wspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.dgwspQualifierPlainPx(context: Context, qualifiedPx: Float, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainQualifierPx(context, this, qualifiedPx, qualifierType, qualifierValue)
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-fun Float.wspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
+fun Float.dgwspScreenPlainPx(context: Context, screenPx: Float, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number): Float =
     plainScreenPx(context, this, screenPx, uiModeType, qualifierType, qualifierValue)

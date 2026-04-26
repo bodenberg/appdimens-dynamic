@@ -53,7 +53,7 @@ import com.appdimens.dynamic.core.pxRememberStamp
  * it uses [rotationValue] scaled with the given [finalQualifierResolver].
  */
 @Composable
-fun Number.sspRotate(
+fun Number.logsspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -80,7 +80,7 @@ fun Number.sspRotate(
  * Extension for Int with dynamic scaling based on **Screen Height (hDP)**.
  */
 @Composable
-fun Number.hspRotate(
+fun Number.loghspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -107,7 +107,7 @@ fun Number.hspRotate(
  * Extension for Int with dynamic scaling based on **Screen Width (wDP)**.
  */
 @Composable
-fun Number.wspRotate(
+fun Number.logwspRotate(
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
     orientation: Orientation = Orientation.LANDSCAPE,
@@ -139,7 +139,7 @@ fun Number.wspRotate(
  * it uses [modeValue] instead.
  */
 @Composable
-fun Number.sspMode(
+fun Number.logsspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -161,7 +161,7 @@ fun Number.sspMode(
  * Extension for Int with dynamic scaling based on **Screen Height (hDP)**.
  */
 @Composable
-fun Number.hspMode(
+fun Number.loghspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -183,7 +183,7 @@ fun Number.hspMode(
  * Extension for Int with dynamic scaling based on **Screen Width (wDP)**.
  */
 @Composable
-fun Number.wspMode(
+fun Number.logwspMode(
     modeValue: Number,
     uiModeType: UiModeType,
     finalQualifierResolver: DpQualifier? = null,
@@ -216,22 +216,22 @@ fun Number.wspMode(
 val Number.logssp: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.logsspa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.logsspi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsspia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true)
+val Number.logsspPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true)
 @get:Composable
-val Number.sspPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.logsspPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.logsspPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsspPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -241,7 +241,7 @@ val Number.sspPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_
  *
  * PT
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**,
- * mas sem respeitar a escala de fonte do sistema.
+ * mas logsem respeitar a escala de fonte do sistema.
  * Exemplo de uso: `16.logsem`.
  */
 @get:Composable
@@ -269,109 +269,109 @@ val Number.logsemPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMA
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.sspPh`.
+ * Usage example: `32.logsspPh`.
  */
 @get:Composable
-val Number.sspPh: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
+val Number.logsspPh: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspPha: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
+val Number.logsspPha: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspPhi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
+val Number.logsspPhi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspPhia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsspPhia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
+val Number.logsspPxPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
 @get:Composable
-val Number.sspPxaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
+val Number.logsspPxaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
+val Number.logsspPxiPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsspPxiaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in landscape orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.sspLh`.
+ * Usage example: `32.logsspLh`.
  */
 @get:Composable
-val Number.sspLh: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
+val Number.logsspLh: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspLha: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
+val Number.logsspLha: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspLhi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
+val Number.logsspLhi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspLhia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsspLhia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
+val Number.logsspPxLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
 @get:Composable
-val Number.sspPxaLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
+val Number.logsspPxaLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
+val Number.logsspPxiLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsspPxiaLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in portrait orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.sspPw`.
+ * Usage example: `32.logsspPw`.
  */
 @get:Composable
-val Number.sspPw: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
+val Number.logsspPw: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspPwa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
+val Number.logsspPwa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspPwi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
+val Number.logsspPwi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspPwia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsspPwia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
+val Number.logsspPxPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
 @get:Composable
-val Number.sspPxaPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
+val Number.logsspPxaPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
+val Number.logsspPxiPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsspPxiaPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in landscape orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.sspLw`.
+ * Usage example: `32.logsspLw`.
  */
 @get:Composable
-val Number.sspLw: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
+val Number.logsspLw: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.sspLwa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
+val Number.logsspLwa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.sspLwi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
+val Number.logsspLwi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.sspLwia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsspLwia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.sspPxLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
+val Number.logsspPxLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
 @get:Composable
-val Number.sspPxaLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
+val Number.logsspPxaLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
 @get:Composable
-val Number.sspPxiLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
+val Number.logsspPxiLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
 @get:Composable
-val Number.sspPxiaLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logsspPxiaLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -382,22 +382,22 @@ val Number.sspPxiaLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.SMAL
 val Number.loghsp: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hspa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
+val Number.loghspa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hspi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
+val Number.loghspi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hspia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.loghspia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hspPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true)
+val Number.loghspPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true)
 @get:Composable
-val Number.hspPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
+val Number.loghspPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Number.hspPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
+val Number.loghspPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Number.hspPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.loghspPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -409,76 +409,76 @@ val Number.hspPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT
 val Number.loghem: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = false)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hema: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
+val Number.loghema: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hemi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
+val Number.loghemi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hemia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.loghemia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hemPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = false)
+val Number.loghemPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = false)
 @get:Composable
-val Number.hemPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
+val Number.loghemPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = false, applyAspectRatio = true)
 @get:Composable
-val Number.hemPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
+val Number.loghemPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true)
 @get:Composable
-val Number.hemPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.loghemPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
  * in landscape orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.hspLw`.
+ * Usage example: `32.loghspLw`.
  */
 @get:Composable
-val Number.hspLw: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
+val Number.loghspLw: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hspLwa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
+val Number.loghspLwa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hspLwi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
+val Number.loghspLwi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hspLwia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.loghspLwia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hspPxLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
+val Number.loghspPxLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
 @get:Composable
-val Number.hspPxaLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
+val Number.loghspPxaLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
 @get:Composable
-val Number.hspPxiLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
+val Number.loghspPxiLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
 @get:Composable
-val Number.hspPxiaLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.loghspPxiaLw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
  * in portrait orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.hspPw`.
+ * Usage example: `32.loghspPw`.
  */
 @get:Composable
-val Number.hspPw: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
+val Number.loghspPw: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.hspPwa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
+val Number.loghspPwa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.hspPwi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
+val Number.loghspPwi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.hspPwia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.loghspPwia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.hspPxPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
+val Number.loghspPxPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
 @get:Composable
-val Number.hspPxaPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
+val Number.loghspPxaPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
 @get:Composable
-val Number.hspPxiPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
+val Number.loghspPxiPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
 @get:Composable
-val Number.hspPxiaPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.loghspPxiaPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -489,22 +489,22 @@ val Number.hspPxiaPw: Float get() = this.toDynamicLogarithmicPx(DpQualifier.HEIG
 val Number.logwsp: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wspa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.logwspa: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wspi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.logwspi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wspia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logwspia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wspPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true)
+val Number.logwspPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true)
 @get:Composable
-val Number.wspPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
+val Number.logwspPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
 @get:Composable
-val Number.wspPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
+val Number.logwspPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
 @get:Composable
-val Number.wspPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logwspPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -516,104 +516,104 @@ val Number.wspPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH,
 val Number.logwem: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wema: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
+val Number.logwema: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wemi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
+val Number.logwemi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wemia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logwemia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wemPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false)
+val Number.logwemPx: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false)
 @get:Composable
-val Number.wemPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
+val Number.logwemPxa: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, applyAspectRatio = true)
 @get:Composable
-val Number.wemPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
+val Number.logwemPxi: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true)
 @get:Composable
-val Number.wemPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logwemPxia: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * in landscape orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wspLh`.
+ * Usage example: `100.logwspLh`.
  */
 @get:Composable
-val Number.wspLh: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
+val Number.logwspLh: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wspLha: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
+val Number.logwspLha: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wspLhi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
+val Number.logwspLhi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wspLhia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logwspLhia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wspPxLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
+val Number.logwspPxLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
 @get:Composable
-val Number.wspPxaLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
+val Number.logwspPxaLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
 @get:Composable
-val Number.wspPxiLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
+val Number.logwspPxiLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
 @get:Composable
-val Number.wspPxiaLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logwspPxiaLh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wspPh`.
+ * Usage example: `100.logwspPh`.
  */
 @get:Composable
-val Number.wspPh: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
+val Number.logwspPh: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wspPha: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.logwspPha: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wspPhi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.logwspPhi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wspPhia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logwspPhia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wspPxPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
+val Number.logwspPxPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
 @get:Composable
-val Number.wspPxaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.logwspPxaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 @get:Composable
-val Number.wspPxiPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.logwspPxiPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 @get:Composable
-val Number.wspPxiaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logwspPxiaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * without respecting the system font scale, and
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wemPh`.
+ * Usage example: `100.logwemPh`.
  */
 @get:Composable
-val Number.wemPh: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
+val Number.logwemPh: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
 /** a variant explicitly with applyAspectRatio */
 @get:Composable
-val Number.wemPha: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.logwemPha: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 /** i variant explicitly with ignoreMultiWindows */
 @get:Composable
-val Number.wemPhi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.logwemPhi: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 /** ia variant explicitly with both */
 @get:Composable
-val Number.wemPhia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logwemPhia: TextUnit get() = this.toDynamicLogarithmicSp(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 @get:Composable
-val Number.wemPxPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
+val Number.logwemPxPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
 @get:Composable
-val Number.wemPxaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+val Number.logwemPxaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
 @get:Composable
-val Number.wemPxiPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+val Number.logwemPxiPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
 @get:Composable
-val Number.wemPxiaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+val Number.logwemPxiaPh: Float get() = this.toDynamicLogarithmicPx(DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -713,13 +713,13 @@ internal fun rememberLogarithmicSp(
 }
 
 /**
- * EN [remember]s the cached px [Float] for [toDynamicLogarithmicPx] using [cacheKey] and [sspPxStamp].
- * PT [remember] do [Float] em px para [toDynamicLogarithmicPx] usando [cacheKey] e [sspPxStamp].
+ * EN [remember]s the cached px [Float] for [toDynamicLogarithmicPx] using [cacheKey] and [logsspPxStamp].
+ * PT [remember] do [Float] em px para [toDynamicLogarithmicPx] usando [cacheKey] e [logsspPxStamp].
  */
 @Composable
 internal fun rememberLogarithmicSpPx(
     cacheKey: Long,
-    sspPxStamp: Long,
+    logsspPxStamp: Long,
     androidContext: android.content.Context,
     density: Density,
     baseValue: Float,
@@ -730,7 +730,7 @@ internal fun rememberLogarithmicSpPx(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): Float = remember(cacheKey, sspPxStamp) {
+): Float = remember(cacheKey, logsspPxStamp) {
     DimenCache.getOrPut(cacheKey, androidContext) {
         val scaledVal = calculateLogarithmicSpValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
         val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
@@ -783,10 +783,10 @@ fun Number.toDynamicLogarithmicPx(
         valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val logsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
     return rememberLogarithmicSpPx(
-        cacheKey, sspPxStamp, androidContext, density, this.toFloat(), configuration,
+        cacheKey, logsspPxStamp, androidContext, density, this.toFloat(), configuration,
         qualifier, inverter, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
     )
 }

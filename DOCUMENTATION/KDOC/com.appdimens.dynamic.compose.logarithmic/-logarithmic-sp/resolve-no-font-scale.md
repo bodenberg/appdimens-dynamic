@@ -4,4 +4,4 @@
 
 private fun [resolveNoFontScale](resolve-no-font-scale.md)(qualifier: [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)): ERROR CLASS: Symbol not found for TextUnit
 
-EN Like [resolve](resolve.md) but forces `fontScale = false` (fixed Sp, same idea as `sem` / `logwem` accessors). PT Como [resolve](resolve.md), mas força `fontScale = false` (Sp fixo, mesmo propósito dos acessores `sem` / `logwem`).
+EN Like [resolve](resolve.md) but forces `fontScale = false` (fixed Sp, same idea as `logsem` / `logwem` accessors). PT Como [resolve](resolve.md), mas força `fontScale = false` (Sp fixo, mesmo propósito dos acessores `logsem` / `logwem`).

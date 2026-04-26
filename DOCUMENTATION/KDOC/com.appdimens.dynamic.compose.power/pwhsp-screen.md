@@ -1,0 +1,13 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../index.md)/[com.appdimens.dynamic.compose.power](index.md)/[pwhspScreen](pwhsp-screen.md)
+
+# pwhspScreen
+
+fun [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[pwhspScreen](pwhsp-screen.md)(screenValue: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html), uiModeType: [UiModeType](../com.appdimens.dynamic.common/-ui-mode-type/index.md), qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, fontScale: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = true, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)? = null): ERROR CLASS: Symbol not found for TextUnit
+
+EN Extension for TextUnit (Sp) with dynamic scaling based on **Screen Height (hDP)**. Uses the base value by default, but when the device matches [uiModeType](pwhsp-screen.md) AND the screen metric for [qualifierType](pwhsp-screen.md) is >= [qualifierValue](pwhsp-screen.md), it uses [screenValue](pwhsp-screen.md) instead. Usage example: `30.pwhspScreen(50, UiModeType.TELEVISION, DpQualifier.HEIGHT, 800)` → 30.pwhsp by default, 50.pwhsp on television with height >= 800.
+
+PT Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Altura da Tela (hDP)**.
+
+EN Extension for TextUnit (Sp) with dynamic scaling based on **Screen Height (hDP)**. Returns the original value **auto-scaled** using the specified qualifier if the condition is not met. When the device matches [uiModeType](pwhsp-screen.md) AND the screen metric for [qualifierType](pwhsp-screen.md) is >= [qualifierValue](pwhsp-screen.md), it uses [screenValue](pwhsp-screen.md) instead.
+
+PT Extensão para TextUnit (Sp) com dimensionamento dinâmico baseado na **Altura da Tela (hDP)**. Retorna o valor original **auto-escalonado** usando o qualificador especificado se a condição não for atendida. Quando o dispositivo corresponde ao [uiModeType](pwhsp-screen.md) E a métrica de tela para [qualifierType](pwhsp-screen.md) é >= [qualifierValue](pwhsp-screen.md), usa [screenValue](pwhsp-screen.md) no lugar.

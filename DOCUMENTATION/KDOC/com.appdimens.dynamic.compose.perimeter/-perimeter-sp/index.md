@@ -92,7 +92,7 @@ EN Resolves the matching [CustomSpEntry](../-custom-sp-entry/index.md) and retur
 
 private fun [resolveNoFontScale](resolve-no-font-scale.md)(qualifier: [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)): ERROR CLASS: Symbol not found for TextUnit
 
-EN Like [resolve](resolve.md) but forces `fontScale = false` (fixed Sp, same idea as `sem` / `prwem` accessors). PT Como [resolve](resolve.md), mas força `fontScale = false` (Sp fixo, mesmo propósito dos acessores `sem` / `prwem`).
+EN Like [resolve](resolve.md) but forces `fontScale = false` (fixed Sp, same idea as `prsem` / `prwem` accessors). PT Como [resolve](resolve.md), mas força `fontScale = false` (Sp fixo, mesmo propósito dos acessores `prsem` / `prwem`).
 
 private fun [resolveNoFontScalePx](resolve-no-font-scale-px.md)(qualifier: [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 

@@ -1,0 +1,7 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../index.md)/[com.appdimens.dynamic.compose.density](index.md)/[dsspLwa](dssp-lwa.md)
+
+# dsspLwa
+
+val [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[dsspLwa](dssp-lwa.md): ERROR CLASS: Symbol not found for TextUnit
+
+a variant explicitly with applyAspectRatio

@@ -46,7 +46,7 @@ private const val BASE_RATIO_STEP = 300f
  * it uses [rotationValue] scaled with the given [finalQualifierResolver].
  */
 @JvmOverloads
-fun Number.sspRotate(
+fun Number.psspRotate(
     context: Context,
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.SMALL_WIDTH,
@@ -74,7 +74,7 @@ fun Number.sspRotate(
  * Extension for Int with dynamic scaling based on **Screen Height (hDP)**.
  */
 @JvmOverloads
-fun Number.hspRotate(
+fun Number.phspRotate(
     context: Context,
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.HEIGHT,
@@ -102,7 +102,7 @@ fun Number.hspRotate(
  * Extension for Int with dynamic scaling based on **Screen Width (wDP)**.
  */
 @JvmOverloads
-fun Number.wspRotate(
+fun Number.pwspRotate(
     context: Context,
     rotationValue: Number,
     finalQualifierResolver: DpQualifier = DpQualifier.WIDTH,
@@ -133,7 +133,7 @@ fun Number.wspRotate(
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**.
  */
 @JvmOverloads
-fun Number.sspMode(
+fun Number.psspMode(
     context: Context,
     modeValue: Number,
     uiModeType: UiModeType,
@@ -156,7 +156,7 @@ fun Number.sspMode(
  * Extension for Int with dynamic scaling based on **Screen Height (hDP)**.
  */
 @JvmOverloads
-fun Number.hspMode(
+fun Number.phspMode(
     context: Context,
     modeValue: Number,
     uiModeType: UiModeType,
@@ -179,7 +179,7 @@ fun Number.hspMode(
  * Extension for Int with dynamic scaling based on **Screen Width (wDP)**.
  */
 @JvmOverloads
-fun Number.wspMode(
+fun Number.pwspMode(
     context: Context,
     modeValue: Number,
     uiModeType: UiModeType,
@@ -207,53 +207,53 @@ fun Number.wspMode(
  * Usage example: `16.pssp(context)`.
  */
 fun Number.pssp(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true)
-fun Number.sspa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
-fun Number.sspi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
-fun Number.sspia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.psspa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, applyAspectRatio = true)
+fun Number.psspi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true)
+fun Number.psspia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.sspPh(context)`.
+ * Usage example: `32.psspPh(context)`.
  */
-fun Number.sspPh(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
-fun Number.sspPha(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
-fun Number.sspPhi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
-fun Number.sspPhia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.psspPh(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH)
+fun Number.psspPha(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, applyAspectRatio = true)
+fun Number.psspPhi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true)
+fun Number.psspPhia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in landscape orientation it acts as **Screen Height (hDP)**.
- * Usage example: `32.sspLh(context)`.
+ * Usage example: `32.psspLh(context)`.
  */
-fun Number.sspLh(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
-fun Number.sspLha(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
-fun Number.sspLhi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
-fun Number.sspLhia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.psspLh(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH)
+fun Number.psspLha(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, applyAspectRatio = true)
+fun Number.psspLhi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true)
+fun Number.psspLhia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in portrait orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.sspPw(context)`.
+ * Usage example: `32.psspPw(context)`.
  */
-fun Number.sspPw(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
-fun Number.sspPwa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
-fun Number.sspPwi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
-fun Number.sspPwia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.psspPw(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW)
+fun Number.psspPwa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, applyAspectRatio = true)
+fun Number.psspPwi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true)
+fun Number.psspPwia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on **Smallest Width (swDP)**, but
  * in landscape orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.sspLw(context)`.
+ * Usage example: `32.psspLw(context)`.
  */
-fun Number.sspLw(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
-fun Number.sspLwa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
-fun Number.sspLwi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
-fun Number.sspLwia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.psspLw(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW)
+fun Number.psspLwa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, applyAspectRatio = true)
+fun Number.psspLwi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true)
+fun Number.psspLwia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.SMALL_WIDTH, fontScale = true, inverter = Inverter.SW_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -261,31 +261,31 @@ fun Number.sspLwia(context: Context): Float = this.toDynamicPercentSpPx(context,
  * Usage example: `32.phsp(context)`.
  */
 fun Number.phsp(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true)
-fun Number.hspa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
-fun Number.hspi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
-fun Number.hspia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.phspa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, applyAspectRatio = true)
+fun Number.phspi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true)
+fun Number.phspia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
  * in landscape orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.hspLw(context)`.
+ * Usage example: `32.phspLw(context)`.
  */
-fun Number.hspLw(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
-fun Number.hspLwa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
-fun Number.hspLwi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
-fun Number.hspLwia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.phspLw(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW)
+fun Number.phspLwa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, applyAspectRatio = true)
+fun Number.phspLwi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true)
+fun Number.phspLwia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.PH_TO_LW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**, but
  * in portrait orientation it acts as **Screen Width (wDP)**.
- * Usage example: `32.hspPw(context)`.
+ * Usage example: `32.phspPw(context)`.
  */
-fun Number.hspPw(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
-fun Number.hspPwa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
-fun Number.hspPwi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
-fun Number.hspPwia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.phspPw(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW)
+fun Number.phspPwa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, applyAspectRatio = true)
+fun Number.phspPwi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true)
+fun Number.phspPwia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.HEIGHT, fontScale = true, inverter = Inverter.LH_TO_PW, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
@@ -293,33 +293,33 @@ fun Number.hspPwia(context: Context): Float = this.toDynamicPercentSpPx(context,
  * Usage example: `100.pwsp(context)`.
  */
 fun Number.pwsp(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true)
-fun Number.wspa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
-fun Number.wspi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
-fun Number.wspia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.pwspa(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, applyAspectRatio = true)
+fun Number.pwspi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true)
+fun Number.pwspia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * in landscape orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wspLh(context)`.
+ * Usage example: `100.pwspLh(context)`.
  */
-fun Number.wspLh(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
-fun Number.wspLha(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
-fun Number.wspLhi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
-fun Number.wspLhia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.pwspLh(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH)
+fun Number.pwspLha(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, applyAspectRatio = true)
+fun Number.pwspLhi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true)
+fun Number.pwspLhia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.PW_TO_LH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 /**
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**, but
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wspPh(context)`.
+ * Usage example: `100.pwspPh(context)`.
  */
-fun Number.wspPh(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
-fun Number.wspPha(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
-fun Number.wspPhi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
-fun Number.wspPhia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.pwspPh(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH)
+fun Number.pwspPha(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+fun Number.pwspPhi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+fun Number.pwspPhia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = true, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
-// EN WITHOUT FONT SCALE variants (sem escala de fonte)
+// EN WITHOUT FONT SCALE variants (psem escala de fonte)
 // PT Variantes SEM ESCALA DE FONTE
 
 /**
@@ -433,12 +433,12 @@ fun Number.wemLhia(context: Context): Float = this.toDynamicPercentSpPx(context,
  * EN
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)** (WITHOUT FONT SCALE), but
  * in portrait orientation it acts as **Screen Height (hDP)**.
- * Usage example: `100.wemPh(context)`.
+ * Usage example: `100.pwemPh(context)`.
  */
-fun Number.wemPh(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
-fun Number.wemPha(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
-fun Number.wemPhi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
-fun Number.wemPhia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
+fun Number.pwemPh(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH)
+fun Number.pwemPha(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, applyAspectRatio = true)
+fun Number.pwemPhi(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true)
+fun Number.pwemPhia(context: Context): Float = this.toDynamicPercentSpPx(context, DpQualifier.WIDTH, fontScale = false, inverter = Inverter.LW_TO_PH, ignoreMultiWindows = true, applyAspectRatio = true)
 
 // EN Qualifier-based conditional dynamic scaling for Sp.
 // PT Escalonamento condicional baseado em qualificador para Sp.
@@ -454,7 +454,7 @@ fun Number.wemPhia(context: Context): Float = this.toDynamicPercentSpPx(context,
  * Usa o valor base por padrão, mas quando a métrica de tela para [qualifierType]
  * é >= [qualifierValue], usa [qualifiedValue] no lugar.
  */
-fun Number.sspQualifier(context: Context, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+fun Number.psspQualifier(context: Context, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
@@ -475,7 +475,7 @@ fun Number.sspQualifier(context: Context, qualifiedValue: Number, qualifierType:
  * Usa o valor base por padrão, mas quando a métrica de tela para [qualifierType]
  * é >= [qualifierValue], usa [qualifiedValue] no lugar.
  */
-fun Number.hspQualifier(context: Context, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+fun Number.phspQualifier(context: Context, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
@@ -496,7 +496,7 @@ fun Number.hspQualifier(context: Context, qualifiedValue: Number, qualifierType:
  * Usa o valor base por padrão, mas quando a métrica de tela para [qualifierType]
  * é >= [qualifierValue], usa [qualifiedValue] no lugar.
  */
-fun Number.wspQualifier(context: Context, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+fun Number.pwspQualifier(context: Context, qualifiedValue: Number, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     return if (qualifierMatch) {
@@ -520,7 +520,7 @@ fun Number.wspQualifier(context: Context, qualifiedValue: Number, qualifierType:
  * Usa o valor base por padrão, mas quando o dispositivo corresponde ao [uiModeType] E
  * a métrica de tela para [qualifierType] é >= [qualifierValue], usa [screenValue] no lugar.
  */
-fun Number.sspScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+fun Number.psspScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
     val currentUiModeType = DimenCache.getCachedUiModeType(context)
     val uiModeMatch = currentUiModeType == uiModeType
@@ -543,7 +543,7 @@ fun Number.sspScreen(context: Context, screenValue: Number, uiModeType: UiModeTy
  * Usa o valor base por padrão, mas quando o dispositivo corresponde ao [uiModeType] E
  * a métrica de tela para [qualifierType] é >= [qualifierValue], usa [screenValue] no lugar.
  */
-fun Number.hspScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+fun Number.phspScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
     val currentUiModeType = DimenCache.getCachedUiModeType(context)
     val uiModeMatch = currentUiModeType == uiModeType
@@ -566,7 +566,7 @@ fun Number.hspScreen(context: Context, screenValue: Number, uiModeType: UiModeTy
  * Usa o valor base por padrão, mas quando o dispositivo corresponde ao [uiModeType] E
  * a métrica de tela para [qualifierType] é >= [qualifierValue], usa [screenValue] no lugar.
  */
-fun Number.wspScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+fun Number.pwspScreen(context: Context, screenValue: Number, uiModeType: UiModeType, qualifierType: DpQualifier, qualifierValue: Number, finalQualifierResolver: DpQualifier? = null, fontScale: Boolean = true, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
     val configuration = context.resources.configuration
     val currentUiModeType = DimenCache.getCachedUiModeType(context)
     val uiModeMatch = currentUiModeType == uiModeType

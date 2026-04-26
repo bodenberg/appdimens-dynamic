@@ -1,0 +1,9 @@
+//[AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions](../../index.md)/[com.appdimens.dynamic.code.logarithmic](index.md)/[loghspQualifier](loghsp-qualifier.md)
+
+# loghspQualifier
+
+fun [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html).[loghspQualifier](loghsp-qualifier.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), qualifiedValue: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html), qualifierType: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md), qualifierValue: [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html), finalQualifierResolver: [DpQualifier](../com.appdimens.dynamic.common/-dp-qualifier/index.md)? = null, fontScale: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = true, ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = false, applyAspectRatio: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) = false, customSensitivityK: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)? = null): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+
+EN Extension for Int with dynamic scaling based on **Screen Height (hSP)**. Uses the base value by default, but when the screen metric for [qualifierType](loghsp-qualifier.md) is >= [qualifierValue](loghsp-qualifier.md), it uses [qualifiedValue](loghsp-qualifier.md) instead.
+
+PT Extensão para Int com dimensionamento dinâmico baseado na **Altura da Tela (hSP)**. Usa o valor base por padrão, mas quando a métrica de tela para [qualifierType](loghsp-qualifier.md) é >= [qualifierValue](loghsp-qualifier.md), usa [qualifiedValue](loghsp-qualifier.md) no lugar.
