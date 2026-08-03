@@ -83,7 +83,7 @@ class DimenCacheInvalidationTest {
     }
 
     @Test
-    fun invalidate_orientationSwap_clearsCache() {
+    fun invalidate_orientationSwap_doesNotClearCache() {
         val old = config(sw = 400, w = 400, h = 800)
         DimenCache.invalidateOnConfigChange(old)
 
@@ -93,10 +93,32 @@ class DimenCacheInvalidationTest {
             com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
         )
         DimenCache.getOrPut(key) { 88f }
+        assertEquals(88f, DimenCache.peek(key) ?: -1f, 0f)
 
+        // Pure rotation: width ↔ height swap, same min/max/sw/dpi.
+        // ScreenFactors are invariant → no clearAll(); keys encode isLandscape bit.
         val new = config(sw = 400, w = 800, h = 400)
         DimenCache.invalidateOnConfigChange(new)
 
+        assertEquals(88f, DimenCache.peek(key) ?: -1f, 0f)
+    }
+
+    @Test
+    fun invalidate_physicalResize_clearsCache() {
+        val old = config(sw = 400, w = 400, h = 800, dpi = 420)
+        DimenCache.invalidateOnConfigChange(old)
+
+        val key = DimenCache.buildKey(
+            32f, false, false, DimenCache.CalcType.POWER,
+            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
+            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+        DimenCache.getOrPut(key) { 66f }
+        assertEquals(66f, DimenCache.peek(key) ?: -1f, 0f)
+
+        // Split-screen / fold resize: min changes → real physical change.
+        val resized = config(sw = 300, w = 300, h = 800, dpi = 420)
+        DimenCache.invalidateOnConfigChange(resized)
         assertEquals(null, DimenCache.peek(key))
     }
 

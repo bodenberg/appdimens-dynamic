@@ -851,10 +851,12 @@ object DimenCache {
         val newMin = min(new.screenWidthDp, new.screenHeightDp)
         val newMax = max(new.screenWidthDp, new.screenHeightDp)
 
+        // Orientation-only swaps exchange screenWidthDp ↔ screenHeightDp but leave
+        // min/max (and thus all ScreenFactors: scale, arMultiplier, diagonalScale, …)
+        // mathematically unchanged. Comparing raw width/height here would clear the
+        // entire 2048-slot cache on every rotation — contradicting the comment below.
         val physicalChange = oldMin != newMin ||
                 oldMax != newMax ||
-                old.screenWidthDp != new.screenWidthDp ||
-                old.screenHeightDp != new.screenHeightDp ||
                 old.smallestScreenWidthDp != new.smallestScreenWidthDp ||
                 old.densityDpi != new.densityDpi
 
