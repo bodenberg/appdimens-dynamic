@@ -66,7 +66,7 @@ class DimenCacheInvalidationTest {
         DimenCache.invalidateOnConfigChange(before)
 
         val key = DimenCache.buildKey(
-            30f, false, false, DimenCache.CalcType.POWER,
+            30f, false, false, DimenCache.CalcType.AUTO,
             com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
             com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
         )
@@ -84,7 +84,7 @@ class DimenCacheInvalidationTest {
         DimenCache.invalidateOnConfigChange(old)
 
         val key = DimenCache.buildKey(
-            31f, false, false, DimenCache.CalcType.POWER,
+            31f, false, false, DimenCache.CalcType.AUTO,
             com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
             com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
         )
@@ -105,7 +105,7 @@ class DimenCacheInvalidationTest {
         DimenCache.invalidateOnConfigChange(old)
 
         val key = DimenCache.buildKey(
-            32f, false, false, DimenCache.CalcType.POWER,
+            32f, false, false, DimenCache.CalcType.AUTO,
             com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
             com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
         )
@@ -134,5 +134,39 @@ class DimenCacheInvalidationTest {
         DimenCache.invalidateOnConfigChange(new)
 
         assertEquals(null, DimenCache.peek(key))
+    }
+
+    @Test
+    fun invalidate_fontScaleOnly_clearsOnlyFontDependentEntries() {
+        val old = config()
+        DimenCache.invalidateOnConfigChange(old)
+
+        val keyDp = DimenCache.buildKey(
+            10f, false, false, DimenCache.CalcType.AUTO,
+            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
+            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+        val keySpWith = DimenCache.buildKey(
+            11f, false, false, DimenCache.CalcType.AUTO,
+            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
+            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.SP_WITH_SCALE
+        )
+        val keySpNo = DimenCache.buildKey(
+            12f, false, false, DimenCache.CalcType.AUTO,
+            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
+            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.SP_NO_SCALE
+        )
+        DimenCache.getOrPut(keyDp) { 1f }
+        DimenCache.getOrPut(keySpWith) { 2f }
+        DimenCache.getOrPut(keySpNo) { 3f }
+
+        val new = config().apply { fontScale = 1.5f }
+        DimenCache.diskClearRequested = false
+        DimenCache.invalidateOnConfigChange(new)
+
+        assertEquals(1f, DimenCache.peek(keyDp) ?: -1f, 0f)
+        assertEquals(2f, DimenCache.peek(keySpWith) ?: -1f, 0f)
+        assertEquals(null, DimenCache.peek(keySpNo))
+        assertEquals(false, DimenCache.diskClearRequested)
     }
 }
