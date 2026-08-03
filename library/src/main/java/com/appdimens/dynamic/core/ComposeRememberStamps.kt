@@ -11,6 +11,30 @@ import android.content.res.Configuration
 import androidx.compose.ui.unit.Density
 
 /**
+ * EN Mix [densityDpi] into a layout-only packed long without overlapping SW/W/H bit fields.
+ * A plain `or (dpi shl 4)` collided with the low bits of height and could produce false hits.
+ *
+ * PT Mistura densityDpi sem sobrepor os campos de SW/W/H.
+ */
+private fun mixDpi(packedLayout: Long, densityDpi: Int): Long {
+    // Spread 16-bit dpi across the 64-bit word (Knuth multiplicative hash fragment).
+    val dpi = densityDpi.toLong() and 0xFFFFL
+    return packedLayout xor (dpi * 0x0001000100010001L)
+}
+
+/**
+ * EN Packs orientation + SW + W + H into non-overlapping bit fields (4+20+20+20 = 64).
+ * PT Empacota orientação + SW + W + H em campos sem sobreposição.
+ */
+private fun packLayoutFields(configuration: Configuration): Long {
+    val sw = configuration.smallestScreenWidthDp.toLong() and 0xFFFFFL
+    val w = configuration.screenWidthDp.toLong() and 0xFFFFFL
+    val h = configuration.screenHeightDp.toLong() and 0xFFFFFL
+    val o = configuration.orientation.toLong() and 0xFL
+    return (o shl 60) or (sw shl 40) or (w shl 20) or h
+}
+
+/**
  * EN Layout stamp for Dp [remember] keys.
  * Packs only fields that affect layout scaling (orientation, SW, W, H, densityDpi).
  * Deliberately **excludes** [Configuration.hashCode] so locale / fontScale / keyboard
@@ -20,12 +44,7 @@ import androidx.compose.ui.unit.Density
  */
 @Suppress("UNUSED_PARAMETER")
 internal fun layoutRememberStamp(configuration: Configuration, context: Context): Long {
-    val sw = configuration.smallestScreenWidthDp.toLong() and 0xFFFFFL
-    val w = configuration.screenWidthDp.toLong() and 0xFFFFFL
-    val h = configuration.screenHeightDp.toLong() and 0xFFFFFL
-    val o = configuration.orientation.toLong() and 0xFL
-    val dpi = configuration.densityDpi.toLong() and 0xFFFFL
-    return (o shl 60) or (sw shl 40) or (w shl 20) or h or (dpi shl 4)
+    return mixDpi(packLayoutFields(configuration), configuration.densityDpi)
 }
 
 /**
@@ -52,22 +71,20 @@ internal fun spRememberStamp(layoutStamp: Long, density: Density): Long {
 }
 
 /**
- * EN Stamp equivalent to the former multi-key [remember] for [com.appdimens.dynamic.compose.DimenScaled] / [com.appdimens.dynamic.compose.ScaledSp] custom entry resolution.
- * PT Carimbo equivalente ao antigo [remember] multi-chave para resolução de entradas customizadas.
+ * EN Stamp for custom scaled-entry resolution ([com.appdimens.dynamic.compose.DimenScaled] / ScaledSp).
+ * Keys only matcher inputs: SW/W/H/orientation + uiMode + ignoreMultiWindows.
+ * Omits densityDpi and aspectRatio (AR is derived from W/H) to avoid extra invalidation.
+ *
+ * PT Carimbo para resolução de entradas customizadas — só inputs do matcher.
  */
+@Suppress("UNUSED_PARAMETER")
 internal fun scaledEntryRememberStamp(
     uiModeOrdinal: Int,
     configuration: Configuration,
     aspectRatio: Float,
     ignoreMultiWindows: Boolean
 ): Long {
-    val sw = configuration.smallestScreenWidthDp.toLong() and 0xFFFFFL
-    val w = configuration.screenWidthDp.toLong() and 0xFFFFFL
-    val h = configuration.screenHeightDp.toLong() and 0xFFFFFL
-    val o = configuration.orientation.toLong() and 0xFL
-    val dpi = configuration.densityDpi.toLong() and 0xFFFFL
-    val packed = (o shl 60) or (sw shl 40) or (w shl 20) or h or (dpi shl 4)
-    val ar = aspectRatio.toRawBits().toLong()
+    val packed = packLayoutFields(configuration)
     val imw = if (ignoreMultiWindows) 0x13579BDFL else 0L
-    return packed xor ar xor uiModeOrdinal.toLong() xor imw
+    return packed xor uiModeOrdinal.toLong() xor imw
 }

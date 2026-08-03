@@ -81,6 +81,24 @@ Each `calculate*Dp` function reads the pre-computed factor from `ScreenFactors` 
 
 For testing, call **`DimenCache.shutdown()`** to cancel the internal `CoroutineScope` and avoid leaked writes during teardown. Use **`restartSaveCollectorForTest()`** after changing `saveDebounceMs` / `saveSampleMs`.
 
+## Compose recomposition stamps
+
+Packed `Long` remember keys in `ComposeRememberStamps` avoid `Configuration.hashCode()` and slot-table instability:
+
+| Stamp | Keys | Does **not** invalidate on |
+|---|---|---|
+| `layoutRememberStamp` | orientation, SW, W, H, densityDpi (dpi mixed without overlapping H bits) | locale, keyboard, fontScale |
+| `pxRememberStamp` | layout ⊕ physical density | fontScale |
+| `spRememberStamp` | layout ⊕ density ⊕ fontScale | — |
+| `scaledEntryRememberStamp` | SW/W/H/orientation ⊕ uiMode ⊕ ignoreMultiWindows | densityDpi, aspectRatio float noise |
+
+Related Compose hygiene:
+
+- `*Plain` paths always call `rememberDimen*` (no conditional `remember`)
+- `fontScale`-only cache invalidation clears only `SP_NO_SCALE` / `SP_PX_*` entries
+- `AppDimensProvider` keys fold UiMode on `state`/`orientation`/`isSeparating`, not the `FoldingFeature` instance
+- `DimenResize` uses `spRememberStamp` when bounds are `FixedSp`; Dp inset paths key on `density` bits only
+
 ## Benchmarks
 
 Do not use SCALED / PERCENT / DENSITY / DIAGONAL / INTERPOLATED / PERIMETER **without AR** — or **with default AR** — to measure shard-cache throughput; those calls intentionally bypass storage. Use a non-default qualifier, custom sensitivity, or `AUTO`/`FLUID`/`POWER` keys to exercise the cache path.

@@ -249,9 +249,9 @@ private fun rememberLiteralSpaceScreenSp(
     val configuration = LocalConfiguration.current
     val androidContext = LocalContext.current
     val density = LocalDensity.current
-    val resultDp = literalPercentOfScreenDp(percent, qualifier, configuration, ignoreMultiWindows)
     val stamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-    return remember(stamp, fontScale, ignoreMultiWindows, resultDp) {
+    return remember(stamp, fontScale, ignoreMultiWindows, qualifier, percent) {
+        val resultDp = literalPercentOfScreenDp(percent, qualifier, configuration, ignoreMultiWindows)
         val fs = configuration.fontScale.coerceAtLeast(1e-6f)
         if (fontScale) {
             (resultDp / fs).sp
@@ -271,9 +271,9 @@ private fun rememberLiteralSpaceReferenceSp(
     val configuration = LocalConfiguration.current
     val androidContext = LocalContext.current
     val density = LocalDensity.current
-    val resultDp = literalPercentOfReferenceDp(percent, referenceDp, configuration, ignoreMultiWindows)
     val stamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-    return remember(stamp, fontScale, ignoreMultiWindows, resultDp, referenceDp) {
+    return remember(stamp, fontScale, ignoreMultiWindows, percent, referenceDp) {
+        val resultDp = literalPercentOfReferenceDp(percent, referenceDp, configuration, ignoreMultiWindows)
         val fs = configuration.fontScale.coerceAtLeast(1e-6f)
         if (fontScale) {
             (resultDp / fs).sp

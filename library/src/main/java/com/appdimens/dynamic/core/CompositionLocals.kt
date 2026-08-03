@@ -15,6 +15,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
@@ -65,7 +66,14 @@ fun AppDimensProvider(content: @Composable () -> Unit) {
     val foldingFeature = windowLayoutInfo.value?.displayFeatures
         ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
 
-    val uiModeType = remember(context, foldingFeature) {
+    // Key on fold semantics, not the FoldingFeature instance — WindowLayoutInfo
+    // often re-emits a new feature object with identical state/orientation.
+    val uiModeType = remember(
+        context,
+        foldingFeature?.state,
+        foldingFeature?.orientation,
+        foldingFeature?.isSeparating,
+    ) {
         UiModeType.fromConfiguration(context, foldingFeature)
     }
 
@@ -83,7 +91,16 @@ internal fun getCurrentUiModeType(): UiModeType {
     val provided = LocalUiModeType.current
     if (provided != UiModeType.UNDEFINED) return provided
     val context = LocalContext.current
-    return remember(context) { UiModeType.fromConfiguration(context, null) }
+    val configuration = LocalConfiguration.current
+    // Track only fields that affect UiMode — same fingerprint idea as DimenCache.
+    return remember(
+        configuration.uiMode,
+        configuration.smallestScreenWidthDp,
+        configuration.screenWidthDp,
+        configuration.screenHeightDp,
+    ) {
+        DimenCache.getCachedUiModeType(context)
+    }
 }
 
 /**

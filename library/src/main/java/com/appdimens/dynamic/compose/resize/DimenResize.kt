@@ -32,6 +32,7 @@ import com.appdimens.dynamic.core.pxRememberStamp
 import com.appdimens.dynamic.core.resolveToPx
 import com.appdimens.dynamic.core.resizeFixedDp
 import com.appdimens.dynamic.core.resizeFixedSp
+import com.appdimens.dynamic.core.spRememberStamp
 import kotlin.math.roundToInt
 
 private fun Dp.toResizeDpBound(): ResizeBound = ResizeBound.FixedDp(this.value)
@@ -85,7 +86,9 @@ private fun resolveSquareContentPadding(
 private fun BoxWithConstraintsScope.innerMaxDimensionsPx(contentPadding: PaddingValues): Pair<Float, Float> {
     val density = LocalDensity.current
     val layoutDirection = LocalLayoutDirection.current
-    return remember(maxWidth, maxHeight, contentPadding, layoutDirection, density) {
+    // Key on physical density only — fontScale must not invalidate Dp→px insets.
+    val densityBits = density.density.toRawBits()
+    return remember(maxWidth, maxHeight, contentPadding, layoutDirection, densityBits) {
         val boxWpx = with(density) { maxWidth.toPx() }
         val boxHpx = with(density) { maxHeight.toPx() }
         val padL = with(density) { contentPadding.calculateLeftPadding(layoutDirection).toPx() }
@@ -150,8 +153,13 @@ private fun rememberResizeRangePx(
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val layoutStamp = layoutRememberStamp(configuration, androidContext)
-    val pxStamp = pxRememberStamp(layoutStamp, density)
-    return remember(pxStamp, min, max, step) {
+    // FixedSp embeds fontScale in px; FixedDp / Percent do not.
+    val needsFontScale =
+        min is ResizeBound.FixedSp || max is ResizeBound.FixedSp || step is ResizeBound.FixedSp
+    val rangeStamp =
+        if (needsFontScale) spRememberStamp(layoutStamp, density)
+        else pxRememberStamp(layoutStamp, density)
+    return remember(rangeStamp, min, max, step) {
         val d = density.density
         val fs = density.fontScale.coerceAtLeast(1e-6f)
         ResizeRangePx(
@@ -566,20 +574,14 @@ private fun BoxWithConstraintsScope.textSpPercentResizeRange(
     contentPadding: PaddingValues,
 ): ResizeRangePx {
     val configuration = LocalConfiguration.current
+    val androidContext = LocalContext.current
     val density = LocalDensity.current
     val (innerWpx, innerHpx) = innerMaxDimensionsPx(contentPadding)
     val d = density.density
     val fs = density.fontScale.coerceAtLeast(1e-6f)
-    val base = when (percentBasis) {
-        AutoResizePercentBasis.HEIGHT -> innerHpx
-        AutoResizePercentBasis.WIDTH -> innerWpx
-        AutoResizePercentBasis.MIN_SIDE -> minOf(innerWpx, innerHpx)
-    }
-    val minPx = base * minPercent.percentOfBoxToFactor()
-    val maxPx = base * maxPercent.percentOfBoxToFactor()
-    val stepPx = resizeFixedSp(stepSp.toFloat()).resolveToPx(configuration, d, fs)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return remember(
-        configuration,
+        spStamp,
         innerWpx,
         innerHpx,
         minPercent,
@@ -587,9 +589,15 @@ private fun BoxWithConstraintsScope.textSpPercentResizeRange(
         stepSp,
         percentBasis,
         contentPadding,
-        d,
-        fs,
     ) {
+        val base = when (percentBasis) {
+            AutoResizePercentBasis.HEIGHT -> innerHpx
+            AutoResizePercentBasis.WIDTH -> innerWpx
+            AutoResizePercentBasis.MIN_SIDE -> minOf(innerWpx, innerHpx)
+        }
+        val minPx = base * minPercent.percentOfBoxToFactor()
+        val maxPx = base * maxPercent.percentOfBoxToFactor()
+        val stepPx = resizeFixedSp(stepSp.toFloat()).resolveToPx(configuration, d, fs)
         localBoxResizeRangePx(minPx, maxPx, stepPx)
     }
 }
@@ -628,6 +636,8 @@ private fun BoxWithConstraintsScope.autoResizeTextSpWithRange(
         range.minPx,
         range.maxPx,
         range.stepPx,
+        d,
+        fs,
     ) {
         range.resolveFitting { candidatePx ->
             val spSize = candidatePx / (d * fs)
