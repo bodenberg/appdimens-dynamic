@@ -31,6 +31,13 @@ This report documents the performance results **after applying the 4 optimizatio
 | **F2** | `ShardWrapper` | 128-byte padding per shard to eliminate *false sharing* between cores |
 | **F3** | `ScreenFactors` | All `@Volatile` fields grouped in an object with 128-byte padding |
 | **F4** | `clearAll()` | `lazySet()` + manual 4× *unrolling* for mass clearing without redundant barriers |
+| **P1** | `invalidateOnConfigChange` | Pure rotation no longer clears all 2048 slots (min/max invariant) |
+| **P2** | Persistence collector | `debounce(500)` + `sample(10_000)` — zero disk I/O during scroll/animation |
+| **P3** | Sparse serialization | Persist only populated slots; single-pass collect (no buffer overflow race) |
+| **P4** | Disk clear on resize | `savedAppContext` from `init()` auto-clears DataStore on physical change |
+| **P5** | Default-AR bypass | `.sdpa` with default params ≈ `.sdp` cost (~2 ns multiply) |
+| **P8** | Activity lookup cache | `WeakHashMap` Context→Activity for `sdpi`/`sdpia` multi-window checks |
+| **P9** | `AppDimensProvider` | Unconditional `collectAsState` via `emptyFlow()` fallback |
 
 ---
 
@@ -153,7 +160,8 @@ With `ScreenFactors`, the 6 fields + 112-byte padding are isolated in their own 
 | **Micro** | **Combined Avg** | **~303 ns** | Warm (await) |
 | **Micro** | **Combined Avg** | **~260 ns** | **Hot (steady-state)** |
 | **Micro** | sdp/hdp/wdp (bypass) | ~2 ns | Hot |
-| **Micro** | sdpa (cache lookup) | ~35 ns | Hot |
+| **Micro** | sdpa (default AR bypass · P5) | ~2 ns | Hot |
+| **Micro** | sdpa (custom sensitivity · cache) | ~35 ns | Hot |
 | **Macro** | Scroll Duration (1k items) | ~996 ms | Fluid |
 | **Macro** | Est. Cost per item | ~996 µs | Fluid |
 
@@ -218,23 +226,39 @@ graph TD
 
 ## 6. Simple Calculations Faster Than Cache
 
-For `CalcType` values of `AUTO`, `FLUID`, `PERCENT`, and `SCALED` **without Aspect Ratio** (`applyAspectRatio = false`), `DimenCache.getOrPut()` immediately returns `compute()` without touching the sharded arrays.
+For `CalcType` values of `PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, and `PERIMETER`:
 
-> The scaling formula for these types reduces to: `baseValue × scale` (a single float multiply).
+- **without Aspect Ratio** → bypass
+- **with default Aspect Ratio** (`SMALL_WIDTH` + `DEFAULT` + null sensitivity) → bypass (**P5**)
+
+> The scaling formula reduces to: `baseValue × scale` or `baseValue × arMultiplier` (a single float multiply).
 > Measured cost on Snapdragon 888: **~2 ns** (multiply) vs **~5 ns** (hash + atomic lookup).
 > The cache adds overhead for these paths — bypassing it is ~2.5× faster.
 
-This is an intentional hot-path optimization, not a missing feature. The cache is most valuable when the computation is expensive (Aspect Ratio path: **~45 ns** on hardware in recent captures), making the 5 ns lookup amortize well.
+This is an intentional hot-path optimization, not a missing feature. The cache remains valuable for **custom AR sensitivity**, **non-default qualifiers**, **AUTO/FLUID/POWER/…**, and internal **`ln()`** memoization (`CT_ASPECT_RATIO`).
 
 | Path | Cost | Cache? |
 |:---|:---:|:---:|
 | SCALED without AR (most calls) | ~2 ns | ❌ Bypass |
-| SCALED with AR | ~45 ns → ~35 ns cached | ✅ Cache |
+| SCALED with default AR (`.sdpa`) | ~2 ns | ❌ Bypass (P5) |
+| SCALED with custom AR sensitivity | ~45 ns → ~35 ns cached | ✅ Cache |
 | Other CalcTypes with AR | ~45 ns → ~35 ns cached | ✅ Cache |
 
-**Consequence for benchmarks**: calls via `DimenSdp.sdp()`, `.hdp()`, `.wdp()` (i.e., without AR) measure **raw math latency**, not cache lookup latency. Always use the `*a` variants (`.sdpa()`, `.hdpa()`, etc.) to specifically measure cache throughput.
+**Consequence for benchmarks**: calls via `DimenSdp.sdp()` / default `.sdpa()` measure **raw math latency**, not shard-cache lookup latency. Use custom sensitivity, a non-default qualifier, or `AUTO`/`POWER` keys to specifically measure cache throughput.
 
-The `BenchmarkActivity` micro harness reports a **per-cycle** combined average (~260 ns hot) over four calls (3 bypass + 1 cache path), including framework and dispatch overhead — not a per-call pure math figure.
+The `BenchmarkActivity` micro harness reports a **per-cycle** combined average (~260 ns hot) over four calls (default AR now also bypasses after P5), including framework and dispatch overhead — not a per-call pure math figure.
+
+---
+
+## 6a. Persistence before/after (P2 + P3)
+
+| Scenario | Before | After |
+| :--- | :--- | :--- |
+| Cache miss during LazyColumn scroll | `sample(500)` → ~24 KB DataStore write every ~500 ms | `debounce(500)` → **0 writes** until 500 ms quiet |
+| Continuous writes for >10 s | Same periodic 500 ms I/O | `sample(10_000)` safety net (~1 write / 10 s) |
+| Typical fill (<15%, ~50 entries) | Always serialize 2048 × 12 = 24,576 bytes | Sparse blob ≈ 4 + 50 × 12 = **604 bytes** |
+| Pure screen rotation | `clearAll()` wiped all slots | No clear (min/max invariant · P1) |
+| Fold / split-screen resize | Memory cleared; **stale DataStore blob kept** | Memory + DataStore cleared via `savedAppContext` (P4) |
 
 ---
 
@@ -252,5 +276,5 @@ All numbers in this document were captured on a **Xiaomi 2107113SG (Snapdragon 8
 
 ---
 
-*Report generated on: 2026-04-03 · AppDimens Dynamic Performance Lab · Snapdragon 888 (SM8350) · Physical Hardware*
+*Report updated: 2026-08-03 · AppDimens Dynamic Performance Lab · P1–P5 / P8–P9 cache fixes*
 *Compiled with: Kotlin 2.x · JVM 17 · ART (Android 14) · Gradle 9.3.1*

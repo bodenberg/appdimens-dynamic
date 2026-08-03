@@ -2,7 +2,7 @@
 
 ## Fast bypass (`getOrPut`)
 
-When **aspect ratio is off** (cache key bit 63 clear, i.e. `Long` key ≥ 0 in the signed interpretation used in the fast check) and `CalcType` is one of:
+When `CalcType` is one of:
 
 - `PERCENT` (ordinal 7)
 - `SCALED` (ordinal 11)
@@ -11,13 +11,22 @@ When **aspect ratio is off** (cache key bit 63 clear, i.e. `Long` key ≥ 0 in t
 - `INTERPOLATED` (ordinal 5)
 - `PERIMETER` (ordinal 8)
 
-`DimenCache.getOrPut` **returns `compute()` directly** and does **not** store the result in the shard table. These paths reduce to `baseValue * preComputedFactor` — a single multiplication using a value computed once per configuration change.
+`DimenCache.getOrPut` **returns `compute()` directly** and does **not** store the result in the shard table when:
 
-All other strategy ordinals (`AUTO`, `FLUID`, `POWER`, `LOGARITHMIC`, `FIT`, `FILL`, …) go through the normal cache path when the cache is enabled.
+1. **Aspect ratio is off** (bit 63 clear / key ≥ 0) — formula is `baseValue * preComputedFactor`, or
+2. **Default aspect ratio is on** (`qualifier = SMALL_WIDTH`, `inverter = DEFAULT`, `customSensitivityK = null`) — formula is already `baseValue * factors.arMultiplier` (precomputed in `updateFactors()`).
+
+Both paths are a single multiply (~2 ns on Snapdragon 888) — cheaper than a shard lookup (~5 ns).
+
+**Still cached (no bypass):**
+
+- Non-default AR (custom `qualifier` / `inverter` / `customSensitivityK`)
+- `AUTO`, `FLUID`, `POWER`, `LOGARITHMIC`, `FIT`, `FILL`, …
+- `CT_ASPECT_RATIO` (internal `ln()` memoization via `getOrPutAspectRatio` / `fastLn`)
 
 ## Why
 
-For the six bypassed types, measured cost of a single multiply is lower than a full cache-slot lookup; memoization is still provided by **Compose `remember`** (and by call-site batching where used). When **aspect ratio is on**, the computation is heavier and the cache path is used.
+For the six bypassed types, measured cost of a single multiply is lower than a full cache-slot lookup; memoization is still provided by **Compose `remember`** (and by call-site batching where used). After the default-AR bypass, typical `.sdpa` cost approaches `.sdp`.
 
 ## Pre-computed strategy scale factors (`ScreenFactors`)
 
@@ -60,8 +69,19 @@ Each `calculate*Dp` function reads the pre-computed factor from `ScreenFactors` 
 
 ## Persistence
 
-`DimenCache` writes to a Preferences DataStore with namespace **`com.appdimens.dynamic.cache`**. The write flow uses **`sample(500)`** (not `debounce`) so that a first-startup burst of cache misses flushes within 500 ms of the *first* miss, instead of waiting until the burst quiets. For testing, call **`DimenCache.shutdown()`** to cancel the internal `CoroutineScope` and avoid leaked writes during teardown.
+`DimenCache` writes to a Preferences DataStore with namespace **`com.appdimens.dynamic.cache`**.
+
+| Behaviour | Detail |
+|---|---|
+| **Quiescence flush** | `debounce(500)` — disk write only after 500 ms without new cache misses (zero I/O during scroll/animation) |
+| **Safety-net flush** | `sample(10_000)` — still persists at least every ~10 s under pathological continuous writes |
+| **Sparse blob** | Serializes only populated slots (`Int count` + entries), not a fixed `CACHE_SIZE × 12` dump |
+| **Config change** | `invalidateOnConfigChange` clears memory **and** the DataStore blob via the `Application` context captured in `init()` |
+| **Orientation** | Pure width↔height rotation does **not** clear the cache (`ScreenFactors` are min/max invariant) |
+
+For testing, call **`DimenCache.shutdown()`** to cancel the internal `CoroutineScope` and avoid leaked writes during teardown. Use **`restartSaveCollectorForTest()`** after changing `saveDebounceMs` / `saveSampleMs`.
 
 ## Benchmarks
 
-Do not use SCALED / PERCENT / DENSITY / DIAGONAL / INTERPOLATED / PERIMETER **without** AR to measure cache throughput — those calls intentionally bypass shard storage.
+Do not use SCALED / PERCENT / DENSITY / DIAGONAL / INTERPOLATED / PERIMETER **without AR** — or **with default AR** — to measure shard-cache throughput; those calls intentionally bypass storage. Use a non-default qualifier, custom sensitivity, or `AUTO`/`FLUID`/`POWER` keys to exercise the cache path.
+

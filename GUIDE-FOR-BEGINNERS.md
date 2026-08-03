@@ -77,6 +77,8 @@ TV 1200 dp:     16 × (1200/300) = 64 px
 ✅ General sizes
 ✅ **Start here!**
 
+**Views / RecyclerView tip:** Unlike Compose, the `code/` APIs have no `remember()` layer. Resolve constant `sdpa` / `sdp` values **once** outside `onBindViewHolder` (e.g. in `onCreateViewHolder` or a class field) when the value does not depend on the item — this avoids repeated cache lookups on every bind. Distinct per-item values are fine; the shared `DimenCache` still hits after the first write.
+
 ---
 
 ### **#2. AUTO (Automatic) ⭐⭐**

@@ -47,20 +47,23 @@ Measurements captured on physical hardware in a stabilized state.
 | Operation Type | Result | Status |
 | :--- | :--- | :--- |
 | **Raw Math (No AR)** | **2 ns** | **Optimal** ⚡ |
-| **Raw Math (With AR)** | 45 ns | Standard |
+| **Raw Math (With AR)** | 45 ns | Standard (custom sensitivity / non-default qualifier) |
+| **Default AR bypass (`.sdpa`)** | **~2 ns** | **Optimal** ⚡ (same multiply path as `.sdp` after P5) |
 | **Cache Hit (Single - No AR)** | **5 ns** | **Fast** ⚡ |
-| **Cache Hit (Single - AR)** | **35 ns** | **Zero-Math** 🚀 |
+| **Cache Hit (Single - AR custom)** | **35 ns** | **Zero-Math** 🚀 |
 | **Batch Resolution (100 items)** | **169 ns** | **Extreme** 🏎️ |
 | **Batch Cached (100 items - AR)** | **3,773 ns** | **Stable** ✅ |
 | **Persistence Load (100 entries)** | **0.76 ms** | **Fast** |
+| **Persistence during scroll** | **0 I/O** | **Quiet until debounce (P2)** |
 
 ### B. JVM (Local Development — Ubuntu Linux · JVM 17)
 | Operation Type | Result | Status |
 | :--- | :--- | :--- |
 | **Raw Math (Single)** | < 1 ns | Optimal |
 | **Raw Math (With AR)** | 2 ns | Optimal |
+| **Default AR bypass** | < 1 ns | Optimal (P5) |
 | **Cache Hit (Single)** | **1 ns** | **Fast** ⚡ |
-| **Cache Hit (With AR)** | **1 ns** | **Zero-Math** 🚀 |
+| **Cache Hit (With AR custom)** | **1 ns** | **Zero-Math** 🚀 |
 | **Batch Resolution (100 items)** | **34 ns** | **Extreme** |
 | **Batch Cached (100 items - AR)** | **242 ns** | **Optimized** 🏎️ |
 | **Persistence Load** | **~0.06 ms** | **Fast** ✅ |
@@ -77,6 +80,7 @@ Stress test executed via the new **Micro + Macro Benchmark Dashboard**. This mea
 | **Macro Scroll (1000 items)** | ~996 ms | **Fluid** |
 | **Est. Cost per item** | ~996 µs | **Zero Jank** for 120 FPS |
 | **Peak UI Load** | **Indistinguishable** | 0% Jank Detected |
+| **Disk I/O during scroll (P2)** | **None** | Persist only after 500 ms quiet |
 
 The **~260 ns** / **~996 µs** figures above are from **debug without minify**. On **release with minify + R8**, the same dashboard-style harness reports roughly **~125 ns – ~155 ns** (micro combined) and **~367 ns – ~380 ns** for the macro **per-item** estimate under that configuration—see the **Build variants, R8** note at the top of this document.
 
@@ -86,27 +90,32 @@ The **~260 ns** / **~996 µs** figures above are from **debug without minify**. 
 
 1. **Inlining (F1.1)**: All hot-path logic is now fully inlined into the call-site. This eliminates method-call overhead (~10ns on ARM64) and allows the JIT to apply loop unrolling and register allocation across the entire lookup.
 2. **Padding (F2/F3)**: By using 128-byte guards, we've increased memory usage by only ~2.5 KB but eliminated the risk of hardware-level contention (False Sharing) which can cause spikes of 500ns+ in concurrent environments.
-3. **Bypass Logic**: We maintain the bypass for simple types (AUTO, FLUID, PERCENT, SCALED) because computing a multiplication (~2ns) is **2.5× faster** than the fastest possible cache lookup (~5ns).
+3. **Bypass Logic**: Simple types (PERCENT, SCALED, …) bypass the shard table for both **no-AR** and **default-AR** paths because a multiplication (~2ns) is **2.5× faster** than the fastest cache lookup (~5ns).
+4. **Persistence (P2/P3)**: `debounce(500)` + `sample(10_000)` avoids DataStore contention during gestures; sparse blobs cut typical write size from ~24 KB to a few hundred bytes at <15% fill.
 
 ---
 
 ## 5. Simple Calculations Faster Than Cache
 
-For **CalcType** values of `AUTO`, `FLUID`, `PERCENT`, and `SCALED` **without Aspect Ratio** (`applyAspectRatio = false`, bit 63 == 0), the entire cache system is intentionally **bypassed**.
+For **CalcType** values of `PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, and `PERIMETER`:
 
-> These formulas reduce to a single float multiply: `baseValue × scale`.
+- **without Aspect Ratio** → bypass
+- **with default Aspect Ratio** (`SMALL_WIDTH` + `DEFAULT` + null sensitivity) → bypass (P5)
+
+> These formulas reduce to a single float multiply: `baseValue × scale` or `baseValue × arMultiplier`.
 > A raw multiply on Snapdragon 888 takes **~2 ns**, while the fastest cache lookup (hash + atomic load + branch) takes **~5 ns**.
 > The cache would add latency, not reduce it.
 
-This is a deliberate design decision—not a missing feature. The cache provides its full benefit only for **Aspect Ratio** paths (which require `ln()`, ~45 ns on hardware in recent captures), where amortizing the 5 ns lookup cost against that compute cost is clearly worthwhile.
+This is a deliberate design decision—not a missing feature. The cache provides its full benefit for **non-default AR**, **AUTO/FLUID/POWER/…**, and the internal **`ln()`** memoization path (`CT_ASPECT_RATIO`).
 
 | Path | Cost | Cache used? |
 |:---|:---:|:---:|
 | SCALED / no AR (most common) | ~2 ns | ❌ Bypass |
-| SCALED / with AR | ~45 ns | ✅ Cache hit ~35 ns |
-| Cache hit (no AR) | ~5 ns | ✅ |
+| SCALED / default AR (`.sdpa`) | ~2 ns | ❌ Bypass (P5) |
+| SCALED / custom AR sensitivity | ~45 ns compute / ~35 ns hit | ✅ Cache |
+| Cache hit (no AR, non-bypass type) | ~5 ns | ✅ |
 
-**Consequence for benchmarks**: `DimenSdp.sdp()`, `.hdp()`, `.wdp()` without AR always measure **raw math performance**, not cache performance. Use `.sdpa()` (or any `*a` variant) to measure the cache path.
+**Consequence for benchmarks**: `DimenSdp.sdp()` / `.sdpa()` with default params measure **raw math performance**, not shard-cache performance. Use custom sensitivity, a non-default qualifier, or `AUTO`/`POWER` keys to measure the cache path.
 
 ---
 
@@ -128,8 +137,8 @@ Benchmark numbers reported in this document reflect measurements taken on a spec
 ```mermaid
 graph TD
     A[UI / Code Call] --> B{Cache Enabled?}
-    B -- Yes --> C{Bypass-eligible & No-AR?}
-    C -- Yes --> D["Fast Math Return (~2ns)"]
+    B -- Yes --> C{Bypass-eligible?}
+    C -- Yes --> D["Fast Math Return (~2ns)<br/>no-AR or default-AR"]
     C -- No --> E["Inlined Hash Lookup<br/>(Padded Shards)"]
     E --> F{Key Match?}
     F -- Hit --> G["Return Float (~5-35ns)"]
@@ -139,4 +148,4 @@ graph TD
 ```
 
 ---
-*Report Updated: 2026-04-03 · AppDimens Dynamic · AppDimens Performance Lab · Snapdragon 888 Physical Hardware*
+*Report Updated: 2026-08-03 · AppDimens Dynamic · Performance Lab · P1–P5 / P8–P9 cache fixes*
