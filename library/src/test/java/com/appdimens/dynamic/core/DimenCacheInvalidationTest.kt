@@ -19,8 +19,7 @@ class DimenCacheInvalidationTest {
             screenWidthDp = w
             screenHeightDp = h
             densityDpi = dpi
-            // Constructor uses unset() → fontScale 0; keep explicit for clarity.
-            fontScale = 0f
+            fontScale = 1f
         }
 
     @Test
@@ -74,10 +73,7 @@ class DimenCacheInvalidationTest {
         DimenCache.getOrPut(key) { 77f }
         assertEquals(77f, DimenCache.peek(key) ?: -1f, 0f)
 
-        // Configuration(Configuration) runs setTo on the source (e.g. fixUpLocaleList).
-        // Compare against a copy of the same instance so lastConfiguration matches the
-        // incoming snapshot field-for-field on the fields DimenCache checks.
-        DimenCache.invalidateOnConfigChange(Configuration(before))
+        DimenCache.invalidateOnConfigChange(config(sw = 400, w = 400, h = 800))
 
         assertEquals(77f, DimenCache.peek(key) ?: -1f, 0f)
     }

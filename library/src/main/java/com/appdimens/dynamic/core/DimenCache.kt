@@ -180,8 +180,34 @@ object DimenCache {
     // [FASE 5] CACHED UiModeType — avoids SensorManager + WindowMetrics per call
     // ─────────────────────────────────────────────────────────────────────────
 
+    /**
+     * EN Snapshot of the [Configuration] fields that drive cache invalidation.
+     * Avoids `Configuration(Configuration)` copy — the platform stub used in JVM
+     * unit tests does not actually copy fields, which would make every subsequent
+     * invalidate look like a physical change.
+     *
+     * PT Snapshot dos campos de [Configuration] usados na invalidação.
+     */
+    internal data class ConfigSnapshot(
+        val screenWidthDp: Int,
+        val screenHeightDp: Int,
+        val smallestScreenWidthDp: Int,
+        val densityDpi: Int,
+        val fontScale: Float,
+    ) {
+        companion object {
+            fun from(c: Configuration) = ConfigSnapshot(
+                screenWidthDp = c.screenWidthDp,
+                screenHeightDp = c.screenHeightDp,
+                smallestScreenWidthDp = c.smallestScreenWidthDp,
+                densityDpi = c.densityDpi,
+                fontScale = c.fontScale,
+            )
+        }
+    }
+
     @Volatile
-    private var lastConfiguration: Configuration? = null
+    private var lastConfiguration: ConfigSnapshot? = null
 
     /**
      * EN Application [Context] captured in [init]. Reused by
@@ -595,7 +621,7 @@ object DimenCache {
 
         updateFactors(config)
         factors.smallestWidthDp = currentSw
-        lastConfiguration = Configuration(config)
+        lastConfiguration = ConfigSnapshot.from(config)
         isInitializedFast = true
 
         scope.launch {
@@ -995,7 +1021,8 @@ object DimenCache {
     @JvmStatic
     fun invalidateOnConfigChange(new: Configuration) {
         val old = lastConfiguration
-        lastConfiguration = Configuration(new)
+        val snap = ConfigSnapshot.from(new)
+        lastConfiguration = snap
 
         if (old == null) {
             updateFactors(new)
@@ -1006,8 +1033,8 @@ object DimenCache {
 
         val oldMin = min(old.screenWidthDp, old.screenHeightDp)
         val oldMax = max(old.screenWidthDp, old.screenHeightDp)
-        val newMin = min(new.screenWidthDp, new.screenHeightDp)
-        val newMax = max(new.screenWidthDp, new.screenHeightDp)
+        val newMin = min(snap.screenWidthDp, snap.screenHeightDp)
+        val newMax = max(snap.screenWidthDp, snap.screenHeightDp)
 
         // Orientation-only swaps exchange screenWidthDp ↔ screenHeightDp but leave
         // min/max (and thus all ScreenFactors: scale, arMultiplier, diagonalScale, …)
@@ -1015,10 +1042,10 @@ object DimenCache {
         // entire 2048-slot cache on every rotation — contradicting the comment below.
         val physicalChange = oldMin != newMin ||
                 oldMax != newMax ||
-                old.smallestScreenWidthDp != new.smallestScreenWidthDp ||
-                old.densityDpi != new.densityDpi
+                old.smallestScreenWidthDp != snap.smallestScreenWidthDp ||
+                old.densityDpi != snap.densityDpi
 
-        val fontScaleChange = old.fontScale != new.fontScale
+        val fontScaleChange = old.fontScale != snap.fontScale
 
         if (physicalChange || fontScaleChange) {
             if (physicalChange) {

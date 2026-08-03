@@ -18,16 +18,29 @@ class DimenCacheSparseSerializationTest {
 
     @Test
     fun sparseRoundTrip_preservesPartialCache() {
-        val expected = mutableMapOf<Long, Float>()
-        for (i in 0 until 50) {
+        // Reserve distinct shard/slots so direct-mapped collisions cannot evict entries
+        // mid-population (would under-count populated vs. keys we thought we stored).
+        val expected = linkedMapOf<Long, Float>()
+        val occupied = mutableSetOf<Pair<Int, Int>>()
+        var bv = 100
+        while (expected.size < 50 && bv < 200_000) {
             val key = DimenCache.buildKey(
-                (100 + i).toFloat(), false, false, DimenCache.CalcType.FLUID,
+                bv.toFloat(), false, false, DimenCache.CalcType.FLUID,
                 DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
             )
-            val value = i * 1.5f
+            val slot = DimenCache.shardAndSlot(key)
+            if (slot in occupied) {
+                bv++
+                continue
+            }
+            val value = bv * 1.5f
             DimenCache.getOrPut(key) { value }
+            assertEquals(value, DimenCache.peek(key) ?: -1f, 0f)
             expected[key] = value
+            occupied.add(slot)
+            bv++
         }
+        assertEquals(50, expected.size)
         assertEquals(50, DimenCache.stats().populated)
 
         val blob = DimenCache.serializeToByteArray()

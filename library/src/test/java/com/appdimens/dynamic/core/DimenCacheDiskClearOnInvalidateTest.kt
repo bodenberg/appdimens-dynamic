@@ -62,7 +62,7 @@ class DimenCacheDiskClearOnInvalidateTest {
 
         DimenCache.diskClearRequested = false
         // Seed lastConfiguration via a matching invalidate first.
-        DimenCache.invalidateOnConfigChange(Configuration(cfg))
+        DimenCache.invalidateOnConfigChange(cfg)
         DimenCache.diskClearRequested = false
 
         val resized = config(sw = 300, w = 300, h = 800)
