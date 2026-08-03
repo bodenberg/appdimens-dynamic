@@ -183,6 +183,25 @@ object DimenCache {
     @Volatile
     private var lastConfiguration: Configuration? = null
 
+    /**
+     * EN Application [Context] captured in [init]. Reused by
+     * [invalidateOnConfigChange] so physical config changes clear the DataStore
+     * blob without requiring a new public API parameter (avoids opt-in bugs).
+     *
+     * PT [Context] de Application capturado em [init], reutilizado na invalidação.
+     */
+    @Volatile
+    @PublishedApi
+    internal var savedAppContext: Context? = null
+
+    /**
+     * EN Set when [clearAll] is asked to wipe DataStore (test/diagnostics hook).
+     * PT Sinaliza pedido de limpeza do DataStore (gancho de teste).
+     */
+    @Volatile
+    @PublishedApi
+    internal var diskClearRequested: Boolean = false
+
     @JvmField @Volatile
     internal var cachedUiMode: UiModeType = UiModeType.UNDEFINED
 
@@ -570,6 +589,7 @@ object DimenCache {
         if (isInitializing.getAndSet(true)) return
 
         val appContext = context.applicationContext
+        savedAppContext = appContext
         val config = appContext.resources.configuration
         val currentSw = config.smallestScreenWidthDp
 
@@ -586,8 +606,7 @@ object DimenCache {
 
                 if (savedSw != currentSw || rawData == null) {
                     if (savedSw != 0 && savedSw != currentSw) {
-                        clearAll()
-                        appContext.dataStore.edit { it.clear() }
+                        clearAll(appContext)
                     }
                 } else {
                     loadFromByteArray(rawData)
@@ -953,7 +972,7 @@ object DimenCache {
         if (old == null) {
             updateFactors(new)
             factors.smallestWidthDp = new.smallestScreenWidthDp
-            clearAll()
+            clearAll(savedAppContext)
             return
         }
 
@@ -978,7 +997,9 @@ object DimenCache {
                 updateFactors(new)
                 factors.smallestWidthDp = new.smallestScreenWidthDp
             }
-            clearAll()
+            // Use Application context captured in init() — no API signature change,
+            // no opt-in required from call sites. Null-safe before first init.
+            clearAll(savedAppContext)
         }
         // Orientation-only: keys encode isLandscape bit → natural miss, no clear needed.
     }
@@ -1077,6 +1098,8 @@ object DimenCache {
         resetListeners.forEach { it() }
 
         context?.let { ctx ->
+            diskClearRequested = true
+            if (!persistenceWritesEnabled) return@let
             scope.launch {
                 try {
                     ctx.applicationContext.dataStore.edit { it.clear() }
