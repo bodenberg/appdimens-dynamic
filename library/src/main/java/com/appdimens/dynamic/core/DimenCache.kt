@@ -601,7 +601,38 @@ object DimenCache {
         }
     }
 
+    /**
+     * EN Loads a persisted cache blob. Supports the sparse format
+     * (`count:Int` + `count × (key:Long, value:Float)`) and the legacy dense
+     * fixed-size layout (`CACHE_SIZE × 12` bytes, position = slot).
+     *
+     * Sparse entries are placed via the same hash used by [getOrPutInternal]
+     * (not sequential file order). CAS merge preserves entries already computed
+     * during the init→DataStore window.
+     *
+     * PT Carrega o blob persistido. Suporta formato esparso e o layout denso legado.
+     */
     internal fun loadFromByteArray(data: ByteArray) {
+        if (data.size >= 4) {
+            val probe = ByteBuffer.wrap(data)
+            val count = probe.int
+            // Sparse sizes are 4 + count*12; dense legacy is exactly CACHE_SIZE*12.
+            // Those sizes never collide for an integer count.
+            if (count in 0..CACHE_SIZE && data.size == 4 + count * 12) {
+                for (n in 0 until count) {
+                    val key = probe.long
+                    val value = probe.float
+                    if (key == 0L) continue
+                    val (shardIndex, slotIndex) = shardAndSlot(key)
+                    val shard = shards[shardIndex]
+                    if (shard.keys.compareAndSet(slotIndex, 0L, key)) {
+                        shard.values.set(slotIndex, value.toRawBits())
+                    }
+                }
+                return
+            }
+        }
+        // Legacy dense format: position in file == shard/slot index.
         if (data.size < CACHE_SIZE * 12) return
         val buffer = ByteBuffer.wrap(data)
         for (s in 0 until SHARD_COUNT) {
@@ -610,8 +641,6 @@ object DimenCache {
                 val key   = buffer.long
                 val value = buffer.float
                 if (key != 0L) {
-                    // CAS merge: only populate empty slots so entries computed
-                    // during the init→DataStore window are preserved.
                     if (shard.keys.compareAndSet(i, 0L, key)) {
                         shard.values.set(i, value.toRawBits())
                     }
@@ -620,38 +649,65 @@ object DimenCache {
         }
     }
 
+    /** EN Hash → (shard, slot) — same mix as [getOrPutInternal]. */
+    @PublishedApi
+    internal fun shardAndSlot(key: Long): Pair<Int, Int> {
+        val h = (key xor (key ushr 32)).toInt()
+        val mixed = h xor (h ushr 16)
+        return ((mixed ushr 9) and SHARD_MASK) to (mixed and SHARD_SIZE_MASK)
+    }
+
     @JvmStatic
     @PublishedApi
     internal fun saveToPersistence(context: Context) {
         saveFlow.tryEmit(context)
     }
 
+    /**
+     * EN Serializes only populated slots in a single pass (avoids the
+     * count-then-write race that could overflow a pre-sized buffer under
+     * concurrent writers). Snapshot may omit entries written mid-pass —
+     * same non-fatal tolerance as the legacy full dump.
+     *
+     * PT Serializa só slots populados em passada única (sem corrida count/write).
+     */
     private suspend fun performSave(context: Context) {
         performSaveCount.incrementAndGet()
         if (!persistenceWritesEnabled) return
         val appContext = context.applicationContext
-        val buffer = ByteBuffer.allocate(CACHE_SIZE * 12)
-        for (s in 0 until SHARD_COUNT) {
-            val shard = shards[s]
-            for (i in 0 until SHARD_SIZE) {
-                buffer.putLong(shard.keys.get(i))
-                buffer.putFloat(Float.fromBits(shard.values.get(i)))
-            }
-        }
+        val data = serializeToByteArray()
         appContext.dataStore.edit { prefs ->
-            prefs[KEY_SW_DP]     = factors.smallestWidthDp
-            prefs[KEY_CACHE_DATA] = buffer.array()
+            prefs[KEY_SW_DP]      = factors.smallestWidthDp
+            prefs[KEY_CACHE_DATA] = data
         }
     }
 
+    /**
+     * EN Sparse snapshot: `Int count` + `count × (Long key, Float value)`.
+     * Size is proportional to populated entries, not [CACHE_SIZE].
+     *
+     * PT Snapshot esparso; tamanho proporcional às entradas populadas.
+     */
     internal fun serializeToByteArray(): ByteArray {
-        val buffer = ByteBuffer.allocate(CACHE_SIZE * 12)
+        // Single pass — count and payload always agree even if other threads write.
+        val keysBuf = ArrayList<Long>(CACHE_SIZE / 8)
+        val valsBuf = ArrayList<Int>(CACHE_SIZE / 8)
         for (s in 0 until SHARD_COUNT) {
             val shard = shards[s]
             for (i in 0 until SHARD_SIZE) {
-                buffer.putLong(shard.keys.get(i))
-                buffer.putFloat(Float.fromBits(shard.values.get(i)))
+                val k = shard.keys.get(i)
+                if (k != 0L) {
+                    keysBuf.add(k)
+                    valsBuf.add(shard.values.get(i))
+                }
             }
+        }
+        val count = keysBuf.size
+        val buffer = ByteBuffer.allocate(4 + count * 12)
+        buffer.putInt(count)
+        for (idx in 0 until count) {
+            buffer.putLong(keysBuf[idx])
+            buffer.putFloat(Float.fromBits(valsBuf[idx]))
         }
         return buffer.array()
     }
