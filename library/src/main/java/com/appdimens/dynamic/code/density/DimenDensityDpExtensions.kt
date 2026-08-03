@@ -616,7 +616,7 @@ internal fun calculateDensityDp(
     context: Context? = null
 ): Float {
     if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
-    val densityScale = configuration.densityDpi / 160f
+    val densityScale = DimenCache.currentDensity
     var out = baseValue * densityScale
     if (applyAspectRatio) {
         out *= if (customSensitivityK == null) {

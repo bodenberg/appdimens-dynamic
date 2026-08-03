@@ -99,7 +99,16 @@ object DimenCache {
 
     internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "com.appdimens.dynamic.cache")
     internal val KEY_SW_DP = intPreferencesKey("smallest_width_dp")
+    internal val KEY_DPI = intPreferencesKey("density_dpi")
     internal val KEY_CACHE_DATA = byteArrayPreferencesKey("cache_mirror")
+
+    /**
+     * EN Bumped on every [clearAll] / font-selective clear so in-flight [performSave]
+     * calls abort instead of writing a stale snapshot over a wiped DataStore.
+     *
+     * PT Incrementado em cada limpeza para abortar saves em voo.
+     */
+    private val persistenceGeneration = java.util.concurrent.atomic.AtomicLong(0L)
 
     @Volatile
     private var _scope: CoroutineScope? = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -145,6 +154,8 @@ object DimenCache {
     @JvmField @PublishedApi internal val CT_DIAGONAL      = CalcType.DIAGONAL.ordinal
     @JvmField @PublishedApi internal val CT_INTERPOLATED  = CalcType.INTERPOLATED.ordinal
     @JvmField @PublishedApi internal val CT_PERIMETER     = CalcType.PERIMETER.ordinal
+    @JvmField @PublishedApi internal val CT_POWER         = CalcType.POWER.ordinal
+    @JvmField @PublishedApi internal val CT_LOGARITHMIC   = CalcType.LOGARITHMIC.ordinal
 
     // ─────────────────────────────────────────────────────────────────────────
     // DIAGNOSTICS COUNTERS — guarded by [diagnosticsEnabled] to avoid overhead
@@ -236,14 +247,19 @@ object DimenCache {
 
     @JvmStatic
     internal fun getCachedUiModeType(context: Context): UiModeType {
-        val configHash = context.resources.configuration.hashCode()
+        val cfg = context.resources.configuration
+        // Fingerprint only fields that affect UiMode / foldable detection — not locale/keyboard.
+        val fingerprint =
+            (cfg.uiMode * 31 + cfg.smallestScreenWidthDp) * 31 +
+                min(cfg.screenWidthDp, cfg.screenHeightDp) * 31 +
+                max(cfg.screenWidthDp, cfg.screenHeightDp)
         val cached = cachedUiMode
-        if (cachedUiModeConfigHash == configHash && cached != UiModeType.UNDEFINED) {
+        if (cachedUiModeConfigHash == fingerprint && cached != UiModeType.UNDEFINED) {
             return cached
         }
         val mode = UiModeType.fromConfiguration(context, null)
         cachedUiMode = mode
-        cachedUiModeConfigHash = configHash
+        cachedUiModeConfigHash = fingerprint
         return mode
     }
 
@@ -569,7 +585,12 @@ object DimenCache {
         val sk  = (customSensitivityK?.toRawBits()?.ushr(16)?.and(0xFFFF)?.toLong() ?: 0xFFFFL)
         val q   = qualifier.ordinal.toLong() and 0x3L
         val inv = inverter.ordinal.toLong() and 0xFL
-        val land = if (isLandscape) 1L else 0L
+        // DIAGONAL / PERIMETER / DENSITY formulas use min/max or dpi — orientation-invariant.
+        // Dropping the landscape bit avoids mandatory miss + duplicate slots on rotation (P1).
+        val land = when (calcType) {
+            CalcType.DIAGONAL, CalcType.PERIMETER, CalcType.DENSITY -> 0L
+            else -> if (isLandscape) 1L else 0L
+        }
         val imw  = if (ignoreMultiWindows) 1L else 0L
 
         return (ar  shl 63) or
@@ -618,6 +639,7 @@ object DimenCache {
         savedAppContext = appContext
         val config = appContext.resources.configuration
         val currentSw = config.smallestScreenWidthDp
+        val currentDpi = config.densityDpi
 
         updateFactors(config)
         factors.smallestWidthDp = currentSw
@@ -628,14 +650,22 @@ object DimenCache {
             try {
                 val prefs   = appContext.dataStore.data.firstOrNull()
                 val savedSw = prefs?.get(KEY_SW_DP) ?: 0
+                val savedDpi = prefs?.get(KEY_DPI)
                 val rawData = prefs?.get(KEY_CACHE_DATA)
 
-                if (savedSw != currentSw || rawData == null) {
-                    if (savedSw != 0 && savedSw != currentSw) {
+                // Reject blob when SW or densityDpi diverges (PX / density-scaled entries
+                // embed dpi). Missing KEY_DPI = legacy blob → treat as mismatch.
+                val incompatible = savedSw != currentSw ||
+                        savedDpi == null ||
+                        savedDpi != currentDpi ||
+                        rawData == null
+
+                if (incompatible) {
+                    if (savedSw != 0 && (savedSw != currentSw || (savedDpi != null && savedDpi != currentDpi))) {
                         clearAll(appContext)
                     }
                 } else {
-                    loadFromByteArray(rawData)
+                    loadFromByteArray(rawData!!)
                 }
             } catch (_: Exception) {
                 // Fallback to empty cache on error
@@ -719,10 +749,16 @@ object DimenCache {
     private suspend fun performSave(context: Context) {
         performSaveCount.incrementAndGet()
         if (!persistenceWritesEnabled) return
+        val gen = persistenceGeneration.get()
         val appContext = context.applicationContext
         val data = serializeToByteArray()
+        // Abort if a clear happened while we were serializing.
+        if (gen != persistenceGeneration.get()) return
+        val dpi = lastConfiguration?.densityDpi ?: 0
         appContext.dataStore.edit { prefs ->
+            if (gen != persistenceGeneration.get()) return@edit
             prefs[KEY_SW_DP]      = factors.smallestWidthDp
+            prefs[KEY_DPI]        = dpi
             prefs[KEY_CACHE_DATA] = data
         }
     }
@@ -834,11 +870,22 @@ object DimenCache {
     @PublishedApi
     internal inline fun shouldBypassCache(key: Long): Boolean {
         val ct = (key ushr 27 and 0xFL).toInt()
-        val isBypassType = ct == CT_PERCENT || ct == CT_SCALED || ct == CT_DENSITY ||
+        // Multiply-only types with precomputed ScreenFactors on the default path.
+        val isAlwaysBypassType = ct == CT_PERCENT || ct == CT_SCALED || ct == CT_DENSITY ||
                 ct == CT_DIAGONAL || ct == CT_INTERPOLATED || ct == CT_PERIMETER
-        if (!isBypassType) return false
+        // POWER / LOGARITHMIC: only SW+DEFAULT reduces to a precomputed multiply;
+        // WIDTH/HEIGHT still call pow()/ln() and must stay cached.
+        val isConditionalBypassType = ct == CT_POWER || ct == CT_LOGARITHMIC
 
-        if (key >= 0) return true
+        if (!isAlwaysBypassType && !isConditionalBypassType) return false
+
+        if (key >= 0) {
+            if (isAlwaysBypassType) return true
+            // Conditional types without AR: still require default qualifier/inverter.
+            val q   = (key ushr 6 and 0x3L).toInt()
+            val inv = (key ushr 2 and 0xFL).toInt()
+            return q == DpQualifier.SMALL_WIDTH.ordinal && inv == Inverter.DEFAULT.ordinal
+        }
 
         // Default AR: SMALL_WIDTH + DEFAULT inverter + null customSensitivityK (0xFFFF sentinel).
         val q   = (key ushr 6 and 0x3L).toInt()
@@ -1047,14 +1094,18 @@ object DimenCache {
 
         val fontScaleChange = old.fontScale != snap.fontScale
 
-        if (physicalChange || fontScaleChange) {
-            if (physicalChange) {
-                updateFactors(new)
-                factors.smallestWidthDp = new.smallestScreenWidthDp
-            }
-            // Use Application context captured in init() — no API signature change,
-            // no opt-in required from call sites. Null-safe before first init.
+        if (physicalChange) {
+            updateFactors(new)
+            factors.smallestWidthDp = new.smallestScreenWidthDp
+            // Full wipe (memory + DataStore) via savedAppContext.
             clearAll(savedAppContext)
+        } else if (fontScaleChange) {
+            // DP / PX / SP_WITH_SCALE do not embed fontScale — keep them.
+            // Only clear ValueTypes that baked fontScale into the stored float.
+            clearFontScaleDependentEntries()
+            persistenceGeneration.incrementAndGet()
+            // Rewrite disk without a full clear so DP entries survive cold start.
+            savedAppContext?.let { saveToPersistence(it) }
         }
         // Orientation-only: keys encode isLandscape bit → natural miss, no clear needed.
     }
@@ -1131,6 +1182,7 @@ object DimenCache {
     @JvmStatic
     @JvmOverloads
     fun clearAll(context: Context? = null) {
+        persistenceGeneration.incrementAndGet()
         for (s in 0 until SHARD_COUNT) {
             val shard = shards[s]
             val keys  = shard.keys
@@ -1155,12 +1207,44 @@ object DimenCache {
         context?.let { ctx ->
             diskClearRequested = true
             if (!persistenceWritesEnabled) return@let
+            val gen = persistenceGeneration.get()
             scope.launch {
                 try {
+                    // Skip wipe if a newer clear/save generation superseded this one.
+                    if (gen != persistenceGeneration.get()) return@launch
                     ctx.applicationContext.dataStore.edit { it.clear() }
                 } catch (_: Exception) { }
             }
         }
+    }
+
+    /**
+     * EN Clears only cache entries whose [ValueType] embeds fontScale
+     * (`SP_NO_SCALE`, `SP_PX_WITH_SCALE`, `SP_PX_NO_SCALE`). Leaves DP/PX/`SP_WITH_SCALE`.
+     *
+     * PT Limpa só entradas cujo ValueType embute fontScale.
+     */
+    @JvmStatic
+    internal fun clearFontScaleDependentEntries() {
+        // ValueType bits [26-24]; ordinals: SP_NO_SCALE=3, SP_PX_WITH_SCALE=4, SP_PX_NO_SCALE=5
+        val spNoScale = ValueType.SP_NO_SCALE.ordinal
+        val spPxWith = ValueType.SP_PX_WITH_SCALE.ordinal
+        val spPxNo = ValueType.SP_PX_NO_SCALE.ordinal
+        for (s in 0 until SHARD_COUNT) {
+            val shard = shards[s]
+            val keys = shard.keys
+            val vals = shard.values
+            for (i in 0 until SHARD_SIZE) {
+                val key = keys.get(i)
+                if (key == 0L) continue
+                val vt = (key ushr 24 and 0x7L).toInt()
+                if (vt == spNoScale || vt == spPxWith || vt == spPxNo) {
+                    keys.lazySet(i, 0L)
+                    vals.lazySet(i, 0)
+                }
+            }
+        }
+        resetListeners.forEach { it() }
     }
 
     // ─────────────────────────────────────────────────────────────────────────

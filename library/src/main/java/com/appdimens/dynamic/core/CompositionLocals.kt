@@ -52,7 +52,8 @@ internal fun windowLayoutInfoFlowOrEmpty(activity: Activity?): Flow<WindowLayout
 @Composable
 fun AppDimensProvider(content: @Composable () -> Unit) {
     val context = LocalContext.current
-    val activity = context.findActivity()
+    // Memoize Activity lookup — Context→Activity chain is stable for a given Context.
+    val activity = remember(context) { context.findActivity() }
 
     // Always collect — never call collectAsState behind a null-safe `?.` which would
     // skip the @Composable call when activity is null and resume it later (Compose
