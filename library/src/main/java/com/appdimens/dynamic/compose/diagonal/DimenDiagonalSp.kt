@@ -38,10 +38,12 @@ import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.core.DimenCache
+import com.appdimens.dynamic.core.rememberDimenSp
+import com.appdimens.dynamic.core.rememberDimenSpPx
 import com.appdimens.dynamic.core.DimenCalculationPlumbing
 import com.appdimens.dynamic.core.LocalUiModeType
 import com.appdimens.dynamic.core.layoutRememberStamp
-import com.appdimens.dynamic.core.pxRememberStamp
+import com.appdimens.dynamic.core.spRememberStamp
 
 // EN Rotation facilitator extensions for Compose.
 // PT Extensões facilitadoras para rotação em Compose.
@@ -664,7 +666,7 @@ fun Number.toDynamicDiagonalSp(
         valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
     return rememberDiagonalSp(
         cacheKey, spStamp, androidContext, density, this.toFloat(), configuration,
@@ -705,7 +707,9 @@ internal fun rememberDiagonalSp(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): TextUnit = remember(cacheKey, spStamp) {
+    match: Boolean = true,
+    passthrough: TextUnit = TextUnit.Unspecified,
+): TextUnit = rememberDimenSp(cacheKey, spStamp, match = match, passthrough = passthrough) {
     DimenCache.getOrPut(cacheKey, androidContext) {
         val raw = calculateDiagonalSpValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
         if (fontScale) raw else (raw / density.fontScale)
@@ -730,7 +734,9 @@ internal fun rememberDiagonalSpPx(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): Float = remember(cacheKey, dgsspPxStamp) {
+    match: Boolean = true,
+    passthrough: Float = Float.NaN,
+): Float = rememberDimenSpPx(cacheKey, dgsspPxStamp, match = match, passthrough = passthrough) {
     DimenCache.getOrPut(cacheKey, androidContext) {
         val scaledVal = calculateDiagonalSpValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
         val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
@@ -783,7 +789,7 @@ fun Number.toDynamicDiagonalPx(
         valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
         customSensitivityK = customSensitivityK
     )
-    val dgsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val dgsspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
     return rememberDiagonalSpPx(
         cacheKey, dgsspPxStamp, androidContext, density, this.toFloat(), configuration,

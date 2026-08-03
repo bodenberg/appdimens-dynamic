@@ -38,10 +38,12 @@ import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.core.DimenCache
+import com.appdimens.dynamic.core.rememberDimenSp
+import com.appdimens.dynamic.core.rememberDimenSpPx
 import com.appdimens.dynamic.core.DimenCalculationPlumbing
 import com.appdimens.dynamic.core.LocalUiModeType
 import com.appdimens.dynamic.core.layoutRememberStamp
-import com.appdimens.dynamic.core.pxRememberStamp
+import com.appdimens.dynamic.core.spRememberStamp
 
 // EN Rotation facilitator extensions for Compose.
 // PT Extensões facilitadoras para rotação em Compose.
@@ -664,7 +666,7 @@ fun Number.toDynamicScaledSp(
         valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, this.toFloat(), configuration,
@@ -729,7 +731,9 @@ internal fun rememberScaledSp(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): TextUnit = remember(cacheKey, spStamp) {
+    match: Boolean = true,
+    passthrough: TextUnit = TextUnit.Unspecified,
+): TextUnit = rememberDimenSp(cacheKey, spStamp, match = match, passthrough = passthrough) {
     DimenCache.getOrPut(cacheKey, androidContext) {
         val raw = calculateSspValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration, androidContext)
         if (fontScale) raw else (raw / density.fontScale)
@@ -754,7 +758,9 @@ internal fun rememberScaledSpPx(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): Float = remember(cacheKey, sspPxStamp) {
+    match: Boolean = true,
+    passthrough: Float = Float.NaN,
+): Float = rememberDimenSpPx(cacheKey, sspPxStamp, match = match, passthrough = passthrough) {
     DimenCache.getOrPut(cacheKey, androidContext) {
         val scaledVal = calculateSspValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration, androidContext)
         val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp
@@ -807,7 +813,7 @@ fun Number.toDynamicScaledPx(
         valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, this.toFloat(), configuration,

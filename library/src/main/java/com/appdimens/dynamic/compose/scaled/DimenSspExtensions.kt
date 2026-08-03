@@ -38,7 +38,7 @@ import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.core.DimenCache
 import com.appdimens.dynamic.core.getCurrentUiModeType
 import com.appdimens.dynamic.core.layoutRememberStamp
-import com.appdimens.dynamic.core.pxRememberStamp
+import com.appdimens.dynamic.core.spRememberStamp
 
 // EN Rotation facilitator extensions for Sp.
 // PT Extensões facilitadoras para rotação (Sp).
@@ -81,7 +81,7 @@ fun Number.sspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -130,7 +130,7 @@ fun TextUnit.sspRotate(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -173,7 +173,7 @@ fun TextUnit.sspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -208,29 +208,27 @@ fun TextUnit.sspRotatePlain(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val resQ = finalQualifierResolver
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = rotationValue.toFloat()
+    val resQ = finalQualifierResolver
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = this,
+    )
 }
 
 /**
@@ -255,30 +253,28 @@ fun TextUnit.sspRotatePlainPx(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val resQ = finalQualifierResolver
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@sspRotatePlainPx.toPx() }
-    }
+    val baseValue = rotationValue.toFloat()
+    val resQ = finalQualifierResolver
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = density.run { this@sspRotatePlainPx.toPx() },
+    )
 }
 
 /**
@@ -350,7 +346,7 @@ fun Number.hspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -399,7 +395,7 @@ fun TextUnit.hspRotate(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -442,7 +438,7 @@ fun TextUnit.hspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -477,29 +473,27 @@ fun TextUnit.hspRotatePlain(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val resQ = finalQualifierResolver
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = rotationValue.toFloat()
+    val resQ = finalQualifierResolver
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = this,
+    )
 }
 
 /**
@@ -524,30 +518,28 @@ fun TextUnit.hspRotatePlainPx(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val resQ = finalQualifierResolver
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@hspRotatePlainPx.toPx() }
-    }
+    val baseValue = rotationValue.toFloat()
+    val resQ = finalQualifierResolver
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = density.run { this@hspRotatePlainPx.toPx() },
+    )
 }
 
 /**
@@ -619,7 +611,7 @@ fun Number.wspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -668,7 +660,7 @@ fun TextUnit.wspRotate(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -711,7 +703,7 @@ fun TextUnit.wspRotatePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -746,29 +738,27 @@ fun TextUnit.wspRotatePlain(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val resQ = finalQualifierResolver
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = rotationValue.toFloat()
+    val resQ = finalQualifierResolver
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = this,
+    )
 }
 
 /**
@@ -793,30 +783,28 @@ fun TextUnit.wspRotatePlainPx(
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val resQ = finalQualifierResolver
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@wspRotatePlainPx.toPx() }
-    }
+    val baseValue = rotationValue.toFloat()
+    val resQ = finalQualifierResolver
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = density.run { this@wspRotatePlainPx.toPx() },
+    )
 }
 
 /**
@@ -891,7 +879,7 @@ fun Number.sspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -935,7 +923,7 @@ fun TextUnit.sspMode(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -975,7 +963,7 @@ fun TextUnit.sspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1006,28 +994,26 @@ fun TextUnit.sspModePlain(
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = modeValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 @Composable
@@ -1046,29 +1032,27 @@ fun TextUnit.sspModePlainPx(
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@sspModePlainPx.toPx() }
-    }
+    val baseValue = modeValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@sspModePlainPx.toPx() },
+    )
 }
 
 /**
@@ -1129,7 +1113,7 @@ fun Number.hspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1173,7 +1157,7 @@ fun TextUnit.hspMode(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1213,7 +1197,7 @@ fun TextUnit.hspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1244,28 +1228,26 @@ fun TextUnit.hspModePlain(
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = modeValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 @Composable
@@ -1284,29 +1266,27 @@ fun TextUnit.hspModePlainPx(
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@hspModePlainPx.toPx() }
-    }
+    val baseValue = modeValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@hspModePlainPx.toPx() },
+    )
 }
 
 /**
@@ -1367,7 +1347,7 @@ fun Number.wspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1411,7 +1391,7 @@ fun TextUnit.wspMode(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1451,7 +1431,7 @@ fun TextUnit.wspModePx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1482,28 +1462,26 @@ fun TextUnit.wspModePlain(
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = modeValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 @Composable
@@ -1522,29 +1500,27 @@ fun TextUnit.wspModePlainPx(
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@wspModePlainPx.toPx() }
-    }
+    val baseValue = modeValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@wspModePlainPx.toPx() },
+    )
 }
 
 /**
@@ -1611,7 +1587,7 @@ fun Number.sspQualifier(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1652,7 +1628,7 @@ fun Number.sspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1696,7 +1672,7 @@ fun TextUnit.sspQualifier(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1736,7 +1712,7 @@ fun TextUnit.sspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1766,29 +1742,27 @@ fun TextUnit.sspQualifierPlain(
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = this,
+    )
 }
 
 /**
@@ -1810,30 +1784,28 @@ fun TextUnit.sspQualifierPlainPx(
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@sspQualifierPlainPx.toPx() }
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = density.run { this@sspQualifierPlainPx.toPx() },
+    )
 }
 
 /**
@@ -1899,7 +1871,7 @@ fun Number.hspQualifier(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1940,7 +1912,7 @@ fun Number.hspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -1984,7 +1956,7 @@ fun TextUnit.hspQualifier(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2024,7 +1996,7 @@ fun TextUnit.hspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2054,29 +2026,27 @@ fun TextUnit.hspQualifierPlain(
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = this,
+    )
 }
 
 /**
@@ -2098,30 +2068,28 @@ fun TextUnit.hspQualifierPlainPx(
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@hspQualifierPlainPx.toPx() }
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = density.run { this@hspQualifierPlainPx.toPx() },
+    )
 }
 
 /**
@@ -2187,7 +2155,7 @@ fun Number.wspQualifier(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2228,7 +2196,7 @@ fun Number.wspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2272,7 +2240,7 @@ fun TextUnit.wspQualifier(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2312,7 +2280,7 @@ fun TextUnit.wspQualifierPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2342,29 +2310,27 @@ fun TextUnit.wspQualifierPlain(
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = this,
+    )
 }
 
 /**
@@ -2386,30 +2352,28 @@ fun TextUnit.wspQualifierPlainPx(
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@wspQualifierPlainPx.toPx() }
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = density.run { this@wspQualifierPlainPx.toPx() },
+    )
 }
 
 /**
@@ -2484,7 +2448,7 @@ fun Number.sspScreen(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2529,7 +2493,7 @@ fun Number.sspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2579,7 +2543,7 @@ fun TextUnit.sspScreen(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2623,7 +2587,7 @@ fun TextUnit.sspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2660,28 +2624,26 @@ fun TextUnit.sspScreenPlain(
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = screenValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 /**
@@ -2708,29 +2670,27 @@ fun TextUnit.sspScreenPlainPx(
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@sspScreenPlainPx.toPx() }
-    }
+    val baseValue = screenValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@sspScreenPlainPx.toPx() },
+    )
 }
 
 /**
@@ -2804,7 +2764,7 @@ fun Number.hspScreen(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2849,7 +2809,7 @@ fun Number.hspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2899,7 +2859,7 @@ fun TextUnit.hspScreen(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2943,7 +2903,7 @@ fun TextUnit.hspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -2980,28 +2940,26 @@ fun TextUnit.hspScreenPlain(
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = screenValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 /**
@@ -3028,29 +2986,27 @@ fun TextUnit.hspScreenPlainPx(
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@hspScreenPlainPx.toPx() }
-    }
+    val baseValue = screenValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@hspScreenPlainPx.toPx() },
+    )
 }
 
 /**
@@ -3124,7 +3080,7 @@ fun Number.wspScreen(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -3169,7 +3125,7 @@ fun Number.wspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQualifier, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -3219,7 +3175,7 @@ fun TextUnit.wspScreen(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSp(
         cacheKey, spStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -3263,7 +3219,7 @@ fun TextUnit.wspScreenPx(
         valueType = valueType,
         customSensitivityK = customSensitivityK
     )
-    val sspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val sspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return rememberScaledSpPx(
         cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
         resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
@@ -3300,28 +3256,26 @@ fun TextUnit.wspScreenPlain(
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSp(
-            cacheKey, spStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = screenValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSp(
+        cacheKey, spStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 /**
@@ -3348,29 +3302,27 @@ fun TextUnit.wspScreenPlainPx(
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.SCALED,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = valueType,
-            customSensitivityK = customSensitivityK
-        )
-        val sspPxStamp =
-            pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberScaledSpPx(
-            cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
-            resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@wspScreenPlainPx.toPx() }
-    }
+    val baseValue = screenValue.toFloat()
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = valueType,
+        customSensitivityK = customSensitivityK
+    )
+    val sspPxStamp =
+        spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberScaledSpPx(
+        cacheKey, sspPxStamp, androidContext, density, baseValue, configuration,
+        resQ, Inverter.DEFAULT, fontScale, ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@wspScreenPlainPx.toPx() },
+    )
 }
 
 /**

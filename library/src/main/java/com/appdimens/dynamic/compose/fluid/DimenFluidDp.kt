@@ -486,7 +486,9 @@ internal fun rememberFluidDp(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): Dp = rememberDimenDp(cacheKey, layoutStamp, androidContext) {
+    match: Boolean = true,
+    passthrough: Dp = Dp.Unspecified,
+): Dp = rememberDimenDp(cacheKey, layoutStamp, androidContext, match = match, passthrough = passthrough) {
     calculateFluidDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, androidContext)
 }
 
@@ -503,7 +505,9 @@ internal fun rememberFluidPxFromDp(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): Float = rememberDimenPxFromDp(cacheKey, pxStamp, androidContext, density) {
+    match: Boolean = true,
+    passthrough: Float = Float.NaN,
+): Float = rememberDimenPxFromDp(cacheKey, pxStamp, androidContext, density, match = match, passthrough = passthrough) {
     calculateFluidDpCompose(baseValue, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, androidContext)
 }
 

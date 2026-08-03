@@ -19,6 +19,7 @@ import com.appdimens.dynamic.core.layoutRememberStamp
 import com.appdimens.dynamic.core.literalPercentOfReferenceDp
 import com.appdimens.dynamic.core.literalPercentOfScreenDp
 import com.appdimens.dynamic.core.pxRememberStamp
+import com.appdimens.dynamic.core.spRememberStamp
 
 @Composable
 private fun rememberLiteralSpaceScreenDp(
@@ -249,7 +250,7 @@ private fun rememberLiteralSpaceScreenSp(
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val resultDp = literalPercentOfScreenDp(percent, qualifier, configuration, ignoreMultiWindows)
-    val stamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val stamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return remember(stamp, fontScale, ignoreMultiWindows, resultDp) {
         val fs = configuration.fontScale.coerceAtLeast(1e-6f)
         if (fontScale) {
@@ -271,7 +272,7 @@ private fun rememberLiteralSpaceReferenceSp(
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val resultDp = literalPercentOfReferenceDp(percent, referenceDp, configuration, ignoreMultiWindows)
-    val stamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val stamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
     return remember(stamp, fontScale, ignoreMultiWindows, resultDp, referenceDp) {
         val fs = configuration.fontScale.coerceAtLeast(1e-6f)
         if (fontScale) {

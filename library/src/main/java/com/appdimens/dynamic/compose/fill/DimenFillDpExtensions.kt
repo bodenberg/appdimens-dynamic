@@ -217,27 +217,25 @@ fun Dp.flsdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifi
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = finalQualifierResolver,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = rotationValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = finalQualifierResolver,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = this,
+    )
 }
 
 /**
@@ -254,27 +252,25 @@ fun Dp.flsdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQuali
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = finalQualifierResolver,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flsdpRotatePlainPx.toPx() }
-    }
+    val baseValue = rotationValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = finalQualifierResolver,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = density.run { this@flsdpRotatePlainPx.toPx() },
+    )
 }
 
 /**
@@ -773,27 +769,25 @@ fun Dp.flhdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifi
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = finalQualifierResolver,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = rotationValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = finalQualifierResolver,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = this,
+    )
 }
 
 /**
@@ -810,27 +804,25 @@ fun Dp.flhdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQuali
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = finalQualifierResolver,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flhdpRotatePlainPx.toPx() }
-    }
+    val baseValue = rotationValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = finalQualifierResolver,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = density.run { this@flhdpRotatePlainPx.toPx() },
+    )
 }
 
 /**
@@ -1007,27 +999,25 @@ fun Dp.flwdpRotatePlain(rotationValue: Number, finalQualifierResolver: DpQualifi
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = finalQualifierResolver,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = rotationValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = finalQualifierResolver,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = this,
+    )
 }
 
 /**
@@ -1044,27 +1034,25 @@ fun Dp.flwdpRotatePlainPx(rotationValue: Number, finalQualifierResolver: DpQuali
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         else -> false
     }
-    return if (isTargetOrientation) {
-        val baseValue = rotationValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = finalQualifierResolver,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flwdpRotatePlainPx.toPx() }
-    }
+    val baseValue = rotationValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = finalQualifierResolver,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, finalQualifierResolver, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = isTargetOrientation,
+        passthrough = density.run { this@flwdpRotatePlainPx.toPx() },
+    )
 }
 
 
@@ -1233,27 +1221,25 @@ fun Dp.flsdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierR
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = modeValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 /**
@@ -1268,27 +1254,25 @@ fun Dp.flsdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifie
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flsdpModePlainPx.toPx() }
-    }
+    val baseValue = modeValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@flsdpModePlainPx.toPx() },
+    )
 }
 
 /**
@@ -1455,27 +1439,25 @@ fun Dp.flhdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierR
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = modeValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 /**
@@ -1490,27 +1472,25 @@ fun Dp.flhdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifie
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flhdpModePlainPx.toPx() }
-    }
+    val baseValue = modeValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@flhdpModePlainPx.toPx() },
+    )
 }
 
 /**
@@ -1677,27 +1657,25 @@ fun Dp.flwdpModePlain(modeValue: Number, uiModeType: UiModeType, finalQualifierR
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = modeValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 /**
@@ -1712,27 +1690,25 @@ fun Dp.flwdpModePlainPx(modeValue: Number, uiModeType: UiModeType, finalQualifie
     val currentUiModeType = getCurrentUiModeType()
     val match = currentUiModeType == uiModeType
     val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-    return if (match) {
-        val baseValue = modeValue.toFloat()
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flwdpModePlainPx.toPx() }
-    }
+    val baseValue = modeValue.toFloat()
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@flwdpModePlainPx.toPx() },
+    )
 }
 
 // EN DpQualifier facilitator extensions.
@@ -1895,28 +1871,26 @@ fun Dp.flsdpQualifierPlain(qualifiedValue: Number, qualifierType: DpQualifier, q
     val configuration = LocalConfiguration.current
     val androidContext = LocalContext.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = this,
+    )
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
@@ -1930,28 +1904,26 @@ fun Dp.flsdpQualifierPlainPx(qualifiedValue: Number, qualifierType: DpQualifier,
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flsdpQualifierPlainPx.toPx() }
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = density.run { this@flsdpQualifierPlainPx.toPx() },
+    )
 }
 
 /**
@@ -2111,28 +2083,26 @@ fun Dp.flhdpQualifierPlain(qualifiedValue: Number, qualifierType: DpQualifier, q
     val configuration = LocalConfiguration.current
     val androidContext = LocalContext.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = this,
+    )
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
@@ -2146,28 +2116,26 @@ fun Dp.flhdpQualifierPlainPx(qualifiedValue: Number, qualifierType: DpQualifier,
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flhdpQualifierPlainPx.toPx() }
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = density.run { this@flhdpQualifierPlainPx.toPx() },
+    )
 }
 
 /**
@@ -2327,28 +2295,26 @@ fun Dp.flwdpQualifierPlain(qualifiedValue: Number, qualifierType: DpQualifier, q
     val configuration = LocalConfiguration.current
     val androidContext = LocalContext.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = this,
+    )
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
@@ -2362,28 +2328,26 @@ fun Dp.flwdpQualifierPlainPx(qualifiedValue: Number, qualifierType: DpQualifier,
     val androidContext = LocalContext.current
     val density = LocalDensity.current
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
-    return if (qualifierMatch) {
-        val baseValue = qualifiedValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flwdpQualifierPlainPx.toPx() }
-    }
+    val baseValue = qualifiedValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = qualifierMatch,
+        passthrough = density.run { this@flwdpQualifierPlainPx.toPx() },
+    )
 }
 
 // EN UiModeType + DpQualifier combined facilitator extensions.
@@ -2565,28 +2529,26 @@ fun Dp.flsdpScreenPlain(screenValue: Number, uiModeType: UiModeType, qualifierTy
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = screenValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
@@ -2603,28 +2565,26 @@ fun Dp.flsdpScreenPlainPx(screenValue: Number, uiModeType: UiModeType, qualifier
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flsdpScreenPlainPx.toPx() }
-    }
+    val baseValue = screenValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.SMALL_WIDTH
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@flsdpScreenPlainPx.toPx() },
+    )
 }
 
 /**
@@ -2803,28 +2763,26 @@ fun Dp.flhdpScreenPlain(screenValue: Number, uiModeType: UiModeType, qualifierTy
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = screenValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
@@ -2841,28 +2799,26 @@ fun Dp.flhdpScreenPlainPx(screenValue: Number, uiModeType: UiModeType, qualifier
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flhdpScreenPlainPx.toPx() }
-    }
+    val baseValue = screenValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.HEIGHT
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@flhdpScreenPlainPx.toPx() },
+    )
 }
 
 /**
@@ -3041,28 +2997,26 @@ fun Dp.flwdpScreenPlain(screenValue: Number, uiModeType: UiModeType, qualifierTy
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.DP,
-            customSensitivityK = customSensitivityK
-        )
-        val layoutStamp = layoutRememberStamp(configuration, androidContext)
-        rememberFillDp(
-            cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        this
-    }
+    val baseValue = screenValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+    val layoutStamp = layoutRememberStamp(configuration, androidContext)
+    return rememberFillDp(
+        cacheKey, layoutStamp, androidContext, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = this,
+    )
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
@@ -3079,26 +3033,24 @@ fun Dp.flwdpScreenPlainPx(screenValue: Number, uiModeType: UiModeType, qualifier
     val uiModeMatch = currentUiModeType == uiModeType
     val qualifierMatch = getQualifierValue(qualifierType, configuration) >= qualifierValue.toFloat()
     val match = uiModeMatch && qualifierMatch
-    return if (match) {
-        val baseValue = screenValue.toFloat()
-        val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
-        val cacheKey = DimenCache.buildKey(
-            baseValue = baseValue,
-            isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            ignoreMultiWindows = ignoreMultiWindows,
-            calcType = DimenCache.CalcType.FILL,
-            qualifier = resQ,
-            inverter = Inverter.DEFAULT,
-            applyAspectRatio = applyAspectRatio,
-            valueType = DimenCache.ValueType.PX,
-            customSensitivityK = customSensitivityK
-        )
-        val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
-        rememberFillPxFromDp(
-            cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
-            ignoreMultiWindows, applyAspectRatio, customSensitivityK
-        )
-    } else {
-        density.run { this@flwdpScreenPlainPx.toPx() }
-    }
+    val baseValue = screenValue.toFloat()
+    val resQ = finalQualifierResolver ?: DpQualifier.WIDTH
+    val cacheKey = DimenCache.buildKey(
+        baseValue = baseValue,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.FILL,
+        qualifier = resQ,
+        inverter = Inverter.DEFAULT,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+    val pxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    return rememberFillPxFromDp(
+        cacheKey, pxStamp, androidContext, density, baseValue, configuration, resQ, Inverter.DEFAULT,
+        ignoreMultiWindows, applyAspectRatio, customSensitivityK,
+        match = match,
+        passthrough = density.run { this@flwdpScreenPlainPx.toPx() },
+    )
 }
