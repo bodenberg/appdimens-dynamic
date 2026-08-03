@@ -394,10 +394,48 @@ object DimenCache {
         onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
     )
 
+    /**
+     * EN Quiescence window before a disk write (production default: 500 ms).
+     * Overridable in unit tests so timings stay short.
+     *
+     * PT Janela de quiescência antes de gravar em disco (padrão: 500 ms).
+     */
+    @Volatile
+    @PublishedApi
+    internal var saveDebounceMs: Long = 500L
+
+    /**
+     * EN Safety-net sampling interval while writes never go quiet (production: 10 s).
+     * PT Intervalo de amostragem de segurança enquanto escritas não cessam (padrão: 10 s).
+     */
+    @Volatile
+    @PublishedApi
+    internal var saveSampleMs: Long = 10_000L
+
+    /**
+     * EN When `false`, [performSave] increments [performSaveCount] but skips DataStore I/O.
+     * Used by unit tests that exercise the debounce/sample collector without Android DataStore.
+     *
+     * PT Quando `false`, [performSave] só incrementa o contador — sem I/O no DataStore.
+     */
+    @Volatile
+    @PublishedApi
+    internal var persistenceWritesEnabled: Boolean = true
+
+    /** EN Count of [performSave] invocations (test/diagnostics). PT Contagem de invocações. */
+    @JvmField
+    @PublishedApi
+    internal val performSaveCount = java.util.concurrent.atomic.AtomicInteger(0)
+
     private fun launchSaveCollector(target: CoroutineScope) {
         target.launch {
             @OptIn(FlowPreview::class)
-            saveFlow.sample(500).collect { ctx ->
+            // debounce: write once after the cache goes quiet (no I/O during scroll/animation).
+            // sample: safety net so pathological continuous-write apps still persist eventually.
+            merge(
+                saveFlow.debounce(saveDebounceMs),
+                saveFlow.sample(saveSampleMs)
+            ).collect { ctx ->
                 performSave(ctx)
             }
         }
@@ -420,6 +458,21 @@ object DimenCache {
             _scope?.cancel()
             _scope = null
         }
+    }
+
+    /**
+     * EN Restarts the persistence collector after changing [saveDebounceMs] / [saveSampleMs]
+     * in tests. No-op for production callers.
+     *
+     * PT Reinicia o coletor de persistência após alterar intervalos em testes.
+     */
+    @JvmStatic
+    @PublishedApi
+    internal fun restartSaveCollectorForTest() {
+        shutdown()
+        performSaveCount.set(0)
+        // Touching [scope] recreates the CoroutineScope and re-launches the collector.
+        scope
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -574,6 +627,8 @@ object DimenCache {
     }
 
     private suspend fun performSave(context: Context) {
+        performSaveCount.incrementAndGet()
+        if (!persistenceWritesEnabled) return
         val appContext = context.applicationContext
         val buffer = ByteBuffer.allocate(CACHE_SIZE * 12)
         for (s in 0 until SHARD_COUNT) {
