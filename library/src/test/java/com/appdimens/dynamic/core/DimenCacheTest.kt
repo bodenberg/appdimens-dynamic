@@ -5,6 +5,7 @@ import com.appdimens.dynamic.common.Inverter
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class DimenCacheTest {
@@ -184,6 +185,42 @@ class DimenCacheTest {
         val keyAutoAr = DimenCache.buildKey(15, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP)
         assertEquals(15f, DimenCache.getOrPut(keyAutoAr) { 15f }, 0f)
         assertEquals(15f, DimenCache.peek(keyAutoAr) ?: -1f, 0f)
+    }
+
+    @Test
+    fun testDefaultAspectRatioBypass() {
+        DimenCache.clearAll()
+        DimenCache.isEnabled = true
+
+        // Default AR on SCALED → single multiply (arMultiplier) → bypass, not stored.
+        val keyScaledAr = DimenCache.buildKey(
+            16, false, false, DimenCache.CalcType.SCALED,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP
+        )
+        assertEquals(16f, DimenCache.getOrPut(keyScaledAr) { 16f }, 0f)
+        assertNull("default AR SCALED must bypass shard storage", DimenCache.peek(keyScaledAr))
+
+        // Custom sensitivity → full cache path.
+        val keyCustomSens = DimenCache.buildKey(
+            17, false, false, DimenCache.CalcType.SCALED,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP,
+            customSensitivityK = 0.5f
+        )
+        assertEquals(17f, DimenCache.getOrPut(keyCustomSens) { 17f }, 0f)
+        assertEquals(17f, DimenCache.peek(keyCustomSens) ?: -1f, 0f)
+
+        // Non-default qualifier → full cache path.
+        val keyWidthAr = DimenCache.buildKey(
+            18, false, false, DimenCache.CalcType.SCALED,
+            DpQualifier.WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP
+        )
+        assertEquals(18f, DimenCache.getOrPut(keyWidthAr) { 18f }, 0f)
+        assertEquals(18f, DimenCache.peek(keyWidthAr) ?: -1f, 0f)
+
+        // CT_ASPECT_RATIO (ln memoization) must never bypass.
+        val arLn = DimenCache.getOrPutAspectRatio(1.5f)
+        assertEquals(kotlin.math.ln(1.5f), arLn, 0.001f)
+        assertTrue(DimenCache.stats().populated >= 1)
     }
 
     @Test

@@ -746,6 +746,11 @@ object DimenCache {
     @JvmStatic
     @PublishedApi
     internal fun getOrPutInternal(key: Long, context: Context?, compute: () -> Float): Float {
+        if (!isEnabled) return compute()
+
+        // Mirror the inline [getOrPut] fast-bypass (including default-AR multiply path).
+        if (shouldBypassCache(key)) return compute()
+
         // AUTO-INIT — same guard as inline [getOrPut] ([isInitializedFast] + [init])
         if (context != null && !isInitializedFast) {
             init(context)
@@ -789,6 +794,36 @@ object DimenCache {
     }
 
     /**
+     * EN Returns `true` when [getOrPut] should skip the shard table and call `compute()`
+     * directly. Covers simple no-AR multipliers **and** the default AR path where
+     * `compute()` is already `baseValue * factors.arMultiplier` (pre-resolved in
+     * [updateFactors]) — equally cheap as a single multiply (~2 ns vs ~5 ns lookup).
+     *
+     * `CT_ASPECT_RATIO` (used by [getOrPutAspectRatio] / `fastLn`) is **not** bypassed,
+     * so real `ln()` results remain memoized.
+     *
+     * PT Indica se o cache deve ser contornado (multiply barato, incl. AR padrão).
+     */
+    @JvmStatic
+    @PublishedApi
+    internal inline fun shouldBypassCache(key: Long): Boolean {
+        val ct = (key ushr 27 and 0xFL).toInt()
+        val isBypassType = ct == CT_PERCENT || ct == CT_SCALED || ct == CT_DENSITY ||
+                ct == CT_DIAGONAL || ct == CT_INTERPOLATED || ct == CT_PERIMETER
+        if (!isBypassType) return false
+
+        if (key >= 0) return true
+
+        // Default AR: SMALL_WIDTH + DEFAULT inverter + null customSensitivityK (0xFFFF sentinel).
+        val q   = (key ushr 6 and 0x3L).toInt()
+        val inv = (key ushr 2 and 0xFL).toInt()
+        val sk  = (key ushr 8 and 0xFFFFL)
+        return q == DpQualifier.SMALL_WIDTH.ordinal &&
+                inv == Inverter.DEFAULT.ordinal &&
+                sk == 0xFFFFL
+    }
+
+    /**
      * EN
      * Reads from the cache or computes (and stores) a new value. **Lock-free.**
      *
@@ -813,25 +848,18 @@ object DimenCache {
         // 0. FAST BYPASS — intentional design decision.
         //
         // When Aspect Ratio is NOT active (bit 63 == 0) and the CalcType is one of the
-        // "simple multiplier" types (PERCENT, SCALED, DENSITY), the scaling formula
+        // "simple multiplier" types (PERCENT, SCALED, DENSITY, …), the scaling formula
         // often reduces to a single float multiply: `baseValue * scale`.
         //
         // Measured cost on Snapdragon 888:
         //   Raw math (multiply)  ≈  2 ns
         //   Fastest cache lookup ≈  5 ns   (hash + atomic load + branch)
         //
-        // Therefore, for these types WITHOUT Aspect Ratio, bypassing the cache is
-        // ~2.5× faster than using it.  This is NOT a bug — it is a deliberate
-        // hot-path optimization.  The cache is only beneficial when the computation
-        // is expensive (e.g. AR path with ln(), ≈41 ns), making the 5 ns lookup cheap.
-        //
-        // Bypass only for CalcTypes that reduce to ~one multiply without AR (bit 63 clear).
-        // AUTO(0) and FLUID(4) use non-trivial math in their modules — do not bypass.
-        if (key >= 0) {
-            val ct = (key ushr 27 and 0xFL).toInt()
-            if (ct == CT_PERCENT || ct == CT_SCALED || ct == CT_DENSITY
-                || ct == CT_DIAGONAL || ct == CT_INTERPOLATED || ct == CT_PERIMETER) return compute()
-        }
+        // Default AR (SMALL_WIDTH + DEFAULT inverter + null sensitivity) is also just
+        // `baseValue * factors.arMultiplier` — arMultiplier is precomputed in
+        // updateFactors() — so it shares the same bypass. Custom sensitivity / non-default
+        // qualifier still use the full cache path. CT_ASPECT_RATIO (ln memoization) never bypasses.
+        if (shouldBypassCache(key)) return compute()
 
         // ─────────────────────────────────────────────────────────────────────
         // HOT PATH — fully inlined, zero method-call overhead, zero lambda alloc
