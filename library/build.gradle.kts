@@ -60,7 +60,7 @@ mavenPublishing {
 dokka {
     dokkaPublications.html {
         moduleName.set("AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions")
-        outputDirectory.set(layout.projectDirectory.dir("${rootDir}\\DOCUMENTATION2"))
+        outputDirectory.set(rootProject.layout.projectDirectory.dir("DOCUMENTATION2"))
         suppressInheritedMembers.set(true)
         // AGP + Android Dokka plugin register overlapping "jvm" and "release" source sets
         // (same src/main paths). Document only the explicit "main" source set.

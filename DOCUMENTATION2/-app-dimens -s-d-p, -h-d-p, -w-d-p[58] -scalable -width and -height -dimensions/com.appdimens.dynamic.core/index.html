@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>com.appdimens.dynamic.core</title>
+    <link href="../../images/logo-icon.svg" rel="icon" type="image/svg">
+        <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer="defer"></script>
+</head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+            <a class="library-name--link" href="../../index.html" tabindex="1">
+                    AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true"
+                        data-filter=":library/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":library/main"
+                                       data-filter=":library/main"/>
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link"
+                   href="https://github.com/bodenberg"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config='{"defaultSize": 280, "minSize": 200, "maxSize": 400}'>
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                    data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="package" id="content" pageIds="AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions::com.appdimens.dynamic.core////PointingToDeclaration//177865961">
+  <div class="breadcrumbs"><a href="../../index.html">AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions</a><span class="delimiter">/</span><span class="current">com.appdimens.dynamic.core</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button><button class="section-tab" data-togglable="PROPERTY,EXTENSION_PROPERTY">Properties</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="1979565165%2FClasslikes%2F177865961" anchor-label="AspectRatioLookup" id="1979565165%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-aspect-ratio-lookup/index.html"><span>Aspect</span><wbr></wbr><span>Ratio</span><wbr></wbr><span><span>Lookup</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1979565165%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-aspect-ratio-lookup/index.html">AspectRatioLookup</a></div><div class="brief "><p class="paragraph">EN Pre-computed binary-search lookup table for <code class="lang-kotlin">ln(ar / 1.78f)</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-912201236%2FClasslikes%2F177865961" anchor-label="AutoResizePercentBasis" id="-912201236%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-auto-resize-percent-basis/index.html"><span>Auto</span><wbr></wbr><span>Resize</span><wbr></wbr><span>Percent</span><wbr></wbr><span><span>Basis</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-912201236%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-auto-resize-percent-basis/index.html">AutoResizePercentBasis</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-auto-resize-percent-basis/index.html">AutoResizePercentBasis</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1586500891%2FClasslikes%2F177865961" anchor-label="DesignScaleConstants" id="-1586500891%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-design-scale-constants/index.html"><span>Design</span><wbr></wbr><span>Scale</span><wbr></wbr><span><span>Constants</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1586500891%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-design-scale-constants/index.html">DesignScaleConstants</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1506159895%2FClasslikes%2F177865961" anchor-label="DimenCache" id="1506159895%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-dimen-cache/index.html"><span>Dimen</span><wbr></wbr><span><span>Cache</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1506159895%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-dimen-cache/index.html">DimenCache</a></div><div class="brief "><p class="paragraph">EN Global, lock-free, shared cache for all AppDimens dimension calculations.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-849564356%2FClasslikes%2F177865961" anchor-label="DimenCalculationPlumbing" id="-849564356%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-dimen-calculation-plumbing/index.html"><span>Dimen</span><wbr></wbr><span>Calculation</span><wbr></wbr><span><span>Plumbing</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-849564356%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-dimen-calculation-plumbing/index.html">DimenCalculationPlumbing</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1984123128%2FClasslikes%2F177865961" anchor-label="MissingModule" id="-1984123128%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-missing-module/index.html"><span>Missing</span><wbr></wbr><span><span>Module</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1984123128%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-missing-module/index.html">MissingModule</a></div><div class="brief "><p class="paragraph">EN Known strategy modules that ship separately from the principal <code class="lang-kotlin">appdimens-dynamic</code> artifact. Package segment is the last component of <code class="lang-kotlin">com.appdimens.dynamic.compose.&lt;segment&gt;</code> / <code class="lang-kotlin">code.&lt;segment&gt;</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1994510491%2FClasslikes%2F177865961" anchor-label="ResizeAxisQualifier" id="-1994510491%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-resize-axis-qualifier/index.html"><span>Resize</span><wbr></wbr><span>Axis</span><wbr></wbr><span><span>Qualifier</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1994510491%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">typealias </span><a href="-resize-axis-qualifier/index.html">ResizeAxisQualifier</a><span class="token operator"> = </span><a href="../com.appdimens.dynamic.common/-dp-qualifier/index.html">DpQualifier</a></div><div class="brief "><p class="paragraph">EN Screen metric used to resolve Percent bounds (matches sdp / wdp / hdp axes).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="655879824%2FClasslikes%2F177865961" anchor-label="ResizeBound" id="655879824%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-resize-bound/index.html"><span>Resize</span><wbr></wbr><span><span>Bound</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="655879824%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">class </span><a href="-resize-bound/index.html">ResizeBound</a></div><div class="brief "><p class="paragraph">EN One end of a resize range or the step granularity.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2105956727%2FClasslikes%2F177865961" anchor-label="ResizeRangePx" id="-2105956727%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-resize-range-px/index.html"><span>Resize</span><wbr></wbr><span>Range</span><wbr></wbr><span><span>Px</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2105956727%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-resize-range-px/index.html">ResizeRangePx</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>minPx<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>maxPx<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>stepPx<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">EN Normalizes min/max order; <a href="-resize-range-px/steps.html">steps</a> covers [<a href="-resize-range-px/low-px.html">lowPx</a>,<a href="-resize-range-px/high-px.html">highPx</a>] with <span data-unresolved-link="com.appdimens.dynamic.core/ResizeRangePx//#kotlin.Float#kotlin.Float#kotlin.Float/PointingToCallableParameters(2)/">stepPx</span> granularity.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-786818712%2FClasslikes%2F177865961" anchor-label="SharedScreenMetrics" id="-786818712%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-shared-screen-metrics/index.html"><span>Shared</span><wbr></wbr><span>Screen</span><wbr></wbr><span><span>Metrics</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-786818712%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-shared-screen-metrics/index.html">SharedScreenMetrics</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>smallestWidthDp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>minDimDp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>maxDimDp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>density<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>scale<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>normalizedAr<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>logNormalizedAr<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>arMultiplier<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>aspectRatioMul<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">EN Shared screen metrics computed once in <a href="-dimen-cache/index.html">DimenCache</a> on configuration change. PT Métricas compartilhadas calculadas uma vez no core em mudança de configuração.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="674521601%2FClasslikes%2F177865961" anchor-label="StrategyFactorContributor" id="674521601%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-strategy-factor-contributor/index.html"><span>Strategy</span><wbr></wbr><span>Factor</span><wbr></wbr><span><span>Contributor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="674521601%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-strategy-factor-contributor/index.html">StrategyFactorContributor</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-557547479%2FClasslikes%2F177865961" anchor-label="StrategyFactorRegistry" id="-557547479%2FClasslikes%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-strategy-factor-registry/index.html"><span>Strategy</span><wbr></wbr><span>Factor</span><wbr></wbr><span><span>Registry</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-557547479%2FClasslikes%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-strategy-factor-registry/index.html">StrategyFactorRegistry</a></div><div class="brief "><p class="paragraph">EN Process-wide registry. <a href="-strategy-factor-registry/register.html">register</a> is idempotent per instance and immediately replays the last metrics so late class-loading still receives current scales.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="1128345607%2FProperties%2F177865961" anchor-label="LocalUiModeType" id="1128345607%2FProperties%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-local-ui-mode-type.html"><span>Local</span><wbr></wbr><span>Ui</span><wbr></wbr><span>Mode</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1128345607%2FProperties%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="-local-ui-mode-type.html">LocalUiModeType</a><span class="token operator">: </span>ERROR CLASS: Unresolved name: compositionLocalOf</div><div class="brief "><p class="paragraph">EN CompositionLocal for the current UiModeType. PT CompositionLocal para o UiModeType atual.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1250683104%2FProperties%2F177865961" anchor-label="MAX_RESIZE_STEPS" id="1250683104%2FProperties%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-m-a-x_-r-e-s-i-z-e_-s-t-e-p-s.html"><span>MAX_</span><wbr></wbr><span>RESIZE_</span><wbr></wbr><span>STEPS</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1250683104%2FProperties%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">private </span><span class="token keyword">const </span><span class="token keyword">val </span><a href="-m-a-x_-r-e-s-i-z-e_-s-t-e-p-s.html">MAX_RESIZE_STEPS</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">4096</span></div><div class="brief "><p class="paragraph">EN Builds ascending px samples from minPx to maxPx inclusive, advancing by stepPx. If stepPx<= 0, returns <code class="lang-kotlin">[minPx.coerceIn(minPx, maxPx)]</code> (single sample).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-1488949097%2FFunctions%2F177865961" anchor-label="AppDimensProvider" id="-1488949097%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-app-dimens-provider.html"><span>App</span><wbr></wbr><span>Dimens</span><wbr></wbr><span><span>Provider</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1488949097%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-app-dimens-provider.html"><span class="token function">AppDimensProvider</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">content<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">EN Provider that automatically computes and provides the <a href="../com.appdimens.dynamic.common/-ui-mode-type/index.html">UiModeType</a> (including foldables) to all child components. <strong>Recommended for performance:</strong> without it, <a href="get-current-ui-mode-type.html">getCurrentUiModeType</a> falls back to <a href="../com.appdimens.dynamic.common/-ui-mode-type/-companion/from-configuration.html">UiModeType.fromConfiguration</a> on every <code class="lang-kotlin">*Mode</code> / <code class="lang-kotlin">*Screen</code> facilitator call. See the root README section <strong>Performance: DimenCache → Integration checklist</strong>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-521261477%2FFunctions%2F177865961" anchor-label="buildResizeStepsPx" id="-521261477%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="build-resize-steps-px.html"><span>build</span><wbr></wbr><span>Resize</span><wbr></wbr><span>Steps</span><wbr></wbr><span><span>Px</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-521261477%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="build-resize-steps-px.html"><span class="token function">buildResizeStepsPx</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minPx<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">maxPx<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">stepPx<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float-array/index.html">FloatArray</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="873543466%2FFunctions%2F177865961" anchor-label="fastLn" id="873543466%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fast-ln.html"><span>fast</span><wbr></wbr><span><span>Ln</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="873543466%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="fast-ln.html"><span class="token function">fastLn</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">normalizedAr<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">EN Fast natural-logarithm via binary-search lookup table, falling back to the intrinsic <code class="lang-kotlin">ln()</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="175404200%2FFunctions%2F177865961" anchor-label="findActivity" id="175404200%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="find-activity.html"><span>find</span><wbr></wbr><span><span>Activity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="175404200%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="find-activity.html"><span class="token function">findActivity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">EN Walks <a href="https://developer.android.com/reference/kotlin/android/content/ContextWrapper.html">ContextWrapper</a> chain to find the hosting <a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a>, if any. PT Percorre a cadeia de <a href="https://developer.android.com/reference/kotlin/android/content/ContextWrapper.html">ContextWrapper</a> para encontrar a <a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a> hospedeira, se existir.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="191837224%2FFunctions%2F177865961" anchor-label="findLargestFittingResizePx" id="191837224%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="find-largest-fitting-resize-px.html"><span>find</span><wbr></wbr><span>Largest</span><wbr></wbr><span>Fitting</span><wbr></wbr><span>Resize</span><wbr></wbr><span><span>Px</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="191837224%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="find-largest-fitting-resize-px.html"><span class="token function">findLargestFittingResizePx</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">sortedStepsPx<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float-array/index.html">FloatArray</a><span class="token punctuation">, </span></span><span class="parameter ">fits<span class="token operator">: </span><span class="token punctuation">(</span>candidatePx<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">EN Largest step in <a href="find-largest-fitting-resize-px.html">sortedStepsPx</a> (ascending) for which <a href="find-largest-fitting-resize-px.html">fits</a> returns true. If none fit, returns <code class="lang-kotlin">0f</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1750313347%2FFunctions%2F177865961" anchor-label="getCurrentUiModeType" id="1750313347%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-current-ui-mode-type.html"><span>get</span><wbr></wbr><span>Current</span><wbr></wbr><span>Ui</span><wbr></wbr><span>Mode</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1750313347%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-current-ui-mode-type.html"><span class="token function">getCurrentUiModeType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.appdimens.dynamic.common/-ui-mode-type/index.html">UiModeType</a></div><div class="brief "><p class="paragraph">EN Internal helper to get the UiModeType, falling back to computing it if not provided. PT Auxiliar interno para obter o UiModeType, recalculando se não for fornecido.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1592098433%2FFunctions%2F177865961" anchor-label="layoutRememberStamp" id="-1592098433%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="layout-remember-stamp.html"><span>layout</span><wbr></wbr><span>Remember</span><wbr></wbr><span><span>Stamp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1592098433%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="layout-remember-stamp.html"><span class="token function">layoutRememberStamp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">configuration<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html">Configuration</a><span class="token punctuation">, </span></span><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">EN Layout stamp for Dp remember keys. Packs only fields that affect layout scaling (orientation, SW, W, H, densityDpi). Deliberately <strong>excludes</strong> <a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html#hashcode">Configuration.hashCode</a> so locale / fontScale / keyboard changes do not force every <code class="lang-kotlin">.sdp</code> to recompute.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1293162895%2FFunctions%2F177865961" anchor-label="literalPercentOfReferenceDp" id="1293162895%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="literal-percent-of-reference-dp.html"><span>literal</span><wbr></wbr><span>Percent</span><wbr></wbr><span>Of</span><wbr></wbr><span>Reference</span><wbr></wbr><span><span>Dp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1293162895%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="literal-percent-of-reference-dp.html"><span class="token function">literalPercentOfReferenceDp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">percent<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">referenceDp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">configuration<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html">Configuration</a><span class="token punctuation">, </span></span><span class="parameter ">ignoreMultiWindows<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1568265861%2FFunctions%2F177865961" anchor-label="literalPercentOfScreenDp" id="-1568265861%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="literal-percent-of-screen-dp.html"><span>literal</span><wbr></wbr><span>Percent</span><wbr></wbr><span>Of</span><wbr></wbr><span>Screen</span><wbr></wbr><span><span>Dp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1568265861%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="literal-percent-of-screen-dp.html"><span class="token function">literalPercentOfScreenDp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">percent<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">qualifier<span class="token operator">: </span><a href="../com.appdimens.dynamic.common/-dp-qualifier/index.html">DpQualifier</a><span class="token punctuation">, </span></span><span class="parameter ">configuration<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html">Configuration</a><span class="token punctuation">, </span></span><span class="parameter ">ignoreMultiWindows<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1639989734%2FFunctions%2F177865961" anchor-label="mixDpi" id="-1639989734%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="mix-dpi.html"><span>mix</span><wbr></wbr><span><span>Dpi</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1639989734%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">private </span><span class="token keyword">fun </span><a href="mix-dpi.html"><span class="token function">mixDpi</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">packedLayout<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">densityDpi<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">EN Mix <a href="mix-dpi.html">densityDpi</a> into a layout-only packed long without overlapping SW/W/H bit fields. A plain <code class="lang-kotlin">or (dpi shl 4)</code> collided with the low bits of height and could produce false hits.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1283159117%2FFunctions%2F177865961" anchor-label="packLayoutFields" id="-1283159117%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pack-layout-fields.html"><span>pack</span><wbr></wbr><span>Layout</span><wbr></wbr><span><span>Fields</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1283159117%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">private </span><span class="token keyword">fun </span><a href="pack-layout-fields.html"><span class="token function">packLayoutFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">configuration<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html">Configuration</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">EN Packs orientation + SW + W + H into non-overlapping bit fields (4+20+20+20 = 64). PT Empacota orientação + SW + W + H em campos sem sobreposição.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-421920823%2FFunctions%2F177865961" anchor-label="pxRememberStamp" id="-421920823%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="px-remember-stamp.html"><span>px</span><wbr></wbr><span>Remember</span><wbr></wbr><span><span>Stamp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-421920823%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="px-remember-stamp.html"><span class="token function">pxRememberStamp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">layoutStamp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">density<span class="token operator">: </span>ERROR CLASS: Symbol not found for Density</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">EN Stamp for Dp→Px paths: layout fields xor Density.density only. Font scale does <strong>not</strong> affect Dp→Px conversion.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="866531380%2FFunctions%2F177865961" anchor-label="rememberDimenDp" id="866531380%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remember-dimen-dp.html"><span>remember</span><wbr></wbr><span>Dimen</span><wbr></wbr><span><span>Dp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="866531380%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="remember-dimen-dp.html"><span class="token function">rememberDimenDp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cacheKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">layoutStamp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">androidContext<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">match<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">passthrough<span class="token operator">: </span>ERROR CLASS: Symbol not found for Dp<span class="token operator"> = </span>Dp.Unspecified<span class="token punctuation">, </span></span><span class="parameter ">compute<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span>ERROR CLASS: Symbol not found for Dp</div><div class="brief "><p class="paragraph">EN Remembers a scaled Dp. When <a href="remember-dimen-dp.html">match</a> is false, returns <a href="remember-dimen-dp.html">passthrough</a> without touching <a href="-dimen-cache/index.html">DimenCache</a> — used by <code class="lang-kotlin">*Plain</code> APIs so remember is always called (stable Compose slots) while the miss branch stays a true no-op.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="891766934%2FFunctions%2F177865961" anchor-label="rememberDimenPxFromDp" id="891766934%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remember-dimen-px-from-dp.html"><span>remember</span><wbr></wbr><span>Dimen</span><wbr></wbr><span>Px</span><wbr></wbr><span>From</span><wbr></wbr><span><span>Dp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="891766934%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="remember-dimen-px-from-dp.html"><span class="token function">rememberDimenPxFromDp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cacheKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">pxStamp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">androidContext<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">density<span class="token operator">: </span>ERROR CLASS: Symbol not found for Density<span class="token punctuation">, </span></span><span class="parameter ">match<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">passthrough<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span>Float.NaN<span class="token punctuation">, </span></span><span class="parameter ">compute<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">EN Remembers scaled Dp→Px. When <a href="remember-dimen-px-from-dp.html">match</a> is false, returns <a href="remember-dimen-px-from-dp.html">passthrough</a> unchanged. PT Lembra Dp→Px; com <a href="remember-dimen-px-from-dp.html">match</a> falso devolve <a href="remember-dimen-px-from-dp.html">passthrough</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1006079684%2FFunctions%2F177865961" anchor-label="rememberDimenSp" id="-1006079684%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remember-dimen-sp.html"><span>remember</span><wbr></wbr><span>Dimen</span><wbr></wbr><span><span>Sp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1006079684%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="remember-dimen-sp.html"><span class="token function">rememberDimenSp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cacheKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">spStamp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">match<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">passthrough<span class="token operator">: </span>ERROR CLASS: Symbol not found for TextUnit<span class="token operator"> = </span>TextUnit.Unspecified<span class="token punctuation">, </span></span><span class="parameter ">compute<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span>ERROR CLASS: Symbol not found for TextUnit</span></span><span class="token punctuation">)</span><span class="token operator">: </span>ERROR CLASS: Symbol not found for TextUnit</div><div class="brief "><p class="paragraph">EN Remembers a scaled TextUnit (Sp path). Passthrough when <a href="remember-dimen-sp.html">match</a> is false. PT Lembra um TextUnit; passthrough quando <a href="remember-dimen-sp.html">match</a> é falso.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="391186364%2FFunctions%2F177865961" anchor-label="rememberDimenSpPx" id="391186364%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remember-dimen-sp-px.html"><span>remember</span><wbr></wbr><span>Dimen</span><wbr></wbr><span>Sp</span><wbr></wbr><span><span>Px</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="391186364%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="remember-dimen-sp-px.html"><span class="token function">rememberDimenSpPx</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cacheKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">sspPxStamp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">match<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">passthrough<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span>Float.NaN<span class="token punctuation">, </span></span><span class="parameter ">compute<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">EN Remembers Sp→Px. Passthrough when <a href="remember-dimen-sp-px.html">match</a> is false. PT Lembra Sp→Px; passthrough quando <a href="remember-dimen-sp-px.html">match</a> é falso.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="29946536%2FFunctions%2F177865961" anchor-label="resizeFixedDp" id="29946536%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resize-fixed-dp.html"><span>resize</span><wbr></wbr><span>Fixed</span><wbr></wbr><span><span>Dp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="29946536%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="resize-fixed-dp.html"><span class="token function">resizeFixedDp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-resize-bound/index.html">ResizeBound</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-925405321%2FFunctions%2F177865961" anchor-label="resizeFixedSp" id="-925405321%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resize-fixed-sp.html"><span>resize</span><wbr></wbr><span>Fixed</span><wbr></wbr><span><span>Sp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-925405321%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="resize-fixed-sp.html"><span class="token function">resizeFixedSp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">sp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-resize-bound/index.html">ResizeBound</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1693044305%2FFunctions%2F177865961" anchor-label="resizePercentH" id="1693044305%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resize-percent-h.html"><span>resize</span><wbr></wbr><span>Percent</span><wbr></wbr><span><span>H</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1693044305%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="resize-percent-h.html"><span class="token function">resizePercentH</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">percent<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-resize-bound/index.html">ResizeBound</a></div><div class="brief "><p class="paragraph">EN % of <a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html#screenheightdp">Configuration.screenHeightDp</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1531530079%2FFunctions%2F177865961" anchor-label="resizePercentSw" id="1531530079%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resize-percent-sw.html"><span>resize</span><wbr></wbr><span>Percent</span><wbr></wbr><span><span>Sw</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1531530079%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="resize-percent-sw.html"><span class="token function">resizePercentSw</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">percent<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-resize-bound/index.html">ResizeBound</a></div><div class="brief "><p class="paragraph">EN % of <a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html#smallestscreenwidthdp">Configuration.smallestScreenWidthDp</a>. PT % do menor lado (sw).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="415300514%2FFunctions%2F177865961" anchor-label="resizePercentW" id="415300514%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resize-percent-w.html"><span>resize</span><wbr></wbr><span>Percent</span><wbr></wbr><span><span>W</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="415300514%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="resize-percent-w.html"><span class="token function">resizePercentW</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">percent<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-resize-bound/index.html">ResizeBound</a></div><div class="brief "><p class="paragraph">EN % of <a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html#screenwidthdp">Configuration.screenWidthDp</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="427150328%2FFunctions%2F177865961" anchor-label="resolveToPx" id="427150328%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resolve-to-px.html"><span>resolve</span><wbr></wbr><span>To</span><wbr></wbr><span><span>Px</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="427150328%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-resize-bound/index.html">ResizeBound</a><span class="token punctuation">.</span><a href="resolve-to-px.html"><span class="token function">resolveToPx</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">configuration<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html">Configuration</a><span class="token punctuation">, </span></span><span class="parameter ">density<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">fontScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">EN Converts bound to <strong>px</strong> for layout/measure (density + font scale for sp).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="516286746%2FFunctions%2F177865961" anchor-label="scaledEntryRememberStamp" id="516286746%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="scaled-entry-remember-stamp.html"><span>scaled</span><wbr></wbr><span>Entry</span><wbr></wbr><span>Remember</span><wbr></wbr><span><span>Stamp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="516286746%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="scaled-entry-remember-stamp.html"><span class="token function">scaledEntryRememberStamp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uiModeOrdinal<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">configuration<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html">Configuration</a><span class="token punctuation">, </span></span><span class="parameter ">aspectRatio<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">ignoreMultiWindows<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">EN Stamp for custom scaled-entry resolution (<a href="../com.appdimens.dynamic.compose/-dimen-scaled/index.html">com.appdimens.dynamic.compose.DimenScaled</a> / ScaledSp). Keys only matcher inputs: SW/W/H/orientation + uiMode + ignoreMultiWindows. Omits densityDpi and aspectRatio (AR is derived from W/H) to avoid extra invalidation.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1766639277%2FFunctions%2F177865961" anchor-label="sharedMetricsFrom" id="-1766639277%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="shared-metrics-from.html"><span>shared</span><wbr></wbr><span>Metrics</span><wbr></wbr><span><span>From</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1766639277%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">internal </span><span class="token keyword">fun </span><a href="shared-metrics-from.html"><span class="token function">sharedMetricsFrom</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html">Configuration</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-shared-screen-metrics/index.html">SharedScreenMetrics</a></div><div class="brief "><p class="paragraph">EN Builds <a href="-shared-screen-metrics/index.html">SharedScreenMetrics</a> from a <a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html">Configuration</a> using the same formulas as the former monolithic <a href="-dimen-cache/index.html">DimenCache</a> shared path (scale / AR / density).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1005898516%2FFunctions%2F177865961" anchor-label="spRememberStamp" id="1005898516%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="sp-remember-stamp.html"><span>sp</span><wbr></wbr><span>Remember</span><wbr></wbr><span><span>Stamp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1005898516%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="sp-remember-stamp.html"><span class="token function">spRememberStamp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">layoutStamp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">density<span class="token operator">: </span>ERROR CLASS: Symbol not found for Density</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">EN Stamp for Sp remember paths: layout xor density xor fontScale (Sp values may embed or be divided by fontScale depending on the flag).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="100131407%2FFunctions%2F177865961" anchor-label="windowLayoutInfoFlowOrEmpty" id="100131407%2FFunctions%2F177865961" data-filterable-set=":library/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":library/main" data-filterable-set=":library/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="window-layout-info-flow-or-empty.html"><span>window</span><wbr></wbr><span>Layout</span><wbr></wbr><span>Info</span><wbr></wbr><span>Flow</span><wbr></wbr><span>Or</span><wbr></wbr><span><span>Empty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="100131407%2FFunctions%2F177865961"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":library/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html"><span class="token annotation builtin">PublishedApi</span></a></div></div><span class="token keyword">internal </span><span class="token keyword">fun </span><a href="window-layout-info-flow-or-empty.html"><span class="token function">windowLayoutInfoFlowOrEmpty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span>ERROR CLASS: Symbol not found for WindowLayoutInfo<span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">EN Resolves the WindowLayoutInfo flow for <a href="-app-dimens-provider.html">AppDimensProvider</a>. Always returns a non-null <span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span> so collectAsState can be called unconditionally.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>Bodenberg</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
