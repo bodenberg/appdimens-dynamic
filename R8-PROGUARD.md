@@ -5,14 +5,14 @@ This guide explains **why** and **how** to use R8/minify, **what changes** when 
 ---
 
 
-## Modular artifacts (3.1.6)
+## Consumer rules per artifact
 
 Each published AAR ships its own `consumer-rules.pro`:
 
-- **Principal** (`appdimens-dynamic`) — keeps `common`, scaled `code`/`compose`, `DimenCache`, `StrategyFactorRegistry`, Compose locals, etc.
-- **Satellites** (`appdimens-dynamic-<strategy>`) — keep that strategy’s `code.<strategy>` / `compose.<strategy>` public API; core rules arrive **transitively** from the principal.
+- **`appdimens-dynamic`** — `common`, scaled `code`/`compose`, `DimenCache`, `StrategyFactorRegistry`, Compose locals
+- **`appdimens-dynamic-<strategy>`** — that strategy’s public `code` / `compose` API (core rules arrive transitively)
 
-You do **not** need an ALL artifact for R8. Depend only on the modules you use; their consumer rules merge automatically.
+Gradle merges consumer rules from the modules you depend on.
 
 ## Why use minify and R8?
 
@@ -69,7 +69,7 @@ Sync Gradle, then **rebuild release** and **retest**. Full mode does not replace
 ### 3. Rules: what you edit vs what you get for free
 
 - **Your app:** put app-specific keeps in **`app/proguard-rules.pro`** (reflection, JNI, serialization libraries, etc.).
-- **AppDimens Dynamic:** each AAR you depend on (principal `appdimens-dynamic` and any `appdimens-dynamic-<strategy>` satellite) ships its own **`consumer-rules.pro`**. Gradle **merges** those rules into your R8 step automatically—you do **not** paste them by hand. Core/scaled keep rules come from the principal; strategy keep rules come from each satellite AAR.
+- **AppDimens Dynamic:** each AAR you depend on ships its own `consumer-rules.pro`, merged by Gradle automatically. Core/scaled rules come from `appdimens-dynamic`; strategy rules come from each `appdimens-dynamic-<strategy>` AAR.
 
 If a release build **crashes** only after turning on minify or full mode, open **R8 / ProGuard** mapping or stack traces, then adjust **keeps** (see sections below).
 

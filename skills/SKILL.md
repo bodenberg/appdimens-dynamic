@@ -5,11 +5,11 @@ description: Use this skill for any Android responsive layout or scaling questio
 
 # AppDimens Dynamic — project workflow
 
-**Library (3.1.6 modular):** principal `io.github.bodenberg:appdimens-dynamic` (scaled+core); satellites `appdimens-dynamic-<strategy>`; optional BOM `appdimens-dynamic-bom` (versions only). **No ALL aggregator.** See [MODULES.md](../DOCUMENTATION/MODULES.md).
+**Library (3.1.6):** `appdimens-dynamic` (scaled + core), `appdimens-dynamic-<strategy>`, BOM `appdimens-dynamic-bom`. See [MODULES.md](../DOCUMENTATION/MODULES.md).
 
-> **DOC_REF (maintainers):** bump every version URL in this skill and in `library-map.md` / `reference.md` together with the coordinate above on future releases.
+**Install:** `platform("…:appdimens-dynamic-bom:3.1.6")` then the modules you need. Kotlin imports unchanged.
 
-**Packaging:** prefer `platform("…:appdimens-dynamic-bom:3.1.6")` then add only the strategies you use (no per-line version). Kotlin imports unchanged.
+On release bumps, update version URLs in this file, `library-map.md`, and `reference.md` together.
 
 **Authoritative GitHub docs (ref `3.1.6`):**
 - [README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.6/README.md) — install, `AppDimensProvider`, `DimenCache.invalidateOnConfigChange`

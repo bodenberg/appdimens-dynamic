@@ -1,9 +1,7 @@
 # Power strategy (`compose.power` / `code.power`)
 
-
-**Maven artifact (3.1.6):** `io.github.bodenberg:appdimens-dynamic-power:3.1.6`  
-**Gradle module:** `:library-power` — Satellite — add this dependency to use `pwsdp` / power APIs.  
-Always also depend on the principal `appdimens-dynamic` (transitive via the satellite). See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316--modular).
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-power:3.1.6` (`:library-power`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
 
 **Same extension / facilitator / builder shape as scaled** — replace the prefix `sdp` → `pwsdp`, `hdp` → `pwhdp`, `wdp` → `pwwdp`, `ssp` → `pwssp`, etc. Full table: [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
 

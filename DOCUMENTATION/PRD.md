@@ -1,9 +1,8 @@
 # Product Requirements Document (PRD) — AppDimens Dynamic
 
 > [!NOTE]
-> **Product Alignment:** Modular Maven set **`3.1.6`** — principal `io.github.bodenberg:appdimens-dynamic` (scaled + core/common/plain) plus opt-in `appdimens-dynamic-<strategy>` satellites; optional `appdimens-dynamic-bom` for version alignment. **No ALL aggregator.** See [MODULES.md](MODULES.md).
-> **Primary modules:** `:library` + `:library-<strategy>`
-> **Associated Documents:** [PDR (Design)](PDR.md) | [MODULES.md](MODULES.md) | [Mathematics](MATHEMATICS-AND-CALCULUS.md) | [API Conventions](COMPOSE-API-CONVENTIONS.md)
+> **Version:** `3.1.6` — modules: [MODULES.md](MODULES.md)
+> **Related:** [PDR](PDR.md) · [Mathematics](MATHEMATICS-AND-CALCULUS.md) · [API Conventions](COMPOSE-API-CONVENTIONS.md)
 
 ## 1. Executive Summary
 

@@ -40,9 +40,8 @@ mavenPublishing {
     pom {
         name.set("AppDimens Dynamic — BOM")
         description.set(
-            "Bill of Materials for AppDimens Dynamic modular artifacts. " +
-                "Aligns versions of the principal (appdimens-dynamic) and opt-in satellites; " +
-                "does not pull strategy code — declare each module you need."
+            "Bill of Materials for AppDimens Dynamic — version constraints for " +
+                "appdimens-dynamic and appdimens-dynamic-<strategy> modules."
         )
         url.set("https://github.com/bodenberg/appdimens-dynamic")
         licenses {

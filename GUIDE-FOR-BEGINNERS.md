@@ -6,22 +6,20 @@ You write **once** and your code automatically adapts to any device. The library
 
 ---
 
-## Installation (v3.1.6 — modular)
-
-Recommended — align versions with the **BOM**, then add only what you use:
+## Installation (v3.1.6)
 
 ```kotlin
 implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.6"))
-implementation("io.github.bodenberg:appdimens-dynamic") // Scaled + cache/core
+implementation("io.github.bodenberg:appdimens-dynamic")
 implementation("io.github.bodenberg:appdimens-dynamic-percent")
 implementation("io.github.bodenberg:appdimens-dynamic-resize")
 ```
 
-Without the BOM, pin `:3.1.6` on each coordinate. There is **no** “install everything” / ALL artifact (the BOM does **not** pull strategies). Kotlin **imports stay the same**. Full matrix: [README](./README.md#installation-v316--modular) · [MODULES.md](./DOCUMENTATION/MODULES.md).
+Without the BOM, pin `:3.1.6` on each coordinate. Details: [README](./README.md#installation-v316) · [MODULES.md](./DOCUMENTATION/MODULES.md).
 
-| Strategy in this guide | Extra Gradle dependency |
-|------------------------|-------------------------|
-| **Scaled** (`sdp` / `hdp` / `wdp` / `ssp`) | *(included in principal)* |
+| Strategy in this guide | Maven module |
+|------------------------|--------------|
+| **Scaled** (`sdp` / `hdp` / `wdp` / `ssp`) | `appdimens-dynamic` |
 | Percent, Power, Fluid, Auto, Diagonal, Fill, Fit, Interpolated, Logarithmic, Perimeter, Density | `appdimens-dynamic-<name>` |
 | Resize (`autoResize*`) | `appdimens-dynamic-resize` |
 | Physical units (mm / cm / in) | `appdimens-dynamic-units` |

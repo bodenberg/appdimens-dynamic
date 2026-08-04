@@ -1,9 +1,7 @@
 # Percent strategy (`compose.percent` / `code.percent`)
 
-
-**Maven artifact (3.1.6):** `io.github.bodenberg:appdimens-dynamic-percent:3.1.6`  
-**Gradle module:** `:library-percent` — Satellite — add this dependency to use `psdp` / `space*`.  
-Always also depend on the principal `appdimens-dynamic` (transitive via the satellite). See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316--modular).
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-percent:3.1.6` (`:library-percent`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
 
 ## What it is
 

@@ -1,10 +1,9 @@
 # Mathematics and Calculus — AppDimens Dynamic
 
 > [!NOTE]
-> Formal Technical Reference validating the geometry mapping against `android.content.res.Configuration`.
-> **Associated Documents:** [PRD (Requirements)](PRD.md) | [PDR (Design)](PDR.md) | [Resize Spec](resize.md) | [MODULES.md](MODULES.md)
+> Formal reference for geometry mapping against `android.content.res.Configuration`.
+> **Related:** [PRD](PRD.md) · [PDR](PDR.md) · [Resize](resize.md) · [MODULES](MODULES.md)
 >
-> **Packaging (3.1.6):** formulas are unchanged across modules. Shared metrics live in the principal (`appdimens-dynamic`); strategy-specific precomputed scales register via `StrategyFactorRegistry` only when that satellite AAR is on the classpath.
 
 This document establishes the geometric algorithms parsing system UI inputs to logical device dimensions, mapping exact equations translated natively into `AppDimens Dynamic` (`compose.<strategy>` and `code.<strategy>`).
 

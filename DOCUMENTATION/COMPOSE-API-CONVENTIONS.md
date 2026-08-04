@@ -2,13 +2,13 @@
 
 This document is the **authoritative surface-area reference** for Jetpack Compose extensions in **scaled** mode, plus rules that **every other strategy** (`percent`, `power`, `fluid`, …) mirrors with a different name prefix.
 
-**Source of truth (3.1.6):**
-- **Scaled** (principal artifact): `library/src/main/java/com/appdimens/dynamic/compose/`
-- **Other strategies** (satellites): `library-<strategy>/src/main/java/com/appdimens/dynamic/compose/<strategy>/`
+**Sources:**
+- Scaled: `library/src/main/java/com/appdimens/dynamic/compose/`
+- Other strategies: `library-<strategy>/src/main/java/com/appdimens/dynamic/compose/<strategy>/`
 
-Maven: principal `appdimens-dynamic`; satellites `appdimens-dynamic-<strategy>` — see [MODULES.md](MODULES.md). Kotlin **imports stay the same**.
+Artifacts: [MODULES.md](MODULES.md).
 
-**Not in this file:** the **resize** strategy (`com.appdimens.dynamic.compose.resize`, `code.resize`, `autoResize*`, `ResizeBound`) — see [resize.md](resize.md) and the KDoc tree under [`KDOC/com.appdimens.dynamic.compose.resize/`](KDOC/com.appdimens.dynamic.compose.resize/index.md). Requires `appdimens-dynamic-resize`.
+**Out of scope here:** resize (`compose.resize` / `code.resize`, `autoResize*`, `ResizeBound`) — see [resize.md](resize.md) and [`KDOC/…/compose.resize/`](KDOC/com.appdimens.dynamic.compose.resize/index.md).
 
 ---
 

@@ -1,11 +1,7 @@
 # Scaled strategy (`compose.scaled` / mirrored `code`)
 
-
-**Maven artifact (3.1.6):** `io.github.bodenberg:appdimens-dynamic:3.1.6`  
-**Gradle module:** `:library` — Included in the **principal** artifact (scaled + core + common + plain).  
-Other strategies are separate satellites — see [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316--modular).
-
-**Complete API surface (all `sdp`/`hdp`/`wdp`/`ssp`… properties, facilitators, `scaledDp`/`scaledSp`, prefix map for other strategies):** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic:3.1.6` (`:library`)
+API catalog: [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md) · modules: [MODULES.md](MODULES.md)
 
 ## What it is
 

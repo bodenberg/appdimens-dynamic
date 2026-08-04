@@ -1,9 +1,7 @@
 # Physical units (`compose` + `code.units`)
 
-
-**Maven artifact (3.1.6):** `io.github.bodenberg:appdimens-dynamic-units:3.1.6`  
-**Gradle module:** `:library-units` — Satellite — add this dependency to use mm/cm/inch helpers.  
-Always also depend on the principal `appdimens-dynamic` (transitive via the satellite). See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316--modular).
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-units:3.1.6` (`:library-units`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
 
 ## What it is
 

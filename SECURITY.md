@@ -4,11 +4,11 @@
 
 | Version | Supported |
 | ------- | ------------------ |
-| 3.1.x (modular Maven set) | :white_check_mark: |
+| 3.1.x | :white_check_mark: |
 | 3.0.x | :white_check_mark: |
 | < 3.0 | :x: |
 
-The **3.1.6+** line publishes a **principal** artifact (`appdimens-dynamic`) plus optional **satellites** (`appdimens-dynamic-<strategy>`). Security fixes are shipped on the same version line for all published modules.
+Security fixes for **3.1.6+** apply to the full published set (`appdimens-dynamic`, strategy modules, and `appdimens-dynamic-bom`) at the shared version line.
 
 ## Reporting a Vulnerability
 

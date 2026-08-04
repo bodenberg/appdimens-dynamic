@@ -27,7 +27,6 @@ This report provides a deep technical analysis of the AppDimens Dynamic library 
 
 
 > [!NOTE]
-> **Packaging (3.1.6):** benchmarks for a given strategy assume that satellite is on the classpath. The principal artifact alone includes **scaled** + shared `DimenCache`; strategy-specific precomputes register via `StrategyFactorRegistry` only when the satellite AAR is present. See [MODULES.md](DOCUMENTATION/MODULES.md).
 
 ## 1. Architectural Overview
 

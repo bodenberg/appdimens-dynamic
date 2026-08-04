@@ -66,24 +66,22 @@ Write values like `16.sdp` and the library scales them from the current screen *
 
 **New here?** Use **Quick start** below, then [**GUIDE-FOR-BEGINNERS**](./GUIDE-FOR-BEGINNERS) for every strategy in plain language.
 
-**Strategies (modular artifacts):** [DOCUMENTATION/README.md](DOCUMENTATION/README.md) · [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) · [KDoc (hosted)](https://appdimens3.web.app/) · **Product / engineering:** [DOCUMENTATION/PRD.md](DOCUMENTATION/PRD.md) · [DOCUMENTATION/PDR.md](DOCUMENTATION/PDR.md) · [DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md](DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md)
+**Documentation:** [DOCUMENTATION/README.md](DOCUMENTATION/README.md) · [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) · [KDoc (hosted)](https://appdimens3.web.app/) · [PRD](DOCUMENTATION/PRD.md) · [PDR](DOCUMENTATION/PDR.md) · [Mathematics](DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md)
 
 ---
 
-## Installation (v3.1.6 — modular)
+## Installation (v3.1.6)
 
-> **Breaking change (Gradle only):** `appdimens-dynamic` is no longer a monolith. It is the **minimal** artifact (`common` + `core` + **scaled** + `plain`). Other strategies are **opt-in satellites**. There is **no** `ALL` aggregator that pulls every strategy. An optional **BOM** only aligns versions. Kotlin packages/imports stay the same.
+From **3.1.6**, the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
 
-### Recommended — with BOM (version aligned once)
+### With BOM
 
 ```kotlin
 dependencies {
     implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.6"))
 
-    // Required — core cache + default scaled (sdp / hdp / wdp / ssp / …)
     implementation("io.github.bodenberg:appdimens-dynamic")
 
-    // Opt-in satellites (add only what you use — no versions needed with the BOM)
     implementation("io.github.bodenberg:appdimens-dynamic-percent")
     implementation("io.github.bodenberg:appdimens-dynamic-power")
     implementation("io.github.bodenberg:appdimens-dynamic-fluid")
@@ -100,33 +98,35 @@ dependencies {
 }
 ```
 
-### Without BOM (explicit versions)
+### Without BOM
 
 ```kotlin
 dependencies {
     implementation("io.github.bodenberg:appdimens-dynamic:3.1.6")
     implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.6")
-    // …same satellites as above, each with :3.1.6
+    // same satellites as above, each with :3.1.6
 }
 ```
 
 ### Migration from 3.1.5
 
-| Antes (3.1.5) | Depois (3.1.6) |
-|---|---|
-| Uma dep `appdimens-dynamic` com todas as estratégias | `appdimens-dynamic` = scaled+core; declare cada satélite usado |
-| — | Opcional: `appdimens-dynamic-bom` para alinhar versões (não puxa código) |
-| Imports Kotlin iguais | **Sem mudança** de packages |
+| 3.1.5 | 3.1.6 |
+|-------|-------|
+| One `appdimens-dynamic` dependency with every strategy | Principal = scaled + core; declare each extra strategy module |
+| — | Optional `appdimens-dynamic-bom` for shared version management |
+| Kotlin imports | Unchanged |
 
 ### Artifact matrix
 
-| Maven artifact | Contém |
-|---|---|
-| `appdimens-dynamic` | `common`, `core`, `code.plain`, `code`/`compose` **scaled** |
-| `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` (depende só do principal) |
-| `appdimens-dynamic-bom` | **Só constraints de versão** — sem classes; declare cada módulo que usar |
+| Maven artifact | Contents |
+|----------------|----------|
+| `appdimens-dynamic` | `common`, `core`, `code.plain`, `code` / `compose` **scaled** |
+| `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` |
+| `appdimens-dynamic-bom` | Version constraints (`java-platform`) |
 
-**Requirements:** Min SDK **24** · Compile SDK **36** · **Kotlin** & **Java 17** · **Jetpack Compose** (BOM aligned with this library)
+Module graph: [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md).
+
+**Requirements:** Min SDK **24** · Compile SDK **36** · **Kotlin** & **Java 17** · **Jetpack Compose**
 
 ---
 
@@ -334,7 +334,7 @@ Approximate **real-world** size on screen (density-based). Compose: use helpers 
 
 **Recommendation order for most apps:** **Scaled** (with or without `a`) → then **percent** → then **auto**; explore the rest when you have a clear need (fluid, fit, diagonal, etc.).
 
-Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **fill**, **fit**, **interpolated**, **logarithmic**, **perimeter**, **density**, **resize**, **units**) use the **same suffix patterns** as Scaled with a **different import prefix** — and each requires its **satellite Maven dependency** (`appdimens-dynamic-<strategy>`). See [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md), [DOCUMENTATION/README.md](DOCUMENTATION/README.md), and [**GUIDE-FOR-BEGINNERS**](./GUIDE-FOR-BEGINNERS).
+Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **fill**, **fit**, **interpolated**, **logarithmic**, **perimeter**, **density**, **resize**, **units**) mirror the Scaled suffix patterns under a different import prefix and ship as separate Maven modules. See [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md), [DOCUMENTATION/README.md](DOCUMENTATION/README.md), and [GUIDE-FOR-BEGINNERS](./GUIDE-FOR-BEGINNERS).
 
 | Resource | Use for |
 |----------|---------|

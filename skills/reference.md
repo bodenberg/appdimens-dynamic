@@ -1,6 +1,6 @@
 # AppDimens Dynamic — library map (concise)
 
-**Modules (3.1.6):** [DOCUMENTATION/MODULES.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.6/DOCUMENTATION/MODULES.md) — principal + satellites + optional BOM; no ALL aggregator.
+**Modules (3.1.6):** [DOCUMENTATION/MODULES.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.6/DOCUMENTATION/MODULES.md)
 
 **Doc base (Git ref `3.1.6`):** [https://github.com/bodenberg/appdimens-dynamic/blob/3.1.6/](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.6/)
 

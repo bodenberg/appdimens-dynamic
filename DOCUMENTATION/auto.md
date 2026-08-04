@@ -1,9 +1,7 @@
 # Auto strategy (`compose.auto` / `code.auto`)
 
-
-**Maven artifact (3.1.6):** `io.github.bodenberg:appdimens-dynamic-auto:3.1.6`  
-**Gradle module:** `:library-auto` — Satellite — add this dependency to use `asdp` / auto APIs.  
-Always also depend on the principal `appdimens-dynamic` (transitive via the satellite). See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316--modular).
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-auto:3.1.6` (`:library-auto`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
 
 **Same API surface as scaled** with prefixes `asdp` / `ahdp` / `awdp` / `assp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
 

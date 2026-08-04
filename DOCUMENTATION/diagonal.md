@@ -1,9 +1,7 @@
 # Diagonal strategy (`compose.diagonal` / `code.diagonal`)
 
-
-**Maven artifact (3.1.6):** `io.github.bodenberg:appdimens-dynamic-diagonal:3.1.6`  
-**Gradle module:** `:library-diagonal` — Satellite — add this dependency to use `dgsdp` / diagonal APIs.  
-Always also depend on the principal `appdimens-dynamic` (transitive via the satellite). See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316--modular).
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-diagonal:3.1.6` (`:library-diagonal`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
 
 **Same API surface as scaled** with prefixes `dgsdp` / `dghdp` / `dgwdp` / `dgssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
 

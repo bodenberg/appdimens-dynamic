@@ -1,7 +1,5 @@
 # Performance notes — `DimenCache` & Scaling Engine
 
-> **Packaging (3.1.6):** shared cache/factors live in the principal AAR (`appdimens-dynamic`). Strategy-specific scales register via `StrategyFactorRegistry` only when the matching satellite is on the classpath. See [MODULES.md](../DOCUMENTATION/MODULES.md).
-
 ## Fast bypass (`getOrPut`)
 
 When **aspect ratio is off** (cache key bit 63 clear, i.e. `Long` key ≥ 0 in the signed interpretation used in the fast check) and `CalcType` is one of:
