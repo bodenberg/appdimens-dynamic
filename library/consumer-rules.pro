@@ -53,6 +53,12 @@
 -keep class com.appdimens.dynamic.core.DimenCache { *; }
 -keep class com.appdimens.dynamic.core.DimenCache$* { *; }
 
+# Strategy factor SPI — satellites register contributors; R8 must not strip the registry
+# or SharedScreenMetrics used from inline / cross-module call sites.
+-keep class com.appdimens.dynamic.core.StrategyFactorRegistry { *; }
+-keep class com.appdimens.dynamic.core.SharedScreenMetrics { *; }
+-keep class com.appdimens.dynamic.core.StrategyFactorContributor { *; }
+
 # ScreenFactors padding fields (_p0.._p7): R8 full mode strips @JvmField fields
 # it identifies as write-only (never read by name). These fields are never read —
 # their only purpose is to occupy memory and prevent CPU false sharing on ARM64.

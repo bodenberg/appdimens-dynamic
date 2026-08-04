@@ -2,6 +2,8 @@
 
 This folder goes deeper into each **scaling strategy** in [AppDimens Dynamic](../README.md): what it is, the formula, how to import it, and when to pick each mode. Each strategy’s code lives in `com.appdimens.dynamic.compose.<strategy>` and `com.appdimens.dynamic.code.<strategy>` with **no cross-imports** between strategies.
 
+**Packaging (3.1.6):** the default Maven artifact `appdimens-dynamic` ships **scaled + core/common/plain** only. Every other strategy is a satellite `appdimens-dynamic-<strategy>` that depends solely on the principal. There is **no** ALL/BOM aggregator — see [README Installation](../README.md#installation-v316--modular).
+
 **Product docs:** [PRD.md](PRD.md) (product requirements) · [PDR.md](PDR.md) (technical design, development plan, prompt requirements, traceability matrix) · [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) (formulas, constants, and calculation kernels).
 
 For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../library/PERFORMANCE.md).

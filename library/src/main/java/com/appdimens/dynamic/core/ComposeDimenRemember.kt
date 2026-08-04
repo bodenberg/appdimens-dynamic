@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun rememberDimenDp(
+fun rememberDimenDp(
     cacheKey: Long,
     layoutStamp: Long,
     androidContext: Context,
@@ -22,7 +22,7 @@ internal fun rememberDimenDp(
 }
 
 @Composable
-internal fun rememberDimenPxFromDp(
+fun rememberDimenPxFromDp(
     cacheKey: Long,
     pxStamp: Long,
     androidContext: Context,

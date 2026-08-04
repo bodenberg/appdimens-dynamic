@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Density
  * quando qualquer campo da configuração muda.
  */
 @Suppress("UNUSED_PARAMETER")
-internal fun layoutRememberStamp(configuration: Configuration, context: Context): Long {
+fun layoutRememberStamp(configuration: Configuration, context: Context): Long {
     val sw = configuration.smallestScreenWidthDp.toLong() and 0xFFFFFL
     val w = configuration.screenWidthDp.toLong() and 0xFFFFFL
     val h = configuration.screenHeightDp.toLong() and 0xFFFFFL
@@ -33,7 +33,7 @@ internal fun layoutRememberStamp(configuration: Configuration, context: Context)
  * EN [layoutRememberStamp] xor raw bits of [Density.density] and [Density.fontScale] for Px composable paths.
  * PT [layoutRememberStamp] xor bits brutos de densidade e escala de fonte para caminhos Px.
  */
-internal fun pxRememberStamp(layoutStamp: Long, density: Density): Long {
+fun pxRememberStamp(layoutStamp: Long, density: Density): Long {
     val d = density.density.toRawBits().toLong() and 0xFFFFFFFFL
     val f = density.fontScale.toRawBits().toLong() and 0xFFFFFFFFL
     return layoutStamp xor (d shl 32) xor f
@@ -43,7 +43,7 @@ internal fun pxRememberStamp(layoutStamp: Long, density: Density): Long {
  * EN Stamp equivalent to the former multi-key [remember] for [com.appdimens.dynamic.compose.DimenScaled] / [com.appdimens.dynamic.compose.ScaledSp] custom entry resolution.
  * PT Carimbo equivalente ao antigo [remember] multi-chave para resolução de entradas customizadas.
  */
-internal fun scaledEntryRememberStamp(
+fun scaledEntryRememberStamp(
     uiModeOrdinal: Int,
     configuration: Configuration,
     aspectRatio: Float,

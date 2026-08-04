@@ -1,10 +1,10 @@
 # Project Design Document (PDR) — AppDimens Dynamic
 
 > [!NOTE]
-> **Product Alignment:** `io.github.bodenberg:appdimens-dynamic:3.1.5`
-> **Associated Documents:** [PRD (Requirements)](PRD.md) | [Mathematics](MATHEMATICS-AND-CALCULUS.md) | [Performance Specs](../library/PERFORMANCE.md)
+> **Product Alignment:** Modular Maven artifacts at **`3.1.6`** — principal `io.github.bodenberg:appdimens-dynamic` (common + core + scaled + plain) plus opt-in `appdimens-dynamic-<strategy>` satellites. **No ALL/BOM aggregator.**
+> **Associated Documents:** [PRD (Requirements)](PRD.md) | [Mathematics](MATHEMATICS-AND-CALCULUS.md) | [Performance Specs](../library/PERFORMANCE.md) | [README migration](../README.md)
 
-This internal architecture document mandates the precise structural logic, technical dependencies, caching behaviors, and quality integration required by the AppDimens Dynamic `library` package.
+This internal architecture document mandates the precise structural logic, technical dependencies, caching behaviors, and quality integration required by the AppDimens Dynamic library modules.
 
 ---
 
@@ -59,7 +59,18 @@ flowchart TD
 ```
 
 > [!IMPORTANT]
-> **Architectural Invariant:** Code/Modules defined as `compose.<strategy>` **must never** intersect or implicitly construct elements of a differing strategy module. Code routing is strict: `strategy` \(\rightarrow\) `core` \(\rightarrow\) `common`. 
+> **Architectural Invariant:** Code/Modules defined as `compose.<strategy>` **must never** intersect or implicitly construct elements of a differing strategy module. Code routing is strict: `strategy` \(\rightarrow\) `core` \(\rightarrow\) `common`. Satellites depend **only** on the principal artifact — never on each other.
+
+### 2.0 Maven / Gradle module graph (3.1.6)
+
+| Gradle project | Maven coordinate | Contents |
+|---|---|---|
+| `:library` | `appdimens-dynamic` | `common`, `core` (+ `StrategyFactorRegistry`), `code.plain`, scaled |
+| `:library-<strategy>` | `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` |
+
+Strategy-specific precomputed scales (diagonal/power/log/interpolated/perimeter) register via [`StrategyFactorRegistry`](../library/src/main/java/com/appdimens/dynamic/core/StrategyFactorRegistry.kt) so absent satellites do no work in `updateFactors()`.
+
+`CalcType` ordinals remain fixed in core for cache-key stability even when a satellite is not on the classpath.
 
 ### 2.2 Cache Anatomy & Thread Engineering
 
@@ -111,5 +122,7 @@ sequenceDiagram
 
 When modifying structural parameters or curves, engineers must ensure the following baseline protocols are met prior to merging PRs:
 - [ ] Ensure **Code/Compose Parity**. Modify the `code` extension symmetrically when introducing a new Compose builder.
-- [ ] Execute `./gradlew :library:test` and visually cross-check output against `DimenPerformanceTest`.
-- [ ] If mutating `ScreenFactors`, actively adjust bits in `DimenCache` alongside mathematical models evaluated in `MATHEMATICS-AND-CALCULUS.md`.
+- [ ] Execute `./gradlew :library:testDebugUnitTest` plus affected `:library-<strategy>:testDebugUnitTest` and visually cross-check output against `DimenPerformanceTest`.
+- [ ] If mutating `ScreenFactors` / `StrategyFactorRegistry`, actively adjust bits in `DimenCache` alongside mathematical models evaluated in `MATHEMATICS-AND-CALCULUS.md`.
+- [ ] Confirm **no ALL/BOM** artifact and that satellites depend only on `:library`.
+- [ ] Smoke: main `classes.jar` must not contain other strategy packages (`compose.percent`, …).

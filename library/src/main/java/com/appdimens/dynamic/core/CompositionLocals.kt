@@ -63,7 +63,7 @@ fun AppDimensProvider(content: @Composable () -> Unit) {
  * PT Auxiliar interno para obter o UiModeType, recalculando se não for fornecido.
  */
 @Composable
-internal fun getCurrentUiModeType(): UiModeType {
+fun getCurrentUiModeType(): UiModeType {
     val provided = LocalUiModeType.current
     if (provided != UiModeType.UNDEFINED) return provided
     val context = LocalContext.current
@@ -74,7 +74,7 @@ internal fun getCurrentUiModeType(): UiModeType {
  * EN Walks [ContextWrapper] chain to find the hosting [Activity], if any.
  * PT Percorre a cadeia de [ContextWrapper] para encontrar a [Activity] hospedeira, se existir.
  */
-internal fun Context.findActivity(): Activity? {
+fun Context.findActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {
         if (context is Activity) return context

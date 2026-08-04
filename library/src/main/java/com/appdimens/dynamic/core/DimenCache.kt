@@ -125,26 +125,24 @@ object DimenCache {
     @Volatile
     @PublishedApi
     internal var isInitializedFast = false
-    @PublishedApi
-    internal val isInitialized = AtomicBoolean(false)
+    val isInitialized = AtomicBoolean(false)
 
     /**
      * EN Calculation types based on the library's package structure.
      * PT Tipos de cálculo baseados na estrutura de pacotes da biblioteca.
      */
-    @PublishedApi
-    internal enum class CalcType {
+    enum class CalcType {
         AUTO, DIAGONAL, FILL, FIT, FLUID, INTERPOLATED, LOGARITHMIC,
         PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO, DENSITY
     }
 
-    @JvmField @PublishedApi internal val CT_PERCENT       = CalcType.PERCENT.ordinal
-    @JvmField @PublishedApi internal val CT_SCALED        = CalcType.SCALED.ordinal
-    @JvmField @PublishedApi internal val CT_DENSITY       = CalcType.DENSITY.ordinal
-    @JvmField @PublishedApi internal val CT_ASPECT_RATIO  = CalcType.ASPECT_RATIO.ordinal
-    @JvmField @PublishedApi internal val CT_DIAGONAL      = CalcType.DIAGONAL.ordinal
-    @JvmField @PublishedApi internal val CT_INTERPOLATED  = CalcType.INTERPOLATED.ordinal
-    @JvmField @PublishedApi internal val CT_PERIMETER     = CalcType.PERIMETER.ordinal
+    @JvmField val CT_PERCENT       = CalcType.PERCENT.ordinal
+    @JvmField val CT_SCALED        = CalcType.SCALED.ordinal
+    @JvmField val CT_DENSITY       = CalcType.DENSITY.ordinal
+    @JvmField val CT_ASPECT_RATIO  = CalcType.ASPECT_RATIO.ordinal
+    @JvmField val CT_DIAGONAL      = CalcType.DIAGONAL.ordinal
+    @JvmField val CT_INTERPOLATED  = CalcType.INTERPOLATED.ordinal
+    @JvmField val CT_PERIMETER     = CalcType.PERIMETER.ordinal
 
     // ─────────────────────────────────────────────────────────────────────────
     // DIAGNOSTICS COUNTERS — guarded by [diagnosticsEnabled] to avoid overhead
@@ -163,9 +161,9 @@ object DimenCache {
     @PublishedApi
     internal var diagnosticsEnabled: Boolean = false
 
-    @JvmField @PublishedApi internal val hitCount      = LongAdder()
-    @JvmField @PublishedApi internal val missCount     = LongAdder()
-    @JvmField @PublishedApi internal val evictionCount = LongAdder()
+    @JvmField val hitCount      = LongAdder()
+    @JvmField val missCount     = LongAdder()
+    @JvmField val evictionCount = LongAdder()
 
     /**
      * EN Master switch for the cache system. If disabled, all calls will recompute.
@@ -190,7 +188,7 @@ object DimenCache {
     private var cachedUiModeConfigHash: Int = 0
 
     @JvmStatic
-    internal fun getCachedUiModeType(context: Context): UiModeType {
+    fun getCachedUiModeType(context: Context): UiModeType {
         val configHash = context.resources.configuration.hashCode()
         val cached = cachedUiMode
         if (cachedUiModeConfigHash == configHash && cached != UiModeType.UNDEFINED) {
@@ -226,12 +224,9 @@ object DimenCache {
         @JvmField @Volatile var density        : Float = 1.0f
         @JvmField @Volatile var scale          : Float = 1.0f
         @JvmField @Volatile var arMultiplier   : Float = 1.0f
-        // [FASE 5] Pre-computed per-strategy scale factors (config-change only)
-        @JvmField @Volatile var diagonalScale     : Float = 1.0f
-        @JvmField @Volatile var powerScale        : Float = 1.0f
-        @JvmField @Volatile var logScale          : Float = 1.0f
-        @JvmField @Volatile var interpolatedScale : Float = 1.0f
-        @JvmField @Volatile var perimeterScale    : Float = 1.0f
+        // Shared AR multiply helper (used by many strategies' custom-AR paths).
+        // Strategy-specific scales (diagonal/power/log/…) live in satellite modules
+        // via [StrategyFactorRegistry] — not precomputed here.
         @JvmField @Volatile var aspectRatioMul    : Float = 1.0f
         // 128-byte padding guard (8 × Long = 64 bytes + object fields overhead ≥ 128)
         @Suppress("unused") @JvmField val _p0 = 0L
@@ -248,19 +243,14 @@ object DimenCache {
     @PublishedApi
     internal val factors = ScreenFactors()
 
-    // Convenience accessors — @PublishedApi so they are reachable from inline functions
-    @PublishedApi internal val currentNormalizedAr      get() = factors.normalizedAr
-    @PublishedApi internal val currentLogNormalizedAr   get() = factors.logNormalizedAr
-    @PublishedApi internal val currentSmallestWidthDp   get() = factors.smallestWidthDp
-    @PublishedApi internal val currentDensity           get() = factors.density
-    @PublishedApi internal val currentScale             get() = factors.scale
-    @PublishedApi internal val currentArMultiplier      get() = factors.arMultiplier
-    @PublishedApi internal val currentDiagonalScale     get() = factors.diagonalScale
-    @PublishedApi internal val currentPowerScale        get() = factors.powerScale
-    @PublishedApi internal val currentLogScale          get() = factors.logScale
-    @PublishedApi internal val currentInterpolatedScale get() = factors.interpolatedScale
-    @PublishedApi internal val currentPerimeterScale    get() = factors.perimeterScale
-    @PublishedApi internal val currentAspectRatioMul    get() = factors.aspectRatioMul
+    // Convenience accessors — public so satellite modules can read shared scales.
+    val currentNormalizedAr      get() = factors.normalizedAr
+    val currentLogNormalizedAr   get() = factors.logNormalizedAr
+    val currentSmallestWidthDp   get() = factors.smallestWidthDp
+    val currentDensity           get() = factors.density
+    val currentScale             get() = factors.scale
+    val currentArMultiplier      get() = factors.arMultiplier
+    val currentAspectRatioMul    get() = factors.aspectRatioMul
 
     /**
      * Number of slots in the primary (Tier-1) fast cache.
@@ -270,17 +260,16 @@ object DimenCache {
      * Hit-rate analysis: typical app has 100–300 distinct dimension configurations;
      * 2048 slots gives <15% fill ratio under normal usage — near-zero collision rate.
      */
-    @PublishedApi
-    internal const val CACHE_SIZE = 2048
+    const val CACHE_SIZE = 2048
 
     /**
      * EN Cache Sharding (Concurrency Partitioning)
      * Split the cache into 4 shards to reduce false sharing and bus contention.
      */
-    @PublishedApi internal const val SHARD_COUNT    = 4
-    @PublishedApi internal const val SHARD_MASK     = SHARD_COUNT - 1
-    @PublishedApi internal const val SHARD_SIZE     = CACHE_SIZE / SHARD_COUNT
-    @PublishedApi internal const val SHARD_SIZE_MASK = SHARD_SIZE - 1
+    const val SHARD_COUNT    = 4
+    const val SHARD_MASK     = SHARD_COUNT - 1
+    const val SHARD_SIZE     = CACHE_SIZE / SHARD_COUNT
+    const val SHARD_SIZE_MASK = SHARD_SIZE - 1
 
     // ─────────────────────────────────────────────────────────────────────────
     // [FASE 2] SHARD WRAPPER — anti-false-sharing padding between shards
@@ -306,8 +295,8 @@ object DimenCache {
      */
     @PublishedApi
     internal class ShardWrapper(shardSize: Int) {
-        @JvmField @PublishedApi internal val keys  : AtomicLongArray   = AtomicLongArray(shardSize)
-        @JvmField @PublishedApi internal val values: AtomicIntegerArray = AtomicIntegerArray(shardSize)
+        @JvmField val keys  : AtomicLongArray   = AtomicLongArray(shardSize)
+        @JvmField val values: AtomicIntegerArray = AtomicIntegerArray(shardSize)
         // 128-byte padding guard between shard objects
         @Suppress("unused") @JvmField val _p0 = 0L
         @Suppress("unused") @JvmField val _p1 = 0L
@@ -340,13 +329,11 @@ object DimenCache {
      *
      * PT Aliases de compatibilidade com os testes existentes.
      */
-    @PublishedApi
-    internal val keysArray: Array<AtomicLongArray> by lazy {
+    val keysArray: Array<AtomicLongArray> by lazy {
         Array(SHARD_COUNT) { shards[it].keys }
     }
 
-    @PublishedApi
-    internal val valueBitsArray: Array<AtomicIntegerArray> by lazy {
+    val valueBitsArray: Array<AtomicIntegerArray> by lazy {
         Array(SHARD_COUNT) { shards[it].values }
     }
 
@@ -354,17 +341,16 @@ object DimenCache {
     // MATH CONSTANTS
     // ─────────────────────────────────────────────────────────────────────────
 
-    @PublishedApi internal const val INV_BASE_RATIO      = 0.0033333334f // 1f / 300f
-    @PublishedApi internal const val ADJUSTMENT_SCALE    = 0.10f / 30f   // 0.0033333334f
-    @PublishedApi internal const val SENSITIVITY_DEFAULT = 0.08f / 30f   // 0.0026666667f
+    const val INV_BASE_RATIO      = 0.0033333334f // 1f / 300f
+    const val ADJUSTMENT_SCALE    = 0.10f / 30f   // 0.0033333334f
+    const val SENSITIVITY_DEFAULT = 0.08f / 30f   // 0.0026666667f
 
     /**
      * EN Unified high-performance scaling engine. Reads from [factors] — padded object,
      * guaranteeing that the read of `scale` and `arMultiplier` land on the same cache line
      * as all other factor fields.
      */
-    @PublishedApi
-    internal fun calculateRawScaling(
+    fun calculateRawScaling(
         baseValue: Float,
         applyAspectRatio: Boolean,
         customSensitivityK: Float?
@@ -430,8 +416,7 @@ object DimenCache {
      * EN Dimension type discriminator for the cache key.
      * PT Discriminador de tipo de dimensão para a chave de cache.
      */
-    @PublishedApi
-    internal enum class ValueType {
+    enum class ValueType {
         DP, PX, SP_WITH_SCALE, SP_NO_SCALE, SP_PX_WITH_SCALE, SP_PX_NO_SCALE
     }
 
@@ -452,8 +437,7 @@ object DimenCache {
      * ```
      */
     @JvmStatic
-    @PublishedApi
-    internal fun buildKey(
+    fun buildKey(
         baseValue: Float,
         isLandscape: Boolean,
         ignoreMultiWindows: Boolean,
@@ -487,8 +471,7 @@ object DimenCache {
 
     // Overload accepting Int baseValue (kept for call-site convenience)
     @JvmStatic
-    @PublishedApi
-    internal fun buildKey(
+    fun buildKey(
         baseValue: Int,
         isLandscape: Boolean,
         ignoreMultiWindows: Boolean,
@@ -508,8 +491,7 @@ object DimenCache {
     // ─────────────────────────────────────────────────────────────────────────
 
     @JvmStatic
-    @PublishedApi
-    internal fun init(context: Context) {
+    fun init(context: Context) {
         if (isInitialized.get()) {
             isInitializedFast = true
             return
@@ -568,8 +550,7 @@ object DimenCache {
     }
 
     @JvmStatic
-    @PublishedApi
-    internal fun saveToPersistence(context: Context) {
+    fun saveToPersistence(context: Context) {
         saveFlow.tryEmit(context)
     }
 
@@ -614,8 +595,7 @@ object DimenCache {
      * pública precise de acesso direto aos campos internos de [ShardWrapper].
      */
     @JvmStatic
-    @PublishedApi
-    internal fun getOrPutInternal(key: Long, context: Context?, compute: () -> Float): Float {
+    fun getOrPutInternal(key: Long, context: Context?, compute: () -> Float): Float {
         // AUTO-INIT — same guard as inline [getOrPut] ([isInitializedFast] + [init])
         if (context != null && !isInitializedFast) {
             init(context)
@@ -816,8 +796,7 @@ object DimenCache {
     }
 
     @JvmStatic
-    @PublishedApi
-    internal fun getOrPutAspectRatio(normalizedAr: Float, context: Context? = null): Float {
+    fun getOrPutAspectRatio(normalizedAr: Float, context: Context? = null): Float {
         val arKey = ((java.lang.Float.floatToRawIntBits(normalizedAr).toLong() and 0xFFFFFFFFL) shl 31) or
                 (CT_ASPECT_RATIO.toLong() shl 27)
         return getOrPut(arKey, context) {
@@ -871,45 +850,19 @@ object DimenCache {
     }
 
     private fun updateFactors(config: Configuration) {
-        val sw     = config.smallestScreenWidthDp.toFloat()
-        val maxDim = max(config.screenWidthDp.toFloat(), config.screenHeightDp.toFloat())
-        val minDim = min(config.screenWidthDp.toFloat(), config.screenHeightDp.toFloat())
-
+        val metrics = sharedMetricsFrom(config)
         val f = factors
 
-        f.scale = sw * INV_BASE_RATIO
+        f.scale = metrics.scale
+        f.normalizedAr = metrics.normalizedAr
+        f.logNormalizedAr = metrics.logNormalizedAr
+        f.arMultiplier = metrics.arMultiplier
+        f.density = metrics.density
+        f.aspectRatioMul = metrics.aspectRatioMul
+        f.smallestWidthDp = metrics.smallestWidthDp.toInt()
 
-        val rawAr = if (minDim > 0) maxDim / minDim else 1.0f
-        f.normalizedAr    = rawAr / 1.78f
-        f.logNormalizedAr = fastLn(f.normalizedAr)
-
-        val diff = sw - 300f
-        val adjustment = SENSITIVITY_DEFAULT * f.logNormalizedAr
-        f.arMultiplier = 1.0f + diff * (ADJUSTMENT_SCALE + adjustment)
-
-        f.density = config.densityDpi.toFloat() / 160f
-
-        // [FASE 5] Pre-compute per-strategy scale factors
-        val diag = Math.sqrt((minDim * minDim + maxDim * maxDim).toDouble()).toFloat()
-        f.diagonalScale = diag / DesignScaleConstants.BASE_DIAGONAL_DP
-
-        val ratio = sw / DesignScaleConstants.BASE_WIDTH_DP
-        f.powerScale = Math.pow(ratio.toDouble(), 0.75).toFloat()
-
-        val swInv = sw * INV_BASE_RATIO
-        f.logScale = if (sw > DesignScaleConstants.BASE_WIDTH_DP) {
-            1f + 0.4f * kotlin.math.ln(swInv)
-        } else if (sw > 0f) {
-            1f - 0.4f * kotlin.math.ln(DesignScaleConstants.BASE_WIDTH_DP / sw)
-        } else {
-            1f
-        }
-
-        f.interpolatedScale = 1f + (sw * INV_BASE_RATIO - 1f) * 0.5f
-
-        f.perimeterScale = (minDim + maxDim) / DesignScaleConstants.BASE_PERIMETER_DP
-
-        f.aspectRatioMul = 1f + SENSITIVITY_DEFAULT * f.logNormalizedAr
+        // Notify only registered satellites (absent strategies do no work).
+        StrategyFactorRegistry.publish(metrics)
     }
 
     /** EN Clears all cache slots. Java-compatible alias. */

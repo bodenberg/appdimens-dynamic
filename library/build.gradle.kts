@@ -18,15 +18,15 @@ val isJitPack = System.getenv("JITPACK") == "true"
         || System.getenv("ci") == "true"
 
 mavenPublishing {
-    coordinates("io.github.bodenberg", "appdimens-dynamic", "3.1.5")
+    coordinates("io.github.bodenberg", "appdimens-dynamic", providers.gradleProperty("appdimens.version").orElse("3.1.6").get())
 
     configure(
         AndroidSingleVariantLibrary()
     )
 
     pom {
-        name.set("AppDimens Dynamic: Absolute precision dp, sp, px")
-        description.set("Absolute precision in the use of dimensions independent of resolution (dimens, dimension, dimensions, dp, sp, dimen, responsive, adaptative, text unit, font scale, font size, resize, textunit, mm, cm, inch, device, physical, android, dpi, sdpi, auto, hdpi, ldpi, mdpi, precision).")
+        name.set("AppDimens Dynamic — Core + Scaled")
+        description.set("AppDimens Dynamic core: shared cache/plumbing plus the default scaled strategy (sdp/hdp/wdp/ssp). Additional strategies are separate artifacts (appdimens-dynamic-<strategy>).")
         url.set("https://github.com/bodenberg/appdimens-dynamic")
 
         licenses {

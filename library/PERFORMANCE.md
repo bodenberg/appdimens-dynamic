@@ -19,33 +19,27 @@ All other strategy ordinals (`AUTO`, `FLUID`, `POWER`, `LOGARITHMIC`, `FIT`, `FI
 
 For the six bypassed types, measured cost of a single multiply is lower than a full cache-slot lookup; memoization is still provided by **Compose `remember`** (and by call-site batching where used). When **aspect ratio is on**, the computation is heavier and the cache path is used.
 
-## Pre-computed strategy scale factors (`ScreenFactors`)
+## Pre-computed screen factors (`ScreenFactors` + satellite registry)
 
-`ScreenFactors.updateFactors()` runs **only on configuration changes** and pre-computes:
+`DimenCache.updateFactors()` runs **only on configuration changes** and pre-computes **shared** fields:
 
 | Field | Formula |
 |---|---|
 | `scale` | `sw / 300` |
 | `arMultiplier` | `1 + (sw - 300) * (ADJUSTMENT_SCALE + SENSITIVITY_DEFAULT * logNormalizedAr)` |
-| `diagonalScale` | `sqrt(sm² + lg²) / BASE_DIAGONAL_DP` |
-| `powerScale` | `(sw / BASE_WIDTH_DP) ^ 0.75` |
-| `logScale` | `1 ± 0.4 * ln(sw * INV_BASE_RATIO)` |
-| `interpolatedScale` | `1 + (sw * INV_BASE_RATIO - 1) * 0.5` |
-| `perimeterScale` | `(sm + lg) / BASE_PERIMETER_DP` |
 | `aspectRatioMul` | `1 + SENSITIVITY_DEFAULT * logNormalizedAr` |
+| `density` / AR logs | from `Configuration` |
 
-Each `calculate*Dp` function reads the pre-computed factor from `ScreenFactors` for the **default path** (qualifier = `SMALL_WIDTH`, inverter = `DEFAULT`, `customSensitivityK = null`). Non-default paths still compute inline but avoid `Double` conversions where possible.
+Strategy-specific scales (`diagonal` / `power` / `log` / `interpolated` / `perimeter`) register via `StrategyFactorRegistry` inside each satellite module. If the satellite is not on the classpath, that work is never scheduled. Default paths read the satellite’s cached scale; non-default paths still compute inline.
 
 ## Cached `UiModeType`
 
-`UiModeType.fromConfiguration(context, null)` — which accesses `SensorManager`, hinge sensor lookup, and `WindowMetricsCalculator` — is now cached per configuration hash in `DimenCache.getCachedUiModeType(context)`. The cache is invalidated automatically when the configuration hash changes. All `*Mode` / `*Screen` facilitators across 48 extension files read from this cache.
+`UiModeType.fromConfiguration(context, null)` — which accesses `SensorManager`, hinge sensor lookup, and `WindowMetricsCalculator` — is now cached per configuration hash in `DimenCache.getCachedUiModeType(context)`. The cache is invalidated automatically when the configuration hash changes. All `*Mode` / `*Screen` facilitators across strategy modules read from this cache.
 
 ## Eliminated `Float→Double→Float` conversions
 
-- **Diagonal:** `sqrt((sm² + lg²).toDouble()).toFloat()` eliminated — uses pre-computed `diagonalScale`.
-- **Power:** `ratio.toDouble().pow(0.75).toFloat()` eliminated on default path — uses pre-computed `powerScale`. Non-default paths use `Math.pow`.
-- **Logarithmic:** raw `kotlin.math.ln()` eliminated on default path — uses pre-computed `logScale`.
-
+- **Diagonal / Power / Logarithmic default paths:** use satellite-registered precomputed scales (updated only when that module is present).
+- Non-default qualifier/inverter paths may still use `Math.pow` / `ln` inline.
 ## `buildResizeStepsPx` — zero-boxing
 
 `ResizeMath.buildResizeStepsPx` writes directly to a pre-allocated `FloatArray`, avoiding `ArrayList<Float>` boxing/unboxing overhead.

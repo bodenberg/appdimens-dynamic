@@ -18,20 +18,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    /*signingConfigs {
-        create("release") {
-            keyAlias = "key"
-            keyPassword = "123456"
-            storePassword = "123456"
-            storeFile = file("${rootDir}\\key_for_tests.jks")
-        }
-    }*/
-
     buildTypes {
         release {
             isShrinkResources = true
             isMinifyEnabled = true
-            //signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -59,11 +49,26 @@ android {
 }
 
 dependencies {
+    // Main artifact = core + scaled. Satellites are opt-in (no ALL aggregator).
     api(project(":library"))
+    api(project(":library-auto"))
+    api(project(":library-density"))
+    api(project(":library-diagonal"))
+    api(project(":library-fill"))
+    api(project(":library-fit"))
+    api(project(":library-fluid"))
+    api(project(":library-interpolated"))
+    api(project(":library-logarithmic"))
+    api(project(":library-percent"))
+    api(project(":library-perimeter"))
+    api(project(":library-power"))
+    api(project(":library-resize"))
+    api(project(":library-units"))
 
-    //implementation("io.github.bodenberg:appdimens-dynamic:3.1.5")
-    // or
-    //implementation("com.github.bodenberg.appdimens:appdimens-dynamic:3.1.5")
+    // Maven Central (release consumers):
+    // implementation("io.github.bodenberg:appdimens-dynamic:3.1.6")
+    // implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.6")
+    // …
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
