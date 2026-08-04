@@ -24,6 +24,18 @@ class DimenCalculationPlumbingTest {
     }
 
     @Test
+    fun multiWindow_withContext_usesCachedActivityLookup() {
+        DimenCalculationPlumbing.clearActivityCacheForTest()
+        val cfg = config(sw = 400, w = 200)
+        // Non-Activity Context → heuristic fallback; repeated calls must stay consistent
+        // (Context→Activity cache stores null and skips re-walking the wrapper chain).
+        val ctx = org.mockito.kotlin.mock<android.content.Context>()
+        assertTrue(DimenCalculationPlumbing.isMultiWindowConstrained(cfg, true, ctx))
+        assertTrue(DimenCalculationPlumbing.isMultiWindowConstrained(cfg, true, ctx))
+        DimenCalculationPlumbing.clearActivityCacheForTest()
+    }
+
+    @Test
     fun multiWindow_fullscreen_noSplit_returnsFalse() {
         val cfg = config(sw = 400, w = 400)
         assertFalse(DimenCalculationPlumbing.isMultiWindowConstrained(cfg, ignoreMultiWindows = true))

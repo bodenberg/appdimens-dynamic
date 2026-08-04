@@ -38,6 +38,8 @@ import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.core.DimenCache
+import com.appdimens.dynamic.core.rememberDimenSp
+import com.appdimens.dynamic.core.rememberDimenSpPx
 import com.appdimens.dynamic.core.DimenCalculationPlumbing
 import com.appdimens.dynamic.core.LocalUiModeType
 import com.appdimens.dynamic.core.layoutRememberStamp
@@ -705,7 +707,9 @@ internal fun rememberFitSp(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): TextUnit = remember(cacheKey, spStamp) {
+    match: Boolean = true,
+    passthrough: TextUnit = TextUnit.Unspecified,
+): TextUnit = rememberDimenSp(cacheKey, spStamp, match = match, passthrough = passthrough) {
     DimenCache.getOrPut(cacheKey, androidContext) {
         val raw = calculateFitSpValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
         if (fontScale) raw else (raw / density.fontScale)
@@ -730,7 +734,9 @@ internal fun rememberFitSpPx(
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
     customSensitivityK: Float?,
-): Float = remember(cacheKey, ftsspPxStamp) {
+    match: Boolean = true,
+    passthrough: Float = Float.NaN,
+): Float = rememberDimenSpPx(cacheKey, ftsspPxStamp, match = match, passthrough = passthrough) {
     DimenCache.getOrPut(cacheKey, androidContext) {
         val scaledVal = calculateFitSpValueCompose(baseValue, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, configuration)
         val spValue = if (fontScale) scaledVal.sp else (scaledVal / density.fontScale).sp

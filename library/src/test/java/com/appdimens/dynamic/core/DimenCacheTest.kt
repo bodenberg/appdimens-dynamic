@@ -5,6 +5,7 @@ import com.appdimens.dynamic.common.Inverter
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class DimenCacheTest {
@@ -179,7 +180,11 @@ class DimenCacheTest {
 
         val keyPower = DimenCache.buildKey(14, false, false, DimenCache.CalcType.POWER, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         assertEquals(20f, DimenCache.getOrPut(keyPower) { 20f }, 0f)
-        assertEquals(20f, DimenCache.peek(keyPower) ?: -1f, 0f)
+        assertNull("POWER SW default bypass: nothing stored", DimenCache.peek(keyPower))
+
+        val keyFluid = DimenCache.buildKey(14, false, false, DimenCache.CalcType.FLUID, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        assertEquals(20f, DimenCache.getOrPut(keyFluid) { 20f }, 0f)
+        assertEquals(20f, DimenCache.peek(keyFluid) ?: -1f, 0f)
 
         val keyAutoAr = DimenCache.buildKey(15, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP)
         assertEquals(15f, DimenCache.getOrPut(keyAutoAr) { 15f }, 0f)
@@ -187,10 +192,91 @@ class DimenCacheTest {
     }
 
     @Test
+    fun testDefaultAspectRatioBypass() {
+        DimenCache.clearAll()
+        DimenCache.isEnabled = true
+
+        // Default AR on SCALED → single multiply (arMultiplier) → bypass, not stored.
+        val keyScaledAr = DimenCache.buildKey(
+            16, false, false, DimenCache.CalcType.SCALED,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP
+        )
+        assertEquals(16f, DimenCache.getOrPut(keyScaledAr) { 16f }, 0f)
+        assertNull("default AR SCALED must bypass shard storage", DimenCache.peek(keyScaledAr))
+
+        // Custom sensitivity → full cache path.
+        val keyCustomSens = DimenCache.buildKey(
+            17, false, false, DimenCache.CalcType.SCALED,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP,
+            customSensitivityK = 0.5f
+        )
+        assertEquals(17f, DimenCache.getOrPut(keyCustomSens) { 17f }, 0f)
+        assertEquals(17f, DimenCache.peek(keyCustomSens) ?: -1f, 0f)
+
+        // Non-default qualifier → full cache path.
+        val keyWidthAr = DimenCache.buildKey(
+            18, false, false, DimenCache.CalcType.SCALED,
+            DpQualifier.WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP
+        )
+        assertEquals(18f, DimenCache.getOrPut(keyWidthAr) { 18f }, 0f)
+        assertEquals(18f, DimenCache.peek(keyWidthAr) ?: -1f, 0f)
+
+        // CT_ASPECT_RATIO (ln memoization) must never bypass.
+        val arLn = DimenCache.getOrPutAspectRatio(1.5f)
+        assertEquals(kotlin.math.ln(1.5f), arLn, 0.001f)
+        assertTrue(DimenCache.stats().populated >= 1)
+    }
+
+    @Test
+    fun testPowerLogDefaultBypass() {
+        DimenCache.clearAll()
+        DimenCache.isEnabled = true
+
+        val keyPower = DimenCache.buildKey(
+            20, false, false, DimenCache.CalcType.POWER,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+        assertEquals(20f, DimenCache.getOrPut(keyPower) { 20f }, 0f)
+        assertNull("POWER SW default must bypass", DimenCache.peek(keyPower))
+
+        val keyLog = DimenCache.buildKey(
+            21, false, false, DimenCache.CalcType.LOGARITHMIC,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+        assertEquals(21f, DimenCache.getOrPut(keyLog) { 21f }, 0f)
+        assertNull("LOGARITHMIC SW default must bypass", DimenCache.peek(keyLog))
+
+        // WIDTH + POWER still caches (pow path).
+        val keyPowerW = DimenCache.buildKey(
+            22, false, false, DimenCache.CalcType.POWER,
+            DpQualifier.WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+        assertEquals(22f, DimenCache.getOrPut(keyPowerW) { 22f }, 0f)
+        assertEquals(22f, DimenCache.peek(keyPowerW) ?: -1f, 0f)
+    }
+
+    @Test
+    fun testOrientationInvariantKeysShareSlot() {
+        val portrait = DimenCache.buildKey(
+            10f, false, false, DimenCache.CalcType.DIAGONAL,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+        val landscape = DimenCache.buildKey(
+            10f, true, false, DimenCache.CalcType.DIAGONAL,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+        assertEquals(
+            "DIAGONAL keys must ignore isLandscape bit",
+            portrait,
+            landscape
+        )
+    }
+
+    @Test
     fun testReadyToUseValues() {
         DimenCache.clearAll()
-        // Use POWER because it is NOT bypassed (DIAGONAL is now bypassed)
-        val key = DimenCache.buildKey(10, false, false, DimenCache.CalcType.POWER, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
+        // Use AUTO because it is NOT bypassed (POWER default SW is now bypassed like SCALED)
+        val key = DimenCache.buildKey(10, false, false, DimenCache.CalcType.AUTO, DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP)
         
         val computedValue = 15.5f
         val result1 = DimenCache.getOrPut(key) { computedValue }

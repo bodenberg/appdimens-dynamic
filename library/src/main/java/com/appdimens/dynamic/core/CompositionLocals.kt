@@ -12,20 +12,33 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
+import androidx.window.layout.WindowLayoutInfo
 import com.appdimens.dynamic.common.UiModeType
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 /**
  * EN CompositionLocal for the current UiModeType.
  * PT CompositionLocal para o UiModeType atual.
  */
 val LocalUiModeType = compositionLocalOf { UiModeType.UNDEFINED }
+
+/**
+ * EN Resolves the [WindowLayoutInfo] flow for [AppDimensProvider]. Always returns a
+ * non-null [Flow] so [collectAsState] can be called unconditionally.
+ *
+ * PT Resolve o Flow de [WindowLayoutInfo]; sempre não-nulo para collectAsState incondicional.
+ */
+@PublishedApi
+internal fun windowLayoutInfoFlowOrEmpty(activity: Activity?): Flow<WindowLayoutInfo> =
+    activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) } ?: emptyFlow()
 
 /**
  * EN Provider that automatically computes and provides the [UiModeType] (including foldables)
@@ -40,19 +53,30 @@ val LocalUiModeType = compositionLocalOf { UiModeType.UNDEFINED }
 @Composable
 fun AppDimensProvider(content: @Composable () -> Unit) {
     val context = LocalContext.current
-    val activity = context.findActivity()
-    
-    val windowLayoutInfo = remember(activity) {
-        activity?.let { WindowInfoTracker.getOrCreate(it).windowLayoutInfo(it) }
-    }?.collectAsState(initial = null)
-    
-    val foldingFeature = windowLayoutInfo?.value?.displayFeatures
+    // Memoize Activity lookup — Context→Activity chain is stable for a given Context.
+    val activity = remember(context) { context.findActivity() }
+
+    // Always collect — never call collectAsState behind a null-safe `?.` which would
+    // skip the @Composable call when activity is null and resume it later (Compose
+    // slot-table / inconsistent composition rule). emptyFlow() never emits, so
+    // foldingFeature stays null — same observable behaviour as before.
+    val flow = remember(activity) { windowLayoutInfoFlowOrEmpty(activity) }
+    val windowLayoutInfo = flow.collectAsState(initial = null)
+
+    val foldingFeature = windowLayoutInfo.value?.displayFeatures
         ?.filterIsInstance<FoldingFeature>()?.firstOrNull()
-        
-    val uiModeType = remember(context, foldingFeature) {
+
+    // Key on fold semantics, not the FoldingFeature instance — WindowLayoutInfo
+    // often re-emits a new feature object with identical state/orientation.
+    val uiModeType = remember(
+        context,
+        foldingFeature?.state,
+        foldingFeature?.orientation,
+        foldingFeature?.isSeparating,
+    ) {
         UiModeType.fromConfiguration(context, foldingFeature)
     }
-    
+
     CompositionLocalProvider(LocalUiModeType provides uiModeType) {
         content()
     }
@@ -67,7 +91,16 @@ fun getCurrentUiModeType(): UiModeType {
     val provided = LocalUiModeType.current
     if (provided != UiModeType.UNDEFINED) return provided
     val context = LocalContext.current
-    return remember(context) { UiModeType.fromConfiguration(context, null) }
+    val configuration = LocalConfiguration.current
+    // Track only fields that affect UiMode — same fingerprint idea as DimenCache.
+    return remember(
+        configuration.uiMode,
+        configuration.smallestScreenWidthDp,
+        configuration.screenWidthDp,
+        configuration.screenHeightDp,
+    ) {
+        DimenCache.getCachedUiModeType(context)
+    }
 }
 
 /**

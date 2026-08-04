@@ -98,6 +98,22 @@ dependencies {
 }
 ```
 
+### Missing strategy module
+
+If you import `com.appdimens.dynamic.compose.<strategy>` (or `code.<strategy>`) without adding the matching artifact, the Gradle check `checkAppDimensModules` fails with a line such as:
+
+```text
+Missing AppDimens module for import …percent… — add: implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.6")
+```
+
+Apply the same check in your app with:
+
+```kotlin
+apply(from = "<path-to-checkout>/gradle/appdimens-missing-module-check.gradle.kts")
+```
+
+Runtime helper: `com.appdimens.dynamic.core.MissingModule` (package → Maven coordinate). Version comes from the `appdimens.version` Gradle property.
+
 ### Without BOM
 
 ```kotlin

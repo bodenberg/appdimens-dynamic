@@ -92,3 +92,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
+
+// Fail compile when strategy imports lack the matching AppDimens dependency.
+apply(from = rootProject.file("gradle/appdimens-missing-module-check.gradle.kts"))
