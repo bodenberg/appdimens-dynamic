@@ -65,9 +65,10 @@ dependencies {
     api(project(":library-resize"))
     api(project(":library-units"))
 
-    // Maven Central (release consumers):
-    // implementation("io.github.bodenberg:appdimens-dynamic:3.1.6")
-    // implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.6")
+    // Maven Central (release consumers) — preferred with BOM:
+    // implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.6"))
+    // implementation("io.github.bodenberg:appdimens-dynamic")
+    // implementation("io.github.bodenberg:appdimens-dynamic-percent")
     // …
 
     implementation(libs.androidx.core.ktx)

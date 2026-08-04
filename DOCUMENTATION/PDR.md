@@ -1,7 +1,7 @@
 # Project Design Document (PDR) — AppDimens Dynamic
 
 > [!NOTE]
-> **Product Alignment:** Modular Maven artifacts at **`3.1.6`** — principal `io.github.bodenberg:appdimens-dynamic` (common + core + scaled + plain) plus opt-in `appdimens-dynamic-<strategy>` satellites. **No ALL/BOM aggregator.**
+> **Product Alignment:** Modular Maven artifacts at **`3.1.6`** — principal `io.github.bodenberg:appdimens-dynamic` (common + core + scaled + plain) plus opt-in `appdimens-dynamic-<strategy>` satellites; optional `appdimens-dynamic-bom` (versions only). **No ALL aggregator.**
 > **Associated Documents:** [PRD (Requirements)](PRD.md) | [Mathematics](MATHEMATICS-AND-CALCULUS.md) | [Performance Specs](../library/PERFORMANCE.md) | [README migration](../README.md)
 
 This internal architecture document mandates the precise structural logic, technical dependencies, caching behaviors, and quality integration required by the AppDimens Dynamic library modules.
@@ -105,7 +105,7 @@ sequenceDiagram
 ## 4. Development Quality & Reliability Matrix
 
 ### 4.1 Release Constraints
-1. **Module Artifacting:** Each Gradle module publishes its own Maven Central coordinate at shared version `appdimens.version` (`3.1.6`). Principal = `appdimens-dynamic`; satellites = `appdimens-dynamic-<strategy>`. **No ALL/BOM/aggregator.** See [MODULES.md](MODULES.md).
+1. **Module Artifacting:** Each Gradle module publishes its own Maven Central coordinate at shared version `appdimens.version` (`3.1.6`). Principal = `appdimens-dynamic`; satellites = `appdimens-dynamic-<strategy>`; optional BOM = `appdimens-dynamic-bom`. **No ALL aggregator.** See [MODULES.md](MODULES.md).
 2. **Obfuscation Integrity:** Per-AAR ProGuard consumer rules (`consumer-rules.pro`) ensure public API parity and runtime stability; satellites keep strategy packages, principal keeps core/scaled/plain. 
 
 ### 4.2 Known Technical Risk Mapping
@@ -124,5 +124,5 @@ When modifying structural parameters or curves, engineers must ensure the follow
 - [ ] Ensure **Code/Compose Parity**. Modify the `code` extension symmetrically when introducing a new Compose builder.
 - [ ] Execute `./gradlew :library:testDebugUnitTest` plus affected `:library-<strategy>:testDebugUnitTest` and visually cross-check output against `DimenPerformanceTest`.
 - [ ] If mutating `ScreenFactors` / `StrategyFactorRegistry`, actively adjust bits in `DimenCache` alongside mathematical models evaluated in `MATHEMATICS-AND-CALCULUS.md`.
-- [ ] Confirm **no ALL/BOM** artifact and that satellites depend only on `:library`.
+- [ ] Confirm **no ALL aggregator**; BOM is constraints-only; satellites depend only on `:library`.
 - [ ] Smoke: main `classes.jar` must not contain other strategy packages (`compose.percent`, …).

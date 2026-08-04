@@ -8,20 +8,16 @@ You write **once** and your code automatically adapts to any device. The library
 
 ## Installation (v3.1.6 — modular)
 
-Start with the **principal** artifact (includes **Scaled** + cache/core):
+Recommended — align versions with the **BOM**, then add only what you use:
 
 ```kotlin
-implementation("io.github.bodenberg:appdimens-dynamic:3.1.6")
+implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.6"))
+implementation("io.github.bodenberg:appdimens-dynamic") // Scaled + cache/core
+implementation("io.github.bodenberg:appdimens-dynamic-percent")
+implementation("io.github.bodenberg:appdimens-dynamic-resize")
 ```
 
-Each other strategy in this guide is a **separate satellite**. Add only what you use, for example:
-
-```kotlin
-implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.6")
-implementation("io.github.bodenberg:appdimens-dynamic-resize:3.1.6")
-```
-
-There is **no** “install everything” / ALL artifact. Kotlin **imports stay the same**; only Gradle changes. Full matrix: [README](./README.md#installation-v316--modular) · [MODULES.md](./DOCUMENTATION/MODULES.md).
+Without the BOM, pin `:3.1.6` on each coordinate. There is **no** “install everything” / ALL artifact (the BOM does **not** pull strategies). Kotlin **imports stay the same**. Full matrix: [README](./README.md#installation-v316--modular) · [MODULES.md](./DOCUMENTATION/MODULES.md).
 
 | Strategy in this guide | Extra Gradle dependency |
 |------------------------|-------------------------|

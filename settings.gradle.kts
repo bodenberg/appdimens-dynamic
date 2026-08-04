@@ -18,6 +18,7 @@ dependencyResolutionManagement {
 rootProject.name = "AppDimens Dynamic"
 include(":app")
 include(":library")
+include(":library-bom")
 include(":library-auto")
 include(":library-density")
 include(":library-diagonal")

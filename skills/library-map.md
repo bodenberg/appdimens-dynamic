@@ -12,6 +12,7 @@ Read this file when you need package locations, Compose↔`code` symmetry, or co
 | Strategy | Gradle project | Maven artifact | Source roots |
 |---|---|---|---|
 | scaled (+ common/core/plain) | `:library` | `appdimens-dynamic` | `library/src/main/.../{common,core,code/plain,code/scaled,compose/scaled}` |
+| *(BOM — versions only)* | `:library-bom` | `appdimens-dynamic-bom` | `library-bom/build.gradle.kts` (`java-platform` constraints) |
 | auto | `:library-auto` | `appdimens-dynamic-auto` | `library-auto/src/main/.../{code,compose}/auto` |
 | density | `:library-density` | `appdimens-dynamic-density` | `library-density/.../density` |
 | diagonal | `:library-diagonal` | `appdimens-dynamic-diagonal` | `library-diagonal/.../diagonal` |
@@ -26,7 +27,7 @@ Read this file when you need package locations, Compose↔`code` symmetry, or co
 | resize | `:library-resize` | `appdimens-dynamic-resize` | `library-resize/.../resize` |
 | units | `:library-units` | `appdimens-dynamic-units` | `library-units/.../units` |
 
-Full graph: [DOCUMENTATION/MODULES.md](../DOCUMENTATION/MODULES.md). Satellites depend **only** on `:library`. **No ALL/BOM.**
+Full graph: [DOCUMENTATION/MODULES.md](../DOCUMENTATION/MODULES.md). Satellites depend **only** on `:library`. Optional `:library-bom` = version constraints. **No ALL aggregator.**
 
 ## Package layout (packages span `:library` and `:library-*`)
 

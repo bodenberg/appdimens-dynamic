@@ -72,27 +72,41 @@ Write values like `16.sdp` and the library scales them from the current screen *
 
 ## Installation (v3.1.6 — modular)
 
-> **Breaking change (Gradle only):** `appdimens-dynamic` is no longer a monolith. It is the **minimal** artifact (`common` + `core` + **scaled** + `plain`). Other strategies are **opt-in satellites**. There is **no** `ALL` / BOM / aggregator artifact. Kotlin packages/imports stay the same.
+> **Breaking change (Gradle only):** `appdimens-dynamic` is no longer a monolith. It is the **minimal** artifact (`common` + `core` + **scaled** + `plain`). Other strategies are **opt-in satellites**. There is **no** `ALL` aggregator that pulls every strategy. An optional **BOM** only aligns versions. Kotlin packages/imports stay the same.
+
+### Recommended — with BOM (version aligned once)
 
 ```kotlin
 dependencies {
-    // Required — core cache + default scaled (sdp / hdp / wdp / ssp / …)
-    implementation("io.github.bodenberg:appdimens-dynamic:3.1.6")
+    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.6"))
 
-    // Opt-in satellites (add only what you use)
+    // Required — core cache + default scaled (sdp / hdp / wdp / ssp / …)
+    implementation("io.github.bodenberg:appdimens-dynamic")
+
+    // Opt-in satellites (add only what you use — no versions needed with the BOM)
+    implementation("io.github.bodenberg:appdimens-dynamic-percent")
+    implementation("io.github.bodenberg:appdimens-dynamic-power")
+    implementation("io.github.bodenberg:appdimens-dynamic-fluid")
+    implementation("io.github.bodenberg:appdimens-dynamic-auto")
+    implementation("io.github.bodenberg:appdimens-dynamic-density")
+    implementation("io.github.bodenberg:appdimens-dynamic-diagonal")
+    implementation("io.github.bodenberg:appdimens-dynamic-fill")
+    implementation("io.github.bodenberg:appdimens-dynamic-fit")
+    implementation("io.github.bodenberg:appdimens-dynamic-interpolated")
+    implementation("io.github.bodenberg:appdimens-dynamic-logarithmic")
+    implementation("io.github.bodenberg:appdimens-dynamic-perimeter")
+    implementation("io.github.bodenberg:appdimens-dynamic-resize")
+    implementation("io.github.bodenberg:appdimens-dynamic-units")
+}
+```
+
+### Without BOM (explicit versions)
+
+```kotlin
+dependencies {
+    implementation("io.github.bodenberg:appdimens-dynamic:3.1.6")
     implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-power:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-fluid:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-auto:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-density:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-diagonal:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-fill:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-fit:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-interpolated:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-logarithmic:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-perimeter:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-resize:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-units:3.1.6")
+    // …same satellites as above, each with :3.1.6
 }
 ```
 
@@ -101,6 +115,7 @@ dependencies {
 | Antes (3.1.5) | Depois (3.1.6) |
 |---|---|
 | Uma dep `appdimens-dynamic` com todas as estratégias | `appdimens-dynamic` = scaled+core; declare cada satélite usado |
+| — | Opcional: `appdimens-dynamic-bom` para alinhar versões (não puxa código) |
 | Imports Kotlin iguais | **Sem mudança** de packages |
 
 ### Artifact matrix
@@ -109,6 +124,7 @@ dependencies {
 |---|---|
 | `appdimens-dynamic` | `common`, `core`, `code.plain`, `code`/`compose` **scaled** |
 | `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` (depende só do principal) |
+| `appdimens-dynamic-bom` | **Só constraints de versão** — sem classes; declare cada módulo que usar |
 
 **Requirements:** Min SDK **24** · Compile SDK **36** · **Kotlin** & **Java 17** · **Jetpack Compose** (BOM aligned with this library)
 
