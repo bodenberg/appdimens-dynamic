@@ -111,9 +111,9 @@ Total:  ~24.6 KB (increase of <2.5 KB due to padding — negligible)
 
 ### F3 — ScreenFactors (@Volatile Padding)
 
-The 6 `@Volatile` fields (scale, arMultiplier, normalizedAr, logNormalizedAr, density, smallestWidthDp) occupied ~24 bytes — half an ARM64 cache line. A write to `scale` during `updateFactors()` could invalidate `arMultiplier` on another core reading simultaneously.
+The 7 shared `@Volatile` fields (`scale`, `arMultiplier`, `aspectRatioMul`, `normalizedAr`, `logNormalizedAr`, `density`, `smallestWidthDp`) occupied a small span of an ARM64 cache line. A write to `scale` during `updateFactors()` could invalidate sibling reads on another core.
 
-With `ScreenFactors`, the 6 fields + 112-byte padding are isolated in their own line. `updateFactors()` occurs rarely (configuration changes), so the benefit is preventing sporadic jank rather than steady-state latency.
+With `ScreenFactors`, the shared `@Volatile` fields (`scale`, `arMultiplier`, `aspectRatioMul`, `normalizedAr`, `logNormalizedAr`, `density`, `smallestWidthDp`) plus padding sit on isolated lines. `updateFactors()` is rare (configuration changes), so the benefit is preventing sporadic jank rather than steady-state latency.
 
 ### F4 — clearAll() with lazySet() + 4× Unrolling
 
@@ -202,7 +202,7 @@ Mixed bypass (`sdp` / `hdp` / `wdp`) and AR cache (`sdpa`) paths contribute to t
 graph TD
     A[UI / Code Call] --> B{Cache Enabled?}
     B -- No --> Z[Compute Directly]
-    B -- Yes --> C{Bypass-eligible & No-AR?}
+    B -- Yes --> C{shouldBypassCache?}
     C -- Yes --> D["Fast Math Direct Return (~2ns)"]
     C -- No --> E[getOrPutInternal]
     E --> F["Hash Key → ShardWrapper[i]<br/>(Isolated 128-byte padding)"]
@@ -218,23 +218,20 @@ graph TD
 
 ## 6. Simple Calculations Faster Than Cache
 
-For `CalcType` values of `AUTO`, `FLUID`, `PERCENT`, and `SCALED` **without Aspect Ratio** (`applyAspectRatio = false`), `DimenCache.getOrPut()` immediately returns `compute()` without touching the sharded arrays.
+For eligible `CalcType`s on the default path (`shouldBypassCache`), `getOrPut` returns `compute()` without touching the sharded arrays. That includes default aspect ratio when the type is eligible. `AUTO` / `FLUID` / `FIT` / `FILL` always use the cache.
 
-> The scaling formula for these types reduces to: `baseValue × scale` (a single float multiply).
-> Measured cost on Snapdragon 888: **~2 ns** (multiply) vs **~5 ns** (hash + atomic lookup).
-> The cache adds overhead for these paths — bypassing it is ~2.5× faster.
-
-This is an intentional hot-path optimization, not a missing feature. The cache is most valuable when the computation is expensive (Aspect Ratio path: **~45 ns** on hardware in recent captures), making the 5 ns lookup amortize well.
+> Measured on Snapdragon 888: **~2 ns** (multiply) vs **~5 ns** (hash + atomic lookup).
 
 | Path | Cost | Cache? |
 |:---|:---:|:---:|
-| SCALED without AR (most calls) | ~2 ns | ❌ Bypass |
-| SCALED with AR | ~45 ns → ~35 ns cached | ✅ Cache |
-| Other CalcTypes with AR | ~45 ns → ~35 ns cached | ✅ Cache |
+| SCALED default path | ~2 ns | ❌ Bypass |
+| SCALED custom sensitivity / non-default qualifier | varies | ✅ Cache |
+| POWER / LOG on SW+DEFAULT | ~2 ns | ❌ Bypass |
+| AUTO / FLUID | lookup + compute | ✅ Cache |
 
-**Consequence for benchmarks**: calls via `DimenSdp.sdp()`, `.hdp()`, `.wdp()` (i.e., without AR) measure **raw math latency**, not cache lookup latency. Always use the `*a` variants (`.sdpa()`, `.hdpa()`, etc.) to specifically measure cache throughput.
+**Consequence for benchmarks**: default `sdp` / `hdp` / `wdp` measure raw math. Use non-bypass paths to measure shard throughput.
 
-The `BenchmarkActivity` micro harness reports a **per-cycle** combined average (~260 ns hot) over four calls (3 bypass + 1 cache path), including framework and dispatch overhead — not a per-call pure math figure.
+The `BenchmarkActivity` micro harness reports a **per-cycle** combined average (~260 ns hot) over four calls, including framework overhead.
 
 ---
 
@@ -242,13 +239,13 @@ The `BenchmarkActivity` micro harness reports a **per-cycle** combined average (
 
 All numbers in this document were captured on a **Xiaomi 2107113SG (Snapdragon 888 SM8350, Android 14)** and a **Ubuntu Linux JVM 17** host. Real-world results will differ based on:
 
-- **Device class**: budget Cortex-A55 cores (e.g. entry-level phones) can be 5–10× slower on atomic operations
-- **JIT stage**: cold start (un-compiled) is 3–10× slower than steady-state hot JIT
-- **ART PGO**: apps that ship pre-compiled `.prof` profiles skip cold JIT entirely — steady-state from frame 1
-- **Background load**: GC pressure, foreground/background scheduler tier, and CPU frequency governor all affect ns measurements
-- **Cache fill state**: first access after `clearAll()` (config change) is always a miss; subsequent accesses are hits
+- **Device class**: budget Cortex-A55 cores can be 5–10× slower on atomic operations
+- **JIT stage**: cold start is 3–10× slower than steady-state hot JIT
+- **ART PGO**: pre-compiled `.prof` profiles skip cold JIT
+- **Background load**: GC pressure and CPU governor affect ns measurements
+- **Cache fill state**: first access after a physical-size `clearAll()` is a miss; orientation-only config changes do **not** clear the cache
 
-> **Benchmarks vary with real usage** — use these figures as upper-bound reference points for architecture decisions, not as absolute production guarantees. Profile on your target device with your target workload.
+Treat figures as reference points, not guarantees.
 
 ---
 

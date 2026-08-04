@@ -3,7 +3,7 @@
 This document is the **authoritative surface-area reference** for Jetpack Compose extensions in **scaled** mode, plus rules that **every other strategy** (`percent`, `power`, `fluid`, …) mirrors with a different name prefix.
 
 **Sources:**
-- Scaled: `library/src/main/java/com/appdimens/dynamic/compose/`
+- Scaled: `library/src/main/java/com/appdimens/dynamic/compose/scaled/` (Kotlin package `com.appdimens.dynamic.compose`)
 - Other strategies: `library-<strategy>/src/main/java/com/appdimens/dynamic/compose/<strategy>/`
 
 Artifacts: [MODULES.md](MODULES.md).
@@ -174,14 +174,14 @@ Same for **`hdpScreen*`**, **`wdpScreen*`**.
 
 **Recommendation:** wrap the tree with `AppDimensProvider` when using mode/fold-related `UiModeType` heavily (see [library/PERFORMANCE.md](../library/PERFORMANCE.md)).
 
-**Performance:** `sdpMode` / `hdpMode` / `wdpMode` and `sdpScreen` / `hdpScreen` / `wdpScreen` (and strategy equivalents) resolve `UiModeType` via **`DimenCache.getCachedUiModeType(context)`**, which caches the result per `Configuration` hash — they do **not** call `SensorManager` / `WindowMetricsCalculator` on every invocation.
+**Performance:** `sdpMode` / `hdpMode` / `wdpMode` and `sdpScreen` / `hdpScreen` / `wdpScreen` (and strategy equivalents) resolve `UiModeType` via **`DimenCache.getCachedUiModeType(context)`** (fingerprint of `uiMode`, SW, min/max dp — not `Configuration.hashCode()`). They do **not** call `SensorManager` / `WindowMetricsCalculator` on every invocation.
 
 ### 4.5 Views / `code` — Plain (`Float` px + `Context`)
 
 Compose **logic-only** Plain overloads use **`Dp` / `TextUnit`** alternates (no second scaling). On the **View** side, the same branching is exposed as **`Float` extensions** whose receiver and alternate arguments are **already in px** (`layout` or **text** px, depending on use), plus an explicit **`Context`** for `Configuration` / UI-mode cache:
 
 - **Per strategy:** `Dimen*PlainPx.kt` under `com.appdimens.dynamic.code.<strategy>` (e.g. `DimenScaledPlainPx.kt` in `code.scaled`, `DimenPercentPlainPx.kt` in `code.percent`). Naming mirrors Compose: `sdpRotatePlainPx`, `psdpRotatePlainPx`, `sspRotatePlainPx`, etc., for **`RotatePlain`**, **`ModePlain`**, **`QualifierPlain`**, **`ScreenPlain`**.
-- **Shared helpers (internal):** `com.appdimens.dynamic.code.plain` — `DimenPlainBranch.kt` (`plainRotatePx`, `plainModePx`, `plainQualifierPx`, `plainScreenPx`).
+- **Shared helpers:** `com.appdimens.dynamic.code.plain` — `DimenPlainBranch.kt` (`plainRotatePx`, `plainModePx`, `plainQualifierPx`, `plainScreenPx`).
 
 **Example (percent / layout px):**
 

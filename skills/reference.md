@@ -6,15 +6,16 @@
 
 This file supplements [SKILL.md](SKILL.md). Read it when you need **package locations**, **symmetry between Compose and `code`**, or **core types**.
 
-## Module layout (`library`)
+## Module layout
 
-Paths below are as in the upstream repo at **`3.1.6`**; the consumer app does not contain this tree unless they clone the monorepo.
+Paths at Git ref **`3.1.6`**. Full Gradle/Maven matrix: [MODULES.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.6/DOCUMENTATION/MODULES.md) · [library-map.md](library-map.md).
 
-- **`com.appdimens.dynamic.common`** — shared enums/value types: `DpQualifier` (SMALL_WIDTH, HEIGHT, WIDTH), `Inverter`, `Orientation`, `UiModeType`, `UnitType`, `DpQualifierEntry`.
-- **`com.appdimens.dynamic.core`** — cross-cutting engine: `DimenCache` (sharded cache, init, invalidation, internal `CalcType` per strategy family), `DimenCalculationPlumbing` (qualifier resolution, screen dp reads, aspect-ratio multiplier helper, and internal paths tied to **caller-supplied flags** the skill workflow does **not** surface to end users), `DesignScaleConstants`, `AspectRatioLookup`, percent/resize math (`PercentSpaceMath`, `ResizeMath`, `ResizeBound`, `AutoResizePercentBasis`), Compose integration (`CompositionLocals` / `AppDimensProvider`, `LocalUiModeType`, remember-stamp helpers in `ComposeRememberStamps`, `ComposeDimenRemember`).
-- **`com.appdimens.dynamic.compose.<strategy>`** — one folder per **scaling strategy** for Compose UI (e.g. `compose/scaled/DimenSdp.kt`, `DimenSdpExtensions.kt`, `DimenScaled.kt`, Sp mirrors).
-- **`com.appdimens.dynamic.code.<strategy>`** — mirror of the same **strategy** for Views / non-Compose Kotlin (and Java callers): `DimenSdp`, `DimenSsp`, `*DpExtensions`, `*SpExtensions`, `DimenScaled`, `Dimen*PlainPx.kt` for `Float` px + `Context` branching, `code/plain/DimenPlainBranch.kt` shared plain logic.
-- **`com.appdimens.dynamic.compose.resize`** / **`com.appdimens.dynamic.code.resize`** — constraint-based **resize** (binary search over discrete px steps, “fits” predicate); not the same as `calculateRawScaling` curves.
+- **`com.appdimens.dynamic.common`** — `DpQualifier`, `Inverter`, `Orientation`, `UiModeType`, `UnitType`, `DpQualifierEntry`.
+- **`com.appdimens.dynamic.core`** — `DimenCache`, `StrategyFactorRegistry` / `SharedScreenMetrics`, `MissingModule`, `DimenCalculationPlumbing`, `DesignScaleConstants`, `AspectRatioLookup`, `PercentSpaceMath` / `ResizeMath` / `ResizeBound`, Compose (`AppDimensProvider`, stamps, `rememberDimen*`).
+- **`com.appdimens.dynamic.compose.<strategy>`** / **`code.<strategy>`** — sources under `library/` (scaled + plain) or `library-<strategy>/`.
+- **`compose.resize` / `code.resize`** — constraint resize (not `calculateRawScaling`).
+
+Build hint for missing satellites: `gradle/appdimens-missing-module-check.gradle.kts` + `MissingModule`.
 
 ## Strategy → documentation file
 

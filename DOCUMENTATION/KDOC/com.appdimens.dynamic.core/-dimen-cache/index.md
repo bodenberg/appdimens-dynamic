@@ -62,19 +62,14 @@ Number of slots in the primary (Tier-1) fast cache. Must be a power of 2 so that
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentDensity](current-density.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentDiagonalScale](current-diagonal-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentInterpolatedScale](current-interpolated-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentLogNormalizedAr](current-log-normalized-ar.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentLogScale](current-log-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentNormalizedAr](current-normalized-ar.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentPerimeterScale](current-perimeter-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentPowerScale](current-power-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentScale](current-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
@@ -246,13 +241,8 @@ private fun [updateFactors](update-factors.md)(config: [Configuration](https://d
 | [currentArMultiplier](current-ar-multiplier.md) |  |
 | [currentAspectRatioMul](current-aspect-ratio-mul.md) |  |
 | [currentDensity](current-density.md) |  |
-| [currentDiagonalScale](current-diagonal-scale.md) |  |
-| [currentInterpolatedScale](current-interpolated-scale.md) |  |
 | [currentLogNormalizedAr](current-log-normalized-ar.md) |  |
-| [currentLogScale](current-log-scale.md) |  |
 | [currentNormalizedAr](current-normalized-ar.md) |  |
-| [currentPerimeterScale](current-perimeter-scale.md) |  |
-| [currentPowerScale](current-power-scale.md) |  |
 | [currentScale](current-scale.md) |  |
 | [currentSmallestWidthDp](current-smallest-width-dp.md) |  |
 | [dataStore](data-store.md) |  |

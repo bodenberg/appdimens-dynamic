@@ -16,7 +16,7 @@ Conceptually, for effective axis `dim` (dp), after inverters and with multi-wind
 - `ratio = dim / 300`
 - `out = base × ratio^0.75`
 
-**Implementation note:** For **smallest-width** + **default inverter**, `ratio^0.75` is **pre-computed** once per configuration change (`DimenCache.currentPowerScale`). Other qualifiers still compute `ratio` from `readScreenDp` and use `Math.pow(ratio, 0.75)`.
+**Implementation note:** For **smallest-width** + **default inverter**, `ratio^0.75` is pre-computed in `PowerFactors.scale` (`:library-power`) via `StrategyFactorRegistry`. Other qualifiers still compute `ratio` from `readScreenDp` and use `Math.pow(ratio, 0.75)`.
 
 - With **`applyAspectRatio`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 

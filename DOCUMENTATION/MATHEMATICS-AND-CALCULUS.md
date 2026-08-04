@@ -43,30 +43,39 @@ const val REFERENCE_ASPECT_RATIO = 1.78f
 
 ---
 
-## 3. Global Precomputation Matrix (`ScreenFactors (shared metrics; strategy scales via `StrategyFactorRegistry` in satellites)`)
+## 3. Global Precomputation Matrix
 
-Device configurations trigger an asynchronous computation vector (`updateFactors`), isolating heavy geometric calculations outside the standard Render Pass.
+Device configuration changes trigger `DimenCache.updateFactors()`, which updates **shared** `ScreenFactors` and notifies satellites through `StrategyFactorRegistry`.
 
 ```mermaid
 journey
   title High-Frequency Computation Caching Pattern
   section 1. Trigger
     Configuration Shift : 5: Android System
-    Hash Key Evaluation : 4: DimenCache
+    ConfigSnapshot Evaluation : 4: DimenCache
   section 2. Pre-calculation Phase
-    Calculate Diagonal / Log : 3: ScreenFactors Engine
-    Calculate Logarithmic Damping: 2: ScreenFactors Engine
+    Shared metrics (scale / AR / density) : 3: ScreenFactors
+    Strategy scales (if AAR present) : 2: StrategyFactorRegistry
   section 3. State Preservation
     Inject into Atomic Cache Array: 1: AppDimens Plumbing
 ```
 
-### Analytical Variables generated mapping to UI Thread:
+### Shared `ScreenFactors` (principal)
+
 1. **Linear Limit:** `f.scale` $$= sw \cdot \iota$$
 2. **Normalized Multiplier:** `f.arMultiplier` $$=  1 + (sw - 300) \cdot (\iota_{adj} + k_{def} \cdot L_{AR})$$
-3. **Power Translation:** `f.powerScale` $$= (sw / 300)^{0.75}$$
-4. **Logarithmic Yield:** `f.logScale` evaluated precisely over `sw`:  
-   $$Scale = 1 + 0.4 \cdot \ln(sw \cdot \iota)$$
-5. **Density Override:** `f.density` $$= densityDpi / 160f$$
+3. **Aspect helper:** `f.aspectRatioMul` $$= 1 + k_{def} \cdot L_{AR}$$
+4. **Density Override:** `f.density` $$= densityDpi / 160f$$
+
+### Satellite strategy scales (when the module is on the classpath)
+
+| Factor | Module | Formula (default SW path) |
+|--------|--------|---------------------------|
+| `PowerFactors.scale` | `appdimens-dynamic-power` | $$(sw / 300)^{0.75}$$ |
+| `LogarithmicFactors.scale` | `appdimens-dynamic-logarithmic` | piecewise $$\ln$$ on $$sw$$ |
+| `DiagonalFactors.scale` | `appdimens-dynamic-diagonal` | diagonal / base diagonal |
+| `PerimeterFactors.scale` | `appdimens-dynamic-perimeter` | $$(s_{min}+s_{max}) / 833$$ |
+| `InterpolatedFactors.scale` | `appdimens-dynamic-interpolated` | blend of base and linear |
 
 ---
 
@@ -87,7 +96,7 @@ Function path: `DimenCache.calculateRawScaling(baseValue, applyAspectRatio)`
 ### 4.2 Comprehensive Strategy Formulas
 
 > [!TIP]
-> The engine defaults to extremely low computational complexity via direct linear equations or natively precomputed constants out of the `ScreenFactors` bounds mapping.
+> The engine prefers direct multiplies against precomputed shared or satellite factors on default paths; non-default qualifiers may evaluate formulas inline.
 
 | Strategy Class | Mathematical Formalization | Base Operational Logic |
 |:---|:---|:---|

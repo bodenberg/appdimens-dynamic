@@ -191,7 +191,7 @@ setContent {
 
 ### `DimenCache.invalidateOnConfigChange`
 
-Call this when the **same Activity** stays alive across **rotation, split-screen, or density/font changes** and sizes look **stale**. If the Activity is **recreated** on config change (default), you often don’t need it. Details: [library/PERFORMANCE.md](library/PERFORMANCE.md).
+Call this when the **same Activity** stays alive across **rotation, split-screen, or density/font changes** and sizes look **stale**. Orientation-only swaps do not wipe the shard table; physical size/density changes clear memory + DataStore; fontScale clears SP entries only. If the Activity is **recreated** on config change (default), you often don’t need it. Details: [library/PERFORMANCE.md](library/PERFORMANCE.md).
 
 The previous `Configuration` is tracked internally by `DimenCache` — callers only need to pass the new one.
 

@@ -51,7 +51,7 @@ It is the library’s balanced choice: **predictable**, tightly integrated with 
 
 ## Advantages and trade-offs
 
-- **Pros:** familiar curve; strong performance — without aspect ratio, `DimenCache.getOrPut` bypasses shard storage for six cheap `CalcType`s (**PERCENT**, **SCALED**, **DENSITY**, **DIAGONAL**, **INTERPOLATED**, **PERIMETER**); see [library/PERFORMANCE.md](../library/PERFORMANCE.md). Rich README examples.
+- **Pros:** familiar curve; strong performance — `shouldBypassCache` skips shard storage for **PERCENT** / **SCALED** / **DENSITY** / **DIAGONAL** / **INTERPOLATED** / **PERIMETER** (and default AR on those paths); see [library/PERFORMANCE.md](../library/PERFORMANCE.md).
 - **Cons:** on very large screens, linear growth (without `a`) can feel aggressive vs **power** or **fluid** — then consider another strategy only for affected components.
 
 ## Recommended usage strategy

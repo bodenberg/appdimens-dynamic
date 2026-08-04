@@ -32,19 +32,14 @@ constructor()
 
 @[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)var [density](density.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)var [diagonalScale](diagonal-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)var [interpolatedScale](interpolated-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 @[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)var [logNormalizedAr](log-normalized-ar.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)var [logScale](log-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 @[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)var [normalizedAr](normalized-ar.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)var [perimeterScale](perimeter-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)var [powerScale](power-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 @[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)var [scale](scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
@@ -72,12 +67,7 @@ constructor()
 | [arMultiplier](ar-multiplier.md) |  |
 | [aspectRatioMul](aspect-ratio-mul.md) |  |
 | [density](density.md) |  |
-| [diagonalScale](diagonal-scale.md) |  |
-| [interpolatedScale](interpolated-scale.md) |  |
 | [logNormalizedAr](log-normalized-ar.md) |  |
-| [logScale](log-scale.md) |  |
 | [normalizedAr](normalized-ar.md) |  |
-| [perimeterScale](perimeter-scale.md) |  |
-| [powerScale](power-scale.md) |  |
 | [scale](scale.md) |  |
 | [smallestWidthDp](smallest-width-dp.md) |  |

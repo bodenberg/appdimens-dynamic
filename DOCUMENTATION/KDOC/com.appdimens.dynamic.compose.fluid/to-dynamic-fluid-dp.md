@@ -10,11 +10,11 @@ The scaling logic:
 
 Checks [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md) first. On a cache hit, returns the precomputed value; otherwise, computes via [calculateFluidDpCompose](calculate-fluid-dp-compose.md) and stores it.
 
-Uses the internal bypass mechanism in [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md) for sub-nanosecond latency on common width-scaling paths.
+Uses [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md). Fluid is **not** on the always-bypass list — see [library/PERFORMANCE.md](../../../../library/PERFORMANCE.md).
 
 The remember block ensures recalculation only when configuration changes.
 
-⚠️ **Bypass note**: when [applyAspectRatio](to-dynamic-fluid-dp.md) is `false` and [qualifier](to-dynamic-fluid-dp.md) is `SMALL_WIDTH` with `DEFAULT` inverter, the cache is bypassed internally because a raw multiply (~2 ns) is faster than the cache lookup (~5 ns). This is intentional and not a bug.
+⚠️ **Cache note**: `FLUID` uses the shard cache (not `shouldBypassCache`). See [library/PERFORMANCE.md](../../../../library/PERFORMANCE.md).
 
 PT Converte um [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html) (valor Dp base) em um Dp dinamicamente escalado para uso no Jetpack Compose.
 

@@ -4,19 +4,19 @@ This folder goes deeper into each **scaling strategy** in [AppDimens Dynamic](..
 
 **Modules (3.1.6):** principal `appdimens-dynamic` (scaled + core/common/plain); strategy modules `appdimens-dynamic-<strategy>`; BOM `appdimens-dynamic-bom`. See [README — Installation](../README.md#installation-v316) · [MODULES.md](MODULES.md).
 
-**Product docs:** [PRD.md](PRD.md) (product requirements) · [PDR.md](PDR.md) (technical design, development plan, prompt requirements, traceability matrix) · [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) (formulas, constants, and calculation kernels).
+**Product docs:** [PRD.md](PRD.md) · [PDR.md](PDR.md) · [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md).
 
 For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../library/PERFORMANCE.md).
 
 **Naming parity (`compose` vs `code`):** In the multi-module tree, each strategy lives under **`library/`** (scaled) or **`library-<strategy>/`**, pairing **`Dimen<Strategy>DpExtensions.kt`** (layout facilitators → `Float` px + `Context`) with **`Dimen<Strategy>SpExtensions.kt`** where Sp facilitators exist — the same filenames as under `compose/<strategy>/`, so it is easy to jump between UI toolkits. **Scaled** uses **`DimenSdpExtensions.kt`** and **`DimenSspExtensions.kt`** inside the `scaled/` subfolder (packages stay top-level `compose` / `code`). **Plain** View helpers remain in **`Dimen<Strategy>PlainPx.kt`** per strategy plus shared logic in **`com.appdimens.dynamic.code.plain`** (principal artifact).
 
-**Compose API (catálogo scaled, convenções de nomes e comportamento espelhado nas outras estratégias):** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md) — inclui **§4.5** helpers View/`code` **Plain** (`Float` px + `Context`, `Dimen*PlainPx.kt` por estratégia, lógica partilhada em `com.appdimens.dynamic.code.plain`). **Resize** por restrições (`autoResize*`, `ResizeBound`, `compose.resize` / `code.resize`) está em [resize.md](resize.md) e no KDoc: [`compose.resize`](KDOC/com.appdimens.dynamic.compose.resize/index.md), [`code.resize`](KDOC/com.appdimens.dynamic.code.resize/index.md).
+**Compose API catalog:** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md) (scaled surface + prefix map; §4.5 View/`code` Plain). Resize: [resize.md](resize.md) · KDoc [`compose.resize`](KDOC/com.appdimens.dynamic.compose.resize/index.md), [`code.resize`](KDOC/com.appdimens.dynamic.code.resize/index.md).
 
-**KDoc API reference** (gerado a partir do KDoc `/** … */` da library — pacotes, tipos, membros): [index.md](index.md). Os ficheiros por símbolo estão em [`KDOC/`](KDOC/) (caminhos curtos sem `[` / `]` para o GitHub resolver links Markdown).
+**KDoc export:** [index.md](index.md) · pages under [`KDOC/`](KDOC/).
 
-**Atualizar `KDOC/` a partir do HTML do Dokka:** com a saída já gerada em [`DOCUMENTATION2/`](../DOCUMENTATION2) (ver [`library/build.gradle.kts`](../library/build.gradle.kts)), execute na raiz do repo: `python3 scripts/sync_kdoc_from_dokka_html.py` — reescreve [`DOCUMENTATION/KDOC/`](KDOC/) e o ficheiro [`package-list`](KDOC/package-list) a partir desse HTML (sem precisar de voltar a correr o Gradle neste passo). Depois de alterar código ou KDoc, gere HTML com `./gradlew :library:dokkaGenerateHtml` e volte a correr o script para manter nomes e membros alinhados (por exemplo **`unitSizeInDp`** em vez de **`unitSizePerPx`**).
+**Refresh KDoc:** `./gradlew :library:dokkaGenerateHtml` then `python3 scripts/sync_kdoc_from_dokka_html.py` (input HTML in [`DOCUMENTATION2/`](../DOCUMENTATION2)). Narrative pages may be newer than KDoc until that sync runs — prefer [library/PERFORMANCE.md](../library/PERFORMANCE.md) and strategy guides for cache / modular behavior.
 
-**Nota:** o Dokka pode mostrar `ERROR CLASS` em tipos Compose nas páginas exportadas; isso reflecte a resolução de classpath na geração, não um erro da library. As páginas narrativas (`scaled.md`, [library/PERFORMANCE.md](../library/PERFORMANCE.md), [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md)) podem estar mais actualizadas em texto corrido do que tabelas KDoc até sincronizar.
+**Note:** Dokka may show `ERROR CLASS` for some Compose types in exported pages (classpath resolution during generation), not a library runtime error.
 
 ## Summary
 

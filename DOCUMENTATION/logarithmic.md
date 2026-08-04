@@ -18,7 +18,7 @@ Mathematically (effective axis `dim` in dp):
 - If `dim ≤ 300`: `scale = 1 − 0.4 × ln(300 / dim)`
 - `out = base × scale`
 
-**Implementation note:** For **smallest-width** + **default inverter**, `scale` uses **smallestScreenWidthDp** and is **pre-computed** once per configuration change (`DimenCache.currentLogScale`). Other qualifiers still evaluate the piecewise `ln` formula above inline.
+**Implementation note:** For **smallest-width** + **default inverter**, `scale` is pre-computed in `LogarithmicFactors.scale` (`:library-logarithmic`) via `StrategyFactorRegistry`. Other qualifiers still evaluate the piecewise `ln` formula above inline.
 
 - With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 

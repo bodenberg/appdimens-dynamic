@@ -16,7 +16,7 @@ Mathematically:
 - `scale = (shorter + longer) / BASE_PERIMETER_DP` with `BASE_PERIMETER_DP = 833` (`DesignScaleConstants`, aligned with 300 + 533).
 - `out = base × scale`
 
-**Implementation note:** `scale` is **pre-computed** once per configuration change (`DimenCache.currentPerimeterScale`). The formula matches `(shorter + longer) / 833`; the runtime does not re-sum sides on every call.
+**Implementation note:** `scale` is pre-computed in `PerimeterFactors.scale` (`:library-perimeter`) via `StrategyFactorRegistry`. The formula matches `(shorter + longer) / 833`; the default path does not re-sum sides on every call.
 
 - With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 

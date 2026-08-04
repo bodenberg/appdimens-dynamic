@@ -68,7 +68,7 @@ Modifier.height(2.5f.cm.dp)
 
 Use **`UnitType`** (`MM`, `CM`, `INCH`, `SP`, `DP`, `PX`, …) with `radius` and `unitSizeInDp`.
 
-> **Note:** the former name `unitSizePerPx` was renamed to **`unitSizeInDp`** because the values are expressed in **dp**, not raw pixels. If `DOCUMENTATION/KDOC/` estiver desatualizado, gere HTML com Dokka e execute `python3 scripts/sync_kdoc_from_dokka_html.py` (ver [README.md](README.md) nesta pasta).
+> **Note:** the former name `unitSizePerPx` was renamed to **`unitSizeInDp`** (values are in **dp**, not raw pixels). Regenerate KDoc with Dokka + `python3 scripts/sync_kdoc_from_dokka_html.py` if exported pages still show the old name.
 
 ## Why use it
 

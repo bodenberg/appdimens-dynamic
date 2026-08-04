@@ -18,7 +18,7 @@ Mathematically, for the current window:
 - `scale = diag / BASE_DIAGONAL_DP` with `BASE_DIAGONAL_DP = √(300² + 533²) ≈ 611.63` (`DesignScaleConstants`).
 - `out = base × scale`.
 
-**Implementation note:** `scale` is **pre-computed** once per configuration change in `DimenCache.ScreenFactors.updateFactors()` (exposed as `DimenCache.currentDiagonalScale`). The steps above describe what that factor represents; the runtime does not recompute `√(shorter² + longer²)` on every call.
+**Implementation note:** `scale` is pre-computed in `DiagonalFactors.scale` (`:library-diagonal`) via `StrategyFactorRegistry` on configuration change. The steps above describe what that factor represents; the default path does not recompute `√(shorter² + longer²)` on every call.
 
 - With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr` (also derived from cached screen factors).
 

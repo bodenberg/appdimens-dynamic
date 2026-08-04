@@ -77,8 +77,8 @@ Strategy-specific precomputed scales (diagonal/power/log/interpolated/perimeter)
 **The `DimenCache` Subsystem** calculates, stores, and evaluates layout keys natively using bitwise parameters on primitive vectors to minimize Garbage Collection penalties.
 
 * **64-bit Payload Signature:** Keys generated using a complex boolean flag logic including parameters: `applyAspectRatio`, `baseValue(float_bits)`, `CalcType_Enum`, `DpQualifier`, and `multiWindowConstraints`. 
-* **State Bypass Architecture:** Core types (`PERCENT`, `SCALED`, `DENSITY`) natively bypass associative shard writing when aspect ratios are inactive, generating results strictly based on raw mathematics for near-zero timing (refer to `PERFORMANCE.md`).
-* **Volatility Pre-rendering:** `ScreenFactors` are preemptively evaluated and hot-swapped during configuration changes, pushing heavy logarithmic calculations completely outside of the Compose recomposition phase.
+* **State Bypass Architecture:** `shouldBypassCache` skips shard writes for multiply-only / default-path types (see [library/PERFORMANCE.md](../library/PERFORMANCE.md)).
+* **Volatility Pre-rendering:** Shared `ScreenFactors` update on configuration change; strategy scales update only in registered satellites via `StrategyFactorRegistry`.
 
 ---
 
@@ -123,6 +123,6 @@ sequenceDiagram
 When modifying structural parameters or curves, engineers must ensure the following baseline protocols are met prior to merging PRs:
 - [ ] Ensure **Code/Compose Parity**. Modify the `code` extension symmetrically when introducing a new Compose builder.
 - [ ] Execute `./gradlew :library:testDebugUnitTest` plus affected `:library-<strategy>:testDebugUnitTest` and visually cross-check output against `DimenPerformanceTest`.
-- [ ] If mutating `ScreenFactors` / `StrategyFactorRegistry`, actively adjust bits in `DimenCache` alongside mathematical models evaluated in `MATHEMATICS-AND-CALCULUS.md`.
+- [ ] If mutating shared `ScreenFactors`, update `DimenCache` and [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md). Strategy scales belong in satellite `*Factors` + `StrategyFactorRegistry` — do not reintroduce them on `ScreenFactors`.
 - [ ] Confirm satellites depend only on `:library`; BOM publishes version constraints only.
 - [ ] Smoke: main `classes.jar` must not contain other strategy packages (`compose.percent`, …).
