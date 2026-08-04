@@ -1,5 +1,8 @@
 # Perimeter strategy (`compose.perimeter` / `code.perimeter`)
 
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-perimeter:3.1.6` (`:library-perimeter`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
+
 **Same API surface as scaled** with prefixes `prsdp` / `prhdp` / `prwdp` / `prssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
 
 ## What it is
@@ -13,7 +16,7 @@ Mathematically:
 - `scale = (shorter + longer) / BASE_PERIMETER_DP` with `BASE_PERIMETER_DP = 833` (`DesignScaleConstants`, aligned with 300 + 533).
 - `out = base × scale`
 
-**Implementation note:** `scale` is **pre-computed** once per configuration change (`DimenCache.currentPerimeterScale`). The formula matches `(shorter + longer) / 833`; the runtime does not re-sum sides on every call.
+**Implementation note:** `scale` is pre-computed in `PerimeterFactors.scale` (`:library-perimeter`) via `StrategyFactorRegistry`. The formula matches `(shorter + longer) / 833`; the default path does not re-sum sides on every call.
 
 - With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 

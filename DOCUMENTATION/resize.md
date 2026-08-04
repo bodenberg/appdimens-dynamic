@@ -1,6 +1,7 @@
 # Resize module (`compose.resize` / `code.resize`)
 
-This module is **not** prefix-mirrored like sdp/hdp strategies; the full Compose list is under **§ Compose API reference** below. For `sdp`-style extensions, see [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md).
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-resize:3.1.6` (`:library-resize`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
 
 ## What it is
 

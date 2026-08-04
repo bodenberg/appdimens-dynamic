@@ -16,7 +16,7 @@ For the common path (`SMALL_WIDTH` + `DEFAULT` inverter + no custom sensitivity)
 
 For other qualifiers or custom sensitivity, reads the screen dimension from [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html) and performs the scaling formula inline.
 
-**Performance**: Simple paths without Aspect Ratio complete in ~2 ns (single multiply). Paths with Aspect Ratio require ~41 ns on Snapdragon 888 (includes ln() fallback). Results are memoized by the surrounding remember block and [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md).
+**Performance**: Default multiply paths may bypass shard storage via `shouldBypassCache` (~2 ns). Heavier / non-default paths use remember + [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md). See [library/PERFORMANCE.md](../../../../library/PERFORMANCE.md).
 
 PT Núcleo de escalonamento puro compartilhado por [toDynamicScaledDp](to-dynamic-scaled-dp.md) e [toDynamicScaledPx](to-dynamic-scaled-px.md).
 

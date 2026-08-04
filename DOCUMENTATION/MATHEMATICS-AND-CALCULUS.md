@@ -1,8 +1,9 @@
 # Mathematics and Calculus — AppDimens Dynamic
 
 > [!NOTE]
-> Formal Technical Reference validating the geometry mapping against `android.content.res.Configuration`.
-> **Associated Documents:** [PRD (Requirements)](PRD.md) | [PDR (Design)](PDR.md) | [Resize Spec](resize.md)
+> Formal reference for geometry mapping against `android.content.res.Configuration`.
+> **Related:** [PRD](PRD.md) · [PDR](PDR.md) · [Resize](resize.md) · [MODULES](MODULES.md)
+>
 
 This document establishes the geometric algorithms parsing system UI inputs to logical device dimensions, mapping exact equations translated natively into `AppDimens Dynamic` (`compose.<strategy>` and `code.<strategy>`).
 
@@ -42,30 +43,39 @@ const val REFERENCE_ASPECT_RATIO = 1.78f
 
 ---
 
-## 3. Global Precomputation Matrix (`ScreenFactors`)
+## 3. Global Precomputation Matrix
 
-Device configurations trigger an asynchronous computation vector (`updateFactors`), isolating heavy geometric calculations outside the standard Render Pass.
+Device configuration changes trigger `DimenCache.updateFactors()`, which updates **shared** `ScreenFactors` and notifies satellites through `StrategyFactorRegistry`.
 
 ```mermaid
 journey
   title High-Frequency Computation Caching Pattern
   section 1. Trigger
     Configuration Shift : 5: Android System
-    Hash Key Evaluation : 4: DimenCache
+    ConfigSnapshot Evaluation : 4: DimenCache
   section 2. Pre-calculation Phase
-    Calculate Diagonal / Log : 3: ScreenFactors Engine
-    Calculate Logarithmic Damping: 2: ScreenFactors Engine
+    Shared metrics (scale / AR / density) : 3: ScreenFactors
+    Strategy scales (if AAR present) : 2: StrategyFactorRegistry
   section 3. State Preservation
     Inject into Atomic Cache Array: 1: AppDimens Plumbing
 ```
 
-### Analytical Variables generated mapping to UI Thread:
+### Shared `ScreenFactors` (principal)
+
 1. **Linear Limit:** `f.scale` $$= sw \cdot \iota$$
 2. **Normalized Multiplier:** `f.arMultiplier` $$=  1 + (sw - 300) \cdot (\iota_{adj} + k_{def} \cdot L_{AR})$$
-3. **Power Translation:** `f.powerScale` $$= (sw / 300)^{0.75}$$
-4. **Logarithmic Yield:** `f.logScale` evaluated precisely over `sw`:  
-   $$Scale = 1 + 0.4 \cdot \ln(sw \cdot \iota)$$
-5. **Density Override:** `f.density` $$= densityDpi / 160f$$
+3. **Aspect helper:** `f.aspectRatioMul` $$= 1 + k_{def} \cdot L_{AR}$$
+4. **Density Override:** `f.density` $$= densityDpi / 160f$$
+
+### Satellite strategy scales (when the module is on the classpath)
+
+| Factor | Module | Formula (default SW path) |
+|--------|--------|---------------------------|
+| `PowerFactors.scale` | `appdimens-dynamic-power` | $$(sw / 300)^{0.75}$$ |
+| `LogarithmicFactors.scale` | `appdimens-dynamic-logarithmic` | piecewise $$\ln$$ on $$sw$$ |
+| `DiagonalFactors.scale` | `appdimens-dynamic-diagonal` | diagonal / base diagonal |
+| `PerimeterFactors.scale` | `appdimens-dynamic-perimeter` | $$(s_{min}+s_{max}) / 833$$ |
+| `InterpolatedFactors.scale` | `appdimens-dynamic-interpolated` | blend of base and linear |
 
 ---
 
@@ -86,7 +96,7 @@ Function path: `DimenCache.calculateRawScaling(baseValue, applyAspectRatio)`
 ### 4.2 Comprehensive Strategy Formulas
 
 > [!TIP]
-> The engine defaults to extremely low computational complexity via direct linear equations or natively precomputed constants out of the `ScreenFactors` bounds mapping.
+> The engine prefers direct multiplies against precomputed shared or satellite factors on default paths; non-default qualifiers may evaluate formulas inline.
 
 | Strategy Class | Mathematical Formalization | Base Operational Logic |
 |:---|:---|:---|
@@ -115,4 +125,4 @@ The resize model calculates optimal dimension capacity isolated inherently from 
 
 AppDimens is designed entirely on **IEEE 754 32-bit floats (`Float`)**, acknowledging minuscule mathematical deviations natively in standard testing. Validation of curves explicitly applies acceptable `< 0.05` deltas ensuring visual integrity without overtaxing memory buses with `Double` precision arrays.
 
-Explicit module verification operates via `./gradlew :library:test` executing deterministic parameter inputs into `StrategyModuleFormulasTest.kt`.
+Explicit module verification operates via `./gradlew :library:testDebugUnitTest` plus per-satellite formula tests (`:library-percent:testDebugUnitTest`, `:library-auto:testDebugUnitTest`, `:library-diagonal:testDebugUnitTest`, …) executing deterministic parameter inputs into each module’s `*FormulasTest`.

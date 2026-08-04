@@ -22,7 +22,7 @@ import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.core.DimenCache
 
-internal fun isOrientationMatch(configuration: Configuration, orientation: Orientation): Boolean =
+fun isOrientationMatch(configuration: Configuration, orientation: Orientation): Boolean =
     when (orientation) {
         Orientation.LANDSCAPE -> configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Orientation.PORTRAIT -> configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -30,7 +30,7 @@ internal fun isOrientationMatch(configuration: Configuration, orientation: Orien
     }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-internal fun qualifierMeetsThreshold(
+fun qualifierMeetsThreshold(
     configuration: Configuration,
     qualifierType: DpQualifier,
     qualifierValue: Number,
@@ -43,7 +43,7 @@ internal fun qualifierMeetsThreshold(
     return v >= qualifierValue.toFloat()
 }
 
-internal fun plainRotatePx(
+fun plainRotatePx(
     context: Context,
     receiverPx: Float,
     branchPx: Float,
@@ -53,7 +53,7 @@ internal fun plainRotatePx(
     return if (isOrientationMatch(c, orientation)) branchPx else receiverPx
 }
 
-internal fun plainModePx(
+fun plainModePx(
     context: Context,
     receiverPx: Float,
     branchPx: Float,
@@ -62,7 +62,7 @@ internal fun plainModePx(
     if (DimenCache.getCachedUiModeType(context) == uiModeType) branchPx else receiverPx
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-internal fun plainQualifierPx(
+fun plainQualifierPx(
     context: Context,
     receiverPx: Float,
     qualifiedPx: Float,
@@ -74,7 +74,7 @@ internal fun plainQualifierPx(
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-internal fun plainScreenPx(
+fun plainScreenPx(
     context: Context,
     receiverPx: Float,
     screenPx: Float,

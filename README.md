@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/bodenberg/appdimens-dynamic/releases" title="Releases">
-    <img src="https://img.shields.io/badge/version-3.1.5-blue.svg" alt="Version 3.1.5">
+    <img src="https://img.shields.io/badge/version-3.1.6-blue.svg" alt="Version 3.1.6">
   </a>
   &nbsp;
   <a href="LICENSE" title="Apache License 2.0">
@@ -62,23 +62,87 @@
 
 ![AppDimens Banner](IMAGES/banner_top.png)
 
-One dependency: you write values like `16.sdp` and the library scales them from the current screen **Configuration** (size, density, optional flags).
+Write values like `16.sdp` and the library scales them from the current screen **Configuration** (size, density, optional flags).
 
 **New here?** Use **Quick start** below, then [**GUIDE-FOR-BEGINNERS**](./GUIDE-FOR-BEGINNERS) for every strategy in plain language.
 
-**All 14 modes** (scaled, percent, power, fluid, …): [DOCUMENTATION/README.md](DOCUMENTATION/README.md) · [KDoc (hosted)](https://appdimens3.web.app/) · **Product / engineering:** [DOCUMENTATION/PRD.md](DOCUMENTATION/PRD.md) · [DOCUMENTATION/PDR.md](DOCUMENTATION/PDR.md) · [DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md](DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md)
+**Documentation:** [DOCUMENTATION/README.md](DOCUMENTATION/README.md) · [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) · [KDoc (hosted)](https://appdimens3.web.app/) · [PRD](DOCUMENTATION/PRD.md) · [PDR](DOCUMENTATION/PDR.md) · [Mathematics](DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md)
 
 ---
 
-## Installation
+## Installation (v3.1.6)
+
+From **3.1.6**, the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
+
+### With BOM
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.1.5")
+    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.6"))
+
+    implementation("io.github.bodenberg:appdimens-dynamic")
+
+    implementation("io.github.bodenberg:appdimens-dynamic-percent")
+    implementation("io.github.bodenberg:appdimens-dynamic-power")
+    implementation("io.github.bodenberg:appdimens-dynamic-fluid")
+    implementation("io.github.bodenberg:appdimens-dynamic-auto")
+    implementation("io.github.bodenberg:appdimens-dynamic-density")
+    implementation("io.github.bodenberg:appdimens-dynamic-diagonal")
+    implementation("io.github.bodenberg:appdimens-dynamic-fill")
+    implementation("io.github.bodenberg:appdimens-dynamic-fit")
+    implementation("io.github.bodenberg:appdimens-dynamic-interpolated")
+    implementation("io.github.bodenberg:appdimens-dynamic-logarithmic")
+    implementation("io.github.bodenberg:appdimens-dynamic-perimeter")
+    implementation("io.github.bodenberg:appdimens-dynamic-resize")
+    implementation("io.github.bodenberg:appdimens-dynamic-units")
 }
 ```
 
-**Requirements:** Min SDK **24** · Compile SDK **36** · **Kotlin** & **Java 17** · **Jetpack Compose** (BOM aligned with this library)
+### Missing strategy module
+
+If you import `com.appdimens.dynamic.compose.<strategy>` (or `code.<strategy>`) without adding the matching artifact, the Gradle check `checkAppDimensModules` fails with a line such as:
+
+```text
+Missing AppDimens module for import …percent… — add: implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.6")
+```
+
+Apply the same check in your app with:
+
+```kotlin
+apply(from = "<path-to-checkout>/gradle/appdimens-missing-module-check.gradle.kts")
+```
+
+Runtime helper: `com.appdimens.dynamic.core.MissingModule` (package → Maven coordinate). Version comes from the `appdimens.version` Gradle property.
+
+### Without BOM
+
+```kotlin
+dependencies {
+    implementation("io.github.bodenberg:appdimens-dynamic:3.1.6")
+    implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.6")
+    // same satellites as above, each with :3.1.6
+}
+```
+
+### Migration from 3.1.5
+
+| 3.1.5 | 3.1.6 |
+|-------|-------|
+| One `appdimens-dynamic` dependency with every strategy | Principal = scaled + core; declare each extra strategy module |
+| — | Optional `appdimens-dynamic-bom` for shared version management |
+| Kotlin imports | Unchanged |
+
+### Artifact matrix
+
+| Maven artifact | Contents |
+|----------------|----------|
+| `appdimens-dynamic` | `common`, `core`, `code.plain`, `code` / `compose` **scaled** |
+| `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` |
+| `appdimens-dynamic-bom` | Version constraints (`java-platform`) |
+
+Module graph: [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md).
+
+**Requirements:** Min SDK **24** · Compile SDK **36** · **Kotlin** & **Java 17** · **Jetpack Compose**
 
 ---
 
@@ -127,7 +191,7 @@ setContent {
 
 ### `DimenCache.invalidateOnConfigChange`
 
-Call this when the **same Activity** stays alive across **rotation, split-screen, or density/font changes** and sizes look **stale**. If the Activity is **recreated** on config change (default), you often don’t need it. Details: [library/PERFORMANCE.md](library/PERFORMANCE.md).
+Call this when the **same Activity** stays alive across **rotation, split-screen, or density/font changes** and sizes look **stale**. Orientation-only swaps do not wipe the shard table; physical size/density changes clear memory + DataStore; fontScale clears SP entries only. If the Activity is **recreated** on config change (default), you often don’t need it. Details: [library/PERFORMANCE.md](library/PERFORMANCE.md).
 
 The previous `Configuration` is tracked internally by `DimenCache` — callers only need to pass the new one.
 
@@ -286,11 +350,12 @@ Approximate **real-world** size on screen (density-based). Compose: use helpers 
 
 **Recommendation order for most apps:** **Scaled** (with or without `a`) → then **percent** → then **auto**; explore the rest when you have a clear need (fluid, fit, diagonal, etc.).
 
-Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **fill**, **fit**, **interpolated**, **logarithmic**, **perimeter**, **density**) use the **same suffix patterns** as Scaled with a **different import prefix** — see [DOCUMENTATION/README.md](DOCUMENTATION/README.md) and [**GUIDE-FOR-BEGINNERS**](./GUIDE-FOR-BEGINNERS).
+Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **fill**, **fit**, **interpolated**, **logarithmic**, **perimeter**, **density**, **resize**, **units**) mirror the Scaled suffix patterns under a different import prefix and ship as separate Maven modules. See [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md), [DOCUMENTATION/README.md](DOCUMENTATION/README.md), and [GUIDE-FOR-BEGINNERS](./GUIDE-FOR-BEGINNERS).
 
 | Resource | Use for |
 |----------|---------|
 | [DOCUMENTATION/README.md](DOCUMENTATION/README.md) | Per-strategy explanations |
+| [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) | Gradle/Maven module graph (3.1.6) |
 | [COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) | Every Compose property & facilitator (scaled catalog + prefix map) |
 | [DOCUMENTATION/index.md](DOCUMENTATION/index.md) | Markdown API index (KDoc export) |
 | [appdimens3.web.app](https://appdimens3.web.app/) | Searchable KDoc |

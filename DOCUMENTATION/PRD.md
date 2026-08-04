@@ -1,25 +1,25 @@
 # Product Requirements Document (PRD) — AppDimens Dynamic
 
 > [!NOTE]
-> **Product Alignment:** `io.github.bodenberg:appdimens-dynamic:3.1.5`
-> **Primary Module:** `library`
-> **Associated Documents:** [PDR (Design)](PDR.md) | [Mathematics](MATHEMATICS-AND-CALCULUS.md) | [API Conventions](COMPOSE-API-CONVENTIONS.md)
+> **Version:** `3.1.6` — modules: [MODULES.md](MODULES.md)
+> **Related:** [PDR](PDR.md) · [Mathematics](MATHEMATICS-AND-CALCULUS.md) · [API Conventions](COMPOSE-API-CONVENTIONS.md)
 
 ## 1. Executive Summary
 
 **AppDimens Dynamic** is a mathematical scaling engine designed for Android (`com.appdimens.dynamic`). Its purpose is to map generic UI dimensions (developed against a `300dp` or equivalent reference) to physical hardware parameters—scaling elegantly across phones, tablets, and unpredictable foldables.
 
-It encapsulates **14 discrete mathematical scaling strategies** (curves), alongside an autonomous **Resize/Constraint subsystem** that calculates the maximum bounded element size at runtime via binary search.
+It encapsulates **scaling strategies** (curves) shipped as Maven modules, alongside an autonomous **Resize/Constraint** subsystem that finds the largest fitting size via binary search.
 
 ## 2. Market Context & Problem Space
 
 Static `dp` measurements fall apart as device variety increases. A `300dp` horizontal card fits perfectly on a classic phone but becomes aggressively small on high-density tablets or wide-screen foldables.
 
 ### Core Objectives
-1. **Mathematical Consistency:** Provide reproducible scaling curves (Linear, Logarithmic, Factorial/Power).
+1. **Mathematical Consistency:** Provide reproducible scaling curves (Linear, Logarithmic, Power).
 2. **Unified Surface APIs:** Symmetrical integration rules for both Jetpack Compose (`compose.*`) and legacy XML/Views (`code.*`).
 3. **High-Frequency Performance:** Accommodate zero-allocation hot paths using lock-free architecture for smooth `60FPS` and `120FPS` rendering algorithms.
 4. **Hardware Awareness:** Adapt directly to `Configuration`, Display aspect ratios, Multi-Window flags, and Context DPI.
+5. **Modular APK control:** Developers include only the strategy artifacts they need; the principal artifact must not pull all strategies.
 
 ---
 
@@ -66,7 +66,7 @@ mindmap
 | **Logarithmic** | Fast early growth curve with heavy downstream damping. | Text geometries on massive tablets. |
 | **Fluid** | Breakpoint-based linear interpolation \([320..768]\). | Responsive Web-like UI adjustments. |
 | **Percent / Space** | Absolute device fractional limits (\( % \times sw \)). | Fixed grid splits, Nav bars. |
-| **Interpolated** | User-defined N-point vector curves. | Brand-specific interactive scaling. |
+| **Interpolated** | Blend between base and linear scale (50%). | Softer growth than pure linear. |
 
 ### FR-2: Engine & Subsystem Resize Algorithms
 - **FR-2.1 (Memory Integrity):** Generates constraint step buffers via static pre-allocated `FloatArray`. **No auto-boxing allowed.**
@@ -77,7 +77,7 @@ mindmap
 
 ## 5. Non-Functional Requirements (NFR)
 
-* **NFR-1 (Performance Benchmarking):** Memory bypass mechanisms. The system expects that if aspect-ratio scaling is OFF on core types (`PERCENT`, `SCALED`), `getOrPut` reduces to a constant time single-multiply operation.
+* **NFR-1 (Performance Benchmarking):** `shouldBypassCache` skips shard I/O for multiply-only types (`PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`) and for `POWER` / `LOGARITHMIC` on the default SW path — including default aspect ratio when applicable. See [library/PERFORMANCE.md](../library/PERFORMANCE.md).
 * **NFR-2 (Lock-Free Threading):** Uses `AtomicLongArray` / `AtomicIntegerArray` implementing a deterministic *last-write-wins* methodology preventing bottlenecking on ARM64.
 * **NFR-3 (Minimum Environment):** `minSdk = 24`, Java 17 requirements, enforcing direct Proguard shipping via `consumer-rules.pro`.
 * **NFR-4 (Runtime Diagnostics):** Engine observability functions remain conditionally gated (`diagnosticsEnabled`) to eliminate tracing overhead in production applications.

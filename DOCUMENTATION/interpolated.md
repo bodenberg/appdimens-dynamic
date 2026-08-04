@@ -1,5 +1,8 @@
 # Interpolated strategy (`compose.interpolated` / `code.interpolated`)
 
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-interpolated:3.1.6` (`:library-interpolated`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
+
 **Same API surface as scaled** with prefixes `isdp` / `ihdp` / `iwdp` / `issp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
 
 ## What it is
@@ -13,7 +16,7 @@ Mathematically:
 - `linear = base × dim × (1/300)` on the effective axis.
 - `out = base + (linear − base) × 0.5f` (equivalently `out = base × (1 + (dim/300 − 1) × 0.5)` when using SW).
 
-**Implementation note:** For **smallest-width** + **default inverter**, the blended factor is **pre-computed** once per configuration change (`DimenCache.currentInterpolatedScale`), so `out = base × currentInterpolatedScale`. Other qualifiers still compute `linear` from `readScreenDp` and blend inline.
+**Implementation note:** For **smallest-width** + **default inverter**, the blended factor is pre-computed in `InterpolatedFactors.scale` (`:library-interpolated`) via `StrategyFactorRegistry` (`out = base × scale`). Other qualifiers still compute `linear` from `readScreenDp` and blend inline.
 
 - With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 

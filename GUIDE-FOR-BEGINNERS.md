@@ -6,6 +6,26 @@ You write **once** and your code automatically adapts to any device. The library
 
 ---
 
+## Installation (v3.1.6)
+
+```kotlin
+implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.6"))
+implementation("io.github.bodenberg:appdimens-dynamic")
+implementation("io.github.bodenberg:appdimens-dynamic-percent")
+implementation("io.github.bodenberg:appdimens-dynamic-resize")
+```
+
+Without the BOM, pin `:3.1.6` on each coordinate. Details: [README](./README.md#installation-v316) · [MODULES.md](./DOCUMENTATION/MODULES.md).
+
+| Strategy in this guide | Maven module |
+|------------------------|--------------|
+| **Scaled** (`sdp` / `hdp` / `wdp` / `ssp`) | `appdimens-dynamic` |
+| Percent, Power, Fluid, Auto, Diagonal, Fill, Fit, Interpolated, Logarithmic, Perimeter, Density | `appdimens-dynamic-<name>` |
+| Resize (`autoResize*`) | `appdimens-dynamic-resize` |
+| Physical units (mm / cm / in) | `appdimens-dynamic-units` |
+
+---
+
 ## 🎯 The 3 Core Pillars
 
 ### **1️⃣ SDP** (Smallest Dimension Proportion) – The Smallest Side

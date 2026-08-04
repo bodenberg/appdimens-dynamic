@@ -1,67 +1,68 @@
 # Performance notes — `DimenCache` & Scaling Engine
 
-## Fast bypass (`getOrPut`)
+## Fast bypass (`getOrPut` / `shouldBypassCache`)
 
-When **aspect ratio is off** (cache key bit 63 clear, i.e. `Long` key ≥ 0 in the signed interpretation used in the fast check) and `CalcType` is one of:
+`DimenCache.getOrPut` skips shard storage when `shouldBypassCache(key)` is true — the call reduces to `compute()` (typically one multiply against a factor updated on configuration change).
 
-- `PERCENT` (ordinal 7)
-- `SCALED` (ordinal 11)
-- `DENSITY` (ordinal 14)
-- `DIAGONAL` (ordinal 1)
-- `INTERPOLATED` (ordinal 5)
-- `PERIMETER` (ordinal 8)
+**Always eligible** (with or without default aspect ratio when the key uses `SMALL_WIDTH` + `DEFAULT` inverter + null custom sensitivity):
 
-`DimenCache.getOrPut` **returns `compute()` directly** and does **not** store the result in the shard table. These paths reduce to `baseValue * preComputedFactor` — a single multiplication using a value computed once per configuration change.
+- `PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`
 
-All other strategy ordinals (`AUTO`, `FLUID`, `POWER`, `LOGARITHMIC`, `FIT`, `FILL`, …) go through the normal cache path when the cache is enabled.
+**Conditionally eligible** (only `SMALL_WIDTH` + `DEFAULT` inverter — WIDTH/HEIGHT still use the shard cache):
 
-## Why
+- `POWER`, `LOGARITHMIC`
 
-For the six bypassed types, measured cost of a single multiply is lower than a full cache-slot lookup; memoization is still provided by **Compose `remember`** (and by call-site batching where used). When **aspect ratio is on**, the computation is heavier and the cache path is used.
+**Not bypassed:** `AUTO`, `FLUID`, `FIT`, `FILL`, `RESIZE`, `UNITIES`, `ASPECT_RATIO` (ln memoization), and any path with custom sensitivity or non-default qualifier/inverter.
 
-## Pre-computed strategy scale factors (`ScreenFactors`)
+Default aspect ratio (`sdpa` with default settings) uses the same bypass when the type is eligible — `arMultiplier` is already precomputed in `updateFactors()`.
 
-`ScreenFactors.updateFactors()` runs **only on configuration changes** and pre-computes:
+## Pre-computed factors
 
-| Field | Formula |
+`DimenCache.updateFactors()` runs on configuration changes and updates **shared** `ScreenFactors` fields only:
+
+| Field | Role |
 |---|---|
 | `scale` | `sw / 300` |
-| `arMultiplier` | `1 + (sw - 300) * (ADJUSTMENT_SCALE + SENSITIVITY_DEFAULT * logNormalizedAr)` |
-| `diagonalScale` | `sqrt(sm² + lg²) / BASE_DIAGONAL_DP` |
-| `powerScale` | `(sw / BASE_WIDTH_DP) ^ 0.75` |
-| `logScale` | `1 ± 0.4 * ln(sw * INV_BASE_RATIO)` |
-| `interpolatedScale` | `1 + (sw * INV_BASE_RATIO - 1) * 0.5` |
-| `perimeterScale` | `(sm + lg) / BASE_PERIMETER_DP` |
-| `aspectRatioMul` | `1 + SENSITIVITY_DEFAULT * logNormalizedAr` |
+| `arMultiplier` | Scaled AR adjustment |
+| `aspectRatioMul` | Shared AR multiply helper |
+| `density` / AR logs / `smallestWidthDp` | From `Configuration` |
 
-Each `calculate*Dp` function reads the pre-computed factor from `ScreenFactors` for the **default path** (qualifier = `SMALL_WIDTH`, inverter = `DEFAULT`, `customSensitivityK = null`). Non-default paths still compute inline but avoid `Double` conversions where possible.
+Strategy-specific scales (`diagonal`, `power`, `log`, `interpolated`, `perimeter`) live in satellite modules (`DiagonalFactors`, `PowerFactors`, …) and register through `StrategyFactorRegistry`. Absent satellites do no work.
+
+## Invalidation (`invalidateOnConfigChange`)
+
+Uses `ConfigSnapshot` (explicit fields — not a full `Configuration` copy):
+
+| Change | Behavior |
+|--------|----------|
+| Orientation-only (min/max/SW/dpi unchanged) | Updates factors; **does not** `clearAll` |
+| Physical size / density | `clearAll(savedAppContext)` (memory + DataStore) |
+| `fontScale` only | `clearFontScaleDependentEntries()` (SP_* value types only) |
+
+## Compose recomposition stamps
+
+- `layoutRememberStamp` packs SW/W/H/orientation + `mixDpi` — **does not** use `Configuration.hashCode()`
+- Sp paths use `spRememberStamp` (includes fontScale); px paths use `pxRememberStamp` (density only)
+- `rememberDimen*` always runs (stable slots); `match = false` returns `passthrough`
 
 ## Cached `UiModeType`
 
-`UiModeType.fromConfiguration(context, null)` — which accesses `SensorManager`, hinge sensor lookup, and `WindowMetricsCalculator` — is now cached per configuration hash in `DimenCache.getCachedUiModeType(context)`. The cache is invalidated automatically when the configuration hash changes. All `*Mode` / `*Screen` facilitators across 48 extension files read from this cache.
-
-## Eliminated `Float→Double→Float` conversions
-
-- **Diagonal:** `sqrt((sm² + lg²).toDouble()).toFloat()` eliminated — uses pre-computed `diagonalScale`.
-- **Power:** `ratio.toDouble().pow(0.75).toFloat()` eliminated on default path — uses pre-computed `powerScale`. Non-default paths use `Math.pow`.
-- **Logarithmic:** raw `kotlin.math.ln()` eliminated on default path — uses pre-computed `logScale`.
-
-## `buildResizeStepsPx` — zero-boxing
-
-`ResizeMath.buildResizeStepsPx` writes directly to a pre-allocated `FloatArray`, avoiding `ArrayList<Float>` boxing/unboxing overhead.
-
-## `Int` / `Float` overloads
-
-`toDynamicScaledPx`, `toDynamicScaledDp`, `sdp`, `hdp`, `wdp` (and their `a`/`i`/`ia` variants) have specialized `Int` and `Float` receiver overloads that avoid `Number.toFloat()` boxing.
-
-## Consumer R8/ProGuard rules
-
-`consumer-rules.pro` keeps the public API surface (`code`, `compose`, `common`, and the listed `core` types). The rest of `core` is not blanket-kept, so R8 may still shrink, obfuscate, and inline internal helpers where no other rule forbids it. (ProGuard’s `-allowoptimization` is not valid for R8 and was removed.)
+`DimenCache.getCachedUiModeType` uses a fingerprint of `uiMode`, `smallestScreenWidthDp`, and min/max screen dp — not `Configuration.hashCode()`. Facilitators read this cache.
 
 ## Persistence
 
-`DimenCache` writes to a Preferences DataStore with namespace **`com.appdimens.dynamic.cache`**. The write flow uses **`sample(500)`** (not `debounce`) so that a first-startup burst of cache misses flushes within 500 ms of the *first* miss, instead of waiting until the burst quiets. For testing, call **`DimenCache.shutdown()`** to cancel the internal `CoroutineScope` and avoid leaked writes during teardown.
+Preferences DataStore namespace `com.appdimens.dynamic.cache`. Write scheduling: `merge(debounce(500ms), sample(10_000ms))`. Serialization is **sparse** (populated slots only); load still accepts legacy dense blobs. Blobs include `KEY_DPI`; SW/dpi mismatch rejects cold-start restore. Call `DimenCache.shutdown()` in tests to cancel the writer scope.
+
+## Other
+
+- Diagonal / Power / Logarithmic **default** paths: satellite precomputed scales when the module is present
+- `ResizeMath.buildResizeStepsPx`: pre-allocated `FloatArray` (no boxing)
+- Specialized `Int` / `Float` overloads avoid `Number.toFloat()` boxing on hot Scaled paths
+
+## Consumer R8/ProGuard
+
+Each AAR ships `consumer-rules.pro`. Core/scaled rules come from `appdimens-dynamic`; strategy rules from each satellite.
 
 ## Benchmarks
 
-Do not use SCALED / PERCENT / DENSITY / DIAGONAL / INTERPOLATED / PERIMETER **without** AR to measure cache throughput — those calls intentionally bypass shard storage.
+Do not use always-bypass types on the default path to measure **shard** throughput. Use custom sensitivity, non-default qualifiers, or non-bypass `CalcType`s (`AUTO`, `FLUID`, …) when measuring cache hits.

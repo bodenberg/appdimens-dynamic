@@ -2,45 +2,50 @@
 
 This folder goes deeper into each **scaling strategy** in [AppDimens Dynamic](../README.md): what it is, the formula, how to import it, and when to pick each mode. Each strategy’s code lives in `com.appdimens.dynamic.compose.<strategy>` and `com.appdimens.dynamic.code.<strategy>` with **no cross-imports** between strategies.
 
-**Product docs:** [PRD.md](PRD.md) (product requirements) · [PDR.md](PDR.md) (technical design, development plan, prompt requirements, traceability matrix) · [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) (formulas, constants, and calculation kernels).
+**Modules (3.1.6):** principal `appdimens-dynamic` (scaled + core/common/plain); strategy modules `appdimens-dynamic-<strategy>`; BOM `appdimens-dynamic-bom`. See [README — Installation](../README.md#installation-v316) · [MODULES.md](MODULES.md).
+
+**Product docs:** [PRD.md](PRD.md) · [PDR.md](PDR.md) · [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md).
 
 For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../library/PERFORMANCE.md).
 
-**Naming parity (`compose` vs `code`):** In `library/src/main/java/com/appdimens/dynamic/`, each strategy folder pairs **`Dimen<Strategy>DpExtensions.kt`** (layout facilitators → `Float` px + `Context`) with **`Dimen<Strategy>SpExtensions.kt`** where Sp facilitators exist — the same filenames as under `compose/<strategy>/`, so it is easy to jump between UI toolkits. **Scaled** uses **`DimenSdpExtensions.kt`** and **`DimenSspExtensions.kt`** inside the `scaled/` subfolder (packages stay top-level `compose` / `code`). **Plain** View helpers remain in **`Dimen<Strategy>PlainPx.kt`** per strategy plus shared logic in **`com.appdimens.dynamic.code.plain`**.
+**Naming parity (`compose` vs `code`):** In the multi-module tree, each strategy lives under **`library/`** (scaled) or **`library-<strategy>/`**, pairing **`Dimen<Strategy>DpExtensions.kt`** (layout facilitators → `Float` px + `Context`) with **`Dimen<Strategy>SpExtensions.kt`** where Sp facilitators exist — the same filenames as under `compose/<strategy>/`, so it is easy to jump between UI toolkits. **Scaled** uses **`DimenSdpExtensions.kt`** and **`DimenSspExtensions.kt`** inside the `scaled/` subfolder (packages stay top-level `compose` / `code`). **Plain** View helpers remain in **`Dimen<Strategy>PlainPx.kt`** per strategy plus shared logic in **`com.appdimens.dynamic.code.plain`** (principal artifact).
 
-**Compose API (catálogo scaled, convenções de nomes e comportamento espelhado nas outras estratégias):** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md) — inclui **§4.5** helpers View/`code` **Plain** (`Float` px + `Context`, `Dimen*PlainPx.kt` por estratégia, lógica partilhada em `com.appdimens.dynamic.code.plain`). **Resize** por restrições (`autoResize*`, `ResizeBound`, `compose.resize` / `code.resize`) está em [resize.md](resize.md) e no KDoc: [`compose.resize`](KDOC/com.appdimens.dynamic.compose.resize/index.md), [`code.resize`](KDOC/com.appdimens.dynamic.code.resize/index.md).
+**Compose API catalog:** [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md) (scaled surface + prefix map; §4.5 View/`code` Plain). Resize: [resize.md](resize.md) · KDoc [`compose.resize`](KDOC/com.appdimens.dynamic.compose.resize/index.md), [`code.resize`](KDOC/com.appdimens.dynamic.code.resize/index.md).
 
-**KDoc API reference** (gerado a partir do KDoc `/** … */` da library — pacotes, tipos, membros): [index.md](index.md). Os ficheiros por símbolo estão em [`KDOC/`](KDOC/) (caminhos curtos sem `[` / `]` para o GitHub resolver links Markdown).
+**KDoc export:** [index.md](index.md) · pages under [`KDOC/`](KDOC/).
 
-**Atualizar `KDOC/` a partir do HTML do Dokka:** com a saída já gerada em [`DOCUMENTATION2/`](../DOCUMENTATION2) (ver [`library/build.gradle.kts`](../library/build.gradle.kts)), execute na raiz do repo: `python3 scripts/sync_kdoc_from_dokka_html.py` — reescreve [`DOCUMENTATION/KDOC/`](KDOC/) e o ficheiro [`package-list`](KDOC/package-list) a partir desse HTML (sem precisar de voltar a correr o Gradle neste passo). Depois de alterar código ou KDoc, gere HTML com `./gradlew :library:dokkaGenerateHtml` e volte a correr o script para manter nomes e membros alinhados (por exemplo **`unitSizeInDp`** em vez de **`unitSizePerPx`**).
+**Refresh KDoc:** `./gradlew :library:dokkaGenerateHtml` then `python3 scripts/sync_kdoc_from_dokka_html.py` (input HTML in [`DOCUMENTATION2/`](../DOCUMENTATION2)). Narrative pages may be newer than KDoc until that sync runs — prefer [library/PERFORMANCE.md](../library/PERFORMANCE.md) and strategy guides for cache / modular behavior.
 
-**Nota:** o Dokka pode mostrar `ERROR CLASS` em tipos Compose nas páginas exportadas; isso reflecte a resolução de classpath na geração, não um erro da library. As páginas narrativas (`scaled.md`, [library/PERFORMANCE.md](../library/PERFORMANCE.md), [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md)) podem estar mais actualizadas em texto corrido do que tabelas KDoc até sincronizar.
+**Note:** Dokka may show `ERROR CLASS` for some Compose types in exported pages (classpath resolution during generation), not a library runtime error.
 
 ## Summary
 
-| Strategy | Document |
-|----------|----------|
-| **Unified math (all strategies)** | [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) |
-| Scaled (default SDP / HDP / WDP) | [scaled.md](scaled.md) |
-| Percent (linear 1/300 + `space*`) | [percent.md](percent.md) |
-| Power (sublinear) | [power.md](power.md) |
-| Fluid (320–768 dp band) | [fluid.md](fluid.md) |
-| Auto (linear + log after 480 dp) | [auto.md](auto.md) |
-| Diagonal | [diagonal.md](diagonal.md) |
-| Fill (“cover”) | [fill.md](fill.md) |
-| Fit (“contain”) | [fit.md](fit.md) |
-| Interpolated | [interpolated.md](interpolated.md) |
-| Logarithmic | [logarithmic.md](logarithmic.md) |
-| Perimeter | [perimeter.md](perimeter.md) |
-| Density | [density.md](density.md) |
-| Resize (constraint-based auto-fit) | [resize.md](resize.md) |
-| Physical units (mm, cm, in) | [physical-units.md](physical-units.md) |
+| Strategy | Maven artifact (3.1.6) | Document |
+|----------|------------------------|----------|
+| **Unified math (all strategies)** | — | [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) |
+| **Module graph / packaging** | see [MODULES.md](MODULES.md) | [MODULES.md](MODULES.md) |
+| **BOM (version alignment only)** | `appdimens-dynamic-bom` | [MODULES.md](MODULES.md) |
+| Scaled (default SDP / HDP / WDP) | `appdimens-dynamic` (principal) | [scaled.md](scaled.md) |
+| Percent (linear 1/300 + `space*`) | `appdimens-dynamic-percent` | [percent.md](percent.md) |
+| Power (sublinear) | `appdimens-dynamic-power` | [power.md](power.md) |
+| Fluid (320–768 dp band) | `appdimens-dynamic-fluid` | [fluid.md](fluid.md) |
+| Auto (linear + log after 480 dp) | `appdimens-dynamic-auto` | [auto.md](auto.md) |
+| Diagonal | `appdimens-dynamic-diagonal` | [diagonal.md](diagonal.md) |
+| Fill (“cover”) | `appdimens-dynamic-fill` | [fill.md](fill.md) |
+| Fit (“contain”) | `appdimens-dynamic-fit` | [fit.md](fit.md) |
+| Interpolated | `appdimens-dynamic-interpolated` | [interpolated.md](interpolated.md) |
+| Logarithmic | `appdimens-dynamic-logarithmic` | [logarithmic.md](logarithmic.md) |
+| Perimeter | `appdimens-dynamic-perimeter` | [perimeter.md](perimeter.md) |
+| Density | `appdimens-dynamic-density` | [density.md](density.md) |
+| Resize (constraint-based auto-fit) | `appdimens-dynamic-resize` | [resize.md](resize.md) |
+| Physical units (mm, cm, in) | `appdimens-dynamic-units` | [physical-units.md](physical-units.md) |
 
 ### Quick links
 
 - [PRD.md](PRD.md) · [PDR.md](PDR.md)
 
 0. [KDoc API — root index](index.md)  
+0a. [Modules — Maven/Gradle graph (3.1.6)](MODULES.md)  
 0b. [Mathematics & calculus — formal reference](MATHEMATICS-AND-CALCULUS.md)  
 1. [Compose API reference — conventions & scaled catalog](COMPOSE-API-CONVENTIONS.md)  
 2. [Scaled](scaled.md) — recommended starting point  

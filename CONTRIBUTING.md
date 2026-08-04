@@ -34,8 +34,11 @@ Ready to contribute code? Follow these steps:
 ## Technical Guidelines
 
   * **Code Style:** Follow standard Kotlin/Compose coding conventions.
-  * **Documentation:** If you add a new scaling method or parameter, please update the README or add KDoc comments.
+  * **Modules:** Strategy code lives in `:library-<strategy>`; shared cache/core/scaled/plain stay in `:library`. Satellites depend only on `:library`. `:library-bom` publishes version constraints only. See [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md).
+  * **Documentation:** If you add a new scaling method, parameter, or module, update the README installation matrix, the strategy page under `DOCUMENTATION/`, and [MODULES.md](DOCUMENTATION/MODULES.md). Keep KDoc on public APIs.
+  * **Tests:** Run `./gradlew :library:testDebugUnitTest` and the affected `:library-<strategy>:testDebugUnitTest`.
   * **Precision:** Since this library focuses on UI precision, ensure that any changes to dimension calculations are tested across multiple screen configurations.
+
 
 ## License
 

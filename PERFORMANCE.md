@@ -25,13 +25,16 @@ This report provides a deep technical analysis of the AppDimens Dynamic library 
 
 ---
 
+
+> [!NOTE]
+
 ## 1. Architectural Overview
 
 The library features a **Lock-Free Padded Sharded Cache** architecture with an intelligent **Fast Bypass Layer**. 
 - **Padded Sharding**: Each cache shard is isolated with 128-byte padding to eliminate **False Sharing** between CPU cores (ARM64).
 - **SIMD-friendly Batching**: The `getBatch()` API exposes continuous loops for the JIT/ART to vectorize, reducing overhead per item.
-- **Volatile Isolation**: Scale factors are grouped in a padded `ScreenFactors` object to prevent cache line invalidations during configuration changes.
-- **Fast Bypass**: For ultra-simple calculation types (AUTO, FLUID, PERCENT, SCALED), the system bypasses the sharded cache lookup when Aspect Ratio is inactive (cost: ~2ns).
+- **Volatile Isolation**: Shared scale factors live in a padded `ScreenFactors` object; strategy-specific scales register through `StrategyFactorRegistry` in satellite modules.
+- **Fast Bypass**: `shouldBypassCache` skips shard lookup for multiply-only types (`PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`) and for `POWER` / `LOGARITHMIC` on the default SW path — including default aspect ratio when applicable (~2 ns multiply). `AUTO` / `FLUID` / `FIT` / `FILL` use the cache.
 
 ---
 
@@ -86,27 +89,22 @@ The **~260 ns** / **~996 µs** figures above are from **debug without minify**. 
 
 1. **Inlining (F1.1)**: All hot-path logic is now fully inlined into the call-site. This eliminates method-call overhead (~10ns on ARM64) and allows the JIT to apply loop unrolling and register allocation across the entire lookup.
 2. **Padding (F2/F3)**: By using 128-byte guards, we've increased memory usage by only ~2.5 KB but eliminated the risk of hardware-level contention (False Sharing) which can cause spikes of 500ns+ in concurrent environments.
-3. **Bypass Logic**: We maintain the bypass for simple types (AUTO, FLUID, PERCENT, SCALED) because computing a multiplication (~2ns) is **2.5× faster** than the fastest possible cache lookup (~5ns).
+3. **Bypass Logic**: Multiply-only / default-path types bypass the shard table because a float multiply (~2 ns) is faster than the fastest cache lookup (~5 ns). See [library/PERFORMANCE.md](library/PERFORMANCE.md).
 
 ---
 
 ## 5. Simple Calculations Faster Than Cache
 
-For **CalcType** values of `AUTO`, `FLUID`, `PERCENT`, and `SCALED` **without Aspect Ratio** (`applyAspectRatio = false`, bit 63 == 0), the entire cache system is intentionally **bypassed**.
-
-> These formulas reduce to a single float multiply: `baseValue × scale`.
-> A raw multiply on Snapdragon 888 takes **~2 ns**, while the fastest cache lookup (hash + atomic load + branch) takes **~5 ns**.
-> The cache would add latency, not reduce it.
-
-This is a deliberate design decision—not a missing feature. The cache provides its full benefit only for **Aspect Ratio** paths (which require `ln()`, ~45 ns on hardware in recent captures), where amortizing the 5 ns lookup cost against that compute cost is clearly worthwhile.
+For eligible `CalcType`s on the default path (`shouldBypassCache`), `getOrPut` returns `compute()` without touching the shards — typically `baseValue × precomputedFactor`.
 
 | Path | Cost | Cache used? |
 |:---|:---:|:---:|
-| SCALED / no AR (most common) | ~2 ns | ❌ Bypass |
-| SCALED / with AR | ~45 ns | ✅ Cache hit ~35 ns |
-| Cache hit (no AR) | ~5 ns | ✅ |
+| SCALED / default (most common) | ~2 ns | ❌ Bypass |
+| SCALED / custom sensitivity or non-default qualifier | varies | ✅ Cache |
+| POWER / LOG on SW+DEFAULT | ~2 ns | ❌ Bypass |
+| AUTO / FLUID / FIT / FILL | lookup + compute | ✅ Cache |
 
-**Consequence for benchmarks**: `DimenSdp.sdp()`, `.hdp()`, `.wdp()` without AR always measure **raw math performance**, not cache performance. Use `.sdpa()` (or any `*a` variant) to measure the cache path.
+**Consequence for benchmarks**: `DimenSdp.sdp()` / `.hdp()` / `.wdp()` on the default path measure **raw math**, not shard throughput. Use custom sensitivity, non-default qualifiers, or non-bypass types to measure the cache.
 
 ---
 
@@ -128,7 +126,7 @@ Benchmark numbers reported in this document reflect measurements taken on a spec
 ```mermaid
 graph TD
     A[UI / Code Call] --> B{Cache Enabled?}
-    B -- Yes --> C{Bypass-eligible & No-AR?}
+    B -- Yes --> C{shouldBypassCache?}
     C -- Yes --> D["Fast Math Return (~2ns)"]
     C -- No --> E["Inlined Hash Lookup<br/>(Padded Shards)"]
     E --> F{Key Match?}

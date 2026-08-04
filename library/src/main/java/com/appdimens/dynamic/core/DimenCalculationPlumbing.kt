@@ -10,9 +10,21 @@ import android.content.ContextWrapper
 import android.content.res.Configuration
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
+import java.util.Collections
+import java.util.WeakHashMap
 import kotlin.math.ln
 
 object DimenCalculationPlumbing {
+
+    /**
+     * EN Lightweight [Context] → [Activity] cache. The wrapper chain is stable for the
+     * lifetime of a given [Context] instance, so walking it on every `sdpi`/`sdpia`
+     * call is wasteful. [WeakHashMap] avoids retaining Contexts past GC.
+     *
+     * PT Cache leve Context→Activity; a cadeia de wrappers é estável por instância.
+     */
+    private val activityByContext: MutableMap<Context, Activity?> =
+        Collections.synchronizedMap(WeakHashMap())
 
     fun effectiveQualifier(
         qualifier: DpQualifier,
@@ -62,12 +74,29 @@ object DimenCalculationPlumbing {
     }
 
     private fun Context.findActivityInternal(): Activity? {
-        var ctx: Context = this
-        while (ctx is ContextWrapper) {
-            if (ctx is Activity) return ctx
-            ctx = ctx.baseContext
+        // Compound containsKey+get must lock the synchronizedMap's mutex.
+        synchronized(activityByContext) {
+            if (activityByContext.containsKey(this)) {
+                return activityByContext[this]
+            }
+            var ctx: Context = this
+            var found: Activity? = null
+            while (ctx is ContextWrapper) {
+                if (ctx is Activity) {
+                    found = ctx
+                    break
+                }
+                ctx = ctx.baseContext
+            }
+            activityByContext[this] = found
+            return found
         }
-        return null
+    }
+
+    /** EN Clears the Context→Activity cache (tests). PT Limpa o cache Context→Activity. */
+    @JvmStatic
+    internal fun clearActivityCacheForTest() {
+        activityByContext.clear()
     }
 
     fun readScreenDp(configuration: Configuration, actualQualifier: DpQualifier): Float =

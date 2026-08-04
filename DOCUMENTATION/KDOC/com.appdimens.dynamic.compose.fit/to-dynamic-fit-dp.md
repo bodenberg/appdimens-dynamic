@@ -10,7 +10,7 @@ The scaling logic:
 
 Checks [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md) first. On a cache hit, returns the precomputed value; otherwise, computes via [calculateFitDpCompose](calculate-fit-dp-compose.md) and stores it.
 
-Uses the internal bypass mechanism in [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md) for sub-nanosecond latency on common width-scaling paths.
+Uses [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md). Fluid is **not** on the always-bypass list — see [library/PERFORMANCE.md](../../../../library/PERFORMANCE.md).
 
 The remember block ensures recalculation only when configuration changes.
 

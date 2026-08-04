@@ -1,5 +1,8 @@
 # Physical units (`compose` + `code.units`)
 
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-units:3.1.6` (`:library-units`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
+
 ## What it is
 
 Conversion of **real-world** measures (millimeters, centimeters, inches) using `DisplayMetrics` / `Resources`. It does **not** follow the “300 dp axis” scaling model; use when you need **approximate physical size** on the device.
@@ -65,7 +68,7 @@ Modifier.height(2.5f.cm.dp)
 
 Use **`UnitType`** (`MM`, `CM`, `INCH`, `SP`, `DP`, `PX`, …) with `radius` and `unitSizeInDp`.
 
-> **Note:** the former name `unitSizePerPx` was renamed to **`unitSizeInDp`** because the values are expressed in **dp**, not raw pixels. If `DOCUMENTATION/KDOC/` estiver desatualizado, gere HTML com Dokka e execute `python3 scripts/sync_kdoc_from_dokka_html.py` (ver [README.md](README.md) nesta pasta).
+> **Note:** the former name `unitSizePerPx` was renamed to **`unitSizeInDp`** (values are in **dp**, not raw pixels). Regenerate KDoc with Dokka + `python3 scripts/sync_kdoc_from_dokka_html.py` if exported pages still show the old name.
 
 ## Why use it
 

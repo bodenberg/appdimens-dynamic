@@ -2,9 +2,13 @@
 
 This document is the **authoritative surface-area reference** for Jetpack Compose extensions in **scaled** mode, plus rules that **every other strategy** (`percent`, `power`, `fluid`, …) mirrors with a different name prefix.
 
-**Source of truth:** `library/src/main/java/com/appdimens/dynamic/compose/`.
+**Sources:**
+- Scaled: `library/src/main/java/com/appdimens/dynamic/compose/scaled/` (Kotlin package `com.appdimens.dynamic.compose`)
+- Other strategies: `library-<strategy>/src/main/java/com/appdimens/dynamic/compose/<strategy>/`
 
-**Not in this file:** the **resize** strategy (`com.appdimens.dynamic.compose.resize`, `code.resize`, `autoResize*`, `ResizeBound`) — see [resize.md](resize.md) and the KDoc tree under [`KDOC/com.appdimens.dynamic.compose.resize/`](KDOC/com.appdimens.dynamic.compose.resize/index.md).
+Artifacts: [MODULES.md](MODULES.md).
+
+**Out of scope here:** resize (`compose.resize` / `code.resize`, `autoResize*`, `ResizeBound`) — see [resize.md](resize.md) and [`KDOC/…/compose.resize/`](KDOC/com.appdimens.dynamic.compose.resize/index.md).
 
 ---
 
@@ -170,14 +174,14 @@ Same for **`hdpScreen*`**, **`wdpScreen*`**.
 
 **Recommendation:** wrap the tree with `AppDimensProvider` when using mode/fold-related `UiModeType` heavily (see [library/PERFORMANCE.md](../library/PERFORMANCE.md)).
 
-**Performance:** `sdpMode` / `hdpMode` / `wdpMode` and `sdpScreen` / `hdpScreen` / `wdpScreen` (and strategy equivalents) resolve `UiModeType` via **`DimenCache.getCachedUiModeType(context)`**, which caches the result per `Configuration` hash — they do **not** call `SensorManager` / `WindowMetricsCalculator` on every invocation.
+**Performance:** `sdpMode` / `hdpMode` / `wdpMode` and `sdpScreen` / `hdpScreen` / `wdpScreen` (and strategy equivalents) resolve `UiModeType` via **`DimenCache.getCachedUiModeType(context)`** (fingerprint of `uiMode`, SW, min/max dp — not `Configuration.hashCode()`). They do **not** call `SensorManager` / `WindowMetricsCalculator` on every invocation.
 
 ### 4.5 Views / `code` — Plain (`Float` px + `Context`)
 
 Compose **logic-only** Plain overloads use **`Dp` / `TextUnit`** alternates (no second scaling). On the **View** side, the same branching is exposed as **`Float` extensions** whose receiver and alternate arguments are **already in px** (`layout` or **text** px, depending on use), plus an explicit **`Context`** for `Configuration` / UI-mode cache:
 
 - **Per strategy:** `Dimen*PlainPx.kt` under `com.appdimens.dynamic.code.<strategy>` (e.g. `DimenScaledPlainPx.kt` in `code.scaled`, `DimenPercentPlainPx.kt` in `code.percent`). Naming mirrors Compose: `sdpRotatePlainPx`, `psdpRotatePlainPx`, `sspRotatePlainPx`, etc., for **`RotatePlain`**, **`ModePlain`**, **`QualifierPlain`**, **`ScreenPlain`**.
-- **Shared helpers (internal):** `com.appdimens.dynamic.code.plain` — `DimenPlainBranch.kt` (`plainRotatePx`, `plainModePx`, `plainQualifierPx`, `plainScreenPx`).
+- **Shared helpers:** `com.appdimens.dynamic.code.plain` — `DimenPlainBranch.kt` (`plainRotatePx`, `plainModePx`, `plainQualifierPx`, `plainScreenPx`).
 
 **Example (percent / layout px):**
 
@@ -521,9 +525,9 @@ The following tables list **every** `Number` extension property in **scaled** mo
 
 When the library adds a new property or facilitator, update:
 
-1. The Kotlin sources under `library/src/main/java/com/appdimens/dynamic/compose/`.
+1. The Kotlin sources under `library/.../compose/` (scaled) or `library-<strategy>/.../compose/<strategy>/` (satellites).
 2. This file (or regenerate Appendix A with the project script).
-3. The strategy overview in [scaled.md](scaled.md) and [README.md](../README.md).
-4. Regenerate Dokka HTML (`./gradlew :library:dokkaGenerateHtml` → `DOCUMENTATION2/`), then run `python3 scripts/sync_kdoc_from_dokka_html.py` so **`DOCUMENTATION/KDOC/`** matches renamed members (e.g. `unitSizeInDp`).
+3. The strategy overview in [scaled.md](scaled.md) / the matching `DOCUMENTATION/<strategy>.md`, plus [README.md](../README.md) and [MODULES.md](MODULES.md) if packaging changes.
+4. Regenerate Dokka HTML for the modules you changed (at minimum `./gradlew :library:dokkaGenerateHtml`; satellites as needed) → `DOCUMENTATION2/`, then run `python3 scripts/sync_kdoc_from_dokka_html.py` so **`DOCUMENTATION/KDOC/`** matches renamed members (e.g. `unitSizeInDp`).
 5. [physical-units.md](physical-units.md) when `DimenPhysicalUnits` or `code.units` behavior changes.
 

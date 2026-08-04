@@ -4,6 +4,16 @@ This guide explains **why** and **how** to use R8/minify, **what changes** when 
 
 ---
 
+
+## Consumer rules per artifact
+
+Each published AAR ships its own `consumer-rules.pro`:
+
+- **`appdimens-dynamic`** — `common`, scaled `code`/`compose`, `DimenCache`, `StrategyFactorRegistry`, Compose locals
+- **`appdimens-dynamic-<strategy>`** — that strategy’s public `code` / `compose` API (core rules arrive transitively)
+
+Gradle merges consumer rules from the modules you depend on.
+
 ## Why use minify and R8?
 
 **R8** runs when you enable **code shrinking** (often called “minify”) on a **release** (or other) build type. In practice you get three related benefits:
@@ -59,7 +69,7 @@ Sync Gradle, then **rebuild release** and **retest**. Full mode does not replace
 ### 3. Rules: what you edit vs what you get for free
 
 - **Your app:** put app-specific keeps in **`app/proguard-rules.pro`** (reflection, JNI, serialization libraries, etc.).
-- **AppDimens Dynamic:** when you depend on `io.github.bodenberg:appdimens-dynamic`, the AAR already carries **[`library/consumer-rules.pro`](library/consumer-rules.pro)**. Gradle **merges** those rules into your R8 step automatically—you do **not** paste them by hand.
+- **AppDimens Dynamic:** each AAR you depend on ships its own `consumer-rules.pro`, merged by Gradle automatically. Core/scaled rules come from `appdimens-dynamic`; strategy rules come from each `appdimens-dynamic-<strategy>` AAR.
 
 If a release build **crashes** only after turning on minify or full mode, open **R8 / ProGuard** mapping or stack traces, then adjust **keeps** (see sections below).
 
@@ -91,7 +101,7 @@ Think of it as: **R8 reads your app + dependencies + merged rules → outputs a 
 
 ## 1. Library module: `library/proguard-rules.pro`
 
-**When it runs:** Only when the **`:library`** Android module is built with **`minifyEnabled = true`** for that module’s build type.
+**When it runs:** Only when an Android **library** module (`:library` or `:library-<strategy>`) is built with **`minifyEnabled = true`** for that module’s build type (this repo keeps library minify off; the **app** release minify is what ships).
 
 In this repo, [`library/build.gradle.kts`](library/build.gradle.kts) currently sets **`isMinifyEnabled = false`** for the library `release` type. So for a normal **AAR** publish, these rules are **prepared** but often **not** executed during the library artifact build; the **app** that depends on the library still runs R8 on the **merged** app when **the app** has minify enabled.
 
