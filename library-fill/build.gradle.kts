@@ -46,7 +46,7 @@ mavenPublishing {
 }
 
 android {
-    namespace = "com.appdimens.dynamic"
+    namespace = "com.appdimens.dynamic.fill"
     compileSdk = 36
     defaultConfig {
         minSdk = 24

@@ -23,6 +23,8 @@ app (demo)
 
 Satellites depend only on `:library` (`api(project(":library"))`).
 
+Android Gradle `namespace` values are unique per module (`com.appdimens.dynamic` for the principal, `com.appdimens.dynamic.<strategy>` for satellites). Kotlin packages remain `com.appdimens.dynamic.*` as before.
+
 ## Artifacts
 
 | Artifact | Contents |
