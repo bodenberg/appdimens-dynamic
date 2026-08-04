@@ -1,11 +1,12 @@
 ################################################################################
-# AppDimens Dynamic — consumer-rules.pro
+# AppDimens Dynamic — principal consumer-rules.pro (appdimens-dynamic)
 #
-# This file is bundled INSIDE the AAR and automatically merged into the
-# consuming app's R8/ProGuard run. The developer does NOT need to copy
-# anything manually — these rules apply transparently when they add:
+# Bundled INSIDE the AAR and merged into the consuming app's R8/ProGuard run when:
 #
 #   implementation("io.github.bodenberg:appdimens-dynamic:x.y.z")
+#
+# Satellite AARs (appdimens-dynamic-<strategy>) ship their own consumer-rules.pro
+# for that strategy's public API; core keeps below remain the shared baseline.
 #
 # Design principle: keep the minimum surface needed for correctness.
 # Do NOT impose -optimizationpasses or -allowaccessmodification here —
@@ -14,12 +15,12 @@
 
 
 ################################################################################
-# 1. PUBLIC API SURFACE
+# 1. PUBLIC API SURFACE (principal = common + scaled + plain packages present here)
 #
-#    Every class under .code.**, .compose.** and .common.** is part of the
-#    developer-facing API. R8 must not rename or remove any public or protected
-#    member, because the consuming app calls them by name (Kotlin extension
-#    properties, @Composable functions, Java-style static methods).
+#    Classes under .code.** / .compose.** in this AAR are the scaled (+ related)
+#    developer-facing API. Satellite strategies keep their own packages in their
+#    own AARs. R8 must not rename or remove public/protected members the app calls
+#    by name (Kotlin extensions, @Composable functions, Java-style static methods).
 #
 #    -keep (not -keepnames) because full mode may also _remove_ members that it
 #    determines are unreachable from the app's entry points. We want to prevent

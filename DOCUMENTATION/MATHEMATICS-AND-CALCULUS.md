@@ -2,7 +2,9 @@
 
 > [!NOTE]
 > Formal Technical Reference validating the geometry mapping against `android.content.res.Configuration`.
-> **Associated Documents:** [PRD (Requirements)](PRD.md) | [PDR (Design)](PDR.md) | [Resize Spec](resize.md)
+> **Associated Documents:** [PRD (Requirements)](PRD.md) | [PDR (Design)](PDR.md) | [Resize Spec](resize.md) | [MODULES.md](MODULES.md)
+>
+> **Packaging (3.1.6):** formulas are unchanged across modules. Shared metrics live in the principal (`appdimens-dynamic`); strategy-specific precomputed scales register via `StrategyFactorRegistry` only when that satellite AAR is on the classpath.
 
 This document establishes the geometric algorithms parsing system UI inputs to logical device dimensions, mapping exact equations translated natively into `AppDimens Dynamic` (`compose.<strategy>` and `code.<strategy>`).
 
@@ -42,7 +44,7 @@ const val REFERENCE_ASPECT_RATIO = 1.78f
 
 ---
 
-## 3. Global Precomputation Matrix (`ScreenFactors`)
+## 3. Global Precomputation Matrix (`ScreenFactors (shared metrics; strategy scales via `StrategyFactorRegistry` in satellites)`)
 
 Device configurations trigger an asynchronous computation vector (`updateFactors`), isolating heavy geometric calculations outside the standard Render Pass.
 
@@ -115,4 +117,4 @@ The resize model calculates optimal dimension capacity isolated inherently from 
 
 AppDimens is designed entirely on **IEEE 754 32-bit floats (`Float`)**, acknowledging minuscule mathematical deviations natively in standard testing. Validation of curves explicitly applies acceptable `< 0.05` deltas ensuring visual integrity without overtaxing memory buses with `Double` precision arrays.
 
-Explicit module verification operates via `./gradlew :library:test` executing deterministic parameter inputs into `StrategyModuleFormulasTest.kt`.
+Explicit module verification operates via `./gradlew :library:testDebugUnitTest` plus per-satellite formula tests (`:library-percent:testDebugUnitTest`, `:library-auto:testDebugUnitTest`, `:library-diagonal:testDebugUnitTest`, …) executing deterministic parameter inputs into each module’s `*FormulasTest`.

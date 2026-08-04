@@ -2,9 +2,13 @@
 
 This document is the **authoritative surface-area reference** for Jetpack Compose extensions in **scaled** mode, plus rules that **every other strategy** (`percent`, `power`, `fluid`, …) mirrors with a different name prefix.
 
-**Source of truth:** `library/src/main/java/com/appdimens/dynamic/compose/`.
+**Source of truth (3.1.6):**
+- **Scaled** (principal artifact): `library/src/main/java/com/appdimens/dynamic/compose/`
+- **Other strategies** (satellites): `library-<strategy>/src/main/java/com/appdimens/dynamic/compose/<strategy>/`
 
-**Not in this file:** the **resize** strategy (`com.appdimens.dynamic.compose.resize`, `code.resize`, `autoResize*`, `ResizeBound`) — see [resize.md](resize.md) and the KDoc tree under [`KDOC/com.appdimens.dynamic.compose.resize/`](KDOC/com.appdimens.dynamic.compose.resize/index.md).
+Maven: principal `appdimens-dynamic`; satellites `appdimens-dynamic-<strategy>` — see [MODULES.md](MODULES.md). Kotlin **imports stay the same**.
+
+**Not in this file:** the **resize** strategy (`com.appdimens.dynamic.compose.resize`, `code.resize`, `autoResize*`, `ResizeBound`) — see [resize.md](resize.md) and the KDoc tree under [`KDOC/com.appdimens.dynamic.compose.resize/`](KDOC/com.appdimens.dynamic.compose.resize/index.md). Requires `appdimens-dynamic-resize`.
 
 ---
 
@@ -521,9 +525,9 @@ The following tables list **every** `Number` extension property in **scaled** mo
 
 When the library adds a new property or facilitator, update:
 
-1. The Kotlin sources under `library/src/main/java/com/appdimens/dynamic/compose/`.
+1. The Kotlin sources under `library/.../compose/` (scaled) or `library-<strategy>/.../compose/<strategy>/` (satellites).
 2. This file (or regenerate Appendix A with the project script).
-3. The strategy overview in [scaled.md](scaled.md) and [README.md](../README.md).
-4. Regenerate Dokka HTML (`./gradlew :library:dokkaGenerateHtml` → `DOCUMENTATION2/`), then run `python3 scripts/sync_kdoc_from_dokka_html.py` so **`DOCUMENTATION/KDOC/`** matches renamed members (e.g. `unitSizeInDp`).
+3. The strategy overview in [scaled.md](scaled.md) / the matching `DOCUMENTATION/<strategy>.md`, plus [README.md](../README.md) and [MODULES.md](MODULES.md) if packaging changes.
+4. Regenerate Dokka HTML for the modules you changed (at minimum `./gradlew :library:dokkaGenerateHtml`; satellites as needed) → `DOCUMENTATION2/`, then run `python3 scripts/sync_kdoc_from_dokka_html.py` so **`DOCUMENTATION/KDOC/`** matches renamed members (e.g. `unitSizeInDp`).
 5. [physical-units.md](physical-units.md) when `DimenPhysicalUnits` or `code.units` behavior changes.
 

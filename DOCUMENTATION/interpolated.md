@@ -1,5 +1,10 @@
 # Interpolated strategy (`compose.interpolated` / `code.interpolated`)
 
+
+**Maven artifact (3.1.6):** `io.github.bodenberg:appdimens-dynamic-interpolated:3.1.6`  
+**Gradle module:** `:library-interpolated` — Satellite — add this dependency to use `isdp` / interpolated APIs.  
+Always also depend on the principal `appdimens-dynamic` (transitive via the satellite). See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316--modular).
+
 **Same API surface as scaled** with prefixes `isdp` / `ihdp` / `iwdp` / `issp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
 
 ## What it is

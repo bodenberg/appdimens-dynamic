@@ -1,5 +1,10 @@
 # Fluid strategy (`compose.fluid` / `code.fluid`)
 
+
+**Maven artifact (3.1.6):** `io.github.bodenberg:appdimens-dynamic-fluid:3.1.6`  
+**Gradle module:** `:library-fluid` — Satellite — add this dependency to use `fsdp` / fluid APIs.  
+Always also depend on the principal `appdimens-dynamic` (transitive via the satellite). See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316--modular).
+
 **Same API surface as scaled** with prefixes `fsdp` / `fhdp` / `fwdp` / `fssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
 
 ## What it is

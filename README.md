@@ -66,7 +66,7 @@ Write values like `16.sdp` and the library scales them from the current screen *
 
 **New here?** Use **Quick start** below, then [**GUIDE-FOR-BEGINNERS**](./GUIDE-FOR-BEGINNERS) for every strategy in plain language.
 
-**Strategies (modular artifacts):** [DOCUMENTATION/README.md](DOCUMENTATION/README.md) · [KDoc (hosted)](https://appdimens3.web.app/) · **Product / engineering:** [DOCUMENTATION/PRD.md](DOCUMENTATION/PRD.md) · [DOCUMENTATION/PDR.md](DOCUMENTATION/PDR.md) · [DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md](DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md)
+**Strategies (modular artifacts):** [DOCUMENTATION/README.md](DOCUMENTATION/README.md) · [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) · [KDoc (hosted)](https://appdimens3.web.app/) · **Product / engineering:** [DOCUMENTATION/PRD.md](DOCUMENTATION/PRD.md) · [DOCUMENTATION/PDR.md](DOCUMENTATION/PDR.md) · [DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md](DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md)
 
 ---
 
@@ -318,11 +318,12 @@ Approximate **real-world** size on screen (density-based). Compose: use helpers 
 
 **Recommendation order for most apps:** **Scaled** (with or without `a`) → then **percent** → then **auto**; explore the rest when you have a clear need (fluid, fit, diagonal, etc.).
 
-Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **fill**, **fit**, **interpolated**, **logarithmic**, **perimeter**, **density**) use the **same suffix patterns** as Scaled with a **different import prefix** — see [DOCUMENTATION/README.md](DOCUMENTATION/README.md) and [**GUIDE-FOR-BEGINNERS**](./GUIDE-FOR-BEGINNERS).
+Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **fill**, **fit**, **interpolated**, **logarithmic**, **perimeter**, **density**, **resize**, **units**) use the **same suffix patterns** as Scaled with a **different import prefix** — and each requires its **satellite Maven dependency** (`appdimens-dynamic-<strategy>`). See [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md), [DOCUMENTATION/README.md](DOCUMENTATION/README.md), and [**GUIDE-FOR-BEGINNERS**](./GUIDE-FOR-BEGINNERS).
 
 | Resource | Use for |
 |----------|---------|
 | [DOCUMENTATION/README.md](DOCUMENTATION/README.md) | Per-strategy explanations |
+| [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) | Gradle/Maven module graph (3.1.6) |
 | [COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) | Every Compose property & facilitator (scaled catalog + prefix map) |
 | [DOCUMENTATION/index.md](DOCUMENTATION/index.md) | Markdown API index (KDoc export) |
 | [appdimens3.web.app](https://appdimens3.web.app/) | Searchable KDoc |

@@ -1,5 +1,10 @@
 # Resize module (`compose.resize` / `code.resize`)
 
+
+**Maven artifact (3.1.6):** `io.github.bodenberg:appdimens-dynamic-resize:3.1.6`  
+**Gradle module:** `:library-resize` — Satellite — add this dependency to use `autoResize*` / `DimenResize`.  
+Always also depend on the principal `appdimens-dynamic` (transitive via the satellite). See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316--modular).
+
 This module is **not** prefix-mirrored like sdp/hdp strategies; the full Compose list is under **§ Compose API reference** below. For `sdp`-style extensions, see [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md).
 
 ## What it is

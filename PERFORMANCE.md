@@ -25,12 +25,16 @@ This report provides a deep technical analysis of the AppDimens Dynamic library 
 
 ---
 
+
+> [!NOTE]
+> **Packaging (3.1.6):** benchmarks for a given strategy assume that satellite is on the classpath. The principal artifact alone includes **scaled** + shared `DimenCache`; strategy-specific precomputes register via `StrategyFactorRegistry` only when the satellite AAR is present. See [MODULES.md](DOCUMENTATION/MODULES.md).
+
 ## 1. Architectural Overview
 
 The library features a **Lock-Free Padded Sharded Cache** architecture with an intelligent **Fast Bypass Layer**. 
 - **Padded Sharding**: Each cache shard is isolated with 128-byte padding to eliminate **False Sharing** between CPU cores (ARM64).
 - **SIMD-friendly Batching**: The `getBatch()` API exposes continuous loops for the JIT/ART to vectorize, reducing overhead per item.
-- **Volatile Isolation**: Scale factors are grouped in a padded `ScreenFactors` object to prevent cache line invalidations during configuration changes.
+- **Volatile Isolation**: Shared scale factors live in a padded `ScreenFactors` object; strategy-specific scales register through `StrategyFactorRegistry` in satellite modules.
 - **Fast Bypass**: For ultra-simple calculation types (AUTO, FLUID, PERCENT, SCALED), the system bypasses the sharded cache lookup when Aspect Ratio is inactive (cost: ~2ns).
 
 ---

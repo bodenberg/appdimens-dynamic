@@ -10,16 +10,16 @@ This internal architecture document mandates the precise structural logic, techn
 
 ## 1. Traceability & Package Matrix
 
-**Core Index:** 180 `.kt` logical components under `library/src/main/java/com/appdimens/dynamic/`.
+**Core Index:** ~180 `.kt` logical components across `:library` (principal) and `:library-<strategy>` satellites. Packages remain `com.appdimens.dynamic.*`.
 
-| Subsystem Domain | Crucial Topologies | Domain Core Strategy | Active Verification Gates |
+| Subsystem Domain | Gradle / Maven | Crucial Topologies | Active Verification Gates |
 |:---|:---|:---|:---|
-| `core` / `common` | `DimenCache`, `ResizeMath`, `DpQualifier` | Unified Mathematics & Core cache. | `DimenCacheTest`, `DimenPerformanceTest` |
-| `compose.scaled` | `DimenScaled`, `*Extensions` | Base Reference Anchors | `StrategyModuleFormulasTest` |
-| `compose.percent` | `DimenPercentSpace`, `DimenPercentPlainPx`| Context Fractions | `StrategyModuleFormulasTest` |
-| `compose.geometric` | `diagonal`, `perimeter`, `fit`, `fill`| Shape/Geometric Scaling | `StrategyModuleFormulasTest` |
-| `code.plain` | `DimenPlainBranch.kt` | Raw `Context` Contextualing | `DimenPlainBranchTest` |
-| `compose.resize` | `DimenResize` | Asymptotic Search Subsystem | `DimenResizeCodeUnitTest` |
+| `core` / `common` | `:library` / `appdimens-dynamic` | `DimenCache`, `StrategyFactorRegistry`, `DpQualifier` | `DimenCacheTest`, `StrategyFactorRegistryTest`, `DimenPerformanceTest` |
+| `compose`/`code` scaled + `plain` | `:library` / `appdimens-dynamic` | `DimenSdp*`, `DimenPlainBranch` | `DimenPlainBranchTest` |
+| `compose.percent` / `code.percent` | `:library-percent` | `DimenPercentSpace`, `*PlainPx` | `PercentFormulasTest` |
+| geometric (`diagonal`/`perimeter`/`fit`/`fill`) | respective `:library-*` | strategy `*Dp` / `*Extensions` | `DiagonalFormulasTest` (+ peer formula tests) |
+| `compose.auto` / `code.auto` | `:library-auto` | `DimenAuto*` | `AutoFormulasTest` |
+| `compose.resize` / `code.resize` | `:library-resize` | `DimenResize` | `DimenResizeCodeUnitTest` |
 
 ---
 
@@ -105,8 +105,8 @@ sequenceDiagram
 ## 4. Development Quality & Reliability Matrix
 
 ### 4.1 Release Constraints
-1. **Module Artifacting:** Built and aligned under the standard Kotlin multiplatform `mavenPublishing` protocol targeting Maven Central.
-2. **Obfuscation Integrity:** Comprehensive ProGuard rules (`consumer-rules.pro`) ensure public API parity and runtime stability natively. 
+1. **Module Artifacting:** Each Gradle module publishes its own Maven Central coordinate at shared version `appdimens.version` (`3.1.6`). Principal = `appdimens-dynamic`; satellites = `appdimens-dynamic-<strategy>`. **No ALL/BOM/aggregator.** See [MODULES.md](MODULES.md).
+2. **Obfuscation Integrity:** Per-AAR ProGuard consumer rules (`consumer-rules.pro`) ensure public API parity and runtime stability; satellites keep strategy packages, principal keeps core/scaled/plain. 
 
 ### 4.2 Known Technical Risk Mapping
 

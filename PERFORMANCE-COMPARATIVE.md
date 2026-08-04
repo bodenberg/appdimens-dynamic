@@ -36,7 +36,7 @@ This report documents the performance results **after applying the 4 optimizatio
 
 ## 2. Benchmarks — Local JVM (Ubuntu Linux · JVM 17)
 
-Executed via `./gradlew :library:testDebugUnitTest` · 1,000,000 iterations per case · 5 trials, minimum reported.
+Executed via `./gradlew :library:testDebugUnitTest` (principal); satellite formula checks use `:library-<strategy>:testDebugUnitTest` · 1,000,000 iterations per case · 5 trials, minimum reported.
 
 | Operation | Result | Status |
 | :--- | :---: | :--- |

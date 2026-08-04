@@ -1,9 +1,9 @@
 # Product Requirements Document (PRD) — AppDimens Dynamic
 
 > [!NOTE]
-> **Product Alignment:** `io.github.bodenberg:appdimens-dynamic:3.1.5`
-> **Primary Module:** `library`
-> **Associated Documents:** [PDR (Design)](PDR.md) | [Mathematics](MATHEMATICS-AND-CALCULUS.md) | [API Conventions](COMPOSE-API-CONVENTIONS.md)
+> **Product Alignment:** Modular Maven set **`3.1.6`** — principal `io.github.bodenberg:appdimens-dynamic` (scaled + core/common/plain) plus opt-in `appdimens-dynamic-<strategy>` satellites. **No ALL/BOM.** See [MODULES.md](MODULES.md).
+> **Primary modules:** `:library` + `:library-<strategy>`
+> **Associated Documents:** [PDR (Design)](PDR.md) | [MODULES.md](MODULES.md) | [Mathematics](MATHEMATICS-AND-CALCULUS.md) | [API Conventions](COMPOSE-API-CONVENTIONS.md)
 
 ## 1. Executive Summary
 
@@ -20,6 +20,7 @@ Static `dp` measurements fall apart as device variety increases. A `300dp` horiz
 2. **Unified Surface APIs:** Symmetrical integration rules for both Jetpack Compose (`compose.*`) and legacy XML/Views (`code.*`).
 3. **High-Frequency Performance:** Accommodate zero-allocation hot paths using lock-free architecture for smooth `60FPS` and `120FPS` rendering algorithms.
 4. **Hardware Awareness:** Adapt directly to `Configuration`, Display aspect ratios, Multi-Window flags, and Context DPI.
+5. **Modular APK control:** Developers include only the strategy artifacts they need; the principal artifact must not pull all strategies.
 
 ---
 

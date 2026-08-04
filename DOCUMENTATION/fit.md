@@ -1,5 +1,10 @@
 # Fit strategy (`compose.fit` / `code.fit`)
 
+
+**Maven artifact (3.1.6):** `io.github.bodenberg:appdimens-dynamic-fit:3.1.6`  
+**Gradle module:** `:library-fit` — Satellite — add this dependency to use `ftsdp` / fit APIs.  
+Always also depend on the principal `appdimens-dynamic` (transitive via the satellite). See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316--modular).
+
 **Same API surface as scaled** with prefixes `ftsdp` / `fthdp` / `ftwdp` / `ftssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
 
 ## What it is
