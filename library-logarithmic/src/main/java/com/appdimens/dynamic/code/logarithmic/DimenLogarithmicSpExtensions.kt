@@ -587,7 +587,7 @@ fun Number.logwspScreen(context: Context, screenValue: Number, uiModeType: UiMod
  *
  * Sp→px uses `scaledSp * density * fontScale` when respecting font scale (equivalent to
  * [android.util.TypedValue.applyDimension] for `COMPLEX_UNIT_SP`), else `scaledSp * density`
- * for the fixed-Sp path. For many lookups, prefer [DimenCache.getBatch]; for early DataStore init,
+ * for the fixed-Sp path. For many lookups, prefer [DimenCache.getBatch]; for early initialization,
  * [DimenLogarithmicSp.warmupCache].
  *
  * PT

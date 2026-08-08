@@ -16,6 +16,6 @@ PT Resolução em lote amigável ao SIMD / JIT auto-vetorização. API pública 
 
 Array of 64-bit keys built via [buildKey](build-key.md)
 
-Optional context used for lazy init and persistence
+Optional context used for lazy init and snapshot partition
 
 Lambda `(index: Int) -> Float` called on cache miss

@@ -6,7 +6,7 @@
 
 EN Converts an Int (the base Sp value) into a dynamically scaled pixel value (Float).
 
-Sp→px uses `scaledSp * density * fontScale` when respecting font scale (equivalent to [android.util.TypedValue.applyDimension](https://developer.android.com/reference/kotlin/android/util/TypedValue.html#applydimension) for `COMPLEX_UNIT_SP`), else `scaledSp * density` for the fixed-Sp path. For many lookups, prefer [DimenCache.getBatch](../com.appdimens.dynamic.core/-dimen-cache/get-batch.md); for early DataStore init, [DimenDensitySp.warmupCache](-dimen-density-sp/warmup-cache.md).
+Sp→px uses `scaledSp * density * fontScale` when respecting font scale (equivalent to [android.util.TypedValue.applyDimension](https://developer.android.com/reference/kotlin/android/util/TypedValue.html#applydimension) for `COMPLEX_UNIT_SP`), else `scaledSp * density` for the fixed-Sp path. For many lookups, prefer [DimenCache.getBatch](../com.appdimens.dynamic.core/-dimen-cache/get-batch.md); for early initialization, [DimenDensitySp.warmupCache](-dimen-density-sp/warmup-cache.md).
 
 PT Converte um Int (o valor base de Sp) em um valor de pixel dinamicamente escalado (Float).
 

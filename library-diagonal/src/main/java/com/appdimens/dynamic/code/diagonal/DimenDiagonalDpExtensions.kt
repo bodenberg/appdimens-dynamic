@@ -504,7 +504,7 @@ fun Number.dgwdpScreen(context: Context, screenValue: Number, uiModeType: UiMode
  *
  * **Bulk resolution:** for many keys in one pass, prefer building [LongArray] keys with
  * [DimenCache.buildKey] and [DimenCache.getBatch]. **Early init:** call [DimenSdp.warmupCache]
- * (or [DimenSsp.warmupCache]) once with your [android.content.Context] so persistence/DataStore
+ * (or [DimenSsp.warmupCache]) once with your [android.content.Context] so initialization
  * work does not land on the first hot-frame call.
  *
  * PT

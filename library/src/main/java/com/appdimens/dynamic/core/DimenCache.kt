@@ -10,10 +10,11 @@
  * Works for both `compose` and `code` (non-Compose) packages.
  *
  * Key Design Principles:
- *  - Lock-free reads via AtomicLongArray / AtomicIntegerArray (zero contention)
+ *  - Snapshot-partitioned cache: each window/configuration snapshot (DimenMetrics)
+ *    owns a bounded partition; entries are published as one immutable atomic reference
  *  - Collision-safe via packed 64-bit Long key (no false hits)
  *  - Shared state across all library instances (save memory, share reuse)
- *  - Smart invalidation: only clears when physical screen dimensions actually change
+ *  - Per-snapshot correctness: rotated / resized / recreated windows never read stale values
  *  - Zero allocation in hot path: stores raw Float, caller boxes into Dp/TextUnit
  *
  * Optimizations applied (2026-03-31):
@@ -61,10 +62,11 @@ import kotlin.math.min
  * EN
  * Global, lock-free, shared cache for all AppDimens dimension calculations.
  *
- * **Thread Safety**: Completely thread-safe.  All reads and writes are lock-free
- * using [AtomicLongArray] / [AtomicIntegerArray].  If two threads write
- * identically-keyed entries simultaneously, the last write wins — always correct
- * because both computed the same value.
+ * **Thread Safety**: Completely thread-safe.  Since 3.1.7 the cache is partitioned per
+ * immutable window snapshot ([DimenMetrics]); each entry is published as a single
+ * atomic [CacheEntry] (key + value bits) reference, so concurrent readers can never
+ * observe another key's value. The legacy padded shard arrays are retained for
+ * source compatibility only.
  *
  * PT
  * Cache global, lock-free e compartilhado para todos os cálculos de dimensão do AppDimens.
@@ -200,19 +202,18 @@ object DimenCache {
     private var lastConfiguration: ConfigSnapshot? = null
 
     /**
-     * EN Application [Context] captured in [init]. Reused by
-     * [invalidateOnConfigChange] so physical config changes clear the DataStore
-     * blob without requiring a new public API parameter (avoids opt-in bugs).
+     * EN Application [Context] captured in [init]. Retained for source compatibility
+     * and used as the fallback window source when no explicit context/metrics is given.
      *
-     * PT [Context] de Application capturado em [init], reutilizado na invalidação.
+     * PT [Context] de Application capturado em [init] (compatibilidade).
      */
     @Volatile
     @PublishedApi
     internal var savedAppContext: Context? = null
 
     /**
-     * EN Set when [clearAll] is asked to wipe DataStore (test/diagnostics hook).
-     * PT Sinaliza pedido de limpeza do DataStore (gancho de teste).
+     * EN Compatibility flag set when [clearAll] is called with a context (diagnostics hook).
+     * PT Flag de compatibilidade sinalizada em [clearAll] com contexto.
      */
     @Volatile
     @PublishedApi
@@ -279,8 +280,8 @@ object DimenCache {
         @JvmField @Volatile var scale          : Float = 1.0f
         @JvmField @Volatile var arMultiplier   : Float = 1.0f
         // Shared AR multiply helper (used by many strategies' custom-AR paths).
-        // Strategy-specific scales (diagonal/power/log/…) live in satellite modules
-        // via [StrategyFactorRegistry] — not precomputed here.
+        // Production formulas resolve through DimenCache.currentMetrics; satellite
+        // scales (diagonal/power/log/…) derive from that snapshot at resolution time.
         @JvmField @Volatile var aspectRatioMul    : Float = 1.0f
         // 128-byte padding guard (8 × Long = 64 bytes + object fields overhead ≥ 128)
         @Suppress("unused") @JvmField val _p0 = 0L
@@ -682,15 +683,11 @@ object DimenCache {
     }
 
     /**
-     * EN Loads a persisted cache blob. Supports the sparse format
-     * (`count:Int` + `count × (key:Long, value:Float)`) and the legacy dense
-     * fixed-size layout (`CACHE_SIZE × 12` bytes, position = slot).
+     * EN Compatibility no-op. The persistent result cache was removed in 3.1.7;
+     * a serialized blob is never loaded or consulted.
      *
-     * Sparse entries are placed via the same hash used by [getOrPutInternal]
-     * (not sequential file order). CAS merge preserves entries already computed
-     * during the init→DataStore window.
-     *
-     * PT Carrega o blob persistido. Suporta formato esparso e o layout denso legado.
+     * PT No-op de compatibilidade. A persistência foi removida na 3.1.7; nenhum
+     * blob é carregado ou consultado.
      */
     internal fun loadFromByteArray(data: ByteArray) = Unit
 
@@ -710,12 +707,10 @@ object DimenCache {
     }
 
     /**
-     * EN Serializes only populated slots in a single pass (avoids the
-     * count-then-write race that could overflow a pre-sized buffer under
-     * concurrent writers). Snapshot may omit entries written mid-pass —
-     * same non-fatal tolerance as the legacy full dump.
+     * EN Compatibility no-op (retained so old test fixtures compile). The persistence
+     * collector was removed in 3.1.7; nothing is written to disk.
      *
-     * PT Serializa só slots populados em passada única (sem corrida count/write).
+     * PT No-op de compatibilidade (mantido para fixtures antigas compilarem).
      */
     private suspend fun performSave(context: Context) {
         performSaveCount.incrementAndGet()
@@ -723,10 +718,10 @@ object DimenCache {
     }
 
     /**
-     * EN Sparse snapshot: `Int count` + `count × (Long key, Float value)`.
-     * Size is proportional to populated entries, not [CACHE_SIZE].
+     * EN Compatibility stub returning an empty blob. The persistent result cache was
+     * removed in 3.1.7.
      *
-     * PT Snapshot esparso; tamanho proporcional às entradas populadas.
+     * PT Stub de compatibilidade que retorna um blob vazio.
      */
     internal fun serializeToByteArray(): ByteArray = byteArrayOf(0, 0, 0, 0)
 
@@ -743,13 +738,13 @@ object DimenCache {
         resolve(key, metricsScope.get() ?: metricsFor(context), compute)
 
     /**
-     * EN Returns `true` when [getOrPut] should skip the shard table and call `compute()`
-     * directly. Covers simple no-AR multipliers **and** the default AR path where
-     * `compute()` is already `baseValue * factors.arMultiplier` (pre-resolved in
-     * [updateFactors]) — equally cheap as a single multiply (~2 ns vs ~5 ns lookup).
+     * EN Returns `true` when [getOrPut] should skip the snapshot cache and call `compute()`
+     * directly. Covers simple no-AR multipliers **and** the default AR path where the
+     * multiplier is already derived in the [DimenMetrics] snapshot — equally cheap as
+     * a single multiply (~2 ns vs ~5 ns lookup).
      *
-     * `CT_ASPECT_RATIO` (used by [getOrPutAspectRatio] / `fastLn`) is **not** bypassed,
-     * so real `ln()` results remain memoized.
+     * `CT_ASPECT_RATIO` (used by [getOrPutAspectRatio] / `fastLn`) is **not** bypassed;
+     * since 3.1.7 that path computes the exact `ln()` once per snapshot (no memo table).
      *
      * PT Indica se o cache deve ser contornado (multiply barato, incl. AR padrão).
      */
@@ -886,7 +881,7 @@ object DimenCache {
      * API pública — pode ser chamada por código fora da biblioteca.
      *
      * @param keys    Array of 64-bit keys built via [buildKey]
-     * @param context Optional context used for lazy init and persistence
+     * @param context Optional context used to derive the window snapshot partition
      * @param compute Lambda `(index: Int) -> Float` called on cache miss
      * @return        [FloatArray] of resolved values in the same order as [keys]
      */

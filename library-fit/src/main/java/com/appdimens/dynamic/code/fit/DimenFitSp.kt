@@ -45,7 +45,7 @@ import kotlin.math.min
 object DimenFitSp {
 
     /**
-     * EN Eagerly initializes [DimenCache] (persistence / DataStore) so the first resolution on a hot path avoids lazy-init work.
+     * EN Eagerly initializes [DimenCache] so the first resolution on a hot path avoids lazy-init work.
      * PT Inicializa o [DimenCache] antecipadamente para evitar custo lazy no primeiro uso.
      */
     @JvmStatic

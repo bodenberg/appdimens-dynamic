@@ -4,9 +4,9 @@ import com.appdimens.dynamic.core.DesignScaleConstants
 import com.appdimens.dynamic.core.DimenCache
 
 /**
- * EN Precomputed default-path scale for this satellite; updated only when the
- * strategy module is on the classpath and [StrategyFactorRegistry] publishes.
- * PT Escala pré-computada deste satélite — só atualiza se o módulo estiver no APK.
+ * EN Default-path scale for this satellite; evaluated when the
+ * strategy module is on the classpath; derived from the current window snapshot.
+ * PT Escala derivada do snapshot da janela corrente — só existe se o módulo estiver no APK.
  */
 internal object PowerFactors {
     /** Derived from the snapshot active for the current resolver call. */
