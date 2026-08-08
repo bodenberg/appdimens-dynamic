@@ -589,7 +589,7 @@ fun Int.toDynamicScaledPx(
     ignoreMultiWindows: Boolean = false,
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
-): Float = (this as Number).toDynamicScaledPx(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+): Float = this.toFloat().toDynamicScaledPx(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
 @JvmOverloads
 fun Float.toDynamicScaledPx(
@@ -599,7 +599,28 @@ fun Float.toDynamicScaledPx(
     ignoreMultiWindows: Boolean = false,
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
-): Float = (this as Number).toDynamicScaledPx(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+): Float {
+    val resources = context.resources
+    val configuration = resources.configuration
+    val density = resources.displayMetrics.density
+
+    val cacheKey = DimenCache.buildKey(
+        baseValue = this,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = qualifier,
+        inverter = inverter,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.PX,
+        customSensitivityK = customSensitivityK
+    )
+
+    return DimenCache.getOrPut(cacheKey, context) {
+        val scaledDp = calculateScaledDp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
+        scaledDp * density
+    }
+}
 
 /**
  * EN
@@ -746,7 +767,7 @@ fun Int.toDynamicScaledDp(
     ignoreMultiWindows: Boolean = false,
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
-): Float = (this as Number).toDynamicScaledDp(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+): Float = this.toFloat().toDynamicScaledDp(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
 
 @JvmOverloads
 fun Float.toDynamicScaledDp(
@@ -756,4 +777,22 @@ fun Float.toDynamicScaledDp(
     ignoreMultiWindows: Boolean = false,
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
-): Float = (this as Number).toDynamicScaledDp(context, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+): Float {
+    val configuration = context.resources.configuration
+
+    val cacheKey = DimenCache.buildKey(
+        baseValue = this,
+        isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+        ignoreMultiWindows = ignoreMultiWindows,
+        calcType = DimenCache.CalcType.SCALED,
+        qualifier = qualifier,
+        inverter = inverter,
+        applyAspectRatio = applyAspectRatio,
+        valueType = DimenCache.ValueType.DP,
+        customSensitivityK = customSensitivityK
+    )
+
+    return DimenCache.getOrPut(cacheKey, context) {
+        calculateScaledDp(this, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
+    }
+}

@@ -1,7 +1,7 @@
 package com.appdimens.dynamic.diagonal
 
 import com.appdimens.dynamic.core.DesignScaleConstants
-import com.appdimens.dynamic.core.StrategyFactorRegistry
+import com.appdimens.dynamic.core.DimenCache
 
 /**
  * EN Precomputed default-path scale for this satellite; updated only when the
@@ -9,15 +9,13 @@ import com.appdimens.dynamic.core.StrategyFactorRegistry
  * PT Escala pré-computada deste satélite — só atualiza se o módulo estiver no APK.
  */
 internal object DiagonalFactors {
-    @JvmField @Volatile
-    var scale: Float = 1.0f
-
-    init {
-        StrategyFactorRegistry.register { m ->
-        val diag = kotlin.math.sqrt(
-            (m.minDimDp * m.minDimDp + m.maxDimDp * m.maxDimDp).toDouble()
-        ).toFloat()
-        scale = diag / DesignScaleConstants.BASE_DIAGONAL_DP
+    /** Derived from the snapshot active for the current resolver call. */
+    val scale: Float
+        get() {
+            val m = DimenCache.currentMetrics
+            val diag = kotlin.math.sqrt(
+                (m.minDimensionDp * m.minDimensionDp + m.maxDimensionDp * m.maxDimensionDp).toDouble()
+            ).toFloat()
+            return diag / DesignScaleConstants.BASE_DIAGONAL_DP
         }
-    }
 }

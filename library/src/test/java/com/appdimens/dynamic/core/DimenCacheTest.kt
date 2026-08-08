@@ -221,10 +221,9 @@ class DimenCacheTest {
         assertEquals(18f, DimenCache.getOrPut(keyWidthAr) { 18f }, 0f)
         assertEquals(18f, DimenCache.peek(keyWidthAr) ?: -1f, 0f)
 
-        // CT_ASPECT_RATIO (ln memoization) must never bypass.
+        // CT_ASPECT_RATIO ln is computed exactly at snapshot time — not result-cached.
         val arLn = DimenCache.getOrPutAspectRatio(1.5f)
         assertEquals(kotlin.math.ln(1.5f), arLn, 0.001f)
-        assertTrue(DimenCache.stats().populated >= 1)
     }
 
     @Test
@@ -290,45 +289,31 @@ class DimenCacheTest {
     @Test
     fun testAspectRatioProtection() {
         DimenCache.clearAll()
-        
-        // 1. Put an AR entry
-        val expectedArValue = kotlin.math.ln(1.78f)
-        val arResult = DimenCache.getOrPutAspectRatio(1.78f)
-        assertEquals(expectedArValue, arResult, 0.001f)
-        assertEquals(1, DimenCache.stats().populated)
-        
-        val arKey = ((java.lang.Float.floatToRawIntBits(1.78f).toLong() and 0xFFFFFFFFL) shl 31) or (DimenCache.CT_ASPECT_RATIO.toLong() shl 27)
-        val hAr = (arKey xor (arKey ushr 32)).toInt()
-        val mixedAr = hAr xor (hAr ushr 16)
-        val shardIndex = (mixedAr ushr 9) and DimenCache.SHARD_MASK
-        val slotIndex = mixedAr and DimenCache.SHARD_SIZE_MASK
-        
-        // 2. Synthesize a collision: a normal key that hashes to the same shard and slot
-        DimenCache.keysArray[shardIndex].set(slotIndex, arKey)
-        DimenCache.valueBitsArray[shardIndex].set(slotIndex, expectedArValue.toRawBits())
-        
-        // Try to put a normal entry that would map to the same shard/slot
-        var collisionKey = 0L
-        for (k in 1L..2000000L) {
-            val h = (k xor (k ushr 32)).toInt()
-            val m = h xor (h ushr 16)
-            val s = (m ushr 9) and DimenCache.SHARD_MASK
-            val i = m and DimenCache.SHARD_SIZE_MASK
-            if (s == shardIndex && i == slotIndex) {
-                if ((k ushr 27 and 0xFL) != DimenCache.CT_ASPECT_RATIO.toLong()) {
-                    collisionKey = k
-                    break
-                }
-            }
-        }
-        
-        assertNotEquals(0L, collisionKey)
-        
-        // Attempt to store the colliding normal key
-        DimenCache.getOrPut(collisionKey) { 999f }
-        
-        // AR key should still be there!
-        assertEquals("AR key should be protected from collision", arKey, DimenCache.keysArray[shardIndex].get(slotIndex))
-        assertEquals(expectedArValue, Float.fromBits(DimenCache.valueBitsArray[shardIndex].get(slotIndex)), 0.001f)
+        DimenCache.isEnabled = true
+
+        // Snapshot cache: a slot stores one (key,value) atomically. A second key mapping
+        // to the same slot must not make peek() return the first key's value.
+        val metrics = DimenMetrics.DEFAULT
+        val keyA = DimenCache.buildKey(
+            10f, false, false, DimenCache.CalcType.AUTO,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+        val keyB = DimenCache.buildKey(
+            11f, false, false, DimenCache.CalcType.AUTO,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+
+        assertEquals(100f, DimenCache.getOrPut(keyA, metrics) { 100f }, 0f)
+        assertEquals(100f, DimenCache.peek(keyA, metrics) ?: -1f, 0f)
+
+        assertEquals(200f, DimenCache.getOrPut(keyB, metrics) { 200f }, 0f)
+        assertEquals(200f, DimenCache.peek(keyB, metrics) ?: -1f, 0f)
+
+        // Whichever key currently owns the shared slot must peek consistently.
+        val peekA = DimenCache.peek(keyA, metrics)
+        val peekB = DimenCache.peek(keyB, metrics)
+        if (peekA != null) assertEquals(100f, peekA, 0f)
+        if (peekB != null) assertEquals(200f, peekB, 0f)
+        assertTrue(peekA != null || peekB != null)
     }
 }

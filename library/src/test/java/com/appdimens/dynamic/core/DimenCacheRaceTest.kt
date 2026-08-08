@@ -57,14 +57,13 @@ class DimenCacheRaceTest {
 
     @Test
     fun concurrentWrites_sameSlotCollision() {
+        val metrics = DimenMetrics.DEFAULT
         val targetKey1 = DimenCache.buildKey(
             100f, false, false, DimenCache.CalcType.FLUID,
             DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
         )
         val h1 = (targetKey1 xor (targetKey1 ushr 32)).toInt()
-        val mixed1 = h1 xor (h1 ushr 16)
-        val targetShard = (mixed1 ushr 9) and DimenCache.SHARD_MASK
-        val targetSlot = mixed1 and DimenCache.SHARD_SIZE_MASK
+        val targetSlot = (h1 xor (h1 ushr 16)) and (DimenCache.CACHE_SIZE / 4 - 1)
 
         var collidingKey = 0L
         for (bv in 101..2000000) {
@@ -74,9 +73,7 @@ class DimenCacheRaceTest {
             )
             val h = (k xor (k ushr 32)).toInt()
             val m = h xor (h ushr 16)
-            if (((m ushr 9) and DimenCache.SHARD_MASK) == targetShard &&
-                (m and DimenCache.SHARD_SIZE_MASK) == targetSlot
-            ) {
+            if ((m and (DimenCache.CACHE_SIZE / 4 - 1)) == targetSlot) {
                 collidingKey = k
                 break
             }
@@ -97,7 +94,7 @@ class DimenCacheRaceTest {
                 try {
                     val idx = t % 2
                     for (i in 0 until iterations) {
-                        val result = DimenCache.getOrPut(keys[idx]) { values[idx] }
+                        val result = DimenCache.getOrPut(keys[idx], metrics) { values[idx] }
                         if (result != values[0] && result != values[1]) {
                             wrongCount.incrementAndGet()
                         }

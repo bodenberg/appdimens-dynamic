@@ -1,10 +1,18 @@
 package com.appdimens.dynamic.core
 
 import android.content.res.Configuration
+import com.appdimens.dynamic.common.DpQualifier
+import com.appdimens.dynamic.common.Inverter
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 
+/**
+ * Correctness no longer depends on [DimenCache.invalidateOnConfigChange] wiping RAM.
+ * Each [DimenMetrics] snapshot owns an isolated cache partition; callers that pass the
+ * current window snapshot never observe values from another configuration.
+ */
 class DimenCacheInvalidationTest {
 
     @Before
@@ -13,160 +21,73 @@ class DimenCacheInvalidationTest {
         DimenCache.isEnabled = true
     }
 
-    private fun config(sw: Int = 400, w: Int = 400, h: Int = 800, dpi: Int = 420): Configuration =
-        Configuration().apply {
-            smallestScreenWidthDp = sw
-            screenWidthDp = w
-            screenHeightDp = h
-            densityDpi = dpi
-            fontScale = 1f
-        }
+    private fun config(
+        sw: Int = 400,
+        w: Int = 400,
+        h: Int = 800,
+        dpi: Int = 420,
+        fontScale: Float = 1f,
+        orientation: Int = Configuration.ORIENTATION_PORTRAIT,
+    ): Configuration = Configuration().apply {
+        smallestScreenWidthDp = sw
+        screenWidthDp = w
+        screenHeightDp = h
+        densityDpi = dpi
+        this.fontScale = fontScale
+        this.orientation = orientation
+    }
+
+    private fun autoKey(base: Float) = DimenCache.buildKey(
+        base, false, false, DimenCache.CalcType.AUTO,
+        DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
+    )
 
     @Test
-    fun invalidate_screenWidthChange_clearsCache() {
-        val old = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(old)
+    fun differentMetrics_useDifferentPartitions() {
+        val metrics400 = DimenMetrics.from(config(sw = 400, w = 400, h = 800))
+        val metrics300 = DimenMetrics.from(config(sw = 300, w = 300, h = 800))
+        val key = autoKey(10f)
 
-        val key = DimenCache.buildKey(
-            10f, false, false, DimenCache.CalcType.AUTO,
-            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
-            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
-        )
-        DimenCache.getOrPut(key) { 42f }
-        assertEquals(42f, DimenCache.peek(key) ?: -1f, 0f)
-
-        val new = config(sw = 400, w = 300, h = 800)
-        DimenCache.invalidateOnConfigChange(new)
-
-        assertEquals(null, DimenCache.peek(key))
+        assertEquals(42f, DimenCache.getOrPut(key, metrics400) { 42f }, 0f)
+        assertEquals(42f, DimenCache.peek(key, metrics400) ?: -1f, 0f)
+        assertNull(DimenCache.peek(key, metrics300))
     }
 
     @Test
-    fun invalidate_screenHeightChange_clearsCache() {
-        val old = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(old)
-
-        val key = DimenCache.buildKey(
-            20f, false, false, DimenCache.CalcType.AUTO,
-            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
-            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
+    fun orientationSwap_keepsBothPartitions() {
+        val portrait = DimenMetrics.from(config(w = 400, h = 800))
+        val landscape = DimenMetrics.from(
+            config(w = 800, h = 400, orientation = Configuration.ORIENTATION_LANDSCAPE)
         )
-        DimenCache.getOrPut(key) { 55f }
-        assertEquals(55f, DimenCache.peek(key) ?: -1f, 0f)
+        val key = autoKey(31f)
 
-        val new = config(sw = 400, w = 400, h = 600)
-        DimenCache.invalidateOnConfigChange(new)
-
-        assertEquals(null, DimenCache.peek(key))
+        assertEquals(88f, DimenCache.getOrPut(key, portrait) { 88f }, 0f)
+        assertEquals(99f, DimenCache.getOrPut(key, landscape) { 99f }, 0f)
+        assertEquals(88f, DimenCache.peek(key, portrait) ?: -1f, 0f)
+        assertEquals(99f, DimenCache.peek(key, landscape) ?: -1f, 0f)
     }
 
     @Test
-    fun invalidate_nothingChanged_doesNotClear() {
-        val before = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(before)
+    fun fontScaleChange_usesSeparatePartition() {
+        val normal = DimenMetrics.from(config())
+        val largeText = DimenMetrics.from(config().apply { fontScale = 1.5f })
+        val key = autoKey(12f)
 
-        val key = DimenCache.buildKey(
-            30f, false, false, DimenCache.CalcType.AUTO,
-            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
-            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
-        )
-        DimenCache.getOrPut(key) { 77f }
-        assertEquals(77f, DimenCache.peek(key) ?: -1f, 0f)
-
-        DimenCache.invalidateOnConfigChange(config(sw = 400, w = 400, h = 800))
-
-        assertEquals(77f, DimenCache.peek(key) ?: -1f, 0f)
+        assertEquals(3f, DimenCache.getOrPut(key, normal) { 3f }, 0f)
+        assertNull(DimenCache.peek(key, largeText))
+        assertEquals(4f, DimenCache.getOrPut(key, largeText) { 4f }, 0f)
+        assertEquals(3f, DimenCache.peek(key, normal) ?: -1f, 0f)
     }
 
     @Test
-    fun invalidate_orientationSwap_doesNotClearCache() {
-        val old = config(sw = 400, w = 400, h = 800)
-        DimenCache.invalidateOnConfigChange(old)
+    fun invalidate_updatesFallbackMetrics_withoutErasingOtherPartitions() {
+        val oldMetrics = DimenMetrics.from(config(sw = 400, w = 400, h = 800))
+        val key = autoKey(32f)
+        assertEquals(66f, DimenCache.getOrPut(key, oldMetrics) { 66f }, 0f)
 
-        val key = DimenCache.buildKey(
-            31f, false, false, DimenCache.CalcType.AUTO,
-            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
-            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
-        )
-        DimenCache.getOrPut(key) { 88f }
-        assertEquals(88f, DimenCache.peek(key) ?: -1f, 0f)
+        DimenCache.invalidateOnConfigChange(config(sw = 300, w = 300, h = 800))
 
-        // Pure rotation: width ↔ height swap, same min/max/sw/dpi.
-        // ScreenFactors are invariant → no clearAll(); keys encode isLandscape bit.
-        val new = config(sw = 400, w = 800, h = 400)
-        DimenCache.invalidateOnConfigChange(new)
-
-        assertEquals(88f, DimenCache.peek(key) ?: -1f, 0f)
-    }
-
-    @Test
-    fun invalidate_physicalResize_clearsCache() {
-        val old = config(sw = 400, w = 400, h = 800, dpi = 420)
-        DimenCache.invalidateOnConfigChange(old)
-
-        val key = DimenCache.buildKey(
-            32f, false, false, DimenCache.CalcType.AUTO,
-            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
-            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
-        )
-        DimenCache.getOrPut(key) { 66f }
-        assertEquals(66f, DimenCache.peek(key) ?: -1f, 0f)
-
-        // Split-screen / fold resize: min changes → real physical change.
-        val resized = config(sw = 300, w = 300, h = 800, dpi = 420)
-        DimenCache.invalidateOnConfigChange(resized)
-        assertEquals(null, DimenCache.peek(key))
-    }
-
-    @Test
-    fun invalidate_dpiChange_clearsCache() {
-        val old = config(dpi = 420)
-        DimenCache.invalidateOnConfigChange(old)
-
-        val key = DimenCache.buildKey(
-            40f, false, false, DimenCache.CalcType.AUTO,
-            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
-            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
-        )
-        DimenCache.getOrPut(key) { 99f }
-
-        val new = config(dpi = 320)
-        DimenCache.invalidateOnConfigChange(new)
-
-        assertEquals(null, DimenCache.peek(key))
-    }
-
-    @Test
-    fun invalidate_fontScaleOnly_clearsOnlyFontDependentEntries() {
-        val old = config()
-        DimenCache.invalidateOnConfigChange(old)
-
-        val keyDp = DimenCache.buildKey(
-            10f, false, false, DimenCache.CalcType.AUTO,
-            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
-            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.DP
-        )
-        val keySpWith = DimenCache.buildKey(
-            11f, false, false, DimenCache.CalcType.AUTO,
-            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
-            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.SP_WITH_SCALE
-        )
-        val keySpNo = DimenCache.buildKey(
-            12f, false, false, DimenCache.CalcType.AUTO,
-            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
-            com.appdimens.dynamic.common.Inverter.DEFAULT, false, DimenCache.ValueType.SP_NO_SCALE
-        )
-        DimenCache.getOrPut(keyDp) { 1f }
-        DimenCache.getOrPut(keySpWith) { 2f }
-        DimenCache.getOrPut(keySpNo) { 3f }
-
-        val new = config().apply { fontScale = 1.5f }
-        DimenCache.diskClearRequested = false
-        DimenCache.invalidateOnConfigChange(new)
-
-        assertEquals(1f, DimenCache.peek(keyDp) ?: -1f, 0f)
-        assertEquals(2f, DimenCache.peek(keySpWith) ?: -1f, 0f)
-        assertEquals(null, DimenCache.peek(keySpNo))
-        assertEquals(false, DimenCache.diskClearRequested)
+        assertNull(DimenCache.peek(key))
+        assertEquals(66f, DimenCache.peek(key, oldMetrics) ?: -1f, 0f)
     }
 }

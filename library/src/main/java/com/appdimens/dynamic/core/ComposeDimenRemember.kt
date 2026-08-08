@@ -26,9 +26,15 @@ fun rememberDimenDp(
     match: Boolean = true,
     passthrough: Dp = Dp.Unspecified,
     compute: () -> Float,
-): Dp = remember(match, cacheKey, layoutStamp, passthrough) {
-    if (!match) passthrough
-    else DimenCache.getOrPut(cacheKey, androidContext, compute).dp
+): Dp {
+    val metrics = LocalDimenMetrics.current
+    return if (match) {
+        remember(cacheKey, layoutStamp) {
+            resolveCachedFloat(cacheKey, metrics, androidContext, compute).dp
+        }
+    } else {
+        remember(match, cacheKey, layoutStamp, passthrough) { passthrough }
+    }
 }
 
 /**
@@ -44,11 +50,15 @@ fun rememberDimenPxFromDp(
     match: Boolean = true,
     passthrough: Float = Float.NaN,
     compute: () -> Float,
-): Float = remember(match, cacheKey, pxStamp, passthrough) {
-    if (!match) passthrough
-    else DimenCache.getOrPut(cacheKey, androidContext) {
-        val scaledDp = compute()
-        density.run { scaledDp.dp.toPx() }
+): Float {
+    val metrics = LocalDimenMetrics.current
+    return if (match) {
+        remember(cacheKey, pxStamp) {
+            val scaledDp = resolveCachedFloat(cacheKey, metrics, androidContext, compute)
+            density.run { scaledDp.dp.toPx() }
+        }
+    } else {
+        remember(match, cacheKey, pxStamp, passthrough) { passthrough }
     }
 }
 
@@ -63,8 +73,10 @@ fun rememberDimenSp(
     match: Boolean = true,
     passthrough: TextUnit = TextUnit.Unspecified,
     compute: () -> TextUnit,
-): TextUnit = remember(match, cacheKey, spStamp, passthrough) {
-    if (!match) passthrough else compute()
+): TextUnit = if (match) {
+    remember(cacheKey, spStamp) { compute() }
+} else {
+    remember(match, cacheKey, spStamp, passthrough) { passthrough }
 }
 
 /**
@@ -78,6 +90,18 @@ fun rememberDimenSpPx(
     match: Boolean = true,
     passthrough: Float = Float.NaN,
     compute: () -> Float,
-): Float = remember(match, cacheKey, sspPxStamp, passthrough) {
-    if (!match) passthrough else compute()
+): Float = if (match) {
+    remember(cacheKey, sspPxStamp) { compute() }
+} else {
+    remember(match, cacheKey, sspPxStamp, passthrough) { passthrough }
+}
+
+private fun resolveCachedFloat(
+    cacheKey: Long,
+    metrics: DimenMetrics?,
+    androidContext: Context,
+    compute: () -> Float,
+): Float = when {
+    metrics != null -> DimenCache.getOrPut(cacheKey, metrics, compute)
+    else -> DimenCache.getOrPut(cacheKey, androidContext, compute)
 }

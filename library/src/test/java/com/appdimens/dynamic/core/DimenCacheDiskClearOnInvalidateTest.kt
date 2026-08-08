@@ -21,7 +21,6 @@ class DimenCacheDiskClearOnInvalidateTest {
         DimenCache.persistenceWritesEnabled = false
         DimenCache.diskClearRequested = false
         DimenCache.savedAppContext = null
-        // Reset init flags so init() can run again for this test process.
         DimenCache.isInitializedFast = false
         DimenCache.isInitialized.set(false)
         DimenCache.isInitializing.set(false)
@@ -29,7 +28,7 @@ class DimenCacheDiskClearOnInvalidateTest {
 
     @After
     fun teardown() {
-        DimenCache.persistenceWritesEnabled = true
+        DimenCache.persistenceWritesEnabled = false
         DimenCache.diskClearRequested = false
         DimenCache.savedAppContext = null
         DimenCache.shutdown()
@@ -54,22 +53,21 @@ class DimenCacheDiskClearOnInvalidateTest {
     }
 
     @Test
-    fun invalidateAfterInit_requestsDiskClearOnPhysicalChange() {
-        val cfg = config()
-        val app = mockAppContext(cfg)
+    fun clearAll_withContext_requestsDiskClearFlag() {
+        val app = mockAppContext(config())
+        DimenCache.diskClearRequested = false
+        DimenCache.clearAll(app)
+        assertTrue(DimenCache.diskClearRequested)
+    }
+
+    @Test
+    fun invalidate_doesNotRequestDiskClear() {
+        val app = mockAppContext(config())
         DimenCache.init(app)
-        assertTrue(DimenCache.savedAppContext === app)
-
         DimenCache.diskClearRequested = false
-        // Seed lastConfiguration via a matching invalidate first.
-        DimenCache.invalidateOnConfigChange(cfg)
-        DimenCache.diskClearRequested = false
-
-        val resized = config(sw = 300, w = 300, h = 800)
-        DimenCache.invalidateOnConfigChange(resized)
-
-        assertTrue(
-            "physical change after init must clear DataStore via savedAppContext",
+        DimenCache.invalidateOnConfigChange(config(sw = 300, w = 300, h = 800))
+        assertFalse(
+            "snapshot partitions removed DataStore coupling from invalidate",
             DimenCache.diskClearRequested
         )
     }
@@ -78,13 +76,7 @@ class DimenCacheDiskClearOnInvalidateTest {
     fun invalidateBeforeInit_doesNotThrow_andSkipsDiskClear() {
         assertNull(DimenCache.savedAppContext)
         DimenCache.diskClearRequested = false
-
-        // Signature unchanged; null savedAppContext → memory-only clearAll(null).
         DimenCache.invalidateOnConfigChange(config(sw = 500, w = 500, h = 900))
-
-        assertFalse(
-            "without init, disk clear must not be requested",
-            DimenCache.diskClearRequested
-        )
+        assertFalse(DimenCache.diskClearRequested)
     }
 }

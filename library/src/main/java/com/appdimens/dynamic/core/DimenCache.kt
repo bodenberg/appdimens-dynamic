@@ -43,19 +43,17 @@ package com.appdimens.dynamic.core
 
 import android.content.Context
 import android.content.res.Configuration
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.*
-import androidx.datastore.preferences.preferencesDataStore
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.UiModeType
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicIntegerArray
 import java.util.concurrent.atomic.AtomicLongArray
+import java.util.concurrent.atomic.AtomicReferenceArray
 import java.util.concurrent.atomic.LongAdder
+import java.util.concurrent.ConcurrentHashMap
+import java.util.Collections
+import java.util.WeakHashMap
 import kotlin.math.max
 import kotlin.math.min
 
@@ -97,30 +95,13 @@ object DimenCache {
     // CONFIGURATION & PERSISTENT STATE
     // ─────────────────────────────────────────────────────────────────────────
 
-    internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "com.appdimens.dynamic.cache")
-    internal val KEY_SW_DP = intPreferencesKey("smallest_width_dp")
-    internal val KEY_DPI = intPreferencesKey("density_dpi")
-    internal val KEY_CACHE_DATA = byteArrayPreferencesKey("cache_mirror")
-
     /**
-     * EN Bumped on every [clearAll] / font-selective clear so in-flight [performSave]
-     * calls abort instead of writing a stale snapshot over a wiped DataStore.
+     * EN Bumped on every [clearAll]. Retained for source compatibility with prior
+     * persistence diagnostics; result cache persistence was removed.
      *
      * PT Incrementado em cada limpeza para abortar saves em voo.
      */
     private val persistenceGeneration = java.util.concurrent.atomic.AtomicLong(0L)
-
-    @Volatile
-    private var _scope: CoroutineScope? = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val scopeLock = Any()
-
-    internal val scope: CoroutineScope
-        get() = _scope ?: synchronized(scopeLock) {
-            _scope ?: CoroutineScope(SupervisorJob() + Dispatchers.IO).also {
-                _scope = it
-                launchSaveCollector(it)
-            }
-        }
     internal val isInitializing = AtomicBoolean(false)
     /**
      * Internal flag to avoid [AtomicBoolean.get] overhead on every hot-path call.
@@ -243,6 +224,14 @@ object DimenCache {
     @Volatile
     private var cachedUiModeConfigHash: Int = 0
 
+    private data class UiModeCacheEntry(val fingerprint: Int, val value: UiModeType)
+
+    /**
+     * Per-context cache: the value never retains its weak key, so an Activity/window can be
+     * collected normally. A process-wide single entry is incorrect when two windows differ.
+     */
+    private val uiModeByContext = Collections.synchronizedMap(WeakHashMap<Context, UiModeCacheEntry>())
+
     @JvmStatic
     fun getCachedUiModeType(context: Context): UiModeType {
         val cfg = context.resources.configuration
@@ -251,14 +240,18 @@ object DimenCache {
             (cfg.uiMode * 31 + cfg.smallestScreenWidthDp) * 31 +
                 min(cfg.screenWidthDp, cfg.screenHeightDp) * 31 +
                 max(cfg.screenWidthDp, cfg.screenHeightDp)
-        val cached = cachedUiMode
-        if (cachedUiModeConfigHash == fingerprint && cached != UiModeType.UNDEFINED) {
-            return cached
+        synchronized(uiModeByContext) {
+            val cached = uiModeByContext[context]
+            if (cached?.fingerprint == fingerprint) return cached.value
+
+            val mode = UiModeType.fromConfiguration(context, null)
+            uiModeByContext[context] = UiModeCacheEntry(fingerprint, mode)
+            // Deprecated global fields are updated for callers that inspect them, but are
+            // never read as a source of truth.
+            cachedUiMode = mode
+            cachedUiModeConfigHash = fingerprint
+            return mode
         }
-        val mode = UiModeType.fromConfiguration(context, null)
-        cachedUiMode = mode
-        cachedUiModeConfigHash = fingerprint
-        return mode
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -304,14 +297,28 @@ object DimenCache {
     @PublishedApi
     internal val factors = ScreenFactors()
 
-    // Convenience accessors — public so satellite modules can read shared scales.
-    val currentNormalizedAr      get() = factors.normalizedAr
-    val currentLogNormalizedAr   get() = factors.logNormalizedAr
-    val currentSmallestWidthDp   get() = factors.smallestWidthDp
-    val currentDensity           get() = factors.density
-    val currentScale             get() = factors.scale
-    val currentArMultiplier      get() = factors.arMultiplier
-    val currentAspectRatioMul    get() = factors.aspectRatioMul
+    /**
+     * Compatibility view used by existing strategy modules while they are migrated to
+     * explicit [DimenMetrics] parameters.  During a resolution it is the exact immutable
+     * metrics supplied to that call; it is never a partially updated global factor set.
+     */
+    private val metricsScope = ThreadLocal<DimenMetrics?>()
+
+    @Volatile
+    private var fallbackMetrics: DimenMetrics = DimenMetrics.DEFAULT
+
+    @get:JvmStatic
+    val currentMetrics: DimenMetrics
+        get() = metricsScope.get() ?: fallbackMetrics
+
+    // Convenience accessors — public so satellite modules can read a coherent snapshot.
+    val currentNormalizedAr      get() = currentMetrics.normalizedAspectRatio
+    val currentLogNormalizedAr   get() = currentMetrics.logNormalizedAspectRatio
+    val currentSmallestWidthDp   get() = currentMetrics.smallestWidthDp.toInt()
+    val currentDensity           get() = currentMetrics.density
+    val currentScale             get() = currentMetrics.scale
+    val currentArMultiplier      get() = currentMetrics.defaultScaledAspectRatioMultiplier
+    val currentAspectRatioMul    get() = currentMetrics.defaultAspectRatioMultiplier
 
     /**
      * Number of slots in the primary (Tier-1) fast cache.
@@ -401,6 +408,103 @@ object DimenCache {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // SNAPSHOT-PARTITIONED CACHE
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * A key and its raw Float bits are published as one immutable reference.  The previous
+     * two-array design could expose a key written by one thread with a value written by
+     * another.  A single atomic reference is a correctness boundary, not a micro-optimization.
+     */
+    private data class CacheEntry(val key: Long, val valueBits: Int)
+
+    private class SnapshotCache(size: Int) {
+        val entries = AtomicReferenceArray<CacheEntry?>(size)
+    }
+
+    /** Four active window/configuration snapshots × 512 entries = the former 2048-slot budget. */
+    private const val MAX_SNAPSHOT_CACHES = 4
+    private const val SNAPSHOT_CACHE_SIZE = CACHE_SIZE / MAX_SNAPSHOT_CACHES
+    private const val SNAPSHOT_CACHE_MASK = SNAPSHOT_CACHE_SIZE - 1
+
+    private val snapshotCaches = ConcurrentHashMap<DimenMetrics, SnapshotCache>()
+    private val snapshotCacheLock = Any()
+
+    private fun metricsFor(context: Context?): DimenMetrics =
+        if (context == null) {
+            fallbackMetrics
+        } else {
+            DimenMetrics.from(
+                configuration = context.resources.configuration,
+                isInMultiWindowMode = DimenCalculationPlumbing.isInMultiWindowMode(context),
+            )
+        }
+
+    private fun cacheFor(metrics: DimenMetrics): SnapshotCache {
+        snapshotCaches[metrics]?.let { return it }
+        synchronized(snapshotCacheLock) {
+            snapshotCaches[metrics]?.let { return it }
+            // A resize can produce many transient configurations. Keep the total memory
+            // budget fixed instead of turning the cache into a history of every pixel size.
+            if (snapshotCaches.size >= MAX_SNAPSHOT_CACHES) {
+                snapshotCaches.keys.firstOrNull()?.let(snapshotCaches::remove)
+            }
+            return SnapshotCache(SNAPSHOT_CACHE_SIZE).also { snapshotCaches[metrics] = it }
+        }
+    }
+
+    private fun slotFor(key: Long): Int {
+        val h = (key xor (key ushr 32)).toInt()
+        val mixed = h xor (h ushr 16)
+        return mixed and SNAPSHOT_CACHE_MASK
+    }
+
+    private inline fun <T> withMetrics(metrics: DimenMetrics, block: () -> T): T {
+        val previous = metricsScope.get()
+        if (previous === metrics) {
+            return block()
+        }
+        metricsScope.set(metrics)
+        return try {
+            block()
+        } finally {
+            if (previous == null) metricsScope.remove() else metricsScope.set(previous)
+        }
+    }
+
+    /** Used by Compose helpers to make nested legacy strategy calls observe LocalDimenMetrics. */
+    internal fun <T> withCompositionMetrics(metrics: DimenMetrics?, block: () -> T): T =
+        if (metrics == null) block() else withMetrics(metrics, block)
+
+    private fun resolve(
+        key: Long,
+        metrics: DimenMetrics,
+        compute: () -> Float,
+    ): Float {
+        if (!isEnabled || shouldBypassCache(key)) {
+            return withMetrics(metrics, compute)
+        }
+
+        val cache = cacheFor(metrics)
+        val slot = slotFor(key)
+        val existing = cache.entries.get(slot)
+        if (existing?.key == key) {
+            if (diagnosticsEnabled) hitCount.increment()
+            return Float.fromBits(existing.valueBits)
+        }
+
+        if (diagnosticsEnabled) missCount.increment()
+        val computed = withMetrics(metrics, compute)
+        // Non-finite values are never useful cache entries and should not contaminate a
+        // later valid request with the same key.
+        if (!computed.isFinite()) return computed
+
+        if (diagnosticsEnabled && existing != null) evictionCount.increment()
+        cache.entries.set(slot, CacheEntry(key, computed.toRawBits()))
+        return computed
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // MATH CONSTANTS
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -409,45 +513,26 @@ object DimenCache {
     const val SENSITIVITY_DEFAULT = 0.08f / 30f   // 0.0026666667f
 
     /**
-     * EN Unified high-performance scaling engine. Reads from [factors] — padded object,
-     * guaranteeing that the read of `scale` and `arMultiplier` land on the same cache line
-     * as all other factor fields.
+     * Unified scaling engine over the immutable metrics of the current resolution.
+     * Callers that resolve through [getOrPut] receive a per-window snapshot; no result is
+     * derived from a process-wide application configuration.
      */
     fun calculateRawScaling(
         baseValue: Float,
         applyAspectRatio: Boolean,
         customSensitivityK: Float?
     ): Float {
-        val f = factors
-        return if (applyAspectRatio) {
-            val factor = if (customSensitivityK == null) {
-                f.arMultiplier
-            } else {
-                val logAr = f.logNormalizedAr
-                val adjustment = customSensitivityK * logAr
-                1.0f + (f.smallestWidthDp - 300f) * (ADJUSTMENT_SCALE + adjustment)
-            }
-            baseValue * factor
-        } else {
-            baseValue * f.scale
-        }
+        require(baseValue.isFinite()) { "baseValue must be finite" }
+        return baseValue * currentMetrics.scaledMultiplier(applyAspectRatio, customSensitivityK)
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // PERSISTENCE FLOW
     // ─────────────────────────────────────────────────────────────────────────
 
-    private val saveFlow = kotlinx.coroutines.flow.MutableSharedFlow<Context>(
-        replay = 0,
-        extraBufferCapacity = 1,
-        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
-    )
-
     /**
-     * EN Quiescence window before a disk write (production default: 500 ms).
-     * Overridable in unit tests so timings stay short.
-     *
-     * PT Janela de quiescência antes de gravar em disco (padrão: 500 ms).
+     * Deprecated compatibility settings for the removed persistent result cache.
+     * They remain internal so older test fixtures compile, but are never consulted.
      */
     @Volatile
     @PublishedApi
@@ -461,53 +546,19 @@ object DimenCache {
     @PublishedApi
     internal var saveSampleMs: Long = 10_000L
 
-    /**
-     * EN When `false`, [performSave] increments [performSaveCount] but skips DataStore I/O.
-     * Used by unit tests that exercise the debounce/sample collector without Android DataStore.
-     *
-     * PT Quando `false`, [performSave] só incrementa o contador — sem I/O no DataStore.
-     */
+    /** Deprecated compatibility switch; result-cache persistence is disabled permanently. */
     @Volatile
     @PublishedApi
-    internal var persistenceWritesEnabled: Boolean = true
+    internal var persistenceWritesEnabled: Boolean = false
 
-    /** EN Count of [performSave] invocations (test/diagnostics). PT Contagem de invocações. */
+    /** Deprecated compatibility counter. */
     @JvmField
     @PublishedApi
     internal val performSaveCount = java.util.concurrent.atomic.AtomicInteger(0)
 
-    private fun launchSaveCollector(target: CoroutineScope) {
-        target.launch {
-            @OptIn(FlowPreview::class)
-            // debounce: write once after the cache goes quiet (no I/O during scroll/animation).
-            // sample: safety net so pathological continuous-write apps still persist eventually.
-            merge(
-                saveFlow.debounce(saveDebounceMs),
-                saveFlow.sample(saveSampleMs)
-            ).collect { ctx ->
-                performSave(ctx)
-            }
-        }
-    }
-
-    init {
-        _scope?.let { launchSaveCollector(it) }
-    }
-
-    /**
-     * EN Cancels the background persistence scope. Intended for test teardown.
-     * The scope is automatically re-created on next use (e.g. [saveToPersistence]).
-     *
-     * PT Cancela o escopo de persistência em background. Destinado a teardown de testes.
-     * O escopo é recriado automaticamente no próximo uso.
-     */
+    /** No-op: dimension resolution no longer owns a background persistence scope. */
     @JvmStatic
-    fun shutdown() {
-        synchronized(scopeLock) {
-            _scope?.cancel()
-            _scope = null
-        }
-    }
+    fun shutdown() = Unit
 
     /**
      * EN Restarts the persistence collector after changing [saveDebounceMs] / [saveSampleMs]
@@ -518,10 +569,7 @@ object DimenCache {
     @JvmStatic
     @PublishedApi
     internal fun restartSaveCollectorForTest() {
-        shutdown()
         performSaveCount.set(0)
-        // Touching [scope] recreates the CoroutineScope and re-launches the collector.
-        scope
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -564,6 +612,10 @@ object DimenCache {
         valueType: ValueType,
         customSensitivityK: Float? = null
     ): Long {
+        require(baseValue.isFinite()) { "baseValue must be finite" }
+        require(customSensitivityK == null || customSensitivityK.isFinite()) {
+            "customSensitivityK must be finite"
+        }
         val ar  = if (applyAspectRatio) 1L else 0L
         val bv  = baseValue.toRawBits().toLong() and 0xFFFFFFFFL
         val ct  = calcType.ordinal.toLong() and 0xFL
@@ -613,50 +665,19 @@ object DimenCache {
 
     @JvmStatic
     fun init(context: Context) {
-        if (isInitialized.get()) {
-            isInitializedFast = true
-            return
-        }
+        // Initialization is deliberately synchronous and local to the caller's window.
+        // A persisted result cache cannot be made correct across a configuration, formula,
+        // density or multi-window change, and its I/O belongs nowhere near dimension use.
         if (isInitializing.getAndSet(true)) return
-
-        val appContext = context.applicationContext
-        savedAppContext = appContext
-        val config = appContext.resources.configuration
-        val currentSw = config.smallestScreenWidthDp
-        val currentDpi = config.densityDpi
-
-        updateFactors(config)
-        factors.smallestWidthDp = currentSw
-        lastConfiguration = ConfigSnapshot.from(config)
-        isInitializedFast = true
-
-        scope.launch {
-            try {
-                val prefs   = appContext.dataStore.data.firstOrNull()
-                val savedSw = prefs?.get(KEY_SW_DP) ?: 0
-                val savedDpi = prefs?.get(KEY_DPI)
-                val rawData = prefs?.get(KEY_CACHE_DATA)
-
-                // Reject blob when SW or densityDpi diverges (PX / density-scaled entries
-                // embed dpi). Missing KEY_DPI = legacy blob → treat as mismatch.
-                val incompatible = savedSw != currentSw ||
-                        savedDpi == null ||
-                        savedDpi != currentDpi ||
-                        rawData == null
-
-                if (incompatible) {
-                    if (savedSw != 0 && (savedSw != currentSw || (savedDpi != null && savedDpi != currentDpi))) {
-                        clearAll(appContext)
-                    }
-                } else {
-                    loadFromByteArray(rawData!!)
-                }
-            } catch (_: Exception) {
-                // Fallback to empty cache on error
-            } finally {
-                isInitialized.set(true)
-                isInitializing.set(false)
-            }
+        try {
+            savedAppContext = context.applicationContext
+            val config = context.resources.configuration
+            updateFactors(config)
+            lastConfiguration = ConfigSnapshot.from(config)
+            isInitializedFast = true
+            isInitialized.set(true)
+        } finally {
+            isInitializing.set(false)
         }
     }
 
@@ -671,42 +692,7 @@ object DimenCache {
      *
      * PT Carrega o blob persistido. Suporta formato esparso e o layout denso legado.
      */
-    internal fun loadFromByteArray(data: ByteArray) {
-        if (data.size >= 4) {
-            val probe = ByteBuffer.wrap(data)
-            val count = probe.int
-            // Sparse sizes are 4 + count*12; dense legacy is exactly CACHE_SIZE*12.
-            // Those sizes never collide for an integer count.
-            if (count in 0..CACHE_SIZE && data.size == 4 + count * 12) {
-                for (n in 0 until count) {
-                    val key = probe.long
-                    val value = probe.float
-                    if (key == 0L) continue
-                    val (shardIndex, slotIndex) = shardAndSlot(key)
-                    val shard = shards[shardIndex]
-                    if (shard.keys.compareAndSet(slotIndex, 0L, key)) {
-                        shard.values.set(slotIndex, value.toRawBits())
-                    }
-                }
-                return
-            }
-        }
-        // Legacy dense format: position in file == shard/slot index.
-        if (data.size < CACHE_SIZE * 12) return
-        val buffer = ByteBuffer.wrap(data)
-        for (s in 0 until SHARD_COUNT) {
-            val shard = shards[s]
-            for (i in 0 until SHARD_SIZE) {
-                val key   = buffer.long
-                val value = buffer.float
-                if (key != 0L) {
-                    if (shard.keys.compareAndSet(i, 0L, key)) {
-                        shard.values.set(i, value.toRawBits())
-                    }
-                }
-            }
-        }
-    }
+    internal fun loadFromByteArray(data: ByteArray) = Unit
 
     /** EN Hash → (shard, slot) — same mix as [getOrPutInternal]. */
     @PublishedApi
@@ -718,7 +704,9 @@ object DimenCache {
 
     @JvmStatic
     fun saveToPersistence(context: Context) {
-        saveFlow.tryEmit(context)
+        // Kept as a binary-compatible no-op. Result caching is intentionally in-memory
+        // and snapshot-scoped; persisting it would reintroduce stale values on restart.
+        Unit
     }
 
     /**
@@ -731,19 +719,7 @@ object DimenCache {
      */
     private suspend fun performSave(context: Context) {
         performSaveCount.incrementAndGet()
-        if (!persistenceWritesEnabled) return
-        val gen = persistenceGeneration.get()
-        val appContext = context.applicationContext
-        val data = serializeToByteArray()
-        // Abort if a clear happened while we were serializing.
-        if (gen != persistenceGeneration.get()) return
-        val dpi = lastConfiguration?.densityDpi ?: 0
-        appContext.dataStore.edit { prefs ->
-            if (gen != persistenceGeneration.get()) return@edit
-            prefs[KEY_SW_DP]      = factors.smallestWidthDp
-            prefs[KEY_DPI]        = dpi
-            prefs[KEY_CACHE_DATA] = data
-        }
+        // No-op; see saveToPersistence.
     }
 
     /**
@@ -752,90 +728,19 @@ object DimenCache {
      *
      * PT Snapshot esparso; tamanho proporcional às entradas populadas.
      */
-    internal fun serializeToByteArray(): ByteArray {
-        // Single pass — count and payload always agree even if other threads write.
-        val keysBuf = ArrayList<Long>(CACHE_SIZE / 8)
-        val valsBuf = ArrayList<Int>(CACHE_SIZE / 8)
-        for (s in 0 until SHARD_COUNT) {
-            val shard = shards[s]
-            for (i in 0 until SHARD_SIZE) {
-                val k = shard.keys.get(i)
-                if (k != 0L) {
-                    keysBuf.add(k)
-                    valsBuf.add(shard.values.get(i))
-                }
-            }
-        }
-        val count = keysBuf.size
-        val buffer = ByteBuffer.allocate(4 + count * 12)
-        buffer.putInt(count)
-        for (idx in 0 until count) {
-            buffer.putLong(keysBuf[idx])
-            buffer.putFloat(Float.fromBits(valsBuf[idx]))
-        }
-        return buffer.array()
-    }
+    internal fun serializeToByteArray(): ByteArray = byteArrayOf(0, 0, 0, 0)
 
     // ─────────────────────────────────────────────────────────────────────────
     // FAST READ / WRITE (lock-free)
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * EN Non-inline core logic for [getOrPut]. Separated so that the public inline
-     * function does not need access to internal fields of [ShardWrapper] directly.
-     * This function is @PublishedApi, making it visible to the inlined call-sites.
-     *
-     * PT Núcleo não-inline de [getOrPut]. Separado para evitar que a função inline
-     * pública precise de acesso direto aos campos internos de [ShardWrapper].
+     * Compatibility entry point for callers that cannot use the public overload.
+     * The context is converted to an immutable window snapshot before any cache lookup.
      */
     @JvmStatic
-    fun getOrPutInternal(key: Long, context: Context?, compute: () -> Float): Float {
-        if (!isEnabled) return compute()
-
-        // Mirror the inline [getOrPut] fast-bypass (including default-AR multiply path).
-        if (shouldBypassCache(key)) return compute()
-
-        // AUTO-INIT — same guard as inline [getOrPut] ([isInitializedFast] + [init])
-        if (context != null && !isInitializedFast) {
-            init(context)
-        }
-
-        val h      = (key xor (key ushr 32)).toInt()
-        val mixed  = h xor (h ushr 16)
-
-        val shardIndex = (mixed ushr 9) and SHARD_MASK
-        val slotIndex  = mixed and SHARD_SIZE_MASK
-
-        val shard = shards[shardIndex]
-        val shardKeys   = shard.keys
-        val shardValues = shard.values
-
-        // FAST PATH
-        val existingKey = shardKeys.get(slotIndex)
-        if (existingKey == key) {
-            if (diagnosticsEnabled) hitCount.increment()
-            return Float.fromBits(shardValues.get(slotIndex))
-        }
-
-        // MISS
-        if (diagnosticsEnabled) missCount.increment()
-        val computed = compute()
-
-        val ct      = (key         ushr 27 and 0xFL).toInt()
-        val existCt = (existingKey ushr 27 and 0xFL).toInt()
-
-        val isNewAr = ct == CT_ASPECT_RATIO
-        val isOldAr = existingKey != 0L && existCt == CT_ASPECT_RATIO
-
-        if (existingKey == 0L || !isOldAr || isNewAr) {
-            if (diagnosticsEnabled && existingKey != 0L) evictionCount.increment()
-            shardValues.set(slotIndex, computed.toRawBits())
-            shardKeys.set(slotIndex, key)
-            context?.let { saveToPersistence(it) }
-        }
-
-        return computed
-    }
+    fun getOrPutInternal(key: Long, context: Context?, compute: () -> Float): Float =
+        resolve(key, metricsScope.get() ?: metricsFor(context), compute)
 
     /**
      * EN Returns `true` when [getOrPut] should skip the shard table and call `compute()`
@@ -850,44 +755,40 @@ object DimenCache {
      */
     @JvmStatic
     @PublishedApi
-    internal inline fun shouldBypassCache(key: Long): Boolean {
+    internal fun shouldBypassCache(key: Long): Boolean {
         val ct = (key ushr 27 and 0xFL).toInt()
-        // Multiply-only types with precomputed ScreenFactors on the default path.
+        val hasAr = (key ushr 63) != 0L
+        val hasCustomK = (key ushr 8 and 0xFFFFL).toInt() != 0xFFFF
+
+        // Custom K only fits 16 bits in the key — never bypass; compute exactly each time
+        // or store via the snapshot cache so distinct floats cannot alias.
+        if (hasCustomK) return false
+
         val isAlwaysBypassType = ct == CT_PERCENT || ct == CT_SCALED || ct == CT_DENSITY ||
                 ct == CT_DIAGONAL || ct == CT_INTERPOLATED || ct == CT_PERIMETER
-        // POWER / LOGARITHMIC: only SW+DEFAULT reduces to a precomputed multiply;
-        // WIDTH/HEIGHT still call pow()/ln() and must stay cached.
         val isConditionalBypassType = ct == CT_POWER || ct == CT_LOGARITHMIC
 
         if (!isAlwaysBypassType && !isConditionalBypassType) return false
 
-        if (key >= 0) {
-            if (isAlwaysBypassType) return true
-            // Conditional types without AR: still require default qualifier/inverter.
-            val q   = (key ushr 6 and 0x3L).toInt()
-            val inv = (key ushr 2 and 0xFL).toInt()
-            return q == DpQualifier.SMALL_WIDTH.ordinal && inv == Inverter.DEFAULT.ordinal
+        val q = (key ushr 6 and 0x3L).toInt()
+        val inv = (key ushr 2 and 0xFL).toInt()
+        val isDefaultSwPath =
+            q == DpQualifier.SMALL_WIDTH.ordinal && inv == Inverter.DEFAULT.ordinal
+
+        if (isAlwaysBypassType) {
+            // Default AR on SW is one precomputed multiply in [DimenMetrics]; non-default
+            // qualifiers still need the full formula and must stay cacheable.
+            return !hasAr || isDefaultSwPath
         }
 
-        // Default AR: SMALL_WIDTH + DEFAULT inverter + null customSensitivityK (0xFFFF sentinel).
-        val q   = (key ushr 6 and 0x3L).toInt()
-        val inv = (key ushr 2 and 0xFL).toInt()
-        val sk  = (key ushr 8 and 0xFFFFL)
-        return q == DpQualifier.SMALL_WIDTH.ordinal &&
-                inv == Inverter.DEFAULT.ordinal &&
-                sk == 0xFFFFL
+        return isDefaultSwPath
     }
 
     /**
      * EN
-     * Reads from the cache or computes (and stores) a new value. **Lock-free.**
-     *
-     * The full hot path is inlined at every call-site by the Kotlin compiler.
-     * This eliminates all method-call overhead and gives the JIT full visibility
-     * over the loop body when called from a batch context.
-     *
-     * [getOrPutInternal] is kept as a non-inline helper for callers (like [getBatch])
-     * that cannot use inline functions.
+     * Resolves against the actual window configuration supplied by [context].  A lookup
+     * never crosses window/configuration snapshots, so resizing, split-screen, density and
+     * font-scale changes cannot return a cached value from an earlier environment.
      *
      * @param key      64-bit packed key from [buildKey]
      * @param compute  Lambda invoked only on a cache **miss**
@@ -897,63 +798,35 @@ object DimenCache {
      * eliminando overhead de chamada e dando ao JIT visibilidade total do loop.
      */
     @JvmStatic
-    inline fun getOrPut(key: Long, context: Context? = null, crossinline compute: () -> Float): Float {
-        if (!isEnabled) return compute()
+    fun getOrPut(key: Long, context: Context? = null, compute: () -> Float): Float =
+        resolve(key, metricsScope.get() ?: metricsFor(context), compute)
 
-        // 0. FAST BYPASS — intentional design decision.
-        //
-        // When Aspect Ratio is NOT active (bit 63 == 0) and the CalcType is one of the
-        // "simple multiplier" types (PERCENT, SCALED, DENSITY, …), the scaling formula
-        // often reduces to a single float multiply: `baseValue * scale`.
-        //
-        // Measured cost on Snapdragon 888:
-        //   Raw math (multiply)  ≈  2 ns
-        //   Fastest cache lookup ≈  5 ns   (hash + atomic load + branch)
-        //
-        // Default AR (SMALL_WIDTH + DEFAULT inverter + null sensitivity) is also just
-        // `baseValue * factors.arMultiplier` — arMultiplier is precomputed in
-        // updateFactors() — so it shares the same bypass. Custom sensitivity / non-default
-        // qualifier still use the full cache path. CT_ASPECT_RATIO (ln memoization) never bypasses.
-        if (shouldBypassCache(key)) return compute()
+    /**
+     * Explicit snapshot overload for callers that already hold the configuration used by
+     * their formula (notably Compose providers and custom containers).
+     */
+    @JvmStatic
+    fun getOrPut(key: Long, metrics: DimenMetrics, compute: () -> Float): Float =
+        resolve(key, metrics, compute)
 
-        // ─────────────────────────────────────────────────────────────────────
-        // HOT PATH — fully inlined, zero method-call overhead, zero lambda alloc
-        // ─────────────────────────────────────────────────────────────────────
-        if (context != null && !isInitializedFast) init(context)
-
-        val h     = (key xor (key ushr 32)).toInt()
-        val mixed = h xor (h ushr 16)
-        val shard = shards[(mixed ushr 9) and SHARD_MASK]
-        val slot  = mixed and SHARD_SIZE_MASK
-
-        val existingKey = shard.keys.get(slot)
-        if (existingKey == key) {
-            if (diagnosticsEnabled) hitCount.increment()
-            return Float.fromBits(shard.values.get(slot))
-        }
-
-        // MISS — compute then conditionally store
-        if (diagnosticsEnabled) missCount.increment()
-        val computed = compute()
-
-        val ct      = (key         ushr 27 and 0xFL).toInt()
-        val existCt = (existingKey ushr 27 and 0xFL).toInt()
-        val isNewAr = ct == CT_ASPECT_RATIO
-        val isOldAr = existingKey != 0L && existCt == CT_ASPECT_RATIO
-
-        if (existingKey == 0L || !isOldAr || isNewAr) {
-            if (diagnosticsEnabled && existingKey != 0L) evictionCount.increment()
-            shard.values.set(slot, computed.toRawBits())
-            shard.keys.set(slot, key)
-            context?.let { saveToPersistence(it) }
-        }
-
-        return computed
-    }
+    /**
+     * Convenience overload preserving the exact [Configuration] observed by a caller.
+     */
+    @JvmStatic
+    fun getOrPut(
+        key: Long,
+        configuration: Configuration,
+        context: Context? = null,
+        compute: () -> Float,
+    ): Float = resolve(
+        key,
+        DimenMetrics.from(configuration, DimenCalculationPlumbing.isInMultiWindowMode(context)),
+        compute,
+    )
 
     /** Backward compatibility for non-context calls. */
     @JvmStatic
-    inline fun getOrPut(key: Long, crossinline compute: () -> Float): Float =
+    fun getOrPut(key: Long, compute: () -> Float): Float =
         getOrPut(key, null, compute)
 
     /**
@@ -971,14 +844,18 @@ object DimenCache {
      * guardado na tabela; [peek] costuma devolver `null` mesmo após um [getOrPut] bem-sucedido.
      */
     @JvmStatic
-    fun peek(key: Long): Float? {
+    fun peek(key: Long): Float? = peek(key, fallbackMetrics)
+
+    /** Reads an entry from the partition matching [context]'s current window snapshot. */
+    @JvmStatic
+    fun peek(key: Long, context: Context): Float? = peek(key, metricsFor(context))
+
+    /** Reads an entry from one explicit metrics partition. */
+    @JvmStatic
+    fun peek(key: Long, metrics: DimenMetrics): Float? {
         if (!isEnabled) return null
-        val h      = (key xor (key ushr 32)).toInt()
-        val mixed  = h xor (h ushr 16)
-        val shard  = shards[(mixed ushr 9) and SHARD_MASK]
-        val slotIndex = mixed and SHARD_SIZE_MASK
-        val existing = shard.keys.get(slotIndex)
-        return if (existing == key) Float.fromBits(shard.values.get(slotIndex)) else null
+        val entry = snapshotCaches[metrics]?.entries?.get(slotFor(key))
+        return if (entry?.key == key) Float.fromBits(entry.valueBits) else null
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -1021,20 +898,23 @@ object DimenCache {
     ): FloatArray {
         val size    = keys.size
         val results = FloatArray(size)
-        // Tight, index-consecutive loop — maximizes JIT auto-vectorization opportunity
+        // Resolve the environment once. A batch is atomic with respect to the window
+        // snapshot even if a resize arrives while the caller is iterating.
+        val metrics = metricsScope.get() ?: metricsFor(context)
         for (i in 0 until size) {
-            results[i] = getOrPut(keys[i], context) { compute(i) }
+            results[i] = resolve(keys[i], metrics) { compute(i) }
         }
         return results
     }
 
     @JvmStatic
     fun getOrPutAspectRatio(normalizedAr: Float, context: Context? = null): Float {
-        val arKey = ((java.lang.Float.floatToRawIntBits(normalizedAr).toLong() and 0xFFFFFFFFL) shl 31) or
-                (CT_ASPECT_RATIO.toLong() shl 27)
-        return getOrPut(arKey, context) {
-            kotlin.math.ln(normalizedAr)
+        require(normalizedAr.isFinite() && normalizedAr > 0f) {
+            "normalizedAr must be a positive, finite value"
         }
+        // This is executed only while creating a DimenMetrics snapshot. Exact math here
+        // avoids a lossy global lookup table and does not burden a frame-time hot path.
+        return kotlin.math.ln(normalizedAr.toDouble()).toFloat()
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -1048,50 +928,15 @@ object DimenCache {
      */
     @JvmStatic
     fun invalidateOnConfigChange(new: Configuration) {
-        val old = lastConfiguration
-        val snap = ConfigSnapshot.from(new)
-        lastConfiguration = snap
-
-        if (old == null) {
-            updateFactors(new)
-            factors.smallestWidthDp = new.smallestScreenWidthDp
-            clearAll(savedAppContext)
-            return
-        }
-
-        val oldMin = min(old.screenWidthDp, old.screenHeightDp)
-        val oldMax = max(old.screenWidthDp, old.screenHeightDp)
-        val newMin = min(snap.screenWidthDp, snap.screenHeightDp)
-        val newMax = max(snap.screenWidthDp, snap.screenHeightDp)
-
-        // Orientation-only swaps exchange screenWidthDp ↔ screenHeightDp but leave
-        // min/max (and thus all ScreenFactors: scale, arMultiplier, …)
-        // mathematically unchanged. Comparing raw width/height here would clear the
-        // entire 2048-slot cache on every rotation — contradicting the comment below.
-        val physicalChange = oldMin != newMin ||
-                oldMax != newMax ||
-                old.smallestScreenWidthDp != snap.smallestScreenWidthDp ||
-                old.densityDpi != snap.densityDpi
-
-        val fontScaleChange = old.fontScale != snap.fontScale
-
-        if (physicalChange) {
-            updateFactors(new)
-            factors.smallestWidthDp = new.smallestScreenWidthDp
-            // Full wipe (memory + DataStore) via savedAppContext.
-            clearAll(savedAppContext)
-        } else if (fontScaleChange) {
-            // DP / PX / SP_WITH_SCALE do not embed fontScale — keep them.
-            // Only clear ValueTypes that baked fontScale into the stored float.
-            clearFontScaleDependentEntries()
-            persistenceGeneration.incrementAndGet()
-            // Rewrite disk without a full clear so DP entries survive cold start.
-            savedAppContext?.let { saveToPersistence(it) }
-        }
-        // Orientation-only: keys encode isLandscape bit → natural miss, no clear needed.
+        lastConfiguration = ConfigSnapshot.from(new)
+        updateFactors(new)
+        // Snapshot partitions make explicit invalidation unnecessary for correctness.
+        // Keep this API as a compatibility hook, but do not erase other windows' hot
+        // entries whenever one Activity rotates or is resized.
     }
 
     private fun updateFactors(config: Configuration) {
+        fallbackMetrics = DimenMetrics.from(config)
         val metrics = sharedMetricsFrom(config)
         val f = factors
 
@@ -1103,8 +948,9 @@ object DimenCache {
         f.aspectRatioMul = metrics.aspectRatioMul
         f.smallestWidthDp = metrics.smallestWidthDp.toInt()
 
-        // Notify only registered satellites (absent strategies do no work).
-        StrategyFactorRegistry.publish(metrics)
+        // `factors` remains populated only for binary/source compatibility. Production
+        // formulas resolve through currentMetrics, so no process-global strategy update is
+        // published here.
     }
 
     /** EN Clears all cache slots. Java-compatible alias. */
@@ -1138,6 +984,13 @@ object DimenCache {
     @JvmOverloads
     fun clearAll(context: Context? = null) {
         persistenceGeneration.incrementAndGet()
+        // Detaching whole partitions is atomic from the perspective of future lookups:
+        // an in-flight resolver may finish on an old partition, but it can never publish
+        // into the new cache after the clear.
+        snapshotCaches.clear()
+
+        // Legacy arrays are retained only for source compatibility with pre-v4 internal
+        // diagnostics. They are not used by resolution anymore.
         for (s in 0 until SHARD_COUNT) {
             val shard = shards[s]
             val keys  = shard.keys
@@ -1159,18 +1012,7 @@ object DimenCache {
         }
         resetListeners.forEach { it() }
 
-        context?.let { ctx ->
-            diskClearRequested = true
-            if (!persistenceWritesEnabled) return@let
-            val gen = persistenceGeneration.get()
-            scope.launch {
-                try {
-                    // Skip wipe if a newer clear/save generation superseded this one.
-                    if (gen != persistenceGeneration.get()) return@launch
-                    ctx.applicationContext.dataStore.edit { it.clear() }
-                } catch (_: Exception) { }
-            }
-        }
+        if (context != null) diskClearRequested = true
     }
 
     /**
@@ -1181,24 +1023,10 @@ object DimenCache {
      */
     @JvmStatic
     internal fun clearFontScaleDependentEntries() {
-        // ValueType bits [26-24]; ordinals: SP_NO_SCALE=3, SP_PX_WITH_SCALE=4, SP_PX_NO_SCALE=5
-        val spNoScale = ValueType.SP_NO_SCALE.ordinal
-        val spPxWith = ValueType.SP_PX_WITH_SCALE.ordinal
-        val spPxNo = ValueType.SP_PX_NO_SCALE.ordinal
-        for (s in 0 until SHARD_COUNT) {
-            val shard = shards[s]
-            val keys = shard.keys
-            val vals = shard.values
-            for (i in 0 until SHARD_SIZE) {
-                val key = keys.get(i)
-                if (key == 0L) continue
-                val vt = (key ushr 24 and 0x7L).toInt()
-                if (vt == spNoScale || vt == spPxWith || vt == spPxNo) {
-                    keys.lazySet(i, 0L)
-                    vals.lazySet(i, 0)
-                }
-            }
-        }
+        // Font scale is part of DimenMetrics equality. Existing entries therefore cannot
+        // be read by a new font-scale snapshot. Dropping old partitions is bounded and
+        // safer than decoding a partial legacy key format.
+        snapshotCaches.clear()
         resetListeners.forEach { it() }
     }
 
@@ -1209,19 +1037,19 @@ object DimenCache {
     @JvmStatic
     fun stats(): CacheStats {
         var populated = 0
-        for (s in 0 until SHARD_COUNT) {
-            val keys = shards[s].keys
-            for (i in 0 until SHARD_SIZE) {
-                if (keys.get(i) != 0L) populated++
+        for (cache in snapshotCaches.values) {
+            for (i in 0 until SNAPSHOT_CACHE_SIZE) {
+                if (cache.entries.get(i) != null) populated++
             }
         }
         val hits   = hitCount.sum()
         val misses = missCount.sum()
         val total  = hits + misses
+        val capacity = snapshotCaches.size * SNAPSHOT_CACHE_SIZE
         return CacheStats(
-            capacity   = CACHE_SIZE,
+            capacity   = capacity,
             populated  = populated,
-            fillRatio  = populated.toFloat() / CACHE_SIZE,
+            fillRatio  = if (capacity > 0) populated.toFloat() / capacity else 0f,
             hits       = hits,
             misses     = misses,
             evictions  = evictionCount.sum(),

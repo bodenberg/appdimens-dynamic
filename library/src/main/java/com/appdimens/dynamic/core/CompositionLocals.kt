@@ -31,6 +31,13 @@ import kotlinx.coroutines.flow.emptyFlow
 val LocalUiModeType = compositionLocalOf { UiModeType.UNDEFINED }
 
 /**
+ * Per-composition window snapshot. Consumers may use it to avoid repeatedly reading the
+ * broad [LocalConfiguration] state and to keep every dimension in a composition on the same
+ * coherent window snapshot.
+ */
+val LocalDimenMetrics = compositionLocalOf<DimenMetrics?> { null }
+
+/**
  * EN Resolves the [WindowLayoutInfo] flow for [AppDimensProvider]. Always returns a
  * non-null [Flow] so [collectAsState] can be called unconditionally.
  *
@@ -53,6 +60,7 @@ internal fun windowLayoutInfoFlowOrEmpty(activity: Activity?): Flow<WindowLayout
 @Composable
 fun AppDimensProvider(content: @Composable () -> Unit) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
     // Memoize Activity lookup — Context→Activity chain is stable for a given Context.
     val activity = remember(context) { context.findActivity() }
 
@@ -70,6 +78,11 @@ fun AppDimensProvider(content: @Composable () -> Unit) {
     // often re-emits a new feature object with identical state/orientation.
     val uiModeType = remember(
         context,
+        configuration.uiMode,
+        configuration.smallestScreenWidthDp,
+        configuration.screenWidthDp,
+        configuration.screenHeightDp,
+        configuration.densityDpi,
         foldingFeature?.state,
         foldingFeature?.orientation,
         foldingFeature?.isSeparating,
@@ -77,7 +90,23 @@ fun AppDimensProvider(content: @Composable () -> Unit) {
         UiModeType.fromConfiguration(context, foldingFeature)
     }
 
-    CompositionLocalProvider(LocalUiModeType provides uiModeType) {
+    val metrics = remember(
+        configuration.screenWidthDp,
+        configuration.screenHeightDp,
+        configuration.smallestScreenWidthDp,
+        configuration.densityDpi,
+        configuration.fontScale,
+        configuration.orientation,
+        configuration.uiMode,
+        activity?.isInMultiWindowMode,
+    ) {
+        DimenMetrics.from(configuration, activity?.isInMultiWindowMode == true)
+    }
+
+    CompositionLocalProvider(
+        LocalUiModeType provides uiModeType,
+        LocalDimenMetrics provides metrics,
+    ) {
         content()
     }
 }
@@ -98,6 +127,7 @@ fun getCurrentUiModeType(): UiModeType {
         configuration.smallestScreenWidthDp,
         configuration.screenWidthDp,
         configuration.screenHeightDp,
+        configuration.densityDpi,
     ) {
         DimenCache.getCachedUiModeType(context)
     }

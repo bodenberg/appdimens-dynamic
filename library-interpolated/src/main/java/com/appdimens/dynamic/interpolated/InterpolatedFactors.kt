@@ -2,7 +2,6 @@ package com.appdimens.dynamic.interpolated
 
 import com.appdimens.dynamic.core.DesignScaleConstants
 import com.appdimens.dynamic.core.DimenCache
-import com.appdimens.dynamic.core.StrategyFactorRegistry
 
 /**
  * EN Precomputed default-path scale for this satellite; updated only when the
@@ -10,12 +9,7 @@ import com.appdimens.dynamic.core.StrategyFactorRegistry
  * PT Escala pré-computada deste satélite — só atualiza se o módulo estiver no APK.
  */
 internal object InterpolatedFactors {
-    @JvmField @Volatile
-    var scale: Float = 1.0f
-
-    init {
-        StrategyFactorRegistry.register { m ->
-        scale = 1f + (m.smallestWidthDp * DimenCache.INV_BASE_RATIO - 1f) * 0.5f
-        }
-    }
+    /** Derived from the snapshot active for the current resolver call. */
+    val scale: Float
+        get() = 1f + (DimenCache.currentMetrics.smallestWidthDp * DimenCache.INV_BASE_RATIO - 1f) * 0.5f
 }

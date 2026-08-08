@@ -46,9 +46,10 @@ class CoreMathTests {
     }
 
     @Test
-    fun aspectRatioLookup_unknownValue_returnsNull() {
+    fun aspectRatioLookup_largeValue_returnsExactLn() {
         val result = AspectRatioLookup.lookup(99.99f)
-        assertNull(result)
+        assertNotNull(result)
+        assertEquals(kotlin.math.ln(99.99), result!!.toDouble(), 0.001)
     }
 
     @Test
