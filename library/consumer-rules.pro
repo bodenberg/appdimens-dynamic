@@ -154,10 +154,9 @@
 # 7. PARCELIZE / SERIALIZABLE
 #
 #    AppDimens does not currently expose Parcelable or Serializable public types,
-#    but these rules protect any future addition and guard against DataStore's
-#    own serialization edge cases. -keepnames (not -keep) is sufficient here:
-#    we only need to prevent renaming, not removal, for classes the app never
-#    instantiates directly.
+#    but these rules protect any future addition. -keepnames (not -keep) is
+#    sufficient here: we only need to prevent renaming, not removal, for classes
+#    the app never instantiates directly.
 ################################################################################
 
 -keepnames class * implements android.os.Parcelable
@@ -178,18 +177,7 @@
 
 
 ################################################################################
-# 8. DATASTORE
-#
-#    DataStore uses the class name to derive the on-disk preferences file name.
-#    Obfuscating DimenCache would change the file path between builds, causing
-#    the app to lose persisted cache data silently on every update.
-################################################################################
-
--keep class androidx.datastore.** { *; }
-
-
-################################################################################
-# 9. SUPPRESS NOTES — full mode is noisier than compat mode
+# 8. SUPPRESS NOTES — full mode is noisier than compat mode
 #
 #    -dontnote SUPPRESSES MESSAGES ONLY. It does not remove any protection.
 #    These notes appear because android.jar stubs are present in the library

@@ -2,4 +2,8 @@
 
 # currentScale
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentScale](current-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+val [currentScale](current-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+
+EN Convenience accessor: `currentMetrics.scale` — `smallestWidthDp / 300`, derived from the immutable window snapshot active for the current resolution.
+
+PT Acessor de conveniência: `currentMetrics.scale` — derivado do snapshot imutável da janela corrente.

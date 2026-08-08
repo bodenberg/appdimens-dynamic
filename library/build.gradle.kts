@@ -1,15 +1,15 @@
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
-import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
-import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
+//import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
+//import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.net.URI
-import java.util.Properties
+//import java.net.URI
+//import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.vanniktech.maven.publish)
-    alias(libs.plugins.dokka.jetbrains)
+    //alias(libs.plugins.dokka.jetbrains)
 }
 
 val isJitPack = System.getenv("JITPACK") == "true"
@@ -57,7 +57,7 @@ mavenPublishing {
     }
 }
 
-dokka {
+/* dokka {
     dokkaPublications.html {
         moduleName.set("AppDimens SDP, HDP, WDP: Scalable Width and Height Dimensions")
         outputDirectory.set(rootProject.layout.projectDirectory.dir("DOCUMENTATION2"))
@@ -134,11 +134,11 @@ tasks.withType<DokkaGenerateTask>().configureEach {
     doFirst {
         System.setProperty("java.awt.headless", "true")
     }
-}
+}*/
 
 android {
     namespace = "com.appdimens.dynamic"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 24
@@ -199,9 +199,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.core)
-    implementation(libs.androidx.datastore.preferences)
 
-    dokkaPlugin(libs.android.documentation.plugin)
+    //dokkaPlugin(libs.android.documentation.plugin)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)

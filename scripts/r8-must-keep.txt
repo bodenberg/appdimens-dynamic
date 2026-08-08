@@ -1,0 +1,37 @@
+# Must-keep R8 surface — every entry MUST appear (not "removed") in the release
+# usage.txt. One entry per line; '.' matches any other char, '*' a name segment,
+# '**' multiple segments. Hashtags start comments.
+
+# Core cache / plumbing (referenced from inlined @PublishedApi bytecode)
+com.appdimens.dynamic.core.DimenCache
+com.appdimens.dynamic.core.DimenCache$*
+com.appdimens.dynamic.core.DimenMetrics
+com.appdimens.dynamic.core.DesignScaleConstants
+com.appdimens.dynamic.core.AspectRatioLookup
+com.appdimens.dynamic.core.AspectRatioLookupKt
+com.appdimens.dynamic.core.DimenCalculationPlumbing
+com.appdimens.dynamic.core.CompositionLocalsKt
+com.appdimens.dynamic.core.ComposeDimenRememberKt
+com.appdimens.dynamic.core.ResizeMathKt
+com.appdimens.dynamic.core.ResizeBound
+com.appdimens.dynamic.core.ResizeBound$*
+
+# Public builder API (code + compose packages of the core AAR)
+com.appdimens.dynamic.code.*
+com.appdimens.dynamic.compose.*
+com.appdimens.dynamic.common.*
+
+# Satellite public APIs (each module keeps its own packages)
+com.appdimens.dynamic.auto.*
+com.appdimens.dynamic.density.*
+com.appdimens.dynamic.diagonal.*
+com.appdimens.dynamic.fill.*
+com.appdimens.dynamic.fit.*
+com.appdimens.dynamic.fluid.*
+com.appdimens.dynamic.interpolated.*
+com.appdimens.dynamic.logarithmic.*
+com.appdimens.dynamic.percent.*
+com.appdimens.dynamic.perimeter.*
+com.appdimens.dynamic.power.*
+com.appdimens.dynamic.resize.*
+com.appdimens.dynamic.units.*

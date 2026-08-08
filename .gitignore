@@ -41,3 +41,7 @@ DOCUMENTATION2/
 .antigravitycli
 .cursor
 .agent
+
+# Local benchmark artifacts (never commit machine-specific blobs)
+rollout-*.jsonl
+bench-results-*.json

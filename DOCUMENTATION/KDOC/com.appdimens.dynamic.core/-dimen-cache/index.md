@@ -6,13 +6,13 @@ object [DimenCache](index.md)
 
 EN Global, lock-free, shared cache for all AppDimens dimension calculations.
 
-**Thread Safety**: Completely thread-safe. All reads and writes are lock-free using [AtomicLongArray](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicLongArray.html) / [AtomicIntegerArray](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicIntegerArray.html). If two threads write identically-keyed entries simultaneously, the last write wins — always correct because both computed the same value.
+**Thread Safety**: Completely thread-safe. Since 3.1.7 the cache is **partitioned per immutable window snapshot** ([DimenMetrics](../-dimen-metrics/index.md)); each entry is published as a single atomic `CacheEntry` (key + value bits) reference, so concurrent readers can never observe another key's value. The legacy padded shard arrays are retained for source compatibility only.
 
 PT Cache global, lock-free e compartilhado para todos os cálculos de dimensão do AppDimens.
 
 data class [CacheStats](-cache-stats/index.md)(val capacity: [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html), val populated: [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html), val fillRatio: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), val hits: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html) = 0, val misses: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html) = 0, val evictions: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html) = 0, val hitRate: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html) = 0.0f)
 
-EN Cache usage statistics snapshot. The hits, misses, evictions, and hitRate fields are only meaningful when [diagnosticsEnabled](diagnostics-enabled.md) is `true`.
+EN Cache usage statistics snapshot over the active snapshot partitions. The hits, misses, evictions, and hitRate fields are only meaningful when [diagnosticsEnabled](diagnostics-enabled.md) is `true`.
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal enum [CalcType](-calc-type/index.md) : [Enum](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html)<[DimenCache.CalcType](-calc-type/index.md)>
 
@@ -20,23 +20,21 @@ EN Calculation types based on the library's package structure. PT Tipos de cálc
 
 internal class [ScreenFactors](-screen-factors/index.md)
 
-EN Holds all screen-derived scaling factors in an object padded to exceed two ARM64 cache lines (2 × 64 bytes = 128 bytes), ensuring that writes during [updateFactors](update-factors.md) do not invalidate unrelated reads on sibling CPU cores.
+EN Holds all screen-derived scaling factors in an object padded to exceed two ARM64 cache lines (2 × 64 bytes = 128 bytes). Retained for binary/source compatibility — production formulas resolve through [currentMetrics](current-metrics.md).
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal class [ShardWrapper](-shard-wrapper/index.md)(shardSize: [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html))
 
-EN Padded cache shard wrapper that prevents false sharing between shards across CPU cores on ARM64 (cache line = 64 bytes).
+EN Padded cache shard wrapper that prevents false sharing between shards across CPU cores on ARM64 (cache line = 64 bytes). Retained for compatibility with legacy diagnostics.
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal enum [ValueType](-value-type/index.md) : [Enum](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html)<[DimenCache.ValueType](-value-type/index.md)>
 
 EN Dimension type discriminator for the cache key. PT Discriminador de tipo de dimensão para a chave de cache.
 
-@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)private var [_scope](_scope.md): CoroutineScope?
-
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [ADJUSTMENT_SCALE](-a-d-j-u-s-t-m-e-n-t_-s-c-a-l-e.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [CACHE_SIZE](-c-a-c-h-e_-s-i-z-e.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html) = 2048
 
-Number of slots in the primary (Tier-1) fast cache. Must be a power of 2 so that `key and MASK` is a fast modulo.
+Number of slots in the primary (Tier-1) fast cache budget. Must be a power of 2 so that `key and MASK` is a fast modulo.
 
 @[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)internal var [cachedUiMode](cached-ui-mode.md): [UiModeType](../../com.appdimens.dynamic.common/-ui-mode-type/index.md)
 
@@ -54,38 +52,39 @@ Number of slots in the primary (Tier-1) fast cache. Must be a power of 2 so that
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [CT_PERIMETER](-c-t_-p-e-r-i-m-e-t-e-r.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)
 
+@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [CT_POWER](-c-t_-p-o-w-e-r.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)
+
+@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [CT_LOGARITHMIC](-c-t_-l-o-g-a-r-i-t-h-m-i-c.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)
+
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [CT_SCALED](-c-t_-s-c-a-l-e-d.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentArMultiplier](current-ar-multiplier.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+@get:[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)val [currentMetrics](current-metrics.md): [DimenMetrics](../-dimen-metrics/index.md)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentAspectRatioMul](current-aspect-ratio-mul.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+EN The immutable window snapshot active for the current resolution — never a partially updated global factor set.
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentDensity](current-density.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+val [currentArMultiplier](current-ar-multiplier.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
+val [currentAspectRatioMul](current-aspect-ratio-mul.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
+val [currentDensity](current-density.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentLogNormalizedAr](current-log-normalized-ar.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+val [currentLogNormalizedAr](current-log-normalized-ar.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
+val [currentNormalizedAr](current-normalized-ar.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentNormalizedAr](current-normalized-ar.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+val [currentScale](current-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-
-
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentScale](current-scale.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
-
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [currentSmallestWidthDp](current-smallest-width-dp.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)
-
-internal val [Context](https://developer.android.com/reference/kotlin/android/content/Context.html).[dataStore](data-store.md): ERROR CLASS: Symbol not found for DataStore<ERROR CLASS: Symbol not found for Preferences>
+val [currentSmallestWidthDp](current-smallest-width-dp.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)internal var [diagnosticsEnabled](diagnostics-enabled.md): [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)
 
 EN When `true`, hit/miss/eviction counters are incremented on every cache operation. Uses [LongAdder](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/LongAdder.html) for low-contention counting. Disabled by default so production apps pay zero overhead.
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [evictionCount](eviction-count.md): [LongAdder](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/LongAdder.html)
+@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)val [evictionCount](eviction-count.md): [LongAdder](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/LongAdder.html)
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [factors](factors.md): [DimenCache.ScreenFactors](-screen-factors/index.md)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [hitCount](hit-count.md): [LongAdder](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/LongAdder.html)
+@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)val [hitCount](hit-count.md): [LongAdder](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/LongAdder.html)
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [INV_BASE_RATIO](-i-n-v_-b-a-s-e_-r-a-t-i-o.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html) = 0.0033333334f
 
@@ -93,7 +92,7 @@ EN When `true`, hit/miss/eviction counters are incremented on every cache operat
 
 EN Master switch for the cache system. If disabled, all calls will recompute. PT Chave mestre para o sistema de cache. Se desativado, todos os cálculos são refeitos.
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [isInitialized](is-initialized.md): [AtomicBoolean](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicBoolean.html)
+val [isInitialized](is-initialized.md): [AtomicBoolean](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicBoolean.html)
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)internal var [isInitializedFast](is-initialized-fast.md): [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)
 
@@ -101,29 +100,19 @@ Internal flag to avoid [AtomicBoolean.get](https://developer.android.com/referen
 
 internal val [isInitializing](is-initializing.md): [AtomicBoolean](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicBoolean.html)
 
-internal val [KEY_CACHE_DATA](-k-e-y_-c-a-c-h-e_-d-a-t-a.md): ERROR CLASS: Unresolved name: byteArrayPreferencesKey
-
-internal val [KEY_SW_DP](-k-e-y_-s-w_-d-p.md): ERROR CLASS: Unresolved name: intPreferencesKey
-
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [keysArray](keys-array.md): [Array](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html)<[AtomicLongArray](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicLongArray.html)>
 
-EN Backward-compatible accessors — still referenced by DimenCacheTest. These are thin aliases into [shards](shards.md); no extra memory is allocated.
+EN Backward-compatible accessors — still referenced by [DimenCacheTest](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.7/library/src/test/java/com/appdimens/dynamic/core/DimenCacheTest.kt). These are thin aliases into [shards](shards.md); no extra memory is allocated.
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [missCount](miss-count.md): [LongAdder](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/LongAdder.html)
+@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)val [missCount](miss-count.md): [LongAdder](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/LongAdder.html)
 
 private val [resetListeners](reset-listeners.md): [CopyOnWriteArrayList](https://developer.android.com/reference/kotlin/java/util/concurrent/CopyOnWriteArrayList.html)<() -> [Unit](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html)>
-
-private val [saveFlow](save-flow.md): MutableSharedFlow<[Context](https://developer.android.com/reference/kotlin/android/content/Context.html)>
-
-internal val [scope](scope.md): CoroutineScope
-
-private val [scopeLock](scope-lock.md): [Any](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html)
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [SENSITIVITY_DEFAULT](-s-e-n-s-i-t-i-v-i-t-y_-d-e-f-a-u-l-t.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [SHARD_COUNT](-s-h-a-r-d_-c-o-u-n-t.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html) = 4
 
-EN Cache Sharding (Concurrency Partitioning) Split the cache into 4 shards to reduce false sharing and bus contention.
+EN Cache Sharding (Concurrency Partitioning) — legacy layout, split into 4 shards to reduce false sharing and bus contention.
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [SHARD_MASK](-s-h-a-r-d_-m-a-s-k.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)
 
@@ -133,7 +122,7 @@ EN Cache Sharding (Concurrency Partitioning) Split the cache into 4 shards to re
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [shards](shards.md): [Array](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html)<[DimenCache.ShardWrapper](-shard-wrapper/index.md)>
 
-EN Sharded, padded primitive cache storage. Replaces the previous `keysArray` / `valueBitsArray` pair. Each shard is wrapped in a [ShardWrapper](-shard-wrapper/index.md) with 128-byte padding.
+EN Legacy sharded, padded primitive cache storage — retained for source compatibility; resolution uses snapshot partitions.
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [valueBitsArray](value-bits-array.md): [Array](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html)<[AtomicIntegerArray](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicIntegerArray.html)>
 
@@ -141,13 +130,13 @@ EN Sharded, padded primitive cache storage. Replaces the previous `keysArray` / 
 
 EN Registers a listener to be notified when the cache is cleared. PT Registra um listener para ser notificado quando o cache for limpo.
 
-@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [buildKey](build-key.md)(baseValue: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), isLandscape: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), calcType: [DimenCache.CalcType](-calc-type/index.md), qualifier: [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md), inverter: [Inverter](../../com.appdimens.dynamic.common/-inverter/index.md), applyAspectRatio: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), valueType: [DimenCache.ValueType](-value-type/index.md), customSensitivityK: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)? = null): [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [buildKey](build-key.md)(baseValue: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), isLandscape: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), calcType: [DimenCache.CalcType](-calc-type/index.md), qualifier: [DpQualifier](../../com.appdimens.dynamic.common/-dp-qualifier/index.md), inverter: [Inverter](../../com.appdimens.dynamic.common/-inverter/index.md), applyAspectRatio: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), valueType: [DimenCache.ValueType](-value-type/index.md), customSensitivityK: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)? = null): [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html)
 
-Packs all dimension-calculation parameters into a single 64-bit [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html) key.
+Packs all dimension-calculation parameters into a single 64-bit [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html) key. Requires finite inputs.
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [calculateRawScaling](calculate-raw-scaling.md)(baseValue: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), applyAspectRatio: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), customSensitivityK: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)?): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [calculateRawScaling](calculate-raw-scaling.md)(baseValue: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), applyAspectRatio: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), customSensitivityK: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)?): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-EN Unified high-performance scaling engine. Reads from [factors](factors.md) — padded object, guaranteeing that the read of `scale` and `arMultiplier` land on the same cache line as all other factor fields.
+EN Unified scaling engine over the immutable metrics of the current resolution ([currentMetrics](current-metrics.md)).
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [clear](clear.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null)
 
@@ -155,41 +144,51 @@ EN Clears all cache slots. Java-compatible alias.
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[JvmOverloads](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html)fun [clearAll](clear-all.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null)
 
-EN Clears all cache entries using [AtomicLongArray.lazySet](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicLongArray.html#lazyset) / [AtomicIntegerArray.lazySet](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicIntegerArray.html#lazyset) with 4× manual loop unrolling. This avoids issuing a full memory barrier on every element, which is safe because the next [getOrPut](get-or-put.md) will provide the required acquire/release semantics. Thread-safe.
+EN Detaches all snapshot partitions atomically (no disk I/O); legacy shard arrays are zeroed for compatibility.
+
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [clearFontScaleDependentEntries](clear-font-scale-dependent-entries.md)()
+
+EN Compatibility hook — drops all partitions (font scale participates in [DimenMetrics](../-dimen-metrics/index.md) equality).
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [getBatch](get-batch.md)(keys: [LongArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long-array/index.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null, compute: ([Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)) -> [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [FloatArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float-array/index.html)
 
-EN SIMD-friendly batch resolution.
+EN SIMD-friendly batch resolution, atomic with respect to one window snapshot.
 
-@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)internal fun [getCachedUiModeType](get-cached-ui-mode-type.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)): [UiModeType](../../com.appdimens.dynamic.common/-ui-mode-type/index.md)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [getCachedUiModeType](get-cached-ui-mode-type.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)): [UiModeType](../../com.appdimens.dynamic.common/-ui-mode-type/index.md)
 
-@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)inline fun [getOrPut](get-or-put.md)(key: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html), crossinline compute: () -> [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+EN Per-context cached UiModeType via a weak map (no Activity leak).
 
-Backward compatibility for non-context calls.
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [getOrPut](get-or-put.md)(key: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null, compute: () -> [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-EN Reads from the cache or computes (and stores) a new value. **Lock-free.**
+EN Resolves against the window snapshot derived from [context]; a lookup never crosses snapshot partitions. Additional overloads accept an explicit [DimenMetrics](../-dimen-metrics/index.md) or [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html).
 
-@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [getOrPutAspectRatio](get-or-put-aspect-ratio.md)(normalizedAr: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [getOrPutAspectRatio](get-or-put-aspect-ratio.md)(normalizedAr: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [getOrPutInternal](get-or-put-internal.md)(key: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)?, compute: () -> [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+EN Exact `ln()` computed once per snapshot — no lookup table.
 
-EN Non-inline core logic for [getOrPut](get-or-put.md). Separated so that the public inline function does not need access to internal fields of [ShardWrapper](-shard-wrapper/index.md) directly. This function is @PublishedApi, making it visible to the inlined call-sites.
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [getOrPutInternal](get-or-put-internal.md)(key: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)?, compute: () -> [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [init](init.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html))
+EN Compatibility entry point; converts the context to an immutable window snapshot before any cache lookup.
+
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [init](init.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html))
+
+EN Synchronous, window-local initialization (no DataStore, no background I/O).
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [invalidateOnConfigChange](invalidate-on-config-change.md)(new: [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html))
 
-EN Selectively invalidates the cache based on what actually changed in [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html). The previous configuration is tracked internally.
-
-private fun [launchSaveCollector](launch-save-collector.md)(target: CoroutineScope)
+EN Compatibility hook — snapshot partitions make explicit invalidation unnecessary for correctness.
 
 internal fun [loadFromByteArray](load-from-byte-array.md)(data: [ByteArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html))
 
+EN Compatibility no-op (persistence removed in 3.1.7).
+
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [peek](peek.md)(key: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)?
 
-EN Reads a stored cache value without computing a fallback. Returns `null` on a miss.
+EN Reads a stored cache value without computing a fallback. Returns `null` on a miss. Overloads accept a [Context](https://developer.android.com/reference/kotlin/android/content/Context.html) or an explicit [DimenMetrics](../-dimen-metrics/index.md) partition.
 
 private suspend fun [performSave](perform-save.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html))
+
+EN Compatibility no-op.
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [removeResetListener](remove-reset-listener.md)(listener: () -> [Unit](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html))
 
@@ -199,17 +198,33 @@ EN Removes a previously registered reset listener. PT Remove um listener de rese
 
 EN Resets the diagnostic counters (hit, miss, eviction) to zero. PT Zera os contadores de diagnóstico (hit, miss, eviction).
 
-@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [saveToPersistence](save-to-persistence.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html))
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [restartSaveCollectorForTest](restart-save-collector-for-test.md)()
+
+EN Compatibility no-op (result-cache persistence is disabled permanently).
+
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [saveToPersistence](save-to-persistence.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html))
+
+EN Binary-compatible no-op; the result cache is intentionally in-memory and snapshot-scoped.
 
 internal fun [serializeToByteArray](serialize-to-byte-array.md)(): [ByteArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html)
 
+EN Compatibility stub returning an empty blob.
+
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [shutdown](shutdown.md)()
 
-EN Cancels the background persistence scope. Intended for test teardown. The scope is automatically re-created on next use (e.g. [saveToPersistence](save-to-persistence.md)).
+EN No-op — dimension resolution no longer owns a background persistence scope.
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [stats](stats.md)(): [DimenCache.CacheStats](-cache-stats/index.md)
 
+EN Cache usage statistics over the active snapshot partitions.
+
 private fun [updateFactors](update-factors.md)(config: [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html))
+
+EN Compatibility — populates the legacy [factors](factors.md) object and refreshes the fallback snapshot.
+
+internal fun <T> [withCompositionMetrics](with-composition-metrics.md)(metrics: [DimenMetrics](../-dimen-metrics/index.md)?, block: () -> T): T
+
+EN Runs [block] with the supplied snapshot active on the current thread (used by Compose helpers).
 
 ## Types
 
@@ -226,7 +241,6 @@ private fun [updateFactors](update-factors.md)(config: [Configuration](https://d
 
 | Name | Summary |
 |---|---|
-| [_scope](_scope.md) |  |
 | [ADJUSTMENT_SCALE](-a-d-j-u-s-t-m-e-n-t_-s-c-a-l-e.md) |  |
 | [CACHE_SIZE](-c-a-c-h-e_-s-i-z-e.md) |  |
 | [cachedUiMode](cached-ui-mode.md) |  |
@@ -235,17 +249,19 @@ private fun [updateFactors](update-factors.md)(config: [Configuration](https://d
 | [CT_DENSITY](-c-t_-d-e-n-s-i-t-y.md) |  |
 | [CT_DIAGONAL](-c-t_-d-i-a-g-o-n-a-l.md) |  |
 | [CT_INTERPOLATED](-c-t_-i-n-t-e-r-p-o-l-a-t-e-d.md) |  |
+| [CT_LOGARITHMIC](-c-t_-l-o-g-a-r-i-t-h-m-i-c.md) |  |
 | [CT_PERCENT](-c-t_-p-e-r-c-e-n-t.md) |  |
 | [CT_PERIMETER](-c-t_-p-e-r-i-m-e-t-e-r.md) |  |
+| [CT_POWER](-c-t_-p-o-w-e-r.md) |  |
 | [CT_SCALED](-c-t_-s-c-a-l-e-d.md) |  |
 | [currentArMultiplier](current-ar-multiplier.md) |  |
 | [currentAspectRatioMul](current-aspect-ratio-mul.md) |  |
 | [currentDensity](current-density.md) |  |
 | [currentLogNormalizedAr](current-log-normalized-ar.md) |  |
+| [currentMetrics](current-metrics.md) |  |
 | [currentNormalizedAr](current-normalized-ar.md) |  |
 | [currentScale](current-scale.md) |  |
 | [currentSmallestWidthDp](current-smallest-width-dp.md) |  |
-| [dataStore](data-store.md) |  |
 | [diagnosticsEnabled](diagnostics-enabled.md) |  |
 | [evictionCount](eviction-count.md) |  |
 | [factors](factors.md) |  |
@@ -255,14 +271,10 @@ private fun [updateFactors](update-factors.md)(config: [Configuration](https://d
 | [isInitialized](is-initialized.md) |  |
 | [isInitializedFast](is-initialized-fast.md) |  |
 | [isInitializing](is-initializing.md) |  |
-| [KEY_CACHE_DATA](-k-e-y_-c-a-c-h-e_-d-a-t-a.md) |  |
-| [KEY_SW_DP](-k-e-y_-s-w_-d-p.md) |  |
 | [keysArray](keys-array.md) |  |
 | [missCount](miss-count.md) |  |
+| [performSaveCount](perform-save-count.md) |  |
 | [resetListeners](reset-listeners.md) |  |
-| [saveFlow](save-flow.md) |  |
-| [scope](scope.md) |  |
-| [scopeLock](scope-lock.md) |  |
 | [SENSITIVITY_DEFAULT](-s-e-n-s-i-t-i-v-i-t-y_-d-e-f-a-u-l-t.md) |  |
 | [SHARD_COUNT](-s-h-a-r-d_-c-o-u-n-t.md) |  |
 | [SHARD_MASK](-s-h-a-r-d_-m-a-s-k.md) |  |
@@ -281,6 +293,7 @@ private fun [updateFactors](update-factors.md)(config: [Configuration](https://d
 | [calculateRawScaling](calculate-raw-scaling.md) |  |
 | [clear](clear.md) |  |
 | [clearAll](clear-all.md) |  |
+| [clearFontScaleDependentEntries](clear-font-scale-dependent-entries.md) |  |
 | [getBatch](get-batch.md) |  |
 | [getCachedUiModeType](get-cached-ui-mode-type.md) |  |
 | [getOrPut](get-or-put.md) |  |
@@ -288,14 +301,15 @@ private fun [updateFactors](update-factors.md)(config: [Configuration](https://d
 | [getOrPutInternal](get-or-put-internal.md) |  |
 | [init](init.md) |  |
 | [invalidateOnConfigChange](invalidate-on-config-change.md) |  |
-| [launchSaveCollector](launch-save-collector.md) |  |
 | [loadFromByteArray](load-from-byte-array.md) |  |
 | [peek](peek.md) |  |
 | [performSave](perform-save.md) |  |
 | [removeResetListener](remove-reset-listener.md) |  |
 | [resetDiagnostics](reset-diagnostics.md) |  |
+| [restartSaveCollectorForTest](restart-save-collector-for-test.md) |  |
 | [saveToPersistence](save-to-persistence.md) |  |
 | [serializeToByteArray](serialize-to-byte-array.md) |  |
 | [shutdown](shutdown.md) |  |
 | [stats](stats.md) |  |
 | [updateFactors](update-factors.md) |  |
+| [withCompositionMetrics](with-composition-metrics.md) |  |

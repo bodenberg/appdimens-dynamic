@@ -2,4 +2,4 @@
 
 # evictionCount
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [evictionCount](eviction-count.md): [LongAdder](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/LongAdder.html)
+@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)val [evictionCount](eviction-count.md): [LongAdder](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/LongAdder.html)

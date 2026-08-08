@@ -2,10 +2,14 @@
 
 # lookup
 
-fun [lookup](lookup.md)(normalizedAr: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)?
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [lookup](lookup.md)(normalizedAr: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)?
 
-Binary search with tolerance. O(log n) ≈ 7 comparisons for 111 entries.
+EN Exact natural logarithm, kept for source compatibility. The function deliberately does not approximate: a dimension resolver must be deterministic for every valid window ratio.
 
-`ln(normalizedAr)` from the table, or `null` if not within tolerance.
+Returns `ln(normalizedAr)` when [normalizedAr](lookup.md) is positive and finite, otherwise `null` (callers such as [fastLn](../fast-ln.md) fall back to a neutral value).
 
-`currentAr / 1.78f`
+PT Logaritmo natural exato, mantido por compatibilidade de fonte. Não aproxima: o resolvedor de dimensões deve ser determinístico para toda razão de janela válida.
+
+`currentAr / 1.78f` — the normalized aspect ratio
+
+natural log of [normalizedAr](lookup.md), or `null` for invalid input

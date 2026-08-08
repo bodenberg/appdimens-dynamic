@@ -20,7 +20,7 @@ Mathematically, for the current window:
 
 **Implementation note:** `scale` is derived from the immutable per-window snapshot (`DimenCache.currentMetrics`) at resolution time — no process-global pre-computation. The steps above describe what that factor represents; the default path does not recompute `√(shorter² + longer²)` on every call.
 
-- With **`a`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr` (also derived from cached screen factors).
+- With **`a`**: multiply by the per-window aspect-ratio factor (`DimenCache.currentAspectRatioMul`, derived in the immutable `DimenMetrics` snapshot); custom sensitivity uses `1 + k × logNormalizedAr`.
 
 Implementation: `calculateDiagonalDpCompose` in `DimenDiagonalDp.kt`.
 

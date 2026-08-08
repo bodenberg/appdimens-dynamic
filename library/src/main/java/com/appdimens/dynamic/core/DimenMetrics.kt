@@ -47,22 +47,71 @@ data class DimenMetrics(
     val density: Float = (densityDpi.toFloat() / 160f).takeIf { it.isFinite() && it > 0f } ?: 1f
     val scale: Float = smallestWidthDp * DimenCache.INV_BASE_RATIO
 
-    val normalizedAspectRatio: Float = run {
+    val normalizedAspectRatio: Float by lazy {
         val raw = if (minDimensionDp > 0f) maxDimensionDp / minDimensionDp else 1f
         (raw / DesignScaleConstants.REFERENCE_ASPECT_RATIO)
             .takeIf { it.isFinite() && it > 0f }
             ?: 1f
     }
 
-    /** Exact natural logarithm, computed once per snapshot rather than on the hot path. */
-    val logNormalizedAspectRatio: Float = ln(normalizedAspectRatio.toDouble()).toFloat()
+    /** Exact natural logarithm — computed only when an AR multiplier is actually read. */
+    val logNormalizedAspectRatio: Float by lazy {
+        ln(normalizedAspectRatio.toDouble()).toFloat()
+    }
 
-    val defaultAspectRatioMultiplier: Float =
+    val defaultAspectRatioMultiplier: Float by lazy {
         1f + DimenCache.SENSITIVITY_DEFAULT * logNormalizedAspectRatio
+    }
 
-    val defaultScaledAspectRatioMultiplier: Float =
+    val defaultScaledAspectRatioMultiplier: Float by lazy {
         1f + (smallestWidthDp - DesignScaleConstants.BASE_WIDTH_DP) *
             (DimenCache.ADJUSTMENT_SCALE + DimenCache.SENSITIVITY_DEFAULT * logNormalizedAspectRatio)
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // SATELLITE FACTORS — computed at most once per snapshot, only when read.
+    //
+    // Power / logarithmic / diagonal / interpolated / perimeter satellites used to
+    // re-evaluate `Math.pow` / `ln` / `sqrt` on every read of their factor (even on
+    // the bypass path). These are pure functions of the fields above, so they are
+    // memoized on the snapshot (`by lazy`): a snapshot that never touches a satellite
+    // factor pays nothing, and one that does pays the transcendental math once per
+    // snapshot instead of once per call. They are deliberately NOT part of the
+    // primary constructor: Kotlin equality (the cache partition key) must only cover
+    // the raw window inputs, never derived values.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /** `(sw / 300)^0.75` — power satellite default-path scale. */
+    val powerScale: Float by lazy {
+        Math.pow((smallestWidthDp / DesignScaleConstants.BASE_WIDTH_DP).toDouble(), 0.75).toFloat()
+    }
+
+    /** `1 + (sw * INV_BASE_RATIO - 1) * 0.5` — interpolated satellite default-path scale. */
+    val interpolatedScale: Float by lazy {
+        1f + (smallestWidthDp * DimenCache.INV_BASE_RATIO - 1f) * 0.5f
+    }
+
+    /** `√(min² + max²) / BASE_DIAGONAL` — diagonal satellite default-path scale. */
+    val diagonalScale: Float by lazy {
+        kotlin.math.sqrt(minDimensionDp * minDimensionDp + maxDimensionDp * maxDimensionDp) /
+            DesignScaleConstants.BASE_DIAGONAL_DP
+    }
+
+    /** `(min + max) / BASE_PERIMETER` — perimeter satellite default-path scale. */
+    val perimeterScale: Float by lazy {
+        (minDimensionDp + maxDimensionDp) / DesignScaleConstants.BASE_PERIMETER_DP
+    }
+
+    /** Logarithmic satellite default-path scale (matches its historical when-chain). */
+    val logarithmicScale: Float by lazy {
+        when {
+            smallestWidthDp > DesignScaleConstants.BASE_WIDTH_DP ->
+                1f + 0.4f * kotlin.math.ln(smallestWidthDp * DimenCache.INV_BASE_RATIO)
+            smallestWidthDp > 0f ->
+                1f - 0.4f * kotlin.math.ln(DesignScaleConstants.BASE_WIDTH_DP / smallestWidthDp)
+            else -> 1f
+        }
+    }
 
     /**
      * Multiplier used by the scaled SDP/SSP path.  Invalid sensitivities are rejected

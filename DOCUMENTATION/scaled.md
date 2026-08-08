@@ -13,7 +13,7 @@ API catalog: [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md) · modules
 
 - Read the effective axis in dp (after orientation **inverters**, if any).
 - **Without** `applyAspectRatio` (`a` / `ia`): result ≈ `base × (dim / 300)` — factor `1/300` (`INV_BASE_RATIO` in `DimenCache`).
-- **With** `applyAspectRatio`: uses `DimenCache.calculateRawScaling`, which combines deviation from 300 dp with adjustment from **pre-computed** screen factors (`arMultiplier`, `logNormalizedAr` in `ScreenFactors`, updated on configuration change).
+- **With** `applyAspectRatio`: uses `DimenCache.calculateRawScaling`, which combines deviation from 300 dp with the **per-window** aspect-ratio adjustment derived in the immutable `DimenMetrics` snapshot (`logNormalizedAr`, `defaultScaledAspectRatioMultiplier`), read via `DimenCache.currentMetrics` at resolution time.
 - With `ignoreMultiWindows` (`i` / `ia`) and the multi-window heuristic active: returns the **raw base** value (no scaling).
 - Reference constant: `BASE_WIDTH_DP = 300f` in `DesignScaleConstants` (which axis is used depends on the qualifier).
 

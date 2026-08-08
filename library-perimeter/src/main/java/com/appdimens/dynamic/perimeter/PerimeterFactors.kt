@@ -1,6 +1,5 @@
 package com.appdimens.dynamic.perimeter
 
-import com.appdimens.dynamic.core.DesignScaleConstants
 import com.appdimens.dynamic.core.DimenCache
 
 /**
@@ -9,8 +8,7 @@ import com.appdimens.dynamic.core.DimenCache
  * PT Escala derivada do snapshot da janela corrente — só existe se o módulo estiver no APK.
  */
 internal object PerimeterFactors {
-    /** Derived from the snapshot active for the current resolver call. */
+    /** Memoized on the snapshot; one div per DimenMetrics instead of per call. */
     val scale: Float
-        get() = (DimenCache.currentMetrics.minDimensionDp + DimenCache.currentMetrics.maxDimensionDp) /
-            DesignScaleConstants.BASE_PERIMETER_DP
+        get() = DimenCache.currentMetrics.perimeterScale
 }

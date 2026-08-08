@@ -12,7 +12,7 @@ Applies [Inverter](../com.appdimens.dynamic.common/-inverter/index.md) rules to 
 
 If [ignoreMultiWindows](calculate-density-dp.md) is `true`, detects split-screen mode via layout flags; if active, returns [baseValue](calculate-density-dp.md) unchanged so the UI does not over-scale inside a small window.
 
-For the common path (`SMALL_WIDTH` + `DEFAULT` inverter + no custom sensitivity), delegates to [DimenCache.calculateRawScaling](../com.appdimens.dynamic.core/-dimen-cache/calculate-raw-scaling.md) which reads pre-computed factors from [DimenCache.ScreenFactors](../com.appdimens.dynamic.core/-dimen-cache/-screen-factors/index.md) — a single float multiply, zero extra allocations.
+For the common path (`SMALL_WIDTH` + `DEFAULT` inverter + no custom sensitivity), delegates to [DimenCache.calculateRawScaling](../com.appdimens.dynamic.core/-dimen-cache/calculate-raw-scaling.md) which reads the pre-computed multiplier from the immutable [DimenMetrics](../com.appdimens.dynamic.core/-dimen-metrics/index.md) window snapshot ([DimenCache.currentMetrics](../com.appdimens.dynamic.core/-dimen-cache/current-metrics.md)) — a single float multiply, zero extra allocations.
 
 For other qualifiers or a custom sensitivity constant, reads the screen dimension from [android.content.res.Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html) and performs the scaling formula inline.
 

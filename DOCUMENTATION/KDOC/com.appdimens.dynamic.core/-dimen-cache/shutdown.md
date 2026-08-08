@@ -4,6 +4,6 @@
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [shutdown](shutdown.md)()
 
-EN Cancels the background persistence scope. Intended for test teardown. The scope is automatically re-created on next use (e.g. [saveToPersistence](save-to-persistence.md)).
+EN No-op since 3.1.7 — dimension resolution no longer owns a background persistence scope (the persistent result cache was removed). Retained for source compatibility with older test teardown code.
 
-PT Cancela o escopo de persistência em background. Destinado a teardown de testes. O escopo é recriado automaticamente no próximo uso.
+PT No-op desde a 3.1.7 — a resolução de dimensões não possui mais escopo de persistência em background (a persistência foi removida). Mantido para compatibilidade com teardown de testes antigos.

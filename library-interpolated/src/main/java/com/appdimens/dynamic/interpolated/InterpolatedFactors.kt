@@ -1,6 +1,5 @@
 package com.appdimens.dynamic.interpolated
 
-import com.appdimens.dynamic.core.DesignScaleConstants
 import com.appdimens.dynamic.core.DimenCache
 
 /**
@@ -9,7 +8,7 @@ import com.appdimens.dynamic.core.DimenCache
  * PT Escala derivada do snapshot da janela corrente — só existe se o módulo estiver no APK.
  */
 internal object InterpolatedFactors {
-    /** Derived from the snapshot active for the current resolver call. */
+    /** Memoized on the snapshot; identical math, computed once per DimenMetrics. */
     val scale: Float
-        get() = 1f + (DimenCache.currentMetrics.smallestWidthDp * DimenCache.INV_BASE_RATIO - 1f) * 0.5f
+        get() = DimenCache.currentMetrics.interpolatedScale
 }

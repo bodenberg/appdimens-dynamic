@@ -482,7 +482,11 @@ object DimenCache {
         metrics: DimenMetrics,
         compute: () -> Float,
     ): Float {
-        if (!isEnabled || shouldBypassCache(key)) {
+        // Custom-K keys only encode 16 bits of the 32-bit float (buildKey). Two different
+        // K values could alias one slot and answer with the other's result, so they are
+        // computed exactly on every call — never stored, never peek-able. This is also
+        // cheaper than the previous path, which allocated a snapshot partition per call.
+        if (!isEnabled || hasCustomSensitivityKey(key) || shouldBypassCache(key)) {
             return withMetrics(metrics, compute)
         }
 
@@ -738,6 +742,20 @@ object DimenCache {
         resolve(key, metricsScope.get() ?: metricsFor(context), compute)
 
     /**
+     * EN Returns `true` when the packed [key] carries a custom sensitivity K. Only 16
+     * bits of the 32-bit float fit in the key (`buildKey`), so two different K values
+     * can alias the same key — a cached entry could then answer with the *other* K's
+     * result. Custom-K calls therefore always compute exactly and never write the cache.
+     *
+     * PT Verdadeiro quando a [key] empacota um sensibilidade custom. Só 16 dos 32 bits
+     * do float cabem na chave; dois Ks distintos podem colidir — por isso K customizado
+     * sempre computa exatamente e nunca grava no cache.
+     */
+    @JvmStatic
+    internal fun hasCustomSensitivityKey(key: Long): Boolean =
+        (key ushr 8 and 0xFFFFL).toInt() != 0xFFFF
+
+    /**
      * EN Returns `true` when [getOrPut] should skip the snapshot cache and call `compute()`
      * directly. Covers simple no-AR multipliers **and** the default AR path where the
      * multiplier is already derived in the [DimenMetrics] snapshot — equally cheap as
@@ -753,10 +771,10 @@ object DimenCache {
     internal fun shouldBypassCache(key: Long): Boolean {
         val ct = (key ushr 27 and 0xFL).toInt()
         val hasAr = (key ushr 63) != 0L
-        val hasCustomK = (key ushr 8 and 0xFFFFL).toInt() != 0xFFFF
+        val hasCustomK = hasCustomSensitivityKey(key)
 
-        // Custom K only fits 16 bits in the key — never bypass; compute exactly each time
-        // or store via the snapshot cache so distinct floats cannot alias.
+        // Custom K only fits 16 bits in the key — never bypass; [resolve] computes it
+        // exactly every time. distinct floats cannot alias.
         if (hasCustomK) return false
 
         val isAlwaysBypassType = ct == CT_PERCENT || ct == CT_SCALED || ct == CT_DENSITY ||
@@ -890,16 +908,34 @@ object DimenCache {
         keys: LongArray,
         context: Context? = null,
         compute: (Int) -> Float
+    ): FloatArray = getBatch(keys, FloatArray(keys.size), context, compute)
+
+    /**
+     * EN Zero-allocation batch resolution: writes into [destination] (which must be at
+     * least [keys].size long and is returned as-is), so list adapters / producers can
+     * reuse one buffer across frames instead of allocating a [FloatArray] per call.
+     *
+     * PT Resolução em lote sem alocação: grava em [destination] (deve ter pelo menos
+     * [keys].size e é devolvido intacto), permitindo reutilizar um buffer entre frames.
+     */
+    @JvmStatic
+    fun getBatch(
+        keys: LongArray,
+        destination: FloatArray,
+        context: Context? = null,
+        compute: (Int) -> Float
     ): FloatArray {
-        val size    = keys.size
-        val results = FloatArray(size)
+        val size = keys.size
+        require(destination.size >= size) {
+            "destination must hold at least ${keys.size} values (got ${destination.size})"
+        }
         // Resolve the environment once. A batch is atomic with respect to the window
         // snapshot even if a resize arrives while the caller is iterating.
         val metrics = metricsScope.get() ?: metricsFor(context)
         for (i in 0 until size) {
-            results[i] = resolve(keys[i], metrics) { compute(i) }
+            destination[i] = resolve(keys[i], metrics) { compute(i) }
         }
-        return results
+        return destination
     }
 
     @JvmStatic

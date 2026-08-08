@@ -10,6 +10,7 @@
 | [AutoResizePercentBasis](-auto-resize-percent-basis/index.md) |  |
 | [DesignScaleConstants](-design-scale-constants/index.md) |  |
 | [DimenCache](-dimen-cache/index.md) |  |
+| [DimenMetrics](-dimen-metrics/index.md) |  |
 | [DimenCalculationPlumbing](-dimen-calculation-plumbing/index.md) |  |
 | [ResizeAxisQualifier](-resize-axis-qualifier/index.md) |  |
 | [ResizeBound](-resize-bound/index.md) |  |
@@ -20,6 +21,7 @@
 
 | Name | Summary |
 |---|---|
+| [LocalDimenMetrics](local-dimen-metrics.md) |  |
 | [LocalUiModeType](-local-ui-mode-type.md) |  |
 | [MAX_RESIZE_STEPS](-m-a-x_-r-e-s-i-z-e_-s-t-e-p-s.md) |  |
 
@@ -40,6 +42,8 @@
 | [pxRememberStamp](px-remember-stamp.md) |  |
 | [rememberDimenDp](remember-dimen-dp.md) |  |
 | [rememberDimenPxFromDp](remember-dimen-px-from-dp.md) |  |
+| [rememberDimenSp](remember-dimen-sp.md) |  |
+| [rememberDimenSpPx](remember-dimen-sp-px.md) |  |
 | [resizeFixedDp](resize-fixed-dp.md) |  |
 | [resizeFixedSp](resize-fixed-sp.md) |  |
 | [resizePercentH](resize-percent-h.md) |  |
@@ -47,3 +51,4 @@
 | [resizePercentW](resize-percent-w.md) |  |
 | [resolveToPx](resolve-to-px.md) |  |
 | [scaledEntryRememberStamp](scaled-entry-remember-stamp.md) |  |
+| [spRememberStamp](sp-remember-stamp.md) |  |

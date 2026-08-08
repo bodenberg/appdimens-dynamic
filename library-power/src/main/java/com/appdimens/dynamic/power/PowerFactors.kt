@@ -1,6 +1,5 @@
 package com.appdimens.dynamic.power
 
-import com.appdimens.dynamic.core.DesignScaleConstants
 import com.appdimens.dynamic.core.DimenCache
 
 /**
@@ -9,10 +8,10 @@ import com.appdimens.dynamic.core.DimenCache
  * PT Escala derivada do snapshot da janela corrente — só existe se o módulo estiver no APK.
  */
 internal object PowerFactors {
-    /** Derived from the snapshot active for the current resolver call. */
+    /**
+     * Memoized on the snapshot: `Math.pow` runs at most once per DimenMetrics,
+     * never once per call (previous behavior penalized the bypass path).
+     */
     val scale: Float
-        get() {
-            val ratio = DimenCache.currentMetrics.smallestWidthDp / DesignScaleConstants.BASE_WIDTH_DP
-            return Math.pow(ratio.toDouble(), 0.75).toFloat()
-        }
+        get() = DimenCache.currentMetrics.powerScale
 }

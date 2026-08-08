@@ -2,13 +2,13 @@
 
 # fastLn
 
-inline fun [fastLn](fast-ln.md)(normalizedAr: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
+fun [fastLn](fast-ln.md)(normalizedAr: [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 
-EN Fast natural-logarithm via binary-search lookup table, falling back to the intrinsic `ln()`.
+EN Exact natural logarithm with a safe neutral fallback for invalid configuration input.
 
-Because the result is stored in `remember()`, this function is called **at most once per configuration change** per composable. The lookup pays for itself on devices that trigger many simultaneous recompositions (e.g. orientation flip with a large Lazy list).
+Since 3.1.7 the aspect-ratio factor is computed as a deterministic `ln()` once per [DimenMetrics](-dimen-metrics/index.md) snapshot — the hand-maintained binary-search lookup table was removed, so two nearby window ratios can never collapse to the same approximated result. Returns `0f` when [normalizedAr](fast-ln.md) is not a positive finite value (neutral multiplier `1 + k·0`).
 
-PT Logaritmo natural rápido via tabela de busca binária, com fallback para `ln()` intrínseco.
+PT Logaritmo natural exato com fallback neutro seguro para configurações inválidas. A tabela de busca binária foi removida na 3.1.7.
 
 natural log of [normalizedAr](fast-ln.md)
 

@@ -204,14 +204,18 @@ class DimenCacheTest {
         assertEquals(16f, DimenCache.getOrPut(keyScaledAr) { 16f }, 0f)
         assertNull("default AR SCALED must bypass shard storage", DimenCache.peek(keyScaledAr))
 
-        // Custom sensitivity → full cache path.
+        // Custom sensitivity → compute-always (never stored). Only 16 bits of the
+        // 32-bit K fit the packed key, so caching could alias two different K values.
         val keyCustomSens = DimenCache.buildKey(
             17, false, false, DimenCache.CalcType.SCALED,
             DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP,
             customSensitivityK = 0.5f
         )
         assertEquals(17f, DimenCache.getOrPut(keyCustomSens) { 17f }, 0f)
-        assertEquals(17f, DimenCache.peek(keyCustomSens) ?: -1f, 0f)
+        assertNull(
+            "custom-K results must never be cached (16-bit key aliasing)",
+            DimenCache.peek(keyCustomSens)
+        )
 
         // Non-default qualifier → full cache path.
         val keyWidthAr = DimenCache.buildKey(
@@ -224,6 +228,37 @@ class DimenCacheTest {
         // CT_ASPECT_RATIO ln is computed exactly at snapshot time — not result-cached.
         val arLn = DimenCache.getOrPutAspectRatio(1.5f)
         assertEquals(kotlin.math.ln(1.5f), arLn, 0.001f)
+    }
+
+    @Test
+    fun testCustomSensitivityCollisionReturnsExactResult() {
+        DimenCache.clearAll()
+        DimenCache.isEnabled = true
+
+        // Two DIFFERENT K values whose 32-bit float representations share the same
+        // top 16 bits → identical packed cache keys (the 16-bit key aliasing problem).
+        val k1 = Float.fromBits(0x3F800000) // 1.0f
+        val k2 = Float.fromBits(0x3F800100) // 1.0f + 1/32768 ≈ 1.0000305f (same top 16 bits)
+        fun key(k: Float) = DimenCache.buildKey(
+            10f, false, false, DimenCache.CalcType.SCALED,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP,
+            customSensitivityK = k
+        )
+        val key1 = key(k1)
+        val key2 = key(k2)
+        assertEquals(
+            "fixture assumption: both K values must alias one 16-bit key",
+            key1, key2
+        )
+
+        // Each call must compute with ITS OWN K — never answer with the other's result.
+        val r1 = DimenCache.getOrPut(key1) { 10f * k1 }
+        val r2 = DimenCache.getOrPut(key2) { 10f * k2 }
+        assertEquals(10f * k1, r1, 0f)
+        assertEquals(10f * k2, r2, 0f)
+        assertNotEquals("collided keys must not alias results", r1, r2)
+        assertNull("custom-K values are never cached", DimenCache.peek(key1))
+        assertNull("custom-K values are never cached", DimenCache.peek(key2))
     }
 
     @Test
