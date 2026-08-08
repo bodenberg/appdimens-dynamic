@@ -1,7 +1,7 @@
 # Project Design Document (PDR) — AppDimens Dynamic
 
 > [!NOTE]
-> **Version:** `3.1.6` — modules: [MODULES.md](MODULES.md)
+> **Version:** `3.1.7` — modules: [MODULES.md](MODULES.md)
 > **Related:** [PRD](PRD.md) · [Mathematics](MATHEMATICS-AND-CALCULUS.md) · [Performance](../library/PERFORMANCE.md) · [README](../README.md)
 
 This internal architecture document mandates the precise structural logic, technical dependencies, caching behaviors, and quality integration required by the AppDimens Dynamic library modules.
@@ -14,7 +14,7 @@ This internal architecture document mandates the precise structural logic, techn
 
 | Subsystem Domain | Gradle / Maven | Crucial Topologies | Active Verification Gates |
 |:---|:---|:---|:---|
-| `core` / `common` | `:library` / `appdimens-dynamic` | `DimenCache`, `StrategyFactorRegistry`, `DpQualifier` | `DimenCacheTest`, `StrategyFactorRegistryTest`, `DimenPerformanceTest` |
+| `core` / `common` | `:library` / `appdimens-dynamic` | `DimenCache`, `DimenMetrics`, `DpQualifier` | `DimenCacheTest`, `StrategyFactorRegistryTest`, `DimenPerformanceTest` |
 | `compose`/`code` scaled + `plain` | `:library` / `appdimens-dynamic` | `DimenSdp*`, `DimenPlainBranch` | `DimenPlainBranchTest` |
 | `compose.percent` / `code.percent` | `:library-percent` | `DimenPercentSpace`, `*PlainPx` | `PercentFormulasTest` |
 | geometric (`diagonal`/`perimeter`/`fit`/`fill`) | respective `:library-*` | strategy `*Dp` / `*Extensions` | `DiagonalFormulasTest` (+ peer formula tests) |
@@ -61,14 +61,14 @@ flowchart TD
 > [!IMPORTANT]
 > **Architectural Invariant:** Code/Modules defined as `compose.<strategy>` **must never** intersect or implicitly construct elements of a differing strategy module. Code routing is strict: `strategy` \(\rightarrow\) `core` \(\rightarrow\) `common`. Satellites depend **only** on the principal artifact — never on each other.
 
-### 2.0 Maven / Gradle module graph (3.1.6)
+### 2.0 Maven / Gradle module graph (3.1.7)
 
 | Gradle project | Maven coordinate | Contents |
 |---|---|---|
-| `:library` | `appdimens-dynamic` | `common`, `core` (+ `StrategyFactorRegistry`), `code.plain`, scaled |
+| `:library` | `appdimens-dynamic` | `common`, `core` (+ `DimenMetrics`, `StrategyFactorRegistry` compat), `code.plain`, scaled |
 | `:library-<strategy>` | `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` |
 
-Strategy-specific precomputed scales (diagonal/power/log/interpolated/perimeter) register via [`StrategyFactorRegistry`](../library/src/main/java/com/appdimens/dynamic/core/StrategyFactorRegistry.kt) so absent satellites do no work in `updateFactors()`.
+Strategy-specific scales (diagonal/power/log/interpolated/perimeter) are derived lazily from the immutable per-window snapshot (`DimenCache.currentMetrics`) at resolution time, so absent satellites do no work and each window is scaled independently. `StrategyFactorRegistry` remains as a source-compatibility hook only.
 
 `CalcType` ordinals remain fixed in core for cache-key stability even when a satellite is not on the classpath.
 
@@ -78,7 +78,7 @@ Strategy-specific precomputed scales (diagonal/power/log/interpolated/perimeter)
 
 * **64-bit Payload Signature:** Keys generated using a complex boolean flag logic including parameters: `applyAspectRatio`, `baseValue(float_bits)`, `CalcType_Enum`, `DpQualifier`, and `multiWindowConstraints`. 
 * **State Bypass Architecture:** `shouldBypassCache` skips shard writes for multiply-only / default-path types (see [library/PERFORMANCE.md](../library/PERFORMANCE.md)).
-* **Volatility Pre-rendering:** Shared `ScreenFactors` update on configuration change; strategy scales update only in registered satellites via `StrategyFactorRegistry`.
+* **Snapshot Pre-rendering:** The immutable `DimenMetrics` snapshot (size, density, font scale, orientation, ui mode, multi-window) is built once per window/configuration change; shared factors (`scale`, AR, density) and satellite strategy scales are derived from it. `ScreenFactors` is retained only for binary/source compatibility.
 
 ---
 
@@ -105,7 +105,7 @@ sequenceDiagram
 ## 4. Development Quality & Reliability Matrix
 
 ### 4.1 Release Constraints
-1. **Module Artifacting:** Each Gradle module publishes at `appdimens.version` (`3.1.6`). Coordinates: principal `appdimens-dynamic`, strategy modules `appdimens-dynamic-<strategy>`, BOM `appdimens-dynamic-bom`. See [MODULES.md](MODULES.md).
+1. **Module Artifacting:** Each Gradle module publishes at `appdimens.version` (`3.1.7`). Coordinates: principal `appdimens-dynamic`, strategy modules `appdimens-dynamic-<strategy>`, BOM `appdimens-dynamic-bom`. See [MODULES.md](MODULES.md).
 2. **Obfuscation Integrity:** Per-AAR ProGuard consumer rules (`consumer-rules.pro`) ensure public API parity and runtime stability; satellites keep strategy packages, principal keeps core/scaled/plain. 
 
 ### 4.2 Known Technical Risk Mapping
@@ -114,7 +114,7 @@ sequenceDiagram
 |:---|:---|
 | **ARM64 Cache Desynchronization** | Cache primitives strictly tagged with `@Volatile`. Active concurrency verified in `DimenCacheRaceTest`. |
 | **R8 Heavy Obfuscation Stripping** | Dedicated consumer rules preserving reflection vectors unstripped (Refer to [R8-PROGUARD.md](../R8-PROGUARD.md)) |
-| **Dokka HTML API Drift** | Scripts provided locally `scripts/sync_kdoc_from_dokka_html.py` correct `ERROR CLASS` issues caused by Jetpack Compose compiler nuances. |
+| **Dokka HTML API Drift** | Dokka output is generated locally into the git-ignored `DOCUMENTATION2/` directory; committed `KDOC/` pages are a snapshot that may lag the source. |
 
 ---
 
@@ -123,6 +123,6 @@ sequenceDiagram
 When modifying structural parameters or curves, engineers must ensure the following baseline protocols are met prior to merging PRs:
 - [ ] Ensure **Code/Compose Parity**. Modify the `code` extension symmetrically when introducing a new Compose builder.
 - [ ] Execute `./gradlew :library:testDebugUnitTest` plus affected `:library-<strategy>:testDebugUnitTest` and visually cross-check output against `DimenPerformanceTest`.
-- [ ] If mutating shared `ScreenFactors`, update `DimenCache` and [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md). Strategy scales belong in satellite `*Factors` + `StrategyFactorRegistry` — do not reintroduce them on `ScreenFactors`.
+- [ ] `DimenMetrics` is the source of truth for a resolution; update [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) when changing derived factors. Strategy scales belong in satellite `*Factors` read from `DimenCache.currentMetrics` — do not reintroduce process-global state.
 - [ ] Confirm satellites depend only on `:library`; BOM publishes version constraints only.
 - [ ] Smoke: main `classes.jar` must not contain other strategy packages (`compose.percent`, …).

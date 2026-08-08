@@ -30,10 +30,12 @@ This report provides a deep technical analysis of the AppDimens Dynamic library 
 
 ## 1. Architectural Overview
 
+> **3.1.7 note:** the shard-table measurements below predate the 3.1.7 cache rework. Since 3.1.7 the in-memory cache is **snapshot-partitioned** (keyed by the immutable `DimenMetrics` window snapshot, entries published as atomic `CacheEntry` references) and the persistent result cache was removed; the sharded arrays are retained for compatibility only.
+
 The library features a **Lock-Free Padded Sharded Cache** architecture with an intelligent **Fast Bypass Layer**. 
 - **Padded Sharding**: Each cache shard is isolated with 128-byte padding to eliminate **False Sharing** between CPU cores (ARM64).
 - **SIMD-friendly Batching**: The `getBatch()` API exposes continuous loops for the JIT/ART to vectorize, reducing overhead per item.
-- **Volatile Isolation**: Shared scale factors live in a padded `ScreenFactors` object; strategy-specific scales register through `StrategyFactorRegistry` in satellite modules.
+- **Snapshot Isolation**: Since 3.1.7, resolution reads an immutable per-window `DimenMetrics` snapshot; satellite strategy scales derive from `DimenCache.currentMetrics` (padded `ScreenFactors` is kept for source compatibility only).
 - **Fast Bypass**: `shouldBypassCache` skips shard lookup for multiply-only types (`PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`) and for `POWER` / `LOGARITHMIC` on the default SW path — including default aspect ratio when applicable (~2 ns multiply). `AUTO` / `FLUID` / `FIT` / `FILL` use the cache.
 
 ---
@@ -55,7 +57,7 @@ Measurements captured on physical hardware in a stabilized state.
 | **Cache Hit (Single - AR)** | **35 ns** | **Zero-Math** 🚀 |
 | **Batch Resolution (100 items)** | **169 ns** | **Extreme** 🏎️ |
 | **Batch Cached (100 items - AR)** | **3,773 ns** | **Stable** ✅ |
-| **Persistence Load (100 entries)** | **0.76 ms** | **Fast** |
+| **Persistence Load** | **— (removed in 3.1.7)** | **N/A** ✅ |
 
 ### B. JVM (Local Development — Ubuntu Linux · JVM 17)
 | Operation Type | Result | Status |
@@ -66,7 +68,7 @@ Measurements captured on physical hardware in a stabilized state.
 | **Cache Hit (With AR)** | **1 ns** | **Zero-Math** 🚀 |
 | **Batch Resolution (100 items)** | **34 ns** | **Extreme** |
 | **Batch Cached (100 items - AR)** | **242 ns** | **Optimized** 🏎️ |
-| **Persistence Load** | **~0.06 ms** | **Fast** ✅ |
+| **Persistence Load** | **— (removed in 3.1.7)** | **N/A** ✅ |
 
 ---
 
@@ -122,6 +124,8 @@ Benchmark numbers reported in this document reflect measurements taken on a spec
 > The figures in this document are reference points, not guarantees.
 
 ---
+
+**Resolution flow (measured architecture — pre-3.1.7; since 3.1.7 the lookup layer is the snapshot-partitioned cache):**
 
 ```mermaid
 graph TD

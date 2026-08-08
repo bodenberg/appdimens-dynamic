@@ -1,7 +1,7 @@
 # Power strategy (`compose.power` / `code.power`)
 
-**Artifact:** `io.github.bodenberg:appdimens-dynamic-power:3.1.6` (`:library-power`)
-See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-power:3.1.7` (`:library-power`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v317)
 
 **Same extension / facilitator / builder shape as scaled** — replace the prefix `sdp` → `pwsdp`, `hdp` → `pwhdp`, `wdp` → `pwwdp`, `ssp` → `pwssp`, etc. Full table: [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
 
@@ -16,7 +16,7 @@ Conceptually, for effective axis `dim` (dp), after inverters and with multi-wind
 - `ratio = dim / 300`
 - `out = base × ratio^0.75`
 
-**Implementation note:** For **smallest-width** + **default inverter**, `ratio^0.75` is pre-computed in `PowerFactors.scale` (`:library-power`) via `StrategyFactorRegistry`. Other qualifiers still compute `ratio` from `readScreenDp` and use `Math.pow(ratio, 0.75)`.
+**Implementation note:** For **smallest-width** + **default inverter**, `ratio^0.75` is derived from the immutable per-window snapshot (`DimenCache.currentMetrics`) at resolution time — no process-global pre-computation. Other qualifiers still compute `ratio` from `readScreenDp` and use `Math.pow(ratio, 0.75)`.
 
 - With **`applyAspectRatio`**: multiply by the pre-computed aspect-ratio factor (`DimenCache.currentAspectRatioMul`); custom sensitivity uses `1 + k × logNormalizedAr`.
 

@@ -1,4 +1,4 @@
-# AppDimens Dynamic — Gradle / Maven modules (3.1.6)
+# AppDimens Dynamic — Gradle / Maven modules (3.1.7)
 
 ## Module graph
 
@@ -33,32 +33,34 @@ Android Gradle `namespace` values are unique per module (`com.appdimens.dynamic`
 | `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` |
 | `appdimens-dynamic-bom` | Version constraints for the set above (`java-platform`) |
 
-All published coordinates share `appdimens.version` in `gradle.properties` (**3.1.6**). Kotlin packages are unchanged from 3.1.5.
+All published coordinates share `appdimens.version` in `gradle.properties` (**3.1.7**). Kotlin packages are unchanged since 3.1.6.
 
 ## Installation
 
 ```kotlin
 dependencies {
-    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.6"))
+    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.7"))
     implementation("io.github.bodenberg:appdimens-dynamic")
     implementation("io.github.bodenberg:appdimens-dynamic-percent")
 }
 ```
 
-Without the BOM, pin the same version on each coordinate. See [README — Installation](../README.md#installation-v316).
+Without the BOM, pin the same version on each coordinate. See [README — Installation](../README.md#installation-v317).
 
 ## Core layout
 
-- Shared screen metrics (`scale`, aspect ratio, density) are updated in `DimenCache.updateFactors()`.
-- Strategy-specific scales register through `StrategyFactorRegistry` from the satellite that owns them (`diagonal`, `power`, `logarithmic`, `interpolated`, `perimeter`).
+- The source of truth is the immutable **`DimenMetrics`** window snapshot (size, density, font scale, orientation, ui mode, multi-window). Shared screen metrics (`scale`, aspect ratio, density) are derived from it once per snapshot.
+- Strategy-specific scales (`diagonal`, `power`, `logarithmic`, `interpolated`, `perimeter`) are derived lazily from `DimenCache.currentMetrics` at resolution time — no process-global pre-computation. `StrategyFactorRegistry` remains as a source-compatibility hook.
 - `CalcType` ordinals live in core so cache keys stay stable across modules.
 
-## Migration from 3.1.5
+## Migration from 3.1.5 (modularization baseline)
 
 | 3.1.5 | 3.1.6 |
 |-------|-------|
 | Single `appdimens-dynamic` AAR with every strategy | Principal = scaled + core; add one satellite per extra strategy |
 | Version on each dependency | Optional `platform("…:appdimens-dynamic-bom:3.1.6")` |
+
+**3.1.6 → 3.1.7:** no packaging or API changes — internal cache/correctness rework only (see [README — Migration](../README.md#migration-from-316-to-317)).
 
 ## See also
 

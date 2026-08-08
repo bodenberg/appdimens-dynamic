@@ -8,7 +8,7 @@
 | 3.0.x | :white_check_mark: |
 | < 3.0 | :x: |
 
-Security fixes for **3.1.6+** apply to the full published set (`appdimens-dynamic`, strategy modules, and `appdimens-dynamic-bom`) at the shared version line.
+Security fixes for **3.1.7+** apply to the full published set (`appdimens-dynamic`, strategy modules, and `appdimens-dynamic-bom`) at the shared version line.
 
 ## Reporting a Vulnerability
 

@@ -45,29 +45,29 @@ const val REFERENCE_ASPECT_RATIO = 1.78f
 
 ## 3. Global Precomputation Matrix
 
-Device configuration changes trigger `DimenCache.updateFactors()`, which updates **shared** `ScreenFactors` and notifies satellites through `StrategyFactorRegistry`.
+Since **3.1.7** the source of truth is the immutable **`DimenMetrics`** window snapshot, built once per window/configuration change (screen size, smallest width, density, font scale, orientation, ui mode, multi-window). Derived factors are computed once when the snapshot is created; satellite strategy scales are derived lazily from `DimenCache.currentMetrics` at resolution time. `DimenCache.updateFactors()` and `StrategyFactorRegistry` remain as source-compatibility hooks only.
 
 ```mermaid
 journey
   title High-Frequency Computation Caching Pattern
   section 1. Trigger
-    Configuration Shift : 5: Android System
-    ConfigSnapshot Evaluation : 4: DimenCache
+    Window / Configuration Shift : 5: Android System
+    DimenMetrics Snapshot : 4: DimenCache
   section 2. Pre-calculation Phase
-    Shared metrics (scale / AR / density) : 3: ScreenFactors
-    Strategy scales (if AAR present) : 2: StrategyFactorRegistry
+    Shared metrics (scale / AR / density) : 3: DimenMetrics
+    Strategy scales (if AAR present) : 2: currentMetrics
   section 3. State Preservation
-    Inject into Atomic Cache Array: 1: AppDimens Plumbing
+    Partition by snapshot into atomic cache : 1: AppDimens Plumbing
 ```
 
-### Shared `ScreenFactors` (principal)
+### Shared factors derived in `DimenMetrics` (principal)
 
-1. **Linear Limit:** `f.scale` $$= sw \cdot \iota$$
-2. **Normalized Multiplier:** `f.arMultiplier` $$=  1 + (sw - 300) \cdot (\iota_{adj} + k_{def} \cdot L_{AR})$$
-3. **Aspect helper:** `f.aspectRatioMul` $$= 1 + k_{def} \cdot L_{AR}$$
-4. **Density Override:** `f.density` $$= densityDpi / 160f$$
+1. **Linear Limit:** `scale` $$= sw \cdot \iota$$
+2. **Normalized Multiplier:** `defaultScaledAspectRatioMultiplier` $$=  1 + (sw - 300) \cdot (\iota_{adj} + k_{def} \cdot L_{AR})$$
+3. **Aspect helper:** `defaultAspectRatioMultiplier` $$= 1 + k_{def} \cdot L_{AR}$$
+4. **Density Override:** `density` $$= densityDpi / 160f$$
 
-### Satellite strategy scales (when the module is on the classpath)
+### Satellite strategy scales (derived from the window snapshot)
 
 | Factor | Module | Formula (default SW path) |
 |--------|--------|---------------------------|

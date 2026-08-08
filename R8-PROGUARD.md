@@ -109,7 +109,9 @@ In this repo, [`library/build.gradle.kts`](library/build.gradle.kts) currently s
 
 - Strong **optimization** settings (`-optimizationpasses`, `-allowaccessmodification`, `-optimizations`, …) when the library itself is minified.
 - **Keeps** for the public API (`com.appdimens.dynamic.code.**`, `compose.**`, `common.**`).
-- **Keeps** for `DimenCache`, nested types, **padding fields** on `ScreenFactors` / `ShardWrapper`, enums whose ordinals matter, Compose plumbing, `ResizeBound`, DataStore, Kotlin metadata, etc.
+- **Keeps** for `DimenCache`, nested types, **padding fields** on `ScreenFactors` / `ShardWrapper`, enums whose ordinals matter, Compose plumbing, `ResizeBound`, Kotlin metadata, etc.
+
+> **3.1.7 note:** persistence was removed from `DimenCache`, so the legacy `androidx.datastore.**` keep blocks still present in the `.pro` files are inert dead weight (the dependency is no longer exercised by resolution code) and can be dropped on a future cleanup.
 
 The file’s own comments document **why** each block exists (especially **`@PublishedApi internal`** members used from **inlined** code in consuming apps, and **padding** fields R8 might delete as “unused”).
 
@@ -130,7 +132,7 @@ Gradle **packages** it into the **AAR**. When an app enables **minify/R8** on **
 **What this file is for:**
 
 - The **minimum** set of rules so the **published library** stays correct inside **any** consuming app under R8 (including **full mode**).
-- Same critical areas as above: public API surface, `DimenCache` and nested classes, padding fields, enums, `ResizeBound`, Compose-related `core` classes, Kotlin metadata basics, DataStore.
+- Same critical areas as above: public API surface, `DimenCache` and nested classes, padding fields, enums, `ResizeBound`, Compose-related `core` classes, Kotlin metadata basics.
 
 **Design choice:** Consumer rules intentionally **do not** force app-wide policies like `-optimizationpasses` on the app—those remain **app** decisions.
 

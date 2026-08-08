@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD) — AppDimens Dynamic
 
 > [!NOTE]
-> **Version:** `3.1.6` — modules: [MODULES.md](MODULES.md)
+> **Version:** `3.1.7` — modules: [MODULES.md](MODULES.md)
 > **Related:** [PDR](PDR.md) · [Mathematics](MATHEMATICS-AND-CALCULUS.md) · [API Conventions](COMPOSE-API-CONVENTIONS.md)
 
 ## 1. Executive Summary
@@ -42,9 +42,9 @@ mindmap
       Android Virtual Views (XML)
       Pure Kotlin Math Core
     Thread Safe Cache Layer
-      ScreenFactors Bypass
+      Snapshot-partitioned Cache
       Multi-Window Detection
-      Atomic Array Sharding
+      Atomic Reference Entries
 ```
 
 ---
@@ -78,7 +78,7 @@ mindmap
 ## 5. Non-Functional Requirements (NFR)
 
 * **NFR-1 (Performance Benchmarking):** `shouldBypassCache` skips shard I/O for multiply-only types (`PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`) and for `POWER` / `LOGARITHMIC` on the default SW path — including default aspect ratio when applicable. See [library/PERFORMANCE.md](../library/PERFORMANCE.md).
-* **NFR-2 (Lock-Free Threading):** Uses `AtomicLongArray` / `AtomicIntegerArray` implementing a deterministic *last-write-wins* methodology preventing bottlenecking on ARM64.
+* **NFR-2 (Lock-Free Threading):** Lock-free, snapshot-partitioned cache. Each window/configuration snapshot (`DimenMetrics`) owns a fixed-size partition whose entries are published as a single immutable `CacheEntry` (key + value bits) through `AtomicReferenceArray`, so concurrent readers never observe another key’s value; no disk persistence.
 * **NFR-3 (Minimum Environment):** `minSdk = 24`, Java 17 requirements, enforcing direct Proguard shipping via `consumer-rules.pro`.
 * **NFR-4 (Runtime Diagnostics):** Engine observability functions remain conditionally gated (`diagnosticsEnabled`) to eliminate tracing overhead in production applications.
 

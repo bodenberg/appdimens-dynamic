@@ -6,16 +6,16 @@ You write **once** and your code automatically adapts to any device. The library
 
 ---
 
-## Installation (v3.1.6)
+## Installation (v3.1.7)
 
 ```kotlin
-implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.6"))
+implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.7"))
 implementation("io.github.bodenberg:appdimens-dynamic")
 implementation("io.github.bodenberg:appdimens-dynamic-percent")
 implementation("io.github.bodenberg:appdimens-dynamic-resize")
 ```
 
-Without the BOM, pin `:3.1.6` on each coordinate. Details: [README](./README.md#installation-v316) · [MODULES.md](./DOCUMENTATION/MODULES.md).
+Without the BOM, pin `:3.1.7` on each coordinate. Details: [README](./README.md#installation-v317) · [MODULES.md](./DOCUMENTATION/MODULES.md).
 
 | Strategy in this guide | Maven module |
 |------------------------|--------------|

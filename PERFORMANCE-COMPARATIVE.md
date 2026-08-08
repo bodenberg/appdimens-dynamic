@@ -25,6 +25,8 @@ This report documents the performance results **after applying the 4 optimizatio
 
 ## 1. Applied Optimizations
 
+> **3.1.7 note:** the persistent result cache (Preferences DataStore) was removed and the in-memory cache became **snapshot-partitioned** (keyed by the immutable `DimenMetrics` window snapshot, atomic `CacheEntry` references). Cold-start restore cost and stale-cache risk are gone; cache timing rows below measure the in-memory partitions only.
+
 | Phase | Component | Description |
 | :--: | :--- | :--- |
 | **F1** | `DimenCache.getBatch()` | Made the API public for batching N dimensions by the caller |
@@ -46,7 +48,7 @@ Executed via `./gradlew :library:testDebugUnitTest` (principal); satellite formu
 | **Cache Hit (with AR)** per item | **1 ns** | **Zero-Math** 🚀 |
 | **Batch (100 items, math)** | **34 ns/batch** | **Extreme** 🏎️ |
 | **Batch Cache (100 items, AR)** | **242 ns/batch** | **Stable** ✅ |
-| **Persistence Load** | **~0.06 ms** | **Fast** ✅ |
+| **Persistence Load** | **— (removed in 3.1.7)** | **N/A** ✅ |
 
 > `raw_batch_cache_ar` at **242 ns/batch** remains dominated by the 100× AR lookup loop.
 
@@ -68,7 +70,7 @@ Executed via `./gradlew :library:testDebugUnitTest` (principal); satellite formu
 | **Batch Cache (100 items, no AR)** | **431 ns/batch** | **Constant** |
 | **Batch Cache (100 items, with AR)** | **3,773 ns** | **Stable** ✅ |
 | **Batch Mixed (50% AR / 50% without)** | **2,036 ns/batch** | **Stable** ✅ |
-| **Persistence Load** | **0.76 ms** | **Fast** ✅ |
+| **Persistence Load** | **— (removed in 3.1.7)** | **N/A** ✅ |
 
 > **Regression Fix (F1.1):** Inlining of `getOrPutInternal` and `ShardWrapper` visibility (`internal @PublishedApi`) keeps batch AR paths in the ~3.7–3.8 µs range for 100 cached AR lookups; the non-AR hot path (most cases) remains extremely stable at **~5 ns**.
 

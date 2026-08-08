@@ -14,48 +14,49 @@
 
 **Not bypassed:** `AUTO`, `FLUID`, `FIT`, `FILL`, `RESIZE`, `UNITIES`, `ASPECT_RATIO` (ln memoization), and any path with custom sensitivity or non-default qualifier/inverter.
 
-Default aspect ratio (`sdpa` with default settings) uses the same bypass when the type is eligible — `arMultiplier` is already precomputed in `updateFactors()`.
+Default aspect ratio (`sdpa` with default settings) uses the same bypass when the type is eligible — the multiplier is already derived in the `DimenMetrics` snapshot.
 
 ## Pre-computed factors
 
-`DimenCache.updateFactors()` runs on configuration changes and updates **shared** `ScreenFactors` fields only:
+The source of truth is the immutable **`DimenMetrics`** window snapshot, built once per window/configuration change. Derived factors are computed once when the snapshot is created; `DimenCache.updateFactors()` and the legacy `ScreenFactors` fields are retained only for source compatibility:
 
-| Field | Role |
+| `DimenMetrics` derived field | Role |
 |---|---|
 | `scale` | `sw / 300` |
-| `arMultiplier` | Scaled AR adjustment |
-| `aspectRatioMul` | Shared AR multiply helper |
-| `density` / AR logs / `smallestWidthDp` | From `Configuration` |
+| `defaultScaledAspectRatioMultiplier` | Scaled AR adjustment |
+| `defaultAspectRatioMultiplier` | Shared AR multiply helper |
+| `density` / `logNormalizedAspectRatio` / `smallestWidthDp` | From the snapshot's `Configuration` |
 
-Strategy-specific scales (`diagonal`, `power`, `log`, `interpolated`, `perimeter`) live in satellite modules (`DiagonalFactors`, `PowerFactors`, …) and register through `StrategyFactorRegistry`. Absent satellites do no work.
+Strategy-specific scales (`diagonal`, `power`, `log`, `interpolated`, `perimeter`) live in satellite modules (`DiagonalFactors`, `PowerFactors`, …) and are derived lazily from `DimenCache.currentMetrics` at resolution time. Absent satellites do no work, and `StrategyFactorRegistry` is kept as a compatibility hook only.
 
-## Invalidation (`invalidateOnConfigChange`)
+## Cache partitioning & invalidation
 
-Uses `ConfigSnapshot` (explicit fields — not a full `Configuration` copy):
+The in-memory cache is **partitioned per snapshot** (`ConcurrentHashMap<DimenMetrics, SnapshotCache>`): a key is only ever served from the partition of the exact window it was computed for (size, density, font scale, ui mode, multi-window state all participate in the snapshot).
 
-| Change | Behavior |
+| Situation | Behavior |
 |--------|----------|
-| Orientation-only (min/max/SW/dpi unchanged) | Updates factors; **does not** `clearAll` |
-| Physical size / density | `clearAll(savedAppContext)` (memory + DataStore) |
-| `fontScale` only | `clearFontScaleDependentEntries()` (SP_* value types only) |
+| Orientation swap / resize / density / font change | New `DimenMetrics` partition; a partition is evicted when the budget is full (bounded: 4 × 512 = 2048 slots) |
+| `invalidateOnConfigChange(newConfig)` | Compatibility hook; refreshes the fallback snapshot and **does not** wipe other windows' hot entries |
+| `clearAll(context)` / `clearFontScaleDependentEntries()` | Detach all partitions atomically (no disk I/O) |
 
 ## Compose recomposition stamps
 
 - `layoutRememberStamp` packs SW/W/H/orientation + `mixDpi` — **does not** use `Configuration.hashCode()`
 - Sp paths use `spRememberStamp` (includes fontScale); px paths use `pxRememberStamp` (density only)
-- `rememberDimen*` always runs (stable slots); `match = false` returns `passthrough`
+- `rememberDimen*` in 3.1.7 remembers on **two keys** (`cacheKey`, stamp) when `match = true`; `match = false` returns `passthrough` immediately
+- `AppDimensProvider` provides `LocalDimenMetrics`, keeping every dimension in a composition on one coherent window snapshot
 
 ## Cached `UiModeType`
 
-`DimenCache.getCachedUiModeType` uses a fingerprint of `uiMode`, `smallestScreenWidthDp`, and min/max screen dp — not `Configuration.hashCode()`. Facilitators read this cache.
+`DimenCache.getCachedUiModeType` fingerprints `uiMode`, `smallestScreenWidthDp`, min/max screen dp and `densityDpi` — not `Configuration.hashCode()` — and stores per-`Context` entries in a weak map (no Activity leak). Facilitators read this cache.
 
 ## Persistence
 
-Preferences DataStore namespace `com.appdimens.dynamic.cache`. Write scheduling: `merge(debounce(500ms), sample(10_000ms))`. Serialization is **sparse** (populated slots only); load still accepts legacy dense blobs. Blobs include `KEY_DPI`; SW/dpi mismatch rejects cold-start restore. Call `DimenCache.shutdown()` in tests to cancel the writer scope.
+**Removed in 3.1.7.** `DimenCache` no longer persists results to Preferences DataStore. `shutdown()`, `restartSaveCollectorForTest()` and `persistenceWritesEnabled` remain as no-op compatibility hooks for old test fixtures; there is no background writer scope and no disk I/O on the dimension path.
 
 ## Other
 
-- Diagonal / Power / Logarithmic **default** paths: satellite precomputed scales when the module is present
+- Diagonal / Power / Logarithmic **default** paths: satellite scales derived from the current window snapshot
 - `ResizeMath.buildResizeStepsPx`: pre-allocated `FloatArray` (no boxing)
 - Specialized `Int` / `Float` overloads avoid `Number.toFloat()` boxing on hot Scaled paths
 

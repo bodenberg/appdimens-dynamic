@@ -1,7 +1,7 @@
 # Resize module (`compose.resize` / `code.resize`)
 
-**Artifact:** `io.github.bodenberg:appdimens-dynamic-resize:3.1.6` (`:library-resize`)
-See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-resize:3.1.7` (`:library-resize`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v317)
 
 ## What it is
 

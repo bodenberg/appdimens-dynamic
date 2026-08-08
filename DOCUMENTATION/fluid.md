@@ -1,7 +1,7 @@
 # Fluid strategy (`compose.fluid` / `code.fluid`)
 
-**Artifact:** `io.github.bodenberg:appdimens-dynamic-fluid:3.1.6` (`:library-fluid`)
-See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v316)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-fluid:3.1.7` (`:library-fluid`)
+See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v317)
 
 **Same API surface as scaled** with prefixes `fsdp` / `fhdp` / `fwdp` / `fssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
 

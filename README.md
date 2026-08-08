@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/bodenberg/appdimens-dynamic/releases" title="Releases">
-    <img src="https://img.shields.io/badge/version-3.1.6-blue.svg" alt="Version 3.1.6">
+    <img src="https://img.shields.io/badge/version-3.1.7-blue.svg" alt="Version 3.1.7">
   </a>
   &nbsp;
   <a href="LICENSE" title="Apache License 2.0">
@@ -70,15 +70,15 @@ Write values like `16.sdp` and the library scales them from the current screen *
 
 ---
 
-## Installation (v3.1.6)
+## Installation (v3.1.7)
 
-From **3.1.6**, the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
+**3.1.7** keeps the modular packaging introduced in **3.1.6**: the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
 
 ### With BOM
 
 ```kotlin
 dependencies {
-    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.6"))
+    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.7"))
 
     implementation("io.github.bodenberg:appdimens-dynamic")
 
@@ -103,7 +103,7 @@ dependencies {
 If you import `com.appdimens.dynamic.compose.<strategy>` (or `code.<strategy>`) without adding the matching artifact, the Gradle check `checkAppDimensModules` fails with a line such as:
 
 ```text
-Missing AppDimens module for import …percent… — add: implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.6")
+Missing AppDimens module for import …percent… — add: implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.7")
 ```
 
 Apply the same check in your app with:
@@ -118,19 +118,30 @@ Runtime helper: `com.appdimens.dynamic.core.MissingModule` (package → Maven co
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.1.6")
-    implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.6")
-    // same satellites as above, each with :3.1.6
+    implementation("io.github.bodenberg:appdimens-dynamic:3.1.7")
+    implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.7")
+    // same satellites as above, each with :3.1.7
 }
 ```
 
-### Migration from 3.1.5
+### Migration from 3.1.5 (modularization baseline)
 
 | 3.1.5 | 3.1.6 |
 |-------|-------|
 | One `appdimens-dynamic` dependency with every strategy | Principal = scaled + core; declare each extra strategy module |
 | — | Optional `appdimens-dynamic-bom` for shared version management |
 | Kotlin imports | Unchanged |
+
+### Migration from 3.1.6 to 3.1.7
+
+**No API, import, or packaging changes** — 3.1.7 is an internal correctness and performance release; upgrade by bumping the version. Highlights of what changed under the hood:
+
+- **Persistent result cache removed.** `DimenCache` no longer writes to Preferences DataStore. The in-memory cache is **partitioned per window/configuration snapshot** (`DimenMetrics`), so a rotated, resized, or recreated window can never observe values computed for another size, density, font scale, or multi-window state.
+- **Exact aspect-ratio math.** The hand-maintained binary-search lookup table in `AspectRatioLookup` was replaced by a deterministic `ln()` computed once per snapshot — nearby screen ratios no longer collapse to the same approximated value.
+- **Atomic cache entries.** Key and value are published as a single immutable reference, eliminating the key/value race that could return another key’s value under concurrency.
+- **Per-window correctness for Compose.** `AppDimensProvider` provides `LocalDimenMetrics`; the `rememberDimen*` helpers keep every dimension in a composition on the same coherent snapshot and remember on two keys instead of four.
+- **Memory-leak fix.** The `Context → Activity` weak cache was removed.
+- **Build/toolchain refresh:** Kotlin 2.4.10, AGP 9.2.1, Compose BOM 2026.06.01, Material 1.14.0; CI uses least-privilege permissions and updated Actions; the Dokka output path is portable and git-ignored.
 
 ### Artifact matrix
 
@@ -177,7 +188,7 @@ Box(
 
 ### `AppDimensProvider`
 
-Use it when you call **`.sdpMode`**, **`.sdpScreen`**, **`.sspMode`**, **`.sspScreen`**, or similar **facilitators** that depend on **UI mode / fold state**. It sets `LocalUiModeType` once for the tree instead of resolving mode on every call.
+Use it when you call **`.sdpMode`**, **`.sdpScreen`**, **`.sspMode`**, **`.sspScreen`**, or similar **facilitators** that depend on **UI mode / fold state**. It sets `LocalUiModeType` once for the tree instead of resolving mode on every call, and (since 3.1.7) provides `LocalDimenMetrics` — a coherent per-window snapshot that every `rememberDimen*` helper uses.
 
 ```kotlin
 import com.appdimens.dynamic.core.AppDimensProvider
@@ -191,7 +202,9 @@ setContent {
 
 ### `DimenCache.invalidateOnConfigChange`
 
-Call this when the **same Activity** stays alive across **rotation, split-screen, or density/font changes** and sizes look **stale**. Orientation-only swaps do not wipe the shard table; physical size/density changes clear memory + DataStore; fontScale clears SP entries only. If the Activity is **recreated** on config change (default), you often don’t need it. Details: [library/PERFORMANCE.md](library/PERFORMANCE.md).
+Since **3.1.7** the cache is **partitioned per window snapshot** (`DimenMetrics`): every resolution is keyed by the exact configuration it was computed for, so a rotated, resized, or recreated window can never read a stale value. Explicit invalidation is therefore **not required for correctness** — this API is retained as a compatibility hook and no longer wipes other windows’ hot entries.
+
+Call it when the **same Activity** stays alive across **rotation, split-screen, or density/font changes** and you want to refresh internal bookkeeping. If the Activity is **recreated** on config change (default), you don’t need it. Details: [library/PERFORMANCE.md](library/PERFORMANCE.md).
 
 The previous `Configuration` is tracked internally by `DimenCache` — callers only need to pass the new one.
 
@@ -355,7 +368,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 | Resource | Use for |
 |----------|---------|
 | [DOCUMENTATION/README.md](DOCUMENTATION/README.md) | Per-strategy explanations |
-| [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) | Gradle/Maven module graph (3.1.6) |
+| [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) | Gradle/Maven module graph (3.1.7) |
 | [COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) | Every Compose property & facilitator (scaled catalog + prefix map) |
 | [DOCUMENTATION/index.md](DOCUMENTATION/index.md) | Markdown API index (KDoc export) |
 | [appdimens3.web.app](https://appdimens3.web.app/) | Searchable KDoc |
@@ -366,7 +379,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 
 ## Optional: cache & performance
 
-- Results are cached in **`DimenCache`** (lock-free, optional persistence).
+- Results are cached in **`DimenCache`** — lock-free, **partitioned per window/configuration snapshot** (no disk persistence since 3.1.7).
 - Some paths **skip** storing in the shard table when a cheap multiply is enough — see [library/PERFORMANCE.md](library/PERFORMANCE.md).
 - **Batch / low-level keys:** not needed for normal app code; library extensions already use the cache.
 
@@ -389,6 +402,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 - Code-only scaling (no XML dimen grids) · **SDP / HDP / WDP** + **14** scaling modes  
 - **Aspect ratio** & **multi-window** flags · **Inverters** & **facilitators** · **Foldable** awareness via WindowManager  
 - **Physical units** · **Resize** helpers · **DimenScaled** chains  
+- **3.1.7:** per-window `DimenMetrics` snapshots · atomic snapshot-partitioned cache · exact `ln` aspect-ratio math · persistence removed · multi-window / Compose correctness and leak fixes  
 
 ---
 
