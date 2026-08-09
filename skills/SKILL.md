@@ -12,7 +12,7 @@ description: Use this skill for any Android responsive layout or scaling questio
 On release bumps, update version URLs in this file, `library-map.md`, and `reference.md` together.
 
 **Authoritative GitHub docs (ref `3.1.7`):**
-- [README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.7/README.md) — install, `AppDimensProvider`, `DimenCache.invalidateOnConfigChange`
+- [README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.7/README.md) — install, `AppDimensProvider`, `DimenCache` (snapshot-partitioned since 3.1.7; no manual invalidation needed)
 - [DOCUMENTATION/MODULES.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.7/DOCUMENTATION/MODULES.md) — Maven/Gradle graph (principal vs satellites)
 - [DOCUMENTATION/README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.7/DOCUMENTATION/README.md) — all strategies, decision flow
 - [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.7/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) — Compose naming, facilitators, Plain chains, `code` parity
@@ -31,6 +31,18 @@ On release bumps, update version URLs in this file, `library-map.md`, and `refer
 3. Skim the upstream example that matches the user's stack (links above). Restrict deep reading to **relevant packages and call sites** — full module audits only when explicitly requested.
 
 **Hard rule:** never surface `ignoreMultiWindows`, `*i`, or `*ia` suffixes to users.
+
+---
+
+## Docs / KDoc maintenance
+
+When editing or auditing `DOCUMENTATION/` or `DOCUMENTATION/KDOC/`:
+
+- **KDOC is hand-maintained** — the Dokka plugin is disabled in the build, so `DOCUMENTATION/KDOC/` is a curated Dokka snapshot. Do not regenerate it from Gradle.
+- **Keep `package-list` consistent**: every `$dokka.location` entry must point to a page that exists on disk (stale entries break the index).
+- **Modularization rule:** strategy-module APIs (`com.appdimens.dynamic.code.auto`, `.fluid`, `.percent`, `compose.*`, …) exist in the `library-<strategy>` satellites. Their KDOC pages are real documentation — **never prune or delete them**, even when their cross-links dangle (inherited HEAD state).
+- **Only delete KDOC pages for symbols verifiably absent from ALL modules' sources.** Example (3.1.7): `ShardWrapper`, `SHARD_COUNT/MASK/SIZE/SIZE_MASK`, `CACHE_SIZE`, `keysArray`, `valueBitsArray`, `shards`, `performSave*`, `restartSaveCollectorForTest` were removed from the core and don't exist anywhere — their pages are ghosts.
+- **Terminology:** since 3.1.7 the cache is **snapshot-partitioned** (per immutable `DimenMetrics` window snapshot). Never write new prose about a "shard cache"; historical mentions are only OK with an explicit `≤ 3.1.6` qualifier.
 
 ---
 
@@ -139,7 +151,7 @@ Apply regardless of strategy or UI stack:
 
 1. **Strategy isolation** — `compose.<strategy>` and `code.<strategy>` do not cross-import. One strategy per calculation path.
 2. **`AppDimensProvider`** — required for Compose facilitators like `.sdpMode`, `.sdpScreen`, `.sspScreen` (see README).
-3. **Config churn** — if the Activity is not recreated on handled config changes (rotation, font scale, density, `configChanges` in manifest), consider `DimenCache.invalidateOnConfigChange`.
+3. **Config churn** — since 3.1.7 no explicit invalidation is required for correctness: every resolution is keyed by the immutable per-window `DimenMetrics` snapshot, so a rotated/resized/recreated window can never read a stale value. `DimenCache.invalidateOnConfigChange` is retained as a compatibility hook only (for consumers built against ≤ 3.1.6).
 4. **`code` hot paths** — prefer `Int`/`Float` receivers for sdp/hdp/wdp to avoid boxing.
 5. **Nested Plain facilitators** — use `Dp`/`TextUnit` alternates in `*Plain` chains to avoid double-scaling (README + COMPOSE-API-CONVENTIONS).
 

@@ -2,13 +2,13 @@
 
 ## Fast bypass (`getOrPut` / `shouldBypassCache`)
 
-`DimenCache.getOrPut` skips shard storage when `shouldBypassCache(key)` is true — the call reduces to `compute()` (typically one multiply against a factor updated on configuration change).
+`DimenCache.getOrPut` skips snapshot-cache storage when `shouldBypassCache(key)` is true — the call reduces to `compute()` (typically one multiply against a factor updated on configuration change).
 
 **Always eligible** (with or without default aspect ratio when the key uses `SMALL_WIDTH` + `DEFAULT` inverter + null custom sensitivity):
 
 - `PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`
 
-**Conditionally eligible** (only `SMALL_WIDTH` + `DEFAULT` inverter — WIDTH/HEIGHT still use the shard cache):
+**Conditionally eligible** (only `SMALL_WIDTH` + `DEFAULT` inverter — WIDTH/HEIGHT still use the snapshot cache):
 
 - `POWER`, `LOGARITHMIC`
 
@@ -52,7 +52,7 @@ The in-memory cache is **partitioned per snapshot** (`ConcurrentHashMap<DimenMet
 
 ## Persistence
 
-**Removed in 3.1.7.** `DimenCache` no longer persists results to Preferences DataStore. `shutdown()`, `restartSaveCollectorForTest()` and `persistenceWritesEnabled` remain as no-op compatibility hooks for old test fixtures; there is no background writer scope and no disk I/O on the dimension path.
+**Removed in 3.1.7.** `DimenCache` no longer persists results to Preferences DataStore. `shutdown()`, `saveToPersistence()` and `serializeToByteArray()` remain as **binary-compatibility no-ops** for consumers built against ≤ 3.1.6; there is no background writer scope and no disk I/O on the dimension path.
 
 ## Other
 
@@ -66,4 +66,14 @@ Each AAR ships `consumer-rules.pro`. Core/scaled rules come from `appdimens-dyna
 
 ## Benchmarks
 
-Do not use always-bypass types on the default path to measure **shard** throughput. Use custom sensitivity, non-default qualifiers, or non-bypass `CalcType`s (`AUTO`, `FLUID`, …) when measuring cache hits.
+Do not use always-bypass types on the default path to measure **snapshot-cache** throughput. Use custom sensitivity, non-default qualifiers, or non-bypass `CalcType`s (`AUTO`, `FLUID`, …) when measuring cache hits.
+
+### Measured numbers (2026-08-09 — Xiaomi 2107113SG, release APK + AOT `speed`, 3 runs)
+
+With the **3.1.7 fast lane**, the dominant resolutions (`sdp` / `hdp` / `wdp`, and `sdpa` = SMALL_WIDTH + AR) are a single float multiply over the coherent per-window `DimenMetrics` snapshot — no key encoding, no `getOrPut`, no `remember` machinery:
+
+- **Micro combined avg**: ~40–64 ns/op (typical ~50–60; families uniform within ~8 ns of each other).
+- **Same-device baseline** (3 runs each): library 3.1.5 ≈ 158 ns/op; **debug APK ≈ 508–857 ns/op** (interpreter — debuggable APKs are pinned to compiler filter `verify`).
+- **Macro scroll (1k-item LazyColumn)**: ~368–382 ms — frame-limited (366 ms floor at 60 fps), ≈ 4% under 3.1.5's ~393 ms and ~2.4× under the ~940 ms debug APK.
+- **Validation**: the fast lane samples the window configuration 1-in-16 resolutions (`validationTick`) against the same `metricsFor` used by the cache kernel — bit-identical results, sub-microsecond staleness window.
+- **Reproducibility**: the harness holds `THREAD_PRIORITY_URGENT_AUDIO` plus a 1.5 s thermal ramp for the whole measurement window; without it cold-core artifacts inflate the first family by ~100 ns and run-to-run spread to 2–4×. On the Redmi 25062RN2DA (Android 16/SDK 36, same SoC) the release numbers are ~117–118 ns/op — still ~10× the fast-lane floor of the multiply itself.
