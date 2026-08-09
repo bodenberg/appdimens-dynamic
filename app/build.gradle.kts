@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
@@ -20,10 +19,13 @@ android {
 
     signingConfigs {
         create("sample") {
-            storeFile = rootProject.file("test_keystore.jks")
-            storePassword = "123456"
-            keyAlias = "test"
-            keyPassword = "123456"
+            val keystore = rootProject.file("test_keystore.jks")
+            if (keystore.exists()) {
+                storeFile = keystore
+                storePassword = "123456"
+                keyAlias = "test"
+                keyPassword = "123456"
+            }
         }
     }
 
@@ -35,7 +37,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("sample")
+            signingConfig = signingConfigs.getByName("sample").takeIf { it.storeFile?.exists() == true }
+                ?: signingConfigs.getByName("debug")
         }
         debug {
             //noinspection NotShrinkingResources

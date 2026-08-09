@@ -29,7 +29,7 @@ fun rememberDimenDp(
 ): Dp {
     val metrics = LocalDimenMetrics.current
     return if (match) {
-        remember(cacheKey, layoutStamp) {
+        remember(cacheKey, layoutStamp, metrics) {
             resolveCachedFloat(cacheKey, metrics, androidContext, compute).dp
         }
     } else {
@@ -53,7 +53,7 @@ fun rememberDimenPxFromDp(
 ): Float {
     val metrics = LocalDimenMetrics.current
     return if (match) {
-        remember(cacheKey, pxStamp) {
+        remember(cacheKey, pxStamp, metrics) {
             val scaledDp = resolveCachedFloat(cacheKey, metrics, androidContext, compute)
             density.run { scaledDp.dp.toPx() }
         }
@@ -74,7 +74,8 @@ fun rememberDimenSp(
     passthrough: TextUnit = TextUnit.Unspecified,
     compute: () -> TextUnit,
 ): TextUnit = if (match) {
-    remember(cacheKey, spStamp) { compute() }
+    val metrics = LocalDimenMetrics.current
+    remember(cacheKey, spStamp, metrics) { compute() }
 } else {
     remember(match, cacheKey, spStamp, passthrough) { passthrough }
 }
@@ -91,7 +92,8 @@ fun rememberDimenSpPx(
     passthrough: Float = Float.NaN,
     compute: () -> Float,
 ): Float = if (match) {
-    remember(cacheKey, sspPxStamp) { compute() }
+    val metrics = LocalDimenMetrics.current
+    remember(cacheKey, sspPxStamp, metrics) { compute() }
 } else {
     remember(match, cacheKey, sspPxStamp, passthrough) { passthrough }
 }

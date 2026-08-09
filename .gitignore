@@ -36,6 +36,9 @@ google-services.json
 TEST.MD
 TESTE.md
 test.md
+# Local code-review reports (never committed)
+CODE-REVIEW.md
+RELATORIO_COMPLETO.md
 # Generated Dokka HTML (local)
 DOCUMENTATION2/
 .antigravitycli

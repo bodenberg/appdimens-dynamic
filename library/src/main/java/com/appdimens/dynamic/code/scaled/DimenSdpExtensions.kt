@@ -600,6 +600,21 @@ fun Float.toDynamicScaledPx(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
+    // EN Fast lane: dominant path with zero key encoding and zero ThreadLocal
+    //    writes. Bit-identical math, full per-window coherence (same metricsFor).
+    //    AR is only fast for SMALL_WIDTH (shared-kernel contract).
+    // PT Faixa rápida: caminho dominante sem codificar chave e sem escrever no
+    //    ThreadLocal. Mesma matemática, coerência por janela (mesmo metricsFor).
+    //    AR só é rápido para SMALL_WIDTH (contrato do kernel compartilhado).
+    if (DimenCache.isEnabled &&
+        inverter == Inverter.DEFAULT &&
+        !ignoreMultiWindows &&
+        customSensitivityK == null &&
+        (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)
+    ) {
+        return DimenCache.resolveScaledFastPx(this, context, qualifier, applyAspectRatio)
+    }
+
     val resources = context.resources
     val configuration = resources.configuration
     val density = resources.displayMetrics.density
@@ -778,6 +793,21 @@ fun Float.toDynamicScaledDp(
     applyAspectRatio: Boolean = false,
     customSensitivityK: Float? = null
 ): Float {
+    // EN Fast lane: dominant path with zero key encoding and zero ThreadLocal
+    //    writes. Bit-identical math, full per-window coherence (same metricsFor).
+    //    AR is only fast for SMALL_WIDTH (shared-kernel contract).
+    // PT Faixa rápida: caminho dominante sem codificar chave e sem escrever no
+    //    ThreadLocal. Mesma matemática, coerência por janela (mesmo metricsFor).
+    //    AR só é rápido para SMALL_WIDTH (contrato do kernel compartilhado).
+    if (DimenCache.isEnabled &&
+        inverter == Inverter.DEFAULT &&
+        !ignoreMultiWindows &&
+        customSensitivityK == null &&
+        (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)
+    ) {
+        return DimenCache.resolveScaledFastDp(this, context, qualifier, applyAspectRatio)
+    }
+
     val configuration = context.resources.configuration
 
     val cacheKey = DimenCache.buildKey(

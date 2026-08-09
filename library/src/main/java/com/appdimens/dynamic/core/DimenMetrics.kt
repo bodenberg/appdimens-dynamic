@@ -22,7 +22,7 @@ data class DimenMetrics(
     val screenHeightDp: Int,
     val smallestScreenWidthDp: Int,
     val densityDpi: Int,
-    private val fontScaleBits: Int,
+    internal val fontScaleBits: Int,
     val orientation: Int,
     val uiMode: Int,
     val isInMultiWindowMode: Boolean,
@@ -59,14 +59,22 @@ data class DimenMetrics(
         ln(normalizedAspectRatio.toDouble()).toFloat()
     }
 
-    val defaultAspectRatioMultiplier: Float by lazy {
+    /**
+     * EN Plain `val` (not `lazy`) so the hot SDPA fast path never pays the lazy
+     *    double-checked `synchronized` read on every resolution. Snapshots are built
+     *    rarely (once per window), so the eager math is amortized to ~zero.
+     *    The formulas are the exact historical ones (see [logNormalizedAspectRatio]).
+     * PT `val` puro (não `lazy`) para o caminho rápido SDPA nunca pagar a leitura
+     *    `synchronized` do lazy a cada resolução. Snapshots são construídos raramente
+     *    (uma vez por janela), então a matemática antecipada é amortizada.
+     *    As fórmulas são exatamente as históricas (ver [logNormalizedAspectRatio]).
+     */
+    val defaultAspectRatioMultiplier: Float =
         1f + DimenCache.SENSITIVITY_DEFAULT * logNormalizedAspectRatio
-    }
 
-    val defaultScaledAspectRatioMultiplier: Float by lazy {
+    val defaultScaledAspectRatioMultiplier: Float =
         1f + (smallestWidthDp - DesignScaleConstants.BASE_WIDTH_DP) *
             (DimenCache.ADJUSTMENT_SCALE + DimenCache.SENSITIVITY_DEFAULT * logNormalizedAspectRatio)
-    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // SATELLITE FACTORS — computed at most once per snapshot, only when read.

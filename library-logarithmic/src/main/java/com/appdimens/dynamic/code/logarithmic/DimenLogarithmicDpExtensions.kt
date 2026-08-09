@@ -629,8 +629,10 @@ internal fun calculateLogarithmicDp(
         val inv = DimenCache.INV_BASE_RATIO
         if (dim > DesignScaleConstants.BASE_WIDTH_DP) {
             1f + sens * kotlin.math.ln(dim * inv)
-        } else {
+        } else if (dim > 0f) {
             1f - sens * kotlin.math.ln(DesignScaleConstants.BASE_WIDTH_DP / dim)
+        } else {
+            1f
         }
     }
     var out = baseValue * scale

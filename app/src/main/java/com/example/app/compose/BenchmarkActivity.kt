@@ -682,29 +682,33 @@ fun BenchmarkItem(id: Int) {
     val fs14  = 14.sdp
     val h80   = 80.hdp
 
+    val even = id % 2 == 0
+    val cardColor = if (even) SurfaceCard else SurfaceCard.copy(alpha = 0.7f)
+    val shape = remember { RoundedCornerShape(10.dp) }
+    val boxShape = remember { RoundedCornerShape(8.dp) }
+    val boxBrush = remember(even) {
+        Brush.linearGradient(
+            colors = if (even)
+                listOf(AccentCyan.copy(alpha = 0.7f), AccentPurple.copy(alpha = 0.5f))
+            else
+                listOf(AccentAmber.copy(alpha = 0.7f), AccentRed.copy(alpha = 0.5f))
+        )
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = pad4)
-            .clip(RoundedCornerShape(10.dp))
-            .background(
-                if (id % 2 == 0) SurfaceCard else SurfaceCard.copy(alpha = 0.7f)
-            )
+            .clip(shape)
+            .background(cardColor)
             .padding(pad8),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
                 .size(box40)
-                .clip(RoundedCornerShape(8.dp))
-                .background(
-                    Brush.linearGradient(
-                        colors = if (id % 2 == 0)
-                            listOf(AccentCyan.copy(alpha = 0.7f), AccentPurple.copy(alpha = 0.5f))
-                        else
-                            listOf(AccentAmber.copy(alpha = 0.7f), AccentRed.copy(alpha = 0.5f))
-                    )
-                ),
+                .clip(boxShape)
+                .background(boxBrush),
             contentAlignment = Alignment.Center
         ) {
             Text(

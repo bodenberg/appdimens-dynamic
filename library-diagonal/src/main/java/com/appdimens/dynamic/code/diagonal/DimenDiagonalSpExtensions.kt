@@ -613,7 +613,7 @@ fun Number.toDynamicDiagonalSpPx(
     val configuration = resources.configuration
     val density = resources.displayMetrics.density
 
-    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
 
     val cacheKey = DimenCache.buildKey(
         baseValue = base,

@@ -31,6 +31,7 @@ import com.appdimens.dynamic.common.Orientation
 import com.appdimens.dynamic.common.UiModeType
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.core.DimenCache
+import com.appdimens.dynamic.core.DimenCalculationPlumbing
 import kotlin.math.max
 import kotlin.math.min
 
@@ -613,7 +614,7 @@ fun Number.toDynamicScaledSpPx(
     val configuration = resources.configuration
     val density = resources.displayMetrics.density
 
-    val valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE
+    val valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE
 
     val cacheKey = DimenCache.buildKey(
         baseValue = base,
@@ -628,7 +629,7 @@ fun Number.toDynamicScaledSpPx(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val scaledSp = calculateScaledSp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val scaledSp = calculateScaledSp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
         if (fontScale) {
             val fs = configuration.fontScale
             scaledSp * density * if (fs > 0f) fs else 1f
@@ -648,7 +649,8 @@ private fun calculateScaledSp(
     inverter: Inverter,
     ignoreMultiWindows: Boolean,
     applyAspectRatio: Boolean,
-    customSensitivityK: Float?
+    customSensitivityK: Float?,
+    userContext: Context?,
 ): Float {
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -668,11 +670,7 @@ private fun calculateScaledSp(
     }
 
     val isMultiWindow = if (ignoreMultiWindows) {
-        val smallestWidthDp = configuration.smallestScreenWidthDp.toFloat()
-        val currentScreenWidthDp = configuration.screenWidthDp.toFloat()
-        val isLayoutSplit = configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK != Configuration.SCREENLAYOUT_SIZE_MASK
-        val isSmallDiff = (smallestWidthDp - currentScreenWidthDp) < (smallestWidthDp * 0.1f)
-        isLayoutSplit && !isSmallDiff
+        DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, userContext)
     } else false
 
     return if (isMultiWindow) {
@@ -746,7 +744,7 @@ fun Number.toDynamicScaledSp(
     )
 
     return DimenCache.getOrPut(cacheKey, context) {
-        val raw = calculateScaledSp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK)
+        val raw = calculateScaledSp(base, configuration, qualifier, inverter, ignoreMultiWindows, applyAspectRatio, customSensitivityK, context)
         if (fontScale) {
             raw
         } else {

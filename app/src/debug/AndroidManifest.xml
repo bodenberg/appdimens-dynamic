@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only manifest: makes BenchmarkActivity launchable via `am start` so the
+  PTV benchmark pipeline can run headless on a connected device (auto-start via
+  the AUTO_START_FULL intent extra). Release builds keep exported="false".
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+        <activity
+            android:name=".compose.BenchmarkActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+    </application>
+</manifest>

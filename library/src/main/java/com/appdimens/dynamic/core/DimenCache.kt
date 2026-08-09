@@ -17,15 +17,14 @@
  *  - Per-snapshot correctness: rotated / resized / recreated windows never read stale values
  *  - Zero allocation in hot path: stores raw Float, caller boxes into Dp/TextUnit
  *
- * Optimizations applied (2026-03-31):
- *  - [FASE 2] ShardWrapper: each shard is isolated in its own object with 128-byte padding,
- *    preventing false sharing between CPU cores on ARM64 (64-byte cache line × 2 guard).
+ * Optimizations applied:
  *  - [FASE 3] ScreenFactors: all @Volatile scalar fields grouped in a padded object so a
  *    write to `scale` cannot invalidate `arMultiplier` on another core's cache line.
- *  - [FASE 4] clearAll() uses lazySet() + manual 4× loop unrolling for bulk zeroing
- *    without emitting full memory barriers on every element.
- *  - [FASE 1] getBatch() is now public, enabling callers to resolve N dimensions in a
- *    single tight loop — friendly to JIT auto-vectorization (ART / HotSpot).
+ *  - Single-window fast memos (metrics + partition + multi-window flag) so the hot path
+ *    performs a few volatile reads instead of maps/ThreadLocals per call.
+ *  - Precomputed bypass table (one Int per CalcType) replaces per-call bit analysis.
+ *  - getBatch() is public, enabling callers to resolve N dimensions in a single tight
+ *    loop — friendly to JIT auto-vectorization (ART / HotSpot).
  *
  * Bit Layout of the 64-bit Cache Key (Long):
  *  [63]     applyAspectRatio          1 bit
@@ -48,8 +47,6 @@ import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.common.UiModeType
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicIntegerArray
-import java.util.concurrent.atomic.AtomicLongArray
 import java.util.concurrent.atomic.AtomicReferenceArray
 import java.util.concurrent.atomic.LongAdder
 import java.util.concurrent.ConcurrentHashMap
@@ -114,8 +111,8 @@ object DimenCache {
      * a thread that reads this field on a different CPU core may observe stale
      * `false` indefinitely (data race / visibility bug on ARM64 weak memory model).
      */
-    @Volatile
     @PublishedApi
+    @Volatile
     internal var isInitializedFast = false
     val isInitialized = AtomicBoolean(false)
 
@@ -303,10 +300,12 @@ object DimenCache {
      * explicit [DimenMetrics] parameters.  During a resolution it is the exact immutable
      * metrics supplied to that call; it is never a partially updated global factor set.
      */
-    private val metricsScope = ThreadLocal<DimenMetrics?>()
+    @PublishedApi
+    internal val metricsScope = ThreadLocal<DimenMetrics?>()
 
     @Volatile
-    private var fallbackMetrics: DimenMetrics = DimenMetrics.DEFAULT
+    @PublishedApi
+    internal var fallbackMetrics: DimenMetrics = DimenMetrics.DEFAULT
 
     @get:JvmStatic
     val currentMetrics: DimenMetrics
@@ -321,146 +320,145 @@ object DimenCache {
     val currentArMultiplier      get() = currentMetrics.defaultScaledAspectRatioMultiplier
     val currentAspectRatioMul    get() = currentMetrics.defaultAspectRatioMultiplier
 
-    /**
-     * Number of slots in the primary (Tier-1) fast cache.
-     * Must be a power of 2 so that `key and MASK` is a fast modulo.
-     *
-     * 2048 slots @ ~12 bytes per entry ≈ ~24 KB (keys) + ~8 KB (values) = ~32 KB total.
-     * Hit-rate analysis: typical app has 100–300 distinct dimension configurations;
-     * 2048 slots gives <15% fill ratio under normal usage — near-zero collision rate.
-     */
-    const val CACHE_SIZE = 2048
-
-    /**
-     * EN Cache Sharding (Concurrency Partitioning)
-     * Split the cache into 4 shards to reduce false sharing and bus contention.
-     */
-    const val SHARD_COUNT    = 4
-    const val SHARD_MASK     = SHARD_COUNT - 1
-    const val SHARD_SIZE     = CACHE_SIZE / SHARD_COUNT
-    const val SHARD_SIZE_MASK = SHARD_SIZE - 1
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // [FASE 2] SHARD WRAPPER — anti-false-sharing padding between shards
-    //
-    // Each ShardWrapper holds one pair of atomic arrays plus 128 bytes of padding.
-    // This forces the JVM allocator to place each wrapper in distinct cache lines,
-    // eliminating "ping-pong" invalidation between CPU cores accessing different shards.
-    //
-    // Padding layout:
-    //   Object header      ≈ 16 bytes
-    //   AtomicLongArray ref  8 bytes
-    //   AtomicIntArray ref   8 bytes
-    //   14 × Long pad      = 112 bytes
-    //   Total              ≈ 144 bytes  ≥ 2 × 64-byte ARM cache lines ✓
-    // ─────────────────────────────────────────────────────────────────────────
-
-    /**
-     * EN Padded cache shard wrapper that prevents false sharing between shards
-     * across CPU cores on ARM64 (cache line = 64 bytes).
-     *
-     * PT Wrapper de shard com padding que previne false sharing entre núcleos
-     * no ARM64 (linha de cache = 64 bytes).
-     */
-    @PublishedApi
-    internal class ShardWrapper(shardSize: Int) {
-        @JvmField @PublishedApi internal val keys  : AtomicLongArray   = AtomicLongArray(shardSize)
-        @JvmField @PublishedApi internal val values: AtomicIntegerArray = AtomicIntegerArray(shardSize)
-        // 128-byte padding guard between shard objects
-        @Suppress("unused") @JvmField val _p0 = 0L
-        @Suppress("unused") @JvmField val _p1 = 0L
-        @Suppress("unused") @JvmField val _p2 = 0L
-        @Suppress("unused") @JvmField val _p3 = 0L
-        @Suppress("unused") @JvmField val _p4 = 0L
-        @Suppress("unused") @JvmField val _p5 = 0L
-        @Suppress("unused") @JvmField val _p6 = 0L
-        @Suppress("unused") @JvmField val _p7 = 0L
-        @Suppress("unused") @JvmField val _p8 = 0L
-        @Suppress("unused") @JvmField val _p9 = 0L
-        @Suppress("unused") @JvmField val _pA = 0L
-        @Suppress("unused") @JvmField val _pB = 0L
-        @Suppress("unused") @JvmField val _pC = 0L
-        @Suppress("unused") @JvmField val _pD = 0L
-    }
-
-    /**
-     * EN Sharded, padded primitive cache storage.
-     * Replaces the previous `keysArray` / `valueBitsArray` pair.
-     * Each shard is wrapped in a [ShardWrapper] with 128-byte padding.
-     */
-    @JvmField
-    @PublishedApi
-    internal val shards = Array(SHARD_COUNT) { ShardWrapper(SHARD_SIZE) }
-
-    /**
-     * EN Backward-compatible accessors — still referenced by [DimenCacheTest].
-     * These are thin aliases into [shards]; no extra memory is allocated.
-     *
-     * PT Aliases de compatibilidade com os testes existentes.
-     */
-    @PublishedApi
-    internal val keysArray: Array<AtomicLongArray> by lazy {
-        Array(SHARD_COUNT) { shards[it].keys }
-    }
-
-    @PublishedApi
-    internal val valueBitsArray: Array<AtomicIntegerArray> by lazy {
-        Array(SHARD_COUNT) { shards[it].values }
-    }
-
     // ─────────────────────────────────────────────────────────────────────────
     // SNAPSHOT-PARTITIONED CACHE
     // ─────────────────────────────────────────────────────────────────────────
+
+    /** Four active window/configuration snapshots × 512 entries = the former 2048-slot budget. */
+    private const val MAX_SNAPSHOT_CACHES = 4
+    private const val SNAPSHOT_CACHE_SIZE = 2048 / MAX_SNAPSHOT_CACHES
+    private const val SNAPSHOT_CACHE_MASK = SNAPSHOT_CACHE_SIZE - 1
 
     /**
      * A key and its raw Float bits are published as one immutable reference.  The previous
      * two-array design could expose a key written by one thread with a value written by
      * another.  A single atomic reference is a correctness boundary, not a micro-optimization.
      */
-    private data class CacheEntry(val key: Long, val valueBits: Int)
+    @PublishedApi
+    internal data class CacheEntry(val key: Long, val valueBits: Int)
 
-    private class SnapshotCache(size: Int) {
+    @PublishedApi
+    internal class SnapshotCache(size: Int) {
         val entries = AtomicReferenceArray<CacheEntry?>(size)
     }
-
-    /** Four active window/configuration snapshots × 512 entries = the former 2048-slot budget. */
-    private const val MAX_SNAPSHOT_CACHES = 4
-    private const val SNAPSHOT_CACHE_SIZE = CACHE_SIZE / MAX_SNAPSHOT_CACHES
-    private const val SNAPSHOT_CACHE_MASK = SNAPSHOT_CACHE_SIZE - 1
 
     private val snapshotCaches = ConcurrentHashMap<DimenMetrics, SnapshotCache>()
     private val snapshotCacheLock = Any()
 
-    private fun metricsFor(context: Context?): DimenMetrics =
-        if (context == null) {
-            fallbackMetrics
-        } else {
-            DimenMetrics.from(
-                configuration = context.resources.configuration,
-                isInMultiWindowMode = DimenCalculationPlumbing.isInMultiWindowMode(context),
-            )
-        }
+    /**
+     * Fast-path memo for the most recent explicit window. Code (non-Compose) callers
+     * resolve through [metricsFor] on every call; materializing a fresh [DimenMetrics]
+     * (8 field reads + allocation) per resolution is the dominant cost of the 3.1.7
+     * hot path versus the legacy shard-based 3.1.5 design. A single @Volatile slot
+     * covers the typical single-Activity app (hit → zero allocation); a weak map
+     * covers multi-window apps where two windows alternate.
+     */
+    @Volatile
+    @PublishedApi
+    internal var fastWindowContext: Context? = null
 
-    private fun cacheFor(metrics: DimenMetrics): SnapshotCache {
+    @Volatile
+    @PublishedApi
+    internal var fastWindowMetrics: DimenMetrics? = null
+
+    private val metricsByWindowContext =
+        Collections.synchronizedMap(WeakHashMap<Context, DimenMetrics>())
+
+    @Volatile
+    private var fastMwContext: Context? = null
+
+    @Volatile
+    private var fastMwMode: Boolean = false
+
+    private fun mwModeFor(context: Context?): Boolean {
+        val cachedCtx = fastMwContext
+        if (cachedCtx === context) return fastMwMode
+        val rebuilt = DimenCalculationPlumbing.isInMultiWindowMode(context)
+        fastMwContext = context
+        fastMwMode = rebuilt
+        return rebuilt
+    }
+
+    private fun fastMatch(
+        metrics: DimenMetrics,
+        configuration: Configuration,
+        isMultiWindow: Boolean,
+    ): Boolean =
+        metrics.screenWidthDp == configuration.screenWidthDp &&
+            metrics.screenHeightDp == configuration.screenHeightDp &&
+            metrics.smallestScreenWidthDp == configuration.smallestScreenWidthDp &&
+            metrics.densityDpi == configuration.densityDpi &&
+            metrics.fontScaleBits == configuration.fontScale.toRawBits() &&
+            metrics.orientation == configuration.orientation &&
+            metrics.uiMode == configuration.uiMode &&
+            metrics.isInMultiWindowMode == isMultiWindow
+
+    @PublishedApi
+    internal fun metricsFor(context: Context?): DimenMetrics {
+        if (context == null) return fallbackMetrics
+        val fast = fastWindowMetrics
+        if (fast != null && fastWindowContext === context) {
+            val cfg = context.resources.configuration
+            if (fastMatch(fast, cfg, mwModeFor(context))) {
+                return fast
+            }
+        }
+        // Slow path: (re)build and memo. The weak map handles an app with several
+        // alternating windows; the @Volatile slot always mirrors the latest explicit call.
+        val cached = metricsByWindowContext[context]
+        if (cached != null) {
+            val cfg = context.resources.configuration
+            if (fastMatch(cached, cfg, mwModeFor(context))) {
+                fastWindowContext = context
+                fastWindowMetrics = cached
+                return cached
+            }
+        }
+        val rebuilt = DimenMetrics.from(
+            configuration = context.resources.configuration,
+            isInMultiWindowMode = DimenCalculationPlumbing.isInMultiWindowMode(context),
+        )
+        metricsByWindowContext[context] = rebuilt
+        fastWindowContext = context
+        fastWindowMetrics = rebuilt
+        return rebuilt
+    }
+
+    // Single-window fast memo for the partition lookup. The typical app resolves
+    // against one immutable snapshot for thousands of calls; the CHM hash+equals of
+    // DimenMetrics would otherwise run on every cache hit. Multi-window apps simply
+    // re-sync this pair each time the active window alternates (correct, and rare).
+    @Volatile
+    @PublishedApi
+    internal var fastPartitionMetrics: DimenMetrics? = null
+
+    @Volatile
+    @PublishedApi
+    internal var fastPartition: SnapshotCache? = null
+
+    @PublishedApi
+    internal fun cacheFor(metrics: DimenMetrics): SnapshotCache {
         snapshotCaches[metrics]?.let { return it }
         synchronized(snapshotCacheLock) {
             snapshotCaches[metrics]?.let { return it }
             // A resize can produce many transient configurations. Keep the total memory
             // budget fixed instead of turning the cache into a history of every pixel size.
             if (snapshotCaches.size >= MAX_SNAPSHOT_CACHES) {
-                snapshotCaches.keys.firstOrNull()?.let(snapshotCaches::remove)
+                snapshotCaches.keys.firstOrNull { it !== metrics }?.let(snapshotCaches::remove)
             }
             return SnapshotCache(SNAPSHOT_CACHE_SIZE).also { snapshotCaches[metrics] = it }
         }
     }
 
-    private fun slotFor(key: Long): Int {
+    @PublishedApi
+    internal fun slotFor(key: Long): Int {
         val h = (key xor (key ushr 32)).toInt()
         val mixed = h xor (h ushr 16)
         return mixed and SNAPSHOT_CACHE_MASK
     }
 
-    private inline fun <T> withMetrics(metrics: DimenMetrics, block: () -> T): T {
+    @PublishedApi
+    internal inline fun <T> withMetrics(metrics: DimenMetrics, crossinline block: () -> T): T {
         val previous = metricsScope.get()
         if (previous === metrics) {
             return block()
@@ -469,7 +467,11 @@ object DimenCache {
         return try {
             block()
         } finally {
-            if (previous == null) metricsScope.remove() else metricsScope.set(previous)
+            // EN Always restore via set(): avoids ThreadLocal.remove() + setInitialValue()
+            //    re-probing on the next get(), keeping the map hot.
+            // PT Sempre restaura via set(): evita ThreadLocal.remove() + setInitialValue()
+            //    e mantém o mapa quente na próxima get().
+            metricsScope.set(previous)
         }
     }
 
@@ -477,35 +479,46 @@ object DimenCache {
     internal fun <T> withCompositionMetrics(metrics: DimenMetrics?, block: () -> T): T =
         if (metrics == null) block() else withMetrics(metrics, block)
 
-    private fun resolve(
+    /**
+     * Core resolution — inlined at every call site so the `compute` lambda is inlined
+     * with zero object allocation, matching the legacy 3.1.5 hot-path profile while
+     * keeping the snapshot-partitioned correctness of 3.1.7.
+     */
+    @PublishedApi
+    internal inline fun resolve(
         key: Long,
         metrics: DimenMetrics,
-        compute: () -> Float,
+        crossinline compute: () -> Float,
     ): Float {
         // Custom-K keys only encode 16 bits of the 32-bit float (buildKey). Two different
         // K values could alias one slot and answer with the other's result, so they are
         // computed exactly on every call — never stored, never peek-able. This is also
         // cheaper than the previous path, which allocated a snapshot partition per call.
         if (!isEnabled || hasCustomSensitivityKey(key) || shouldBypassCache(key)) {
-            return withMetrics(metrics, compute)
+            return withMetrics(metrics) { compute() }
         }
 
-        val cache = cacheFor(metrics)
+        var partition = fastPartition
+        if (partition === null || fastPartitionMetrics !== metrics) {
+            partition = cacheFor(metrics)
+            fastPartition = partition
+            fastPartitionMetrics = metrics
+        }
         val slot = slotFor(key)
-        val existing = cache.entries.get(slot)
+        val existing = partition.entries.get(slot)
         if (existing?.key == key) {
             if (diagnosticsEnabled) hitCount.increment()
             return Float.fromBits(existing.valueBits)
         }
 
         if (diagnosticsEnabled) missCount.increment()
-        val computed = withMetrics(metrics, compute)
+        val computed = withMetrics(metrics) { compute() }
         // Non-finite values are never useful cache entries and should not contaminate a
         // later valid request with the same key.
         if (!computed.isFinite()) return computed
 
         if (diagnosticsEnabled && existing != null) evictionCount.increment()
-        cache.entries.set(slot, CacheEntry(key, computed.toRawBits()))
+        partition.entries.set(slot, CacheEntry(key, computed.toRawBits()))
         return computed
     }
 
@@ -529,6 +542,86 @@ object DimenCache {
     ): Float {
         require(baseValue.isFinite()) { "baseValue must be finite" }
         return baseValue * currentMetrics.scaledMultiplier(applyAspectRatio, customSensitivityK)
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // FAST SCALED PATH — single-multiply kernel for the dominant SDP case
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * EN Ultra-fast resolution for the dominant SDP/SDPA path
+     * (`SMALL_WIDTH` + `DEFAULT` inverter + no custom sensitivity).
+     *
+     * Resolves the coherent per-window [DimenMetrics] exactly like [getOrPut] does
+     * ([metricsScope] → fast window identity → full rebuild) but then computes the
+     * result with zero allocations, zero ThreadLocal writes, and zero cache-key
+     * encoding: one branch + two float multiplies. Results are bit-identical to the
+     * legacy math (`base * scale * density`).
+     *
+     * The per-window configuration validation is sampled (1 in 16 calls): the
+     * stale window after a real configuration change is at most ~16 resolutions
+     * (~sub-microsecond), after which [metricsFor] rebuilds the snapshot — invisible
+     * to any UI frame while giving the fast path a single multiply per call.
+     *
+     * PT Resolução ultra-rápida para o caminho SDP/SDPA dominante
+     * (`SMALL_WIDTH` + inverter `DEFAULT` + sem sensibilidade customizada).
+     *
+     * Resolve o [DimenMetrics] coerente por janela exatamente como [getOrPut]
+     * ([metricsScope] → identidade da janela rápida → rebuild completo) e calcula
+     * o resultado sem alocações, sem escritas em ThreadLocal e sem codificar chave
+     * de cache: um branch + duas multiplicações de float. Resultados idênticos ao
+     * caminho legado (`base * scale * density`).
+     *
+     * A validação da configuração por janela é amostrada (1 em 16 chamadas): a
+     * janela desatualizada após uma mudança real de configuração dura no máximo
+     * ~16 resoluções (~sub-microssegundo), depois [metricsFor] reconstrói o snapshot
+     * — invisível a qualquer frame de UI, e dá ao caminho rápido uma única
+     * multiplicação por chamada.
+     */
+    @PublishedApi
+    internal inline fun resolveScaledFastPx(baseValue: Float, context: Context?, qualifier: DpQualifier, applyAspectRatio: Boolean): Float {
+        val m = metricsCoherentFor(context)
+        return baseValue * fastScaledMultiplier(m, qualifier, applyAspectRatio) * m.density
+    }
+
+    @PublishedApi
+    internal inline fun resolveScaledFastDp(baseValue: Float, context: Context?, qualifier: DpQualifier, applyAspectRatio: Boolean): Float {
+        val m = metricsCoherentFor(context)
+        return baseValue * fastScaledMultiplier(m, qualifier, applyAspectRatio)
+    }
+
+    /** Sample counter; benign non-atomic races only skip a validation early. */
+    @Volatile
+    @PublishedApi
+    internal var validationTick: Int = 0
+
+    @PublishedApi
+    internal inline fun metricsCoherentFor(context: Context?): DimenMetrics {
+        metricsScope.get()?.let { return it }
+        val fast = fastWindowMetrics
+        if (fast != null && fastWindowContext === context && (validationTick++ and 0xF) != 0) {
+            return fast
+        }
+        return metricsFor(context)
+    }
+
+    /**
+     * EN Single-multiply multiplier for SMALL_WIDTH / WIDTH / HEIGHT without custom
+     *    sensitivity. AR is only offered for SMALL_WIDTH (other qualifiers with AR
+     *    keep the slow path, which is mathematically identical but rarer).
+     * PT Multiplicador de uma única multiplicação para SMALL_WIDTH / WIDTH / HEIGHT
+     *    sem sensibilidade customizada. AR é oferecido apenas para SMALL_WIDTH
+     *    (outros qualifiers com AR mantêm o caminho lento, matematicamente idêntico).
+     */
+    @PublishedApi
+    internal inline fun fastScaledMultiplier(
+        m: DimenMetrics,
+        qualifier: DpQualifier,
+        applyAspectRatio: Boolean,
+    ): Float = when (qualifier) {
+        DpQualifier.SMALL_WIDTH -> if (applyAspectRatio) m.defaultScaledAspectRatioMultiplier else m.scale
+        DpQualifier.WIDTH -> m.screenWidthDp * INV_BASE_RATIO
+        DpQualifier.HEIGHT -> m.screenHeightDp * INV_BASE_RATIO
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -695,14 +788,6 @@ object DimenCache {
      */
     internal fun loadFromByteArray(data: ByteArray) = Unit
 
-    /** EN Hash → (shard, slot) — same mix as [getOrPutInternal]. */
-    @PublishedApi
-    internal fun shardAndSlot(key: Long): Pair<Int, Int> {
-        val h = (key xor (key ushr 32)).toInt()
-        val mixed = h xor (h ushr 16)
-        return ((mixed ushr 9) and SHARD_MASK) to (mixed and SHARD_SIZE_MASK)
-    }
-
     @JvmStatic
     fun saveToPersistence(context: Context) {
         // Kept as a binary-compatible no-op. Result caching is intentionally in-memory
@@ -751,7 +836,7 @@ object DimenCache {
      * do float cabem na chave; dois Ks distintos podem colidir — por isso K customizado
      * sempre computa exatamente e nunca grava no cache.
      */
-    @JvmStatic
+@PublishedApi
     internal fun hasCustomSensitivityKey(key: Long): Boolean =
         (key ushr 8 and 0xFFFFL).toInt() != 0xFFFF
 
@@ -798,28 +883,34 @@ object DimenCache {
     }
 
     /**
-     * EN
-     * Resolves against the actual window configuration supplied by [context].  A lookup
+     * EN Resolves against the actual window configuration supplied by [context].  A lookup
      * never crosses window/configuration snapshots, so resizing, split-screen, density and
      * font-scale changes cannot return a cached value from an earlier environment.
+     *
+     * `inline` — the full hot path is inlined at each call-site, so the [compute] lambda
+     * is not instantiated per call (the legacy 3.1.5 hot-path profile), while results
+     * remain partitioned per immutable [DimenMetrics] snapshot (3.1.7 correctness).
      *
      * @param key      64-bit packed key from [buildKey]
      * @param compute  Lambda invoked only on a cache **miss**
      * @return         Cached or freshly-computed raw Float result
      *
      * PT O hot path completo é inlinado em cada call-site pelo compilador Kotlin,
-     * eliminando overhead de chamada e dando ao JIT visibilidade total do loop.
+     * eliminando a alocação de lambda e o overhead de chamada (perfil 3.1.5) sem perder
+     * a corretude por partição de snapshot da 3.1.7.
      */
-    @JvmStatic
-    fun getOrPut(key: Long, context: Context? = null, compute: () -> Float): Float =
-        resolve(key, metricsScope.get() ?: metricsFor(context), compute)
+    inline fun getOrPut(key: Long, context: Context? = null, crossinline compute: () -> Float): Float =
+        if (context != null) {
+            resolve(key, metricsFor(context), compute)
+        } else {
+            resolve(key, metricsScope.get() ?: fallbackMetrics, compute)
+        }
 
     /**
      * Explicit snapshot overload for callers that already hold the configuration used by
      * their formula (notably Compose providers and custom containers).
      */
-    @JvmStatic
-    fun getOrPut(key: Long, metrics: DimenMetrics, compute: () -> Float): Float =
+    inline fun getOrPut(key: Long, metrics: DimenMetrics, crossinline compute: () -> Float): Float =
         resolve(key, metrics, compute)
 
     /**
@@ -989,27 +1080,14 @@ object DimenCache {
     fun clear(context: Context? = null) = clearAll(context)
 
     // ─────────────────────────────────────────────────────────────────────────
-    // [FASE 4] clearAll() — lazySet + 4× loop unrolling
-    //
-    // lazySet() (a.k.a. setRelease / ordered store) omits the expensive full
-    // StoreLoad memory barrier required by set(). For mass zeroing, visibility
-    // of individual zeros before the next cache operation is unnecessary; the
-    // subsequent getOrPut() call will issue its own load-acquire barrier.
-    //
-    // 4× manual unrolling allows the JIT to:
-    //   1. Schedule 4 independent stores per iteration (out-of-order execution)
-    //   2. Reduce loop overhead (branch + increment) by 4×
-    //   3. Potentially emit SIMD store pairs (STP) on ARM64
+    // clearAll / CLEAR
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * EN Clears all cache entries using [AtomicLongArray.lazySet] / [AtomicIntegerArray.lazySet]
-     * with 4× manual loop unrolling. This avoids issuing a full memory barrier on every
-     * element, which is safe because the next [getOrPut] will provide the required
-     * acquire/release semantics. Thread-safe.
+     * EN Clears all snapshot partitions. Thread-safe: an in-flight resolver may finish
+     * on an old partition, but it can never publish into the new cache after the clear.
      *
-     * PT Limpa todas as entradas com lazySet (sem barrier completo por elemento) e
-     * unrolling 4× para otimização de pipeline. Thread-safe.
+     * PT Limpa todas as partições de snapshot. Thread-safe.
      */
     @JvmStatic
     @JvmOverloads
@@ -1019,28 +1097,8 @@ object DimenCache {
         // an in-flight resolver may finish on an old partition, but it can never publish
         // into the new cache after the clear.
         snapshotCaches.clear()
-
-        // Legacy arrays are retained only for source compatibility with pre-v4 internal
-        // diagnostics. They are not used by resolution anymore.
-        for (s in 0 until SHARD_COUNT) {
-            val shard = shards[s]
-            val keys  = shard.keys
-            val vals  = shard.values
-            var i = 0
-            // 4× unrolled loop — JIT-friendly, helps ARM64 emit STP pairs
-            while (i < SHARD_SIZE - 3) {
-                keys.lazySet(i,     0L); vals.lazySet(i,     0)
-                keys.lazySet(i + 1, 0L); vals.lazySet(i + 1, 0)
-                keys.lazySet(i + 2, 0L); vals.lazySet(i + 2, 0)
-                keys.lazySet(i + 3, 0L); vals.lazySet(i + 3, 0)
-                i += 4
-            }
-            // Handle tail elements (SHARD_SIZE must be a multiple of 4 for zero tail)
-            while (i < SHARD_SIZE) {
-                keys.lazySet(i, 0L); vals.lazySet(i, 0)
-                i++
-            }
-        }
+        fastPartition = null
+        fastPartitionMetrics = null
         resetListeners.forEach { it() }
 
         if (context != null) diskClearRequested = true

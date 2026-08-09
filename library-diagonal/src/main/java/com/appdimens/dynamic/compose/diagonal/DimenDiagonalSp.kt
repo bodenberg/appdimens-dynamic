@@ -43,7 +43,7 @@ import com.appdimens.dynamic.core.rememberDimenSpPx
 import com.appdimens.dynamic.core.DimenCalculationPlumbing
 import com.appdimens.dynamic.core.LocalUiModeType
 import com.appdimens.dynamic.core.layoutRememberStamp
-import com.appdimens.dynamic.core.pxRememberStamp
+import com.appdimens.dynamic.core.spRememberStamp
 
 // EN Rotation facilitator extensions for Compose.
 // PT Extensões facilitadoras para rotação em Compose.
@@ -666,7 +666,7 @@ fun Number.toDynamicDiagonalSp(
         valueType = if (fontScale) DimenCache.ValueType.SP_WITH_SCALE else DimenCache.ValueType.SP_NO_SCALE,
         customSensitivityK = customSensitivityK
     )
-    val spStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val spStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
     return rememberDiagonalSp(
         cacheKey, spStamp, androidContext, density, this.toFloat(), configuration,
@@ -789,7 +789,7 @@ fun Number.toDynamicDiagonalPx(
         valueType = if (fontScale) DimenCache.ValueType.SP_PX_WITH_SCALE else DimenCache.ValueType.SP_PX_NO_SCALE,
         customSensitivityK = customSensitivityK
     )
-    val dgsspPxStamp = pxRememberStamp(layoutRememberStamp(configuration, androidContext), density)
+    val dgsspPxStamp = spRememberStamp(layoutRememberStamp(configuration, androidContext), density)
 
     return rememberDiagonalSpPx(
         cacheKey, dgsspPxStamp, androidContext, density, this.toFloat(), configuration,

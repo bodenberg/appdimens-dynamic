@@ -63,7 +63,7 @@ class DimenCacheRaceTest {
             DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
         )
         val h1 = (targetKey1 xor (targetKey1 ushr 32)).toInt()
-        val targetSlot = (h1 xor (h1 ushr 16)) and (DimenCache.CACHE_SIZE / 4 - 1)
+        val targetSlot = (h1 xor (h1 ushr 16)) and (2048 / 4 - 1)
 
         var collidingKey = 0L
         for (bv in 101..2000000) {
@@ -73,7 +73,7 @@ class DimenCacheRaceTest {
             )
             val h = (k xor (k ushr 32)).toInt()
             val m = h xor (h ushr 16)
-            if ((m and (DimenCache.CACHE_SIZE / 4 - 1)) == targetSlot) {
+            if ((m and (2048 / 4 - 1)) == targetSlot) {
                 collidingKey = k
                 break
             }

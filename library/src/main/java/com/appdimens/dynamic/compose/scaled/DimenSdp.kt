@@ -443,6 +443,23 @@ val Number.wdpPxiaPh: Float get() = this.toDynamicScaledPx(DpQualifier.WIDTH, In
  */
 @Composable
 fun Number.toDynamicScaledDp(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Dp {
+    // EN Fast lane (Compose): the dominant path bypasses key encoding and the
+    //    remember/getOrPut machinery entirely — a single float multiply over the
+    //    coherent per-window metrics (bit-identical to the legacy math).
+    //    AR is only fast for SMALL_WIDTH (shared-kernel contract).
+    // PT Faixa rápida (Compose): o caminho dominante ignora a codificação de
+    //    chave e o mecanismo remember/getOrPut — uma única multiplicação float
+    //    sobre as métricas coerentes por janela (idêntico à matemática legada).
+    //    AR só é rápido para SMALL_WIDTH (contrato do kernel compartilhado).
+    if (DimenCache.isEnabled &&
+        inverter == Inverter.DEFAULT &&
+        !ignoreMultiWindows &&
+        customSensitivityK == null &&
+        (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)
+    ) {
+        return Dp(DimenCache.resolveScaledFastDp(this.toFloat(), LocalContext.current, qualifier, applyAspectRatio))
+    }
+
     val configuration = LocalConfiguration.current
     val androidContext = LocalContext.current
 
@@ -596,6 +613,21 @@ internal fun rememberScaledPxFromDp(
  */
 @Composable
 fun Number.toDynamicScaledPx(qualifier: DpQualifier, inverter: Inverter = Inverter.DEFAULT, ignoreMultiWindows: Boolean = false, applyAspectRatio: Boolean = false, customSensitivityK: Float? = null): Float {
+    // EN Fast lane (Compose): dominant pixel path — one multiply set over the
+    //    coherent per-window metrics, no key encoding, no remember machinery.
+    //    AR is only fast for SMALL_WIDTH (shared-kernel contract).
+    // PT Faixa rápida (Compose): caminho em pixels dominante — um conjunto de
+    //    multiplicações sobre as métricas coerentes, sem codificar chave.
+    //    AR só é rápido para SMALL_WIDTH (contrato do kernel compartilhado).
+    if (DimenCache.isEnabled &&
+        inverter == Inverter.DEFAULT &&
+        !ignoreMultiWindows &&
+        customSensitivityK == null &&
+        (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)
+    ) {
+        return DimenCache.resolveScaledFastPx(this.toFloat(), LocalContext.current, qualifier, applyAspectRatio)
+    }
+
     val configuration = LocalConfiguration.current
     val androidContext = LocalContext.current
     val density = LocalDensity.current

@@ -616,6 +616,9 @@ internal fun calculateFillDp(
     context: Context? = null
 ): Float {
     if (DimenCalculationPlumbing.isMultiWindowConstrained(configuration, ignoreMultiWindows, context)) return baseValue
+    // qualifier/inverter are intentionally ignored: FILL scales by the largest screen side
+    // (maxOf(rw, rh)) regardless of orientation qualifier. Kept in the signature so the
+    // cache key stays consistent with the other "calculate*" kernels.
     val sm = DimenCalculationPlumbing.smallestSideDp(configuration)
     val lg = DimenCalculationPlumbing.largestSideDp(configuration)
     val rw = sm / DesignScaleConstants.BASE_WIDTH_DP
