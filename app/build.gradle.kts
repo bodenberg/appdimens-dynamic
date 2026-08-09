@@ -15,17 +15,42 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // The CI "minified APK" job runs instrumented tests against the R8
+        // release artifact; AGP only registers androidTest tasks for the
+        // testBuildType variant, so it must be release for
+        // assembleReleaseAndroidTest / connectedReleaseAndroidTest to exist.
+        testBuildType = "release"
+    }
+
+    val keystoreFile = rootProject.file("test_keystore.jks")
+
+    // test_keystore.jks is git-ignored (*.jks), so CI cannot rely on it being
+    // checked out. Regenerate it with the same alias/passwords the build
+    // expects ("test"/123456) whenever it is missing, before any build task.
+    val createTestKeystore by tasks.registering(Exec::class) {
+        onlyIf { !keystoreFile.exists() }
+        commandLine(
+            "keytool", "-genkeypair", "-v",
+            "-keystore", keystoreFile.absolutePath,
+            "-storetype", "PKCS12",
+            "-alias", "test",
+            "-keyalg", "RSA", "-keysize", "2048", "-validity", "10000",
+            "-storepass", "123456", "-keypass", "123456",
+            "-dname", "CN=AppDimens Android CI, OU=CI, O=AppDimens, L=Unspecified, ST=Unspecified, C=BR"
+        )
+        outputs.file(keystoreFile)
+    }
+    tasks.named("preBuild") {
+        dependsOn(createTestKeystore)
     }
 
     signingConfigs {
         create("sample") {
-            val keystore = rootProject.file("test_keystore.jks")
-            if (keystore.exists()) {
-                storeFile = keystore
-                storePassword = System.getenv("SAMPLE_STORE_PASSWORD") ?: "123456"
-                keyAlias = "test"
-                keyPassword = System.getenv("SAMPLE_KEY_PASSWORD") ?: "123456"
-            }
+            storeFile = keystoreFile
+            storePassword = System.getenv("SAMPLE_STORE_PASSWORD") ?: "123456"
+            keyAlias = "test"
+            keyPassword = System.getenv("SAMPLE_KEY_PASSWORD") ?: "123456"
         }
     }
 
@@ -98,6 +123,9 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.profileinstaller)
     testImplementation(libs.junit)
+    // Pin the Compose BOM for the androidTest configuration too; ui-test-junit4
+    // has no version of its own and was resolving as ui-test-junit4: (empty).
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
