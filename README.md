@@ -124,25 +124,6 @@ dependencies {
 }
 ```
 
-### Migration from 3.1.5 (modularization baseline)
-
-| 3.1.5 | 3.1.6 |
-|-------|-------|
-| One `appdimens-dynamic` dependency with every strategy | Principal = scaled + core; declare each extra strategy module |
-| — | Optional `appdimens-dynamic-bom` for shared version management |
-| Kotlin imports | Unchanged |
-
-### Migration from 3.1.6 to 3.1.7
-
-**No API, import, or packaging changes** — 3.1.7 is an internal correctness and performance release; upgrade by bumping the version. Highlights of what changed under the hood:
-
-- **Persistent result cache removed.** `DimenCache` no longer writes to Preferences DataStore. The in-memory cache is **partitioned per window/configuration snapshot** (`DimenMetrics`), so a rotated, resized, or recreated window can never observe values computed for another size, density, font scale, or multi-window state.
-- **Exact aspect-ratio math.** The hand-maintained binary-search lookup table in `AspectRatioLookup` was replaced by a deterministic `ln()` computed once per snapshot — nearby screen ratios no longer collapse to the same approximated value.
-- **Atomic cache entries.** Key and value are published as a single immutable reference, eliminating the key/value race that could return another key’s value under concurrency.
-- **Per-window correctness for Compose.** `AppDimensProvider` provides `LocalDimenMetrics`; the `rememberDimen*` helpers keep every dimension in a composition on the same coherent snapshot and remember on two keys instead of four.
-- **Memory-leak fix.** The `Context → Activity` weak cache was removed.
-- **Build/toolchain refresh:** Kotlin 2.4.10, AGP 9.2.1, Compose BOM 2026.06.01, Material 1.14.0; CI uses least-privilege permissions and updated Actions; the Dokka output path is portable and git-ignored.
-
 ### Artifact matrix
 
 | Maven artifact | Contents |
