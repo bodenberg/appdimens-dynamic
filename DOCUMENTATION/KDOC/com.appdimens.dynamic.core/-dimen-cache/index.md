@@ -6,7 +6,7 @@ object [DimenCache](index.md)
 
 EN Global, lock-free, shared cache for all AppDimens dimension calculations.
 
-**Thread Safety**: Completely thread-safe. Since 3.1.7 the cache is **partitioned per immutable window snapshot** ([DimenMetrics](../-dimen-metrics/index.md)); each entry is published as a single atomic `CacheEntry` (key + value bits) reference, so concurrent readers can never observe another key's value. The legacy padded shard arrays are retained for source compatibility only.
+**Thread Safety**: Completely thread-safe. Since 3.1.7 the cache is **partitioned per immutable window snapshot** ([DimenMetrics](../-dimen-metrics/index.md)); each entry is published as a single atomic `CacheEntry` (key + value bits) reference, so concurrent readers can never observe another key's value.
 
 PT Cache global, lock-free e compartilhado para todos os cálculos de dimensão do AppDimens.
 
@@ -22,19 +22,11 @@ internal class [ScreenFactors](-screen-factors/index.md)
 
 EN Holds all screen-derived scaling factors in an object padded to exceed two ARM64 cache lines (2 × 64 bytes = 128 bytes). Retained for binary/source compatibility — production formulas resolve through [currentMetrics](current-metrics.md).
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal class [ShardWrapper](-shard-wrapper/index.md)(shardSize: [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html))
-
-EN Padded cache shard wrapper that prevents false sharing between shards across CPU cores on ARM64 (cache line = 64 bytes). Retained for compatibility with legacy diagnostics.
-
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal enum [ValueType](-value-type/index.md) : [Enum](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html)<[DimenCache.ValueType](-value-type/index.md)>
 
 EN Dimension type discriminator for the cache key. PT Discriminador de tipo de dimensão para a chave de cache.
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [ADJUSTMENT_SCALE](-a-d-j-u-s-t-m-e-n-t_-s-c-a-l-e.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
-
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [CACHE_SIZE](-c-a-c-h-e_-s-i-z-e.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html) = 2048
-
-Number of slots in the primary (Tier-1) fast cache budget. Must be a power of 2 so that `key and MASK` is a fast modulo.
 
 @[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)@[Volatile](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-volatile/index.html)internal var [cachedUiMode](cached-ui-mode.md): [UiModeType](../../com.appdimens.dynamic.common/-ui-mode-type/index.md)
 
@@ -100,31 +92,11 @@ Internal flag to avoid [AtomicBoolean.get](https://developer.android.com/referen
 
 internal val [isInitializing](is-initializing.md): [AtomicBoolean](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicBoolean.html)
 
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [keysArray](keys-array.md): [Array](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html)<[AtomicLongArray](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicLongArray.html)>
-
-EN Backward-compatible accessors — still referenced by [DimenCacheTest](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.7/library/src/test/java/com/appdimens/dynamic/core/DimenCacheTest.kt). These are thin aliases into [shards](shards.md); no extra memory is allocated.
-
 @[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)val [missCount](miss-count.md): [LongAdder](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/LongAdder.html)
 
 private val [resetListeners](reset-listeners.md): [CopyOnWriteArrayList](https://developer.android.com/reference/kotlin/java/util/concurrent/CopyOnWriteArrayList.html)<() -> [Unit](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html)>
 
 @[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [SENSITIVITY_DEFAULT](-s-e-n-s-i-t-i-v-i-t-y_-d-e-f-a-u-l-t.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
-
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [SHARD_COUNT](-s-h-a-r-d_-c-o-u-n-t.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html) = 4
-
-EN Cache Sharding (Concurrency Partitioning) — legacy layout, split into 4 shards to reduce false sharing and bus contention.
-
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [SHARD_MASK](-s-h-a-r-d_-m-a-s-k.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)
-
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [SHARD_SIZE](-s-h-a-r-d_-s-i-z-e.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)
-
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal const val [SHARD_SIZE_MASK](-s-h-a-r-d_-s-i-z-e_-m-a-s-k.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)
-
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)@[JvmField](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html)internal val [shards](shards.md): [Array](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html)<[DimenCache.ShardWrapper](-shard-wrapper/index.md)>
-
-EN Legacy sharded, padded primitive cache storage — retained for source compatibility; resolution uses snapshot partitions.
-
-@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal val [valueBitsArray](value-bits-array.md): [Array](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html)<[AtomicIntegerArray](https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicIntegerArray.html)>
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [addResetListener](add-reset-listener.md)(listener: () -> [Unit](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html))
 
@@ -144,7 +116,7 @@ EN Clears all cache slots. Java-compatible alias.
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[JvmOverloads](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html)fun [clearAll](clear-all.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null)
 
-EN Detaches all snapshot partitions atomically (no disk I/O); legacy shard arrays are zeroed for compatibility.
+EN Detaches all snapshot partitions atomically (no disk I/O).
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [clearFontScaleDependentEntries](clear-font-scale-dependent-entries.md)()
 
@@ -186,10 +158,6 @@ EN Compatibility no-op (persistence removed in 3.1.7).
 
 EN Reads a stored cache value without computing a fallback. Returns `null` on a miss. Overloads accept a [Context](https://developer.android.com/reference/kotlin/android/content/Context.html) or an explicit [DimenMetrics](../-dimen-metrics/index.md) partition.
 
-private suspend fun [performSave](perform-save.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html))
-
-EN Compatibility no-op.
-
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [removeResetListener](remove-reset-listener.md)(listener: () -> [Unit](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html))
 
 EN Removes a previously registered reset listener. PT Remove um listener de reset previamente registrado.
@@ -197,10 +165,6 @@ EN Removes a previously registered reset listener. PT Remove um listener de rese
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [resetDiagnostics](reset-diagnostics.md)()
 
 EN Resets the diagnostic counters (hit, miss, eviction) to zero. PT Zera os contadores de diagnóstico (hit, miss, eviction).
-
-@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[PublishedApi](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-published-api/index.html)internal fun [restartSaveCollectorForTest](restart-save-collector-for-test.md)()
-
-EN Compatibility no-op (result-cache persistence is disabled permanently).
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [saveToPersistence](save-to-persistence.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html))
 
@@ -233,7 +197,6 @@ EN Runs [block] with the supplied snapshot active on the current thread (used by
 | [CacheStats](-cache-stats/index.md) |  |
 | [CalcType](-calc-type/index.md) |  |
 | [ScreenFactors](-screen-factors/index.md) |  |
-| [ShardWrapper](-shard-wrapper/index.md) |  |
 | [ValueType](-value-type/index.md) |  |
 
 
@@ -242,7 +205,6 @@ EN Runs [block] with the supplied snapshot active on the current thread (used by
 | Name | Summary |
 |---|---|
 | [ADJUSTMENT_SCALE](-a-d-j-u-s-t-m-e-n-t_-s-c-a-l-e.md) |  |
-| [CACHE_SIZE](-c-a-c-h-e_-s-i-z-e.md) |  |
 | [cachedUiMode](cached-ui-mode.md) |  |
 | [cachedUiModeConfigHash](cached-ui-mode-config-hash.md) |  |
 | [CT_ASPECT_RATIO](-c-t_-a-s-p-e-c-t_-r-a-t-i-o.md) |  |
@@ -271,17 +233,8 @@ EN Runs [block] with the supplied snapshot active on the current thread (used by
 | [isInitialized](is-initialized.md) |  |
 | [isInitializedFast](is-initialized-fast.md) |  |
 | [isInitializing](is-initializing.md) |  |
-| [keysArray](keys-array.md) |  |
 | [missCount](miss-count.md) |  |
-| [performSaveCount](perform-save-count.md) |  |
 | [resetListeners](reset-listeners.md) |  |
-| [SENSITIVITY_DEFAULT](-s-e-n-s-i-t-i-v-i-t-y_-d-e-f-a-u-l-t.md) |  |
-| [SHARD_COUNT](-s-h-a-r-d_-c-o-u-n-t.md) |  |
-| [SHARD_MASK](-s-h-a-r-d_-m-a-s-k.md) |  |
-| [SHARD_SIZE](-s-h-a-r-d_-s-i-z-e.md) |  |
-| [SHARD_SIZE_MASK](-s-h-a-r-d_-s-i-z-e_-m-a-s-k.md) |  |
-| [shards](shards.md) |  |
-| [valueBitsArray](value-bits-array.md) |  |
 
 
 ## Functions
@@ -303,10 +256,8 @@ EN Runs [block] with the supplied snapshot active on the current thread (used by
 | [invalidateOnConfigChange](invalidate-on-config-change.md) |  |
 | [loadFromByteArray](load-from-byte-array.md) |  |
 | [peek](peek.md) |  |
-| [performSave](perform-save.md) |  |
 | [removeResetListener](remove-reset-listener.md) |  |
 | [resetDiagnostics](reset-diagnostics.md) |  |
-| [restartSaveCollectorForTest](restart-save-collector-for-test.md) |  |
 | [saveToPersistence](save-to-persistence.md) |  |
 | [serializeToByteArray](serialize-to-byte-array.md) |  |
 | [shutdown](shutdown.md) |  |

@@ -3,6 +3,10 @@
 # Core R8 rules arrive transitively via appdimens-dynamic (main).
 ################################################################################
 
--keep public class com.appdimens.dynamic.code.logarithmic.** { public protected *; }
--keep public class com.appdimens.dynamic.compose.logarithmic.** { public protected *; }
--keep class com.appdimens.dynamic.logarithmic.** { *; }
+-keepnames public class com.appdimens.dynamic.code.logarithmic.** { public protected *; }
+-keepnames public class com.appdimens.dynamic.compose.logarithmic.** { public protected *; }
+
+################################################################################
+# Satellite internal helpers are NOT kept (static-only references, no
+# reflection) so the app's R8 pass may shrink them freely.
+################################################################################

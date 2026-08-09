@@ -77,7 +77,7 @@ mindmap
 
 ## 5. Non-Functional Requirements (NFR)
 
-* **NFR-1 (Performance Benchmarking):** `shouldBypassCache` skips shard I/O for multiply-only types (`PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`) and for `POWER` / `LOGARITHMIC` on the default SW path — including default aspect ratio when applicable. See [library/PERFORMANCE.md](../library/PERFORMANCE.md).
+* **NFR-1 (Performance Benchmarking):** `shouldBypassCache` skips snapshot-cache I/O for multiply-only types (`PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`) and for `POWER` / `LOGARITHMIC` on the default SW path — including default aspect ratio when applicable. See [library/PERFORMANCE.md](../library/PERFORMANCE.md).
 * **NFR-2 (Lock-Free Threading):** Lock-free, snapshot-partitioned cache. Each window/configuration snapshot (`DimenMetrics`) owns a fixed-size partition whose entries are published as a single immutable `CacheEntry` (key + value bits) through `AtomicReferenceArray`, so concurrent readers never observe another key’s value; no disk persistence.
 * **NFR-3 (Minimum Environment):** `minSdk = 24`, Java 17 requirements, enforcing direct Proguard shipping via `consumer-rules.pro`.
 * **NFR-4 (Runtime Diagnostics):** Engine observability functions remain conditionally gated (`diagnosticsEnabled`) to eliminate tracing overhead in production applications.

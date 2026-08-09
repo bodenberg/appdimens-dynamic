@@ -1,15 +1,17 @@
 package com.appdimens.dynamic.core
 
 import android.content.Context
-import org.junit.After
+import com.appdimens.dynamic.common.DpQualifier
+import com.appdimens.dynamic.common.Inverter
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 
 /**
- * Result-cache persistence was removed in 3.1.7. These tests lock in the no-op contract so
- * callers do not pay I/O or resurrect stale values after invalidation.
+ * Result-cache persistence was removed in 3.1.7. The public entry points are kept as
+ * binary-compatibility no-ops: these tests lock in the contract that they never perform
+ * I/O, never resurrect stale values, and never disturb the in-memory snapshot cache.
  */
 class DimenCachePersistenceFlowTest {
 
@@ -18,27 +20,29 @@ class DimenCachePersistenceFlowTest {
     @Before
     fun setup() {
         ctx = mock()
-        DimenCache.persistenceWritesEnabled = false
-        DimenCache.saveDebounceMs = 80L
-        DimenCache.saveSampleMs = 10_000L
-        DimenCache.restartSaveCollectorForTest()
-    }
-
-    @After
-    fun teardown() {
-        DimenCache.persistenceWritesEnabled = false
-        DimenCache.saveDebounceMs = 500L
-        DimenCache.saveSampleMs = 10_000L
-        DimenCache.shutdown()
-        DimenCache.performSaveCount.set(0)
+        DimenCache.clearAll()
+        DimenCache.isEnabled = true
     }
 
     @Test
-    fun saveToPersistence_isNoOp() {
-        repeat(30) {
-            DimenCache.saveToPersistence(ctx)
-            Thread.sleep(5)
-        }
-        assertEquals(0, DimenCache.performSaveCount.get())
+    fun saveToPersistence_isNoOp_andKeepsCacheIntact() {
+        val key = DimenCache.buildKey(
+            42f, false, false, DimenCache.CalcType.FLUID,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP
+        )
+        assertEquals(99f, DimenCache.getOrPut(key) { 99f }, 0f)
+        DimenCache.saveToPersistence(ctx)
+        assertEquals(99f, DimenCache.peek(key)!!, 0f)
+    }
+
+    @Test
+    fun shutdown_isNoOp() {
+        val key = DimenCache.buildKey(
+            42f, false, false, DimenCache.CalcType.FLUID,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, true, DimenCache.ValueType.DP
+        )
+        assertEquals(99f, DimenCache.getOrPut(key) { 99f }, 0f)
+        DimenCache.shutdown()
+        assertEquals(99f, DimenCache.peek(key)!!, 0f)
     }
 }

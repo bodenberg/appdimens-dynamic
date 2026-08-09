@@ -77,7 +77,7 @@ Strategy-specific scales (diagonal/power/log/interpolated/perimeter) are derived
 **The `DimenCache` Subsystem** calculates, stores, and evaluates layout keys natively using bitwise parameters on primitive vectors to minimize Garbage Collection penalties.
 
 * **64-bit Payload Signature:** Keys generated using a complex boolean flag logic including parameters: `applyAspectRatio`, `baseValue(float_bits)`, `CalcType_Enum`, `DpQualifier`, and `multiWindowConstraints`. 
-* **State Bypass Architecture:** `shouldBypassCache` skips shard writes for multiply-only / default-path types (see [library/PERFORMANCE.md](../library/PERFORMANCE.md)).
+* **State Bypass Architecture:** `shouldBypassCache` skips snapshot-cache writes for multiply-only / default-path types (see [library/PERFORMANCE.md](../library/PERFORMANCE.md)).
 * **Snapshot Pre-rendering:** The immutable `DimenMetrics` snapshot (size, density, font scale, orientation, ui mode, multi-window) is built once per window/configuration change; shared factors (`scale`, AR, density) and satellite strategy scales are derived from it. `ScreenFactors` is retained only for binary/source compatibility.
 
 ---

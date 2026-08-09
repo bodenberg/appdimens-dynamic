@@ -380,7 +380,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 ## Optional: cache & performance
 
 - Results are cached in **`DimenCache`** — lock-free, **partitioned per window/configuration snapshot** (no disk persistence since 3.1.7).
-- Some paths **skip** storing in the shard table when a cheap multiply is enough — see [library/PERFORMANCE.md](library/PERFORMANCE.md).
+- Some paths **skip** storing in the snapshot cache when a cheap multiply is enough — see [library/PERFORMANCE.md](library/PERFORMANCE.md).
 - **Batch / low-level keys:** not needed for normal app code; library extensions already use the cache.
 
 ---

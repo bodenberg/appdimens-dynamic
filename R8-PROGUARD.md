@@ -99,23 +99,36 @@ Think of it as: **R8 reads your app + dependencies + merged rules → outputs a 
 
 ---
 
-## 1. Library module: `library/proguard-rules.pro`
+## 1. Library module: `library/proguard-rules.pro` (and each satellite's)
 
-**When it runs:** Only when an Android **library** module (`:library` or `:library-<strategy>`) is built with **`minifyEnabled = true`** for that module’s build type (this repo keeps library minify off; the **app** release minify is what ships).
-
-In this repo, [`library/build.gradle.kts`](library/build.gradle.kts) currently sets **`isMinifyEnabled = false`** for the library `release` type. So for a normal **AAR** publish, these rules are **prepared** but often **not** executed during the library artifact build; the **app** that depends on the library still runs R8 on the **merged** app when **the app** has minify enabled.
+**When it runs:** At **AAR build time** for the **release** variant. Every AppDimens
+library module (`:library`, `:library-auto`, …) sets **`isMinifyEnabled = true`**
+on its **release** build type, so R8 now processes the library code **before it is
+published**.
 
 **What this file is for:**
 
-- Strong **optimization** settings (`-optimizationpasses`, `-allowaccessmodification`, `-optimizations`, …) when the library itself is minified.
-- **Keeps** for the public API (`com.appdimens.dynamic.code.**`, `compose.**`, `common.**`).
-- **Keeps** for `DimenCache`, nested types, **padding fields** on `ScreenFactors` / `ShardWrapper`, enums whose ordinals matter, Compose plumbing, `ResizeBound`, Kotlin metadata, etc.
+- Aggressive **optimization**: `-optimizationpasses 10` (more optimizer
+  iterations) and `-allowaccessmodification` (relaxed visibility so R8 can
+  inline across boundaries).
+- **`-dontobfuscate`**: the AAR is **shrunk and optimized, never renamed**
+  (AndroidX-style). Renaming still happens once, in the **consuming app's own
+  R8 pass**, where the app's mapping file applies. This is what keeps stack
+  traces sane and eliminates every double-obfuscation edge case.
+- **Keeps** = the cross-module contract:
+  - public API packages (`code.**`, `compose.**`, `common.**`) — full keep, so
+    a published AAR never strips public members;
+  - **the whole `core.**` engine** — satellites compile against it and inline
+    its `@PublishedApi` members; a member removed here would fail only at
+    consumer runtime, so none may be removed at build time.
 
-> **3.1.7 note:** persistence was removed from `DimenCache`, so the legacy `androidx.datastore.**` keep blocks still present in the `.pro` files are inert dead weight (the dependency is no longer exercised by resolution code) and can be dropped on a future cleanup.
+**Result:** every app that depends on AppDimens gets pre-optimized bytecode —
+even in **debug** builds without minify — and the app's own release R8 pass
+shrinks the remaining surface per-app (via `consumer-rules.pro`).
 
-The file’s own comments document **why** each block exists (especially **`@PublishedApi internal`** members used from **inlined** code in consuming apps, and **padding** fields R8 might delete as “unused”).
-
-**Practical note:** Debug options like `-printmapping` belong here for **library** diagnostics only. **Do not** copy those into `consumer-rules.pro`—they would run on every app developer’s machine (see comments in `library/proguard-rules.pro`).
+> **3.1.7 note:** persistence was removed from `DimenCache`, and the legacy
+> `androidx.datastore.**` keep blocks have already been dropped from the `.pro`
+> files — no `datastore` references remain in any module rules.
 
 ---
 
@@ -132,9 +145,10 @@ Gradle **packages** it into the **AAR**. When an app enables **minify/R8** on **
 **What this file is for:**
 
 - The **minimum** set of rules so the **published library** stays correct inside **any** consuming app under R8 (including **full mode**).
-- Same critical areas as above: public API surface, `DimenCache` and nested classes, padding fields, enums, `ResizeBound`, Compose-related `core` classes, Kotlin metadata basics.
+- Public API surfaces (kept **by name** with `-keepnames`: the app's R8 may drop library members that app does not use, but may never rename them).
+- `DimenCache` and nested classes, **padding fields** on `ScreenFactors`, enums whose ordinals are packed into cache keys, `ResizeBound`, Kotlin metadata, tracing/profile-installer packages.
 
-**Design choice:** Consumer rules intentionally **do not** force app-wide policies like `-optimizationpasses` on the app—those remain **app** decisions.
+**Design choice:** Consumer rules intentionally **do not** force app-wide policies like `-optimizationpasses` on the app—those remain **app** decisions. They also deliberately **do not** keep satellite-internal helper packages: all satellite references are plain static bytecode (no reflection), so the app's R8 shrinks them freely.
 
 **Beginner mental model:**  
 `proguard-rules.pro` (library) = “when we minify **the library artifact** itself.”  
@@ -159,10 +173,11 @@ Gradle **packages** it into the **AAR**. When an app enables **minify/R8** on **
 
 ## Quick checklist (release + R8)
 
-1. Build and run **`release`** (or minified) on a device—not only `debug`.
-2. Exercise screens that use **Compose** extensions, **resize** APIs, and **configuration changes**.
-3. If you enable **`android.enableR8.fullMode=true`**, repeat the same tests; failures usually mean a missing or overly narrow `-keep`.
-4. For performance comparisons, see [`PERFORMANCE.md`](PERFORMANCE.md): **debug without minify** vs **release with minify + R8** are different environments; do not mix numbers without reading the methodology note.
+1. The **published AARs are already shrink+optimized** (release library builds run R8 with `-dontobfuscate`); the checks below still apply to the **consumer app**'s own pass.
+2. Build and run **`release`** (or minified) on a device—not only `debug`.
+3. Exercise screens that use **Compose** extensions, **resize** APIs, and **configuration changes**.
+4. If you enable **`android.enableR8.fullMode=true`**, repeat the same tests; failures usually mean a missing or overly narrow `-keep`. (On AGP 9+ full mode is always on and this flag is a no-op.)
+5. For performance comparisons, see [`PERFORMANCE.md`](PERFORMANCE.md): **debug without minify** vs **release with minify + R8** are different environments; do not mix numbers without reading the methodology note.
 
 ---
 

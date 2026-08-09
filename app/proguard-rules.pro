@@ -1,10 +1,17 @@
 ################################################################################
 # 1. OPTIMIZATIONS
+#
+# AGP 9 runs R8 in full mode, where ALL optimization types (code, method,
+# field, class, library) are already enabled — the legacy -optimizations flag
+# is ignored, so it is not listed here. What still matters is the number of
+# optimizer iterations (-optimizationpasses; default 1) — more passes squeeze
+# the hot dimension-scaling paths further for a small build-time cost —
+# and -allowaccessmodification (enabled by default in full mode; repeated here
+# to document intent) so R8 may inline across visibility boundaries.
 ################################################################################
 
--optimizationpasses 5
+-optimizationpasses 10
 -allowaccessmodification
--optimizations code/*,method/*,field/*,class/*,library/*
 
 ################################################################################
 # 2. KEEPS

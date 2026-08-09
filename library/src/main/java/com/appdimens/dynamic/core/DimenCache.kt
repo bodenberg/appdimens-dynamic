@@ -62,8 +62,7 @@ import kotlin.math.min
  * **Thread Safety**: Completely thread-safe.  Since 3.1.7 the cache is partitioned per
  * immutable window snapshot ([DimenMetrics]); each entry is published as a single
  * atomic [CacheEntry] (key + value bits) reference, so concurrent readers can never
- * observe another key's value. The legacy padded shard arrays are retained for
- * source compatibility only.
+ * observe another key's value.
  *
  * PT
  * Cache global, lock-free e compartilhado para todos os cálculos de dimensão do AppDimens.
@@ -91,16 +90,9 @@ object DimenCache {
 
 
     // ─────────────────────────────────────────────────────────────────────────
-    // CONFIGURATION & PERSISTENT STATE
+    // CONFIGURATION & INITIALIZATION STATE
     // ─────────────────────────────────────────────────────────────────────────
 
-    /**
-     * EN Bumped on every [clearAll]. Retained for source compatibility with prior
-     * persistence diagnostics; result cache persistence was removed.
-     *
-     * PT Incrementado em cada limpeza para abortar saves em voo.
-     */
-    private val persistenceGeneration = java.util.concurrent.atomic.AtomicLong(0L)
     internal val isInitializing = AtomicBoolean(false)
     /**
      * Internal flag to avoid [AtomicBoolean.get] overhead on every hot-path call.
@@ -197,24 +189,6 @@ object DimenCache {
 
     @Volatile
     private var lastConfiguration: ConfigSnapshot? = null
-
-    /**
-     * EN Application [Context] captured in [init]. Retained for source compatibility
-     * and used as the fallback window source when no explicit context/metrics is given.
-     *
-     * PT [Context] de Application capturado em [init] (compatibilidade).
-     */
-    @Volatile
-    @PublishedApi
-    internal var savedAppContext: Context? = null
-
-    /**
-     * EN Compatibility flag set when [clearAll] is called with a context (diagnostics hook).
-     * PT Flag de compatibilidade sinalizada em [clearAll] com contexto.
-     */
-    @Volatile
-    @PublishedApi
-    internal var diskClearRequested: Boolean = false
 
     @JvmField @Volatile
     internal var cachedUiMode: UiModeType = UiModeType.UNDEFINED
@@ -625,50 +599,18 @@ object DimenCache {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // PERSISTENCE FLOW
+    // PERSISTENCE FLOW — binary-compatibility stubs
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Deprecated compatibility settings for the removed persistent result cache.
-     * They remain internal so older test fixtures compile, but are never consulted.
+     * EN No-op: dimension resolution no longer owns a background persistence scope.
+     * Kept as a public binary-compatibility marker for consumers built against ≤ 3.1.6.
+     *
+     * PT No-op: a resolução de dimensões não possui mais escopo de persistência em
+     * segundo plano. Mantido como marcador público de compatibilidade binária.
      */
-    @Volatile
-    @PublishedApi
-    internal var saveDebounceMs: Long = 500L
-
-    /**
-     * EN Safety-net sampling interval while writes never go quiet (production: 10 s).
-     * PT Intervalo de amostragem de segurança enquanto escritas não cessam (padrão: 10 s).
-     */
-    @Volatile
-    @PublishedApi
-    internal var saveSampleMs: Long = 10_000L
-
-    /** Deprecated compatibility switch; result-cache persistence is disabled permanently. */
-    @Volatile
-    @PublishedApi
-    internal var persistenceWritesEnabled: Boolean = false
-
-    /** Deprecated compatibility counter. */
-    @JvmField
-    @PublishedApi
-    internal val performSaveCount = java.util.concurrent.atomic.AtomicInteger(0)
-
-    /** No-op: dimension resolution no longer owns a background persistence scope. */
     @JvmStatic
     fun shutdown() = Unit
-
-    /**
-     * EN Restarts the persistence collector after changing [saveDebounceMs] / [saveSampleMs]
-     * in tests. No-op for production callers.
-     *
-     * PT Reinicia o coletor de persistência após alterar intervalos em testes.
-     */
-    @JvmStatic
-    @PublishedApi
-    internal fun restartSaveCollectorForTest() {
-        performSaveCount.set(0)
-    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // KEY ENCODING
@@ -768,7 +710,6 @@ object DimenCache {
         // density or multi-window change, and its I/O belongs nowhere near dimension use.
         if (isInitializing.getAndSet(true)) return
         try {
-            savedAppContext = context.applicationContext
             val config = context.resources.configuration
             updateFactors(config)
             lastConfiguration = ConfigSnapshot.from(config)
@@ -796,21 +737,10 @@ object DimenCache {
     }
 
     /**
-     * EN Compatibility no-op (retained so old test fixtures compile). The persistence
-     * collector was removed in 3.1.7; nothing is written to disk.
+     * EN Binary-compatibility stub returning an empty blob. Nothing is read back by
+     * this library; kept so consumer binaries built against ≤ 3.1.6 keep linking.
      *
-     * PT No-op de compatibilidade (mantido para fixtures antigas compilarem).
-     */
-    private suspend fun performSave(context: Context) {
-        performSaveCount.incrementAndGet()
-        // No-op; see saveToPersistence.
-    }
-
-    /**
-     * EN Compatibility stub returning an empty blob. The persistent result cache was
-     * removed in 3.1.7.
-     *
-     * PT Stub de compatibilidade que retorna um blob vazio.
+     * PT Stub de compatibilidade binária que retorna um blob vazio.
      */
     internal fun serializeToByteArray(): ByteArray = byteArrayOf(0, 0, 0, 0)
 
@@ -936,7 +866,7 @@ object DimenCache {
     /**
      * EN Reads a stored cache value without computing a fallback. Returns `null` on a miss.
      *
-     * **Bypass interaction:** [getOrPut] intentionally **does not write** to the shard table
+     * **Bypass interaction:** [getOrPut] intentionally **does not write** to the snapshot cache
      * for certain cheap calculation types when aspect ratio is off (see fast-path bypass in
      * [getOrPut]). For those keys, [peek] will typically return `null` even after [getOrPut]
      * returned a value — the result was computed but not persisted. Use [getOrPut] when you
@@ -1092,7 +1022,6 @@ object DimenCache {
     @JvmStatic
     @JvmOverloads
     fun clearAll(context: Context? = null) {
-        persistenceGeneration.incrementAndGet()
         // Detaching whole partitions is atomic from the perspective of future lookups:
         // an in-flight resolver may finish on an old partition, but it can never publish
         // into the new cache after the clear.
@@ -1100,8 +1029,6 @@ object DimenCache {
         fastPartition = null
         fastPartitionMetrics = null
         resetListeners.forEach { it() }
-
-        if (context != null) diskClearRequested = true
     }
 
     /**

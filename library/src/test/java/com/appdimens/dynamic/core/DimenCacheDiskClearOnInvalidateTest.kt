@@ -3,10 +3,8 @@ package com.appdimens.dynamic.core
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
-import org.junit.After
-import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -18,20 +16,6 @@ class DimenCacheDiskClearOnInvalidateTest {
     fun setup() {
         DimenCache.clearAll()
         DimenCache.isEnabled = true
-        DimenCache.persistenceWritesEnabled = false
-        DimenCache.diskClearRequested = false
-        DimenCache.savedAppContext = null
-        DimenCache.isInitializedFast = false
-        DimenCache.isInitialized.set(false)
-        DimenCache.isInitializing.set(false)
-    }
-
-    @After
-    fun teardown() {
-        DimenCache.persistenceWritesEnabled = false
-        DimenCache.diskClearRequested = false
-        DimenCache.savedAppContext = null
-        DimenCache.shutdown()
     }
 
     private fun config(sw: Int = 400, w: Int = 400, h: Int = 800, dpi: Int = 420): Configuration =
@@ -53,30 +37,39 @@ class DimenCacheDiskClearOnInvalidateTest {
     }
 
     @Test
-    fun clearAll_withContext_requestsDiskClearFlag() {
+    fun clearAll_clearsSnapshotPartitions() {
         val app = mockAppContext(config())
-        DimenCache.diskClearRequested = false
+        DimenCache.init(app)
+        val key = DimenCache.buildKey(
+            42f, false, false, DimenCache.CalcType.FLUID,
+            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
+            com.appdimens.dynamic.common.Inverter.DEFAULT, true, DimenCache.ValueType.DP
+        )
+        DimenCache.getOrPut(key, app) { 99f }
         DimenCache.clearAll(app)
-        assertTrue(DimenCache.diskClearRequested)
+        assertNull(DimenCache.peek(key, app))
     }
 
     @Test
-    fun invalidate_doesNotRequestDiskClear() {
+    fun invalidate_doesNotClearSnapshotPartitions() {
         val app = mockAppContext(config())
         DimenCache.init(app)
-        DimenCache.diskClearRequested = false
+        val key = DimenCache.buildKey(
+            42f, false, false, DimenCache.CalcType.FLUID,
+            com.appdimens.dynamic.common.DpQualifier.SMALL_WIDTH,
+            com.appdimens.dynamic.common.Inverter.DEFAULT, true, DimenCache.ValueType.DP
+        )
+        DimenCache.getOrPut(key, app) { 99f }
         DimenCache.invalidateOnConfigChange(config(sw = 300, w = 300, h = 800))
-        assertFalse(
-            "snapshot partitions removed DataStore coupling from invalidate",
-            DimenCache.diskClearRequested
+        assertEquals(
+            "snapshot partitions must survive invalidate (compat hook only)",
+            99f,
+            DimenCache.peek(key, app)!!
         )
     }
 
     @Test
-    fun invalidateBeforeInit_doesNotThrow_andSkipsDiskClear() {
-        assertNull(DimenCache.savedAppContext)
-        DimenCache.diskClearRequested = false
+    fun invalidateBeforeInit_doesNotThrow() {
         DimenCache.invalidateOnConfigChange(config(sw = 500, w = 500, h = 900))
-        assertFalse(DimenCache.diskClearRequested)
     }
 }

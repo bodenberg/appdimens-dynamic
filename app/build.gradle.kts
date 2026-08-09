@@ -22,9 +22,9 @@ android {
             val keystore = rootProject.file("test_keystore.jks")
             if (keystore.exists()) {
                 storeFile = keystore
-                storePassword = "123456"
+                storePassword = System.getenv("SAMPLE_STORE_PASSWORD") ?: "123456"
                 keyAlias = "test"
-                keyPassword = "123456"
+                keyPassword = System.getenv("SAMPLE_KEY_PASSWORD") ?: "123456"
             }
         }
     }
@@ -37,11 +37,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("sample").takeIf { it.storeFile?.exists() == true }
-                ?: signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("sample")
         }
         debug {
-            //noinspection NotShrinkingResources
             isShrinkResources = false
             isMinifyEnabled = false
             proguardFiles(
@@ -98,10 +96,10 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.profileinstaller)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

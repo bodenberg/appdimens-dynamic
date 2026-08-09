@@ -1,19 +1,21 @@
 # Technical Performance Report: AppDimens Dynamic
 
-This report provides a deep technical analysis of the AppDimens Dynamic library performance, following the **SIMD-friendly Batching**, **Cache Sharding (Padded)**, and **Inlined Hot-Path** optimizations.
+This report provides a deep technical analysis of the AppDimens Dynamic library performance, following the **SIMD-friendly Batching**, **Snapshot-Partitioned Lock-Free Cache**, and **Inlined Hot-Path** optimizations.
 
 > [!NOTE]
 > **Build variants, R8, and how to read the numbers**
 >
 > With **code shrinking and R8** enabled on **release** builds (`minifyEnabled = true`), the library’s hot paths can run **much faster** than in a typical **debug** APK. Example ranges observed on the project benchmark harness (same device class as elsewhere in this report):
 >
-> | Harness | Approx. range (release + minify + R8) |
+> | Harness | Approx. range (release + minify + R8 + AOT `speed`) |
 > | :--- | :--- |
-> | **Calculation Test** (avg) | **~82 ns – ~150 ns** |
-> | **Microbenchmark** (combined / per-cycle metric as reported by the dashboard) | **~125 ns – ~155 ns** |
-> | **Macrobenchmark** (estimated **per-item** cost under that harness with R8; **not** the same cell as scroll duration in ms / µs below) | **~367 ns – ~380 ns** |
+> | **Calculation Test** (avg) | **~40 ns – ~90 ns** |
+> | **Microbenchmark** (combined, post-3.1.7 fast lane; typical **~50–60 ns**) | **~40 ns – ~64 ns** |
+> | **Macrobenchmark** (scroll duration, 1k rows — frame-limited at 60 fps) | **~367 ms – ~495 ms** |
 >
 > **All other tables and figures in this document** were captured on **debug** builds **without** minify (no R8 shrinking/optimization pass on that variant). Treat **debug without minify** vs **release with minify + R8** as **different environments**—do not compare cells across those scenarios without this context.
+>
+> Since the 3.1.7 fast lane, the common `sdp`/`hdp`/`wdp`/`sdpa` (AR on SMALL_WIDTH) resolutions are a **single float multiply over the coherent per-window metrics** — the numbers above are that path on a mid-range SoC with AOT compilation. See the **2026-08-09 measurement** in §3.
 >
 > Enabling **R8 full mode** (`android.enableR8.fullMode=true` in `gradle.properties`) makes optimization more aggressive; keep ProGuard/R8 rules correct when you turn it on. See **[R8-PROGUARD.md](./R8-PROGUARD.md)**.
 
@@ -30,13 +32,13 @@ This report provides a deep technical analysis of the AppDimens Dynamic library 
 
 ## 1. Architectural Overview
 
-> **3.1.7 note:** the shard-table measurements below predate the 3.1.7 cache rework. Since 3.1.7 the in-memory cache is **snapshot-partitioned** (keyed by the immutable `DimenMetrics` window snapshot, entries published as atomic `CacheEntry` references) and the persistent result cache was removed; the sharded arrays are retained for compatibility only.
+> **3.1.7 note:** the shard-table measurements below predate the 3.1.7 cache rework. Since 3.1.7 the in-memory cache is **snapshot-partitioned** (keyed by the immutable `DimenMetrics` window snapshot, entries published as atomic `CacheEntry` references) and the persistent result cache was removed; the legacy sharded layout no longer exists.
 
-The library features a **Lock-Free Padded Sharded Cache** architecture with an intelligent **Fast Bypass Layer**. 
-- **Padded Sharding**: Each cache shard is isolated with 128-byte padding to eliminate **False Sharing** between CPU cores (ARM64).
+The library features a **Lock-Free Snapshot-Partitioned Cache** architecture with an intelligent **Fast Bypass Layer**. 
+- **Snapshot Partitioning**: Each immutable per-window `DimenMetrics` snapshot owns a bounded `AtomicReferenceArray` partition (at most 4 active snapshots); entries are published as single atomic `CacheEntry` references, so no stale cross-window value is ever read.
 - **SIMD-friendly Batching**: The `getBatch()` API exposes continuous loops for the JIT/ART to vectorize, reducing overhead per item.
-- **Snapshot Isolation**: Since 3.1.7, resolution reads an immutable per-window `DimenMetrics` snapshot; satellite strategy scales derive from `DimenCache.currentMetrics` (padded `ScreenFactors` is kept for source compatibility only).
-- **Fast Bypass**: `shouldBypassCache` skips shard lookup for multiply-only types (`PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`) and for `POWER` / `LOGARITHMIC` on the default SW path — including default aspect ratio when applicable (~2 ns multiply). `AUTO` / `FLUID` / `FIT` / `FILL` use the cache.
+- **Snapshot Isolation**: Resolution reads an immutable per-window `DimenMetrics` snapshot; satellite strategy scales derive from `DimenCache.currentMetrics` (padded `ScreenFactors` is kept for source compatibility only).
+- **Fast Bypass**: `shouldBypassCache` skips the snapshot-cache lookup for multiply-only types (`PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`) and for `POWER` / `LOGARITHMIC` on the default SW path — including default aspect ratio when applicable (~2 ns multiply). `AUTO` / `FLUID` / `FIT` / `FILL` use the cache.
 
 ---
 
@@ -76,14 +78,22 @@ Measurements captured on physical hardware in a stabilized state.
 
 Stress test executed via the new **Micro + Macro Benchmark Dashboard**. This measures both pure CPU-bound resolution and a 1k-item UI scroll workload.
 
-| Metric | Result | Impact |
-| :--- | :--- | :--- |
-| **Micro Combined Latency (Hot)** | **~260 ns** | **Extreme Efficiency** |
-| **Macro Scroll (1000 items)** | ~996 ms | **Fluid** |
-| **Est. Cost per item** | ~996 µs | **Zero Jank** for 120 FPS |
-| **Peak UI Load** | **Indistinguishable** | 0% Jank Detected |
+> [!IMPORTANT]
+> **2026-08-09 measurement — same device, 3 runs each, release APK + AOT `speed`, thermal ramp.**
+> Hardware: **Xiaomi 2107113SG (Redmi Note 11) · Qualcomm bengal (Snapdragon 680-class, 8 cores · 2.8 GHz max)**.
+> Every `adb install -r` must be followed by `cmd package compile -m speed -f com.example.app` — on debuggable APKs the OS pins the compiler filter to `verify` (interpreter), which is the entire debug-vs-release gap below.
 
-The **~260 ns** / **~996 µs** figures above are from **debug without minify**. On **release with minify + R8**, the same dashboard-style harness reports roughly **~125 ns – ~155 ns** (micro combined) and **~367 ns – ~380 ns** for the macro **per-item** estimate under that configuration—see the **Build variants, R8** note at the top of this document.
+| Metric | Current (3.1.7 fast lane) | 3.1.5 (baseline) | Debug APK (no AOT) |
+| :--- | :--- | :--- | :--- |
+| **Micro Combined avg** | **40–64 ns** (typical ~50–60; 57/59/58 in the final series) | 152–164 ns (~158) | 508–857 ns (~650) |
+| **Micro — family spread** (sdp/hdp/wdp/sdpa) | uniform, within-run Δ ≤ ~8 ns (39–66 ns) | sdp 210–220 ns vs sdpa 108–128 ns (cold-core artifact) | 504–810 ns, erratic |
+| **Macro Scroll (1000 items)** | **~368–382 ms** (frame-limited: 366 ms theoretical at 60 fps) | ~368–432 ms (~393) | ~726–1412 ms (~940) |
+
+**Speed-ups (same device, same session):**
+- Current vs **3.1.5**: **~3×** on the micro average (158 → ~55 ns), up to ~3.9× on the best runs (158 → 40 ns); scroll real-world workload ≈ frame-limited on both, current slightly faster (~393 → ~375 ms).
+- **Release vs debug**: **~10–13×** on the micro average and **~2.4×** on scroll — this is why every benchmark in this document must be read with the build variant.
+
+**Variability was engineered out of the harness on 2026-08-09**: a `thermalRamp()` (≈1.5 s FP-heavy loop) plus holding `THREAD_PRIORITY_URGENT_AUDIO` for the whole measurement window now pins the worker to a boosted core: within-run family spread dropped from ~110 ns (3.1.5) to ~8 ns, and run-to-run spread from 40–250 ns to 40–64 ns. The remaining spread tracks background load, not code.
 
 ---
 
@@ -91,13 +101,13 @@ The **~260 ns** / **~996 µs** figures above are from **debug without minify**. 
 
 1. **Inlining (F1.1)**: All hot-path logic is now fully inlined into the call-site. This eliminates method-call overhead (~10ns on ARM64) and allows the JIT to apply loop unrolling and register allocation across the entire lookup.
 2. **Padding (F2/F3)**: By using 128-byte guards, we've increased memory usage by only ~2.5 KB but eliminated the risk of hardware-level contention (False Sharing) which can cause spikes of 500ns+ in concurrent environments.
-3. **Bypass Logic**: Multiply-only / default-path types bypass the shard table because a float multiply (~2 ns) is faster than the fastest cache lookup (~5 ns). See [library/PERFORMANCE.md](library/PERFORMANCE.md).
+3. **Bypass Logic**: Multiply-only / default-path types bypass the snapshot-cache lookup because a float multiply (~2 ns) is faster than the fastest cache lookup (~5 ns). See [library/PERFORMANCE.md](library/PERFORMANCE.md).
 
 ---
 
 ## 5. Simple Calculations Faster Than Cache
 
-For eligible `CalcType`s on the default path (`shouldBypassCache`), `getOrPut` returns `compute()` without touching the shards — typically `baseValue × precomputedFactor`.
+For eligible `CalcType`s on the default path (`shouldBypassCache`), `getOrPut` returns `compute()` without touching the snapshot cache — typically `baseValue × precomputedFactor`.
 
 | Path | Cost | Cache used? |
 |:---|:---:|:---:|
@@ -106,7 +116,7 @@ For eligible `CalcType`s on the default path (`shouldBypassCache`), `getOrPut` r
 | POWER / LOG on SW+DEFAULT | ~2 ns | ❌ Bypass |
 | AUTO / FLUID / FIT / FILL | lookup + compute | ✅ Cache |
 
-**Consequence for benchmarks**: `DimenSdp.sdp()` / `.hdp()` / `.wdp()` on the default path measure **raw math**, not shard throughput. Use custom sensitivity, non-default qualifiers, or non-bypass types to measure the cache.
+**Consequence for benchmarks**: `DimenSdp.sdp()` / `.hdp()` / `.wdp()` on the default path measure **raw math**, not snapshot-cache throughput. Use custom sensitivity, non-default qualifiers, or non-bypass types to measure the cache.
 
 ---
 
@@ -132,7 +142,7 @@ graph TD
     A[UI / Code Call] --> B{Cache Enabled?}
     B -- Yes --> C{shouldBypassCache?}
     C -- Yes --> D["Fast Math Return (~2ns)"]
-    C -- No --> E["Inlined Hash Lookup<br/>(Padded Shards)"]
+    C -- No --> E["Snapshot Partition Lookup<br/>(AtomicReferenceArray, per window)"]
     E --> F{Key Match?}
     F -- Hit --> G["Return Float (~5-35ns)"]
     F -- Miss --> H[Compute Once & Write back]
@@ -141,4 +151,4 @@ graph TD
 ```
 
 ---
-*Report Updated: 2026-04-03 · AppDimens Dynamic · AppDimens Performance Lab · Snapdragon 888 Physical Hardware*
+*Report Updated: 2026-08-09 · AppDimens Dynamic · AppDimens Performance Lab · Xiaomi 2107113SG (Qualcomm bengal · 2.8 GHz max) physical hardware · release APK + AOT speed*

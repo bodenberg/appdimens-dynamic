@@ -27,9 +27,9 @@
 #    both removal and renaming.
 ################################################################################
 
--keep public class com.appdimens.dynamic.code.** { public protected *; }
--keep public class com.appdimens.dynamic.compose.** { public protected *; }
--keep public class com.appdimens.dynamic.common.** { public protected *; }
+-keepnames public class com.appdimens.dynamic.code.** { public protected *; }
+-keepnames public class com.appdimens.dynamic.compose.** { public protected *; }
+-keepnames public class com.appdimens.dynamic.common.** { public protected *; }
 
 
 ################################################################################
@@ -55,21 +55,20 @@
 -keep class com.appdimens.dynamic.core.DimenCache$* { *; }
 
 # Strategy factor SPI — satellites register contributors; R8 must not strip the registry
-# or SharedScreenMetrics used from inline / cross-module call sites.
--keep class com.appdimens.dynamic.core.StrategyFactorRegistry { *; }
--keep class com.appdimens.dynamic.core.SharedScreenMetrics { *; }
--keep class com.appdimens.dynamic.core.StrategyFactorContributor { *; }
+# or SharedScreenMetrics used from inline / cross-module call sites. Kept by NAME only:
+# members are referenced directly (no reflection/ServiceLoader is used), so renaming must
+# be prevented but dead members may still be removed. -keepnames (not -keep) is enough:
+# call sites are always in the same R8 pass as the library classes.
+-keepnames class com.appdimens.dynamic.core.StrategyFactorRegistry { *; }
+-keepnames class com.appdimens.dynamic.core.SharedScreenMetrics { *; }
+-keepnames class com.appdimens.dynamic.core.StrategyFactorContributor { *; }
 
 # ScreenFactors padding fields (_p0.._p7): R8 full mode strips @JvmField fields
 # it identifies as write-only (never read by name). These fields are never read —
 # their only purpose is to occupy memory and prevent CPU false sharing on ARM64.
-# Without them, DimenCache's hot-path performance degrades silently.
+# ScreenFactors is retained for source compatibility only; the active kernel reads
+# the snapshot-partitioned DimenMetrics (3.1.7+), so this rule is belt-and-braces.
 -keepclassmembers class com.appdimens.dynamic.core.DimenCache$ScreenFactors {
-    <fields>;
-}
-
-# ShardWrapper padding fields (_p0.._pD): same reasoning.
--keepclassmembers class com.appdimens.dynamic.core.DimenCache$ShardWrapper {
     <fields>;
 }
 
@@ -96,7 +95,7 @@
 }
 
 # Ordinals used in resize math — full keep so private enum synthetics survive.
--keep class com.appdimens.dynamic.core.AutoResizePercentBasis { *; }
+-keepnames class com.appdimens.dynamic.core.AutoResizePercentBasis { *; }
 
 
 ################################################################################
@@ -111,30 +110,34 @@
 #    FoundException in when-expressions over ResizeBound.
 ################################################################################
 
--keep class com.appdimens.dynamic.core.ResizeBound { *; }
--keep class com.appdimens.dynamic.core.ResizeBound$* { *; }
--keep class com.appdimens.dynamic.core.ResizeBoundKt { *; }
+-keepnames class com.appdimens.dynamic.core.ResizeBound { *; }
+-keepnames class com.appdimens.dynamic.core.ResizeBound$* { *; }
+-keepnames class com.appdimens.dynamic.core.ResizeBoundKt { *; }
 
 
 ################################################################################
 # 5. CORE PLUMBING — Compose integration
 #
-#    CompositionLocals are resolved by the Compose runtime at runtime using the
-#    object's identity. AppDimensProvider and LocalUiModeType must survive both
-#    shrinking and renaming so that CompositionLocalProvider can wire them.
-#    ComposeRememberStamps and ComposeDimenRemember are referenced from the
-#    inlined Composable extensions — same @PublishedApi risk as DimenCache.
+#    Renaming is prevented for the whole core package by name; the only class
+#    that needs full -keep retention is DimenCache (see §2 — its members are
+#    referenced from inlined @PublishedApi bodies the R8 analysis can lose).
+#    Everything else in core is referenced directly at call sites, so dead
+#    members may still be removed, but names are never renamed.
 ################################################################################
 
--keep class com.appdimens.dynamic.core.CompositionLocalsKt { *; }
--keep class com.appdimens.dynamic.core.ComposeDimenRememberKt { *; }
--keep class com.appdimens.dynamic.core.ComposeRememberStampsKt { *; }
--keep class com.appdimens.dynamic.core.DimenCalculationPlumbing { *; }
--keep class com.appdimens.dynamic.core.ResizeMathKt { *; }
--keep class com.appdimens.dynamic.core.PercentSpaceMathKt { *; }
--keep class com.appdimens.dynamic.core.AspectRatioLookup { *; }
--keep class com.appdimens.dynamic.core.AspectRatioLookupKt { *; }
--keep class com.appdimens.dynamic.core.DesignScaleConstants { *; }
+# 5.1 CompositionLocals (AppDimensProvider), stamps, plumbing, AR lookup and
+#     design constants are all reachable by direct reference; name preservation
+#     is all that is required to keep them callable from consuming apps.
+-keepnames class com.appdimens.dynamic.core.CompositionLocalsKt { *; }
+-keepnames class com.appdimens.dynamic.core.ComposeDimenRememberKt { *; }
+-keepnames class com.appdimens.dynamic.core.ComposeRememberStampsKt { *; }
+-keepnames class com.appdimens.dynamic.core.DimenCalculationPlumbing { *; }
+-keepnames class com.appdimens.dynamic.core.ResizeMathKt { *; }
+-keepnames class com.appdimens.dynamic.core.PercentSpaceMathKt { *; }
+-keepnames class com.appdimens.dynamic.core.AspectRatioLookup { *; }
+-keepnames class com.appdimens.dynamic.core.AspectRatioLookupKt { *; }
+-keepnames class com.appdimens.dynamic.core.DesignScaleConstants { *; }
+-keepnames class com.appdimens.dynamic.core.DimenMetrics { *; }
 
 
 ################################################################################
@@ -177,7 +180,24 @@
 
 
 ################################################################################
-# 8. SUPPRESS NOTES — full mode is noisier than compat mode
+# 8. PROFILE INSTALLER / TRACING (reflection-driven)
+#
+#    androidx.profileinstaller (pulled in by macrobenchmark apps and by apps
+#    embedding baseline profiles) and androidx.startup invoke androidx.tracing
+#    at runtime. In R8 full mode these call sites are invisible to static
+#    analysis, so both packages get stripped from a minified release and the
+#    process crashes with NoClassDefFoundError: androidx/tracing/Trace the
+#    moment instrumentation (or the profile installer) starts.
+#    Keeping both packages adds <10 KB and protects any app that uses
+#    BaselineProfileRule or embedded baseline profiles.
+################################################################################
+
+-keep class androidx.tracing.** { *; }
+-keep class androidx.profileinstaller.** { *; }
+
+
+################################################################################
+# 9. SUPPRESS NOTES — full mode is noisier than compat mode
 #
 #    -dontnote SUPPRESSES MESSAGES ONLY. It does not remove any protection.
 #    These notes appear because android.jar stubs are present in the library

@@ -28,15 +28,36 @@ if [[ ! -r "$usage_file" ]]; then
   exit 2
 fi
 
+# Secondary sources: seeds.txt reports exactly what the -keep rules protected
+# (a fully-kept class has NO line in usage.txt — nothing was removed from it),
+# and mapping.txt lists every class that survived in the output under a header
+# "<original> -> <kept-name>:". Both are produced by R8 next to usage.txt.
+seeds_file="${usage_file%/usage.txt}/seeds.txt"
+mapping_file="${usage_file%/usage.txt}/mapping.txt"
+
 # Convert a must-keep entry into an extended-regex anchored at line start.
-# Literal '.' is escaped; '**' / '*' stay wildcards.
+# Literal '.' and '$' are escaped; '**' / '*' stay wildcards.
 ere_of() {
   local s="$1"
   s="${s//\//.}"
+  s="${s//\$/\$\$}"
   s="${s//\*\*/XK_STAR_STAR}"
   s="${s//\*/[^. ]*}"
   s="${s//XK_STAR_STAR/.*}"
   printf '^%s' "$s"
+}
+
+# The entry survives if ANY of the sources proves it:
+#   usage.txt   : at least one line is not marked "removed" (partial shrink)
+#   seeds.txt   : the entry was protected by a keep rule (fully retained)
+#   mapping.txt : a class header "<entry> -> <name>:" exists (present in output)
+survives() {
+  local entry="$1" pattern
+  pattern="$(ere_of "$entry")"
+  if grep -E "$pattern" "$usage_file" | grep -v 'removed$' | grep -vq '#'; then return 0; fi
+  if [[ -r "$seeds_file" ]] && grep -E "$pattern" "$seeds_file" | grep -vq '#'; then return 0; fi
+  if [[ -r "$mapping_file" ]] && grep -E "$pattern.*->.*:$" "$mapping_file" | grep -vq '#'; then return 0; fi
+  return 1
 }
 
 fail=0
@@ -47,12 +68,10 @@ while IFS= read -r entry || [[ -n "$entry" ]]; do
   [[ "$entry" != \#* ]] || continue
 
   checked=$((checked + 1))
-  pattern="$(ere_of "$entry")"
-  # A kept line matches the anchored pattern and is not suffixed by "removed".
-  if grep -E "$pattern" "$usage_file" | grep -v 'removed$' | grep -vq '#'; then
+  if survives "$entry"; then
     echo "OK   $entry"
   else
-    echo "FAIL $entry  -> no kept member found in usage.txt"
+    echo "FAIL $entry  -> absent from usage.txt (kept-only), seeds.txt and mapping.txt"
     fail=1
   fi
 done < "$must_keep"

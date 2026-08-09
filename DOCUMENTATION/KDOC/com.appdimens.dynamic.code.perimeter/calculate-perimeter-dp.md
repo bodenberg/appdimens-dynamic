@@ -16,7 +16,7 @@ For the common path (`SMALL_WIDTH` + `DEFAULT` inverter + no custom sensitivity)
 
 For other qualifiers or a custom sensitivity constant, reads the screen dimension from [android.content.res.Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html) and performs the scaling formula inline.
 
-**Performance**: Default multiply paths may bypass shard storage via `shouldBypassCache` (~2 ns). Heavier / non-default paths use [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md). See [library/PERFORMANCE.md](../../../../library/PERFORMANCE.md).
+**Performance**: Default multiply paths may bypass snapshot-cache storage via `shouldBypassCache` (~2 ns). Heavier / non-default paths use [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md). See [library/PERFORMANCE.md](../../../../library/PERFORMANCE.md).
 
 **Note**: Both `code/` and `compose/` packages intentionally maintain separate copies of this function because the `code/` variant operates on [android.content.res.Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html) directly (no Compose runtime), while `compose/` reads it from androidx.compose.ui.platform.LocalConfiguration. The math is identical; only the Context acquisition path differs.
 

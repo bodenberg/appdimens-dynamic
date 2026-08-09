@@ -14,7 +14,7 @@ Uses [DimenCache](../com.appdimens.dynamic.core/-dimen-cache/index.md). Fluid is
 
 The remember block ensures recalculation only when configuration changes.
 
-⚠️ **Cache note**: `FLUID` uses the shard cache (not `shouldBypassCache`). See [library/PERFORMANCE.md](../../../../library/PERFORMANCE.md).
+⚠️ **Cache note**: `FLUID` uses the snapshot cache (not `shouldBypassCache`). See [library/PERFORMANCE.md](../../../../library/PERFORMANCE.md).
 
 PT Converte um [Number](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-number/index.html) (valor Dp base) em um Dp dinamicamente escalado para uso no Jetpack Compose.
 
