@@ -22,15 +22,38 @@ android {
 
     targetProjectPath = ":app"
 
+    val keystoreFile = rootProject.file("test_keystore.jks")
+
+    // test_keystore.jks is git-ignored (*.jks), so CI cannot rely on it being
+    // checked out. Regenerate it with the same alias/passwords the build
+    // expects ("test"/123456) whenever it is missing, before any build task.
+    // The test APK must match the target app's signature, so reuse the exact
+    // same keystore (and keytool invocation) as :app.
+    val createTestKeystore by tasks.registering(Exec::class) {
+        onlyIf { !keystoreFile.exists() }
+        val keytoolBin = File(System.getProperty("java.home"), "bin/keytool")
+        commandLine(
+            if (keytoolBin.exists()) keytoolBin.absolutePath else "keytool",
+            "-genkeypair", "-v",
+            "-keystore", keystoreFile.absolutePath,
+            "-storetype", "PKCS12",
+            "-alias", "test",
+            "-keyalg", "RSA", "-keysize", "2048", "-validity", "10000",
+            "-storepass", "123456", "-keypass", "123456",
+            "-dname", "CN=AppDimens Android CI, OU=CI, O=AppDimens, L=Unspecified, ST=Unspecified, C=BR"
+        )
+        outputs.file(keystoreFile)
+    }
+    tasks.matching { it.name == "preBuild" }.configureEach {
+        dependsOn(createTestKeystore)
+    }
+
     signingConfigs {
         create("sample") {
-            val keystore = rootProject.file("test_keystore.jks")
-            if (keystore.exists()) {
-                storeFile = keystore
-                storePassword = System.getenv("SAMPLE_STORE_PASSWORD") ?: "123456"
-                keyAlias = "test"
-                keyPassword = System.getenv("SAMPLE_KEY_PASSWORD") ?: "123456"
-            }
+            storeFile = keystoreFile
+            storePassword = System.getenv("SAMPLE_STORE_PASSWORD") ?: "123456"
+            keyAlias = "test"
+            keyPassword = System.getenv("SAMPLE_KEY_PASSWORD") ?: "123456"
         }
     }
 

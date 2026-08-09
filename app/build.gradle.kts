@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+
 android {
     namespace = "com.example.app"
     compileSdk = 37
@@ -30,8 +31,10 @@ android {
     // expects ("test"/123456) whenever it is missing, before any build task.
     val createTestKeystore by tasks.registering(Exec::class) {
         onlyIf { !keystoreFile.exists() }
+        val keytoolBin = File(System.getProperty("java.home"), "bin/keytool")
         commandLine(
-            "keytool", "-genkeypair", "-v",
+            if (keytoolBin.exists()) keytoolBin.absolutePath else "keytool",
+            "-genkeypair", "-v",
             "-keystore", keystoreFile.absolutePath,
             "-storetype", "PKCS12",
             "-alias", "test",
@@ -41,7 +44,7 @@ android {
         )
         outputs.file(keystoreFile)
     }
-    tasks.named("preBuild") {
+    tasks.matching { it.name == "preBuild" }.configureEach {
         dependsOn(createTestKeystore)
     }
 
@@ -135,3 +138,4 @@ dependencies {
 
 // Fail compile when strategy imports lack the matching AppDimens dependency.
 apply(from = rootProject.file("gradle/appdimens-missing-module-check.gradle.kts"))
+
