@@ -80,9 +80,13 @@ class BenchmarkActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val autoStart = intent.getBooleanExtra("AUTO_START_FULL", false)
+        val autoStartMicro = intent.getBooleanExtra("AUTO_START_MICRO", false)
         setContent {
             AppDimensProvider {
-                BenchmarkDashboardScreen(autoStart = autoStart)
+                BenchmarkDashboardScreen(
+                    autoStart = autoStart,
+                    autoStartMicro = autoStartMicro
+                )
             }
         }
     }
@@ -102,7 +106,7 @@ class BenchmarkActivity : ComponentActivity() {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BenchmarkDashboardScreen(autoStart: Boolean = false) {
+fun BenchmarkDashboardScreen(autoStart: Boolean = false, autoStartMicro: Boolean = false) {
     val context     = LocalContext.current
     val listState   = rememberLazyListState()
     val scope       = rememberCoroutineScope()
@@ -123,7 +127,10 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false) {
     // EN Automated start trigger for headless/automation runs
     // PT Gatilho de início automatizado para execuções headless/automação
     LaunchedEffect(Unit) {
-        if (autoStart) {
+        if (autoStartMicro) {
+            android.util.Log.i("APPDIMENS_AUTO", "Auto-start MICRO triggered via Intent extra.")
+            controller.runMicroOnly(calculationMode)
+        } else if (autoStart) {
             android.util.Log.i("APPDIMENS_AUTO", "Auto-start triggered via Intent extra.")
             controller.runFull(calculationMode)
         }

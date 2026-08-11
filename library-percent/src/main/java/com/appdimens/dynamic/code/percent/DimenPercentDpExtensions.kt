@@ -225,8 +225,25 @@ internal fun getQualifierValue(qualifier: DpQualifier, configuration: Configurat
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
  * Exemplo de uso: `16.sdp(context)`.
  */
-fun Number.psdp(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.SMALL_WIDTH)
-fun Number.psdpa(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+private fun Number.fastPercentPx(context: Context, qualifier: DpQualifier, applyAspectRatio: Boolean): Float {
+    if (DimenCache.isScalingEnabled() && (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)) {
+        val m = DimenCache.coherentMetrics(context)
+        val base = this.toFloat()
+        val dim = when (qualifier) {
+            DpQualifier.SMALL_WIDTH -> m.smallestScreenWidthDp.toFloat()
+            DpQualifier.WIDTH -> m.screenWidthDp.toFloat()
+            DpQualifier.HEIGHT -> m.screenHeightDp.toFloat()
+        }
+        if (!applyAspectRatio) return base * dim * DimenCache.INV_BASE_RATIO * m.density
+        val diff = dim - DesignScaleConstants.BASE_WIDTH_DP
+        val adj = DimenCache.SENSITIVITY_DEFAULT * m.logNormalizedAspectRatio
+        return base * (1f + diff * (DimenCache.ADJUSTMENT_SCALE + adj)) * m.density
+    }
+    return this.toDynamicPercentPx(context, qualifier, applyAspectRatio = applyAspectRatio)
+}
+
+fun Number.psdp(context: Context): Float = fastPercentPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Number.psdpa(context: Context): Float = fastPercentPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Number.psdpi(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Number.psdpia(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
@@ -284,7 +301,7 @@ fun Number.psdpLwia(context: Context): Float = this.toDynamicPercentPx(context, 
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**.
  * Usage example: `32.hdp(context)`.
  */
-fun Number.phdp(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.HEIGHT)
+fun Number.phdp(context: Context): Float = fastPercentPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Number.phdpa(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Number.phdpi(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Number.phdpia(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
@@ -316,7 +333,7 @@ fun Number.phdpPwia(context: Context): Float = this.toDynamicPercentPx(context, 
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**.
  * Usage example: `100.wdp(context)`.
  */
-fun Number.pwdp(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.WIDTH)
+fun Number.pwdp(context: Context): Float = fastPercentPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Number.pwdpa(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Number.pwdpi(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Number.pwdpia(context: Context): Float = this.toDynamicPercentPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)

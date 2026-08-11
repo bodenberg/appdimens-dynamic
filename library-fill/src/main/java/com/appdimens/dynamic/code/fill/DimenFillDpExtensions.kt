@@ -225,8 +225,19 @@ internal fun getQualifierValue(qualifier: DpQualifier, configuration: Configurat
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
  * Exemplo de uso: `16.sdp(context)`.
  */
-fun Number.flsdp(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.SMALL_WIDTH)
-fun Number.flsdpa(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+private fun Number.fastFillPx(context: Context, qualifier: DpQualifier, applyAspectRatio: Boolean): Float {
+    if (DimenCache.isScalingEnabled() && (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)) {
+        val m = DimenCache.coherentMetrics(context)
+        val rw = m.minDimensionDp / DesignScaleConstants.BASE_WIDTH_DP
+        val rh = m.maxDimensionDp / DesignScaleConstants.BASE_HEIGHT_DP
+        val out = this.toFloat() * maxOf(rw, rh)
+        return if (applyAspectRatio) out * m.defaultAspectRatioMultiplier * m.density else out * m.density
+    }
+    return this.toDynamicFillPx(context, qualifier, applyAspectRatio = applyAspectRatio)
+}
+
+fun Number.flsdp(context: Context): Float = fastFillPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Number.flsdpa(context: Context): Float = fastFillPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Number.flsdpi(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Number.flsdpia(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
@@ -284,7 +295,7 @@ fun Number.flsdpLwia(context: Context): Float = this.toDynamicFillPx(context, Dp
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**.
  * Usage example: `32.hdp(context)`.
  */
-fun Number.flhdp(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.HEIGHT)
+fun Number.flhdp(context: Context): Float = fastFillPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Number.flhdpa(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Number.flhdpi(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Number.flhdpia(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
@@ -316,7 +327,7 @@ fun Number.flhdpPwia(context: Context): Float = this.toDynamicFillPx(context, Dp
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**.
  * Usage example: `100.wdp(context)`.
  */
-fun Number.flwdp(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.WIDTH)
+fun Number.flwdp(context: Context): Float = fastFillPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Number.flwdpa(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Number.flwdpi(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Number.flwdpia(context: Context): Float = this.toDynamicFillPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)

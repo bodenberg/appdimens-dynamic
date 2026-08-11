@@ -225,8 +225,31 @@ internal fun getQualifierValue(qualifier: DpQualifier, configuration: Configurat
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
  * Exemplo de uso: `16.sdp(context)`.
  */
-fun Number.fsdp(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.SMALL_WIDTH)
-fun Number.fsdpa(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+private fun Number.fastFluidPx(context: Context, qualifier: DpQualifier, applyAspectRatio: Boolean): Float {
+    if (DimenCache.isScalingEnabled() && (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)) {
+        val m = DimenCache.coherentMetrics(context)
+        val dim = when (qualifier) {
+            DpQualifier.SMALL_WIDTH -> m.smallestScreenWidthDp.toFloat()
+            DpQualifier.WIDTH -> m.screenWidthDp.toFloat()
+            DpQualifier.HEIGHT -> m.screenHeightDp.toFloat()
+        }
+        val base = this.toFloat()
+        val minV = base * 0.8f
+        val maxV = base * 1.2f
+        val minWv = 320f
+        val maxWv = 768f
+        val out = when {
+            dim <= minWv -> minV
+            dim >= maxWv -> maxV
+            else -> minV + (maxV - minV) * (dim - minWv) / (maxWv - minWv)
+        }
+        return if (applyAspectRatio) out * m.defaultAspectRatioMultiplier * m.density else out * m.density
+    }
+    return this.toDynamicFluidPx(context, qualifier, applyAspectRatio = applyAspectRatio)
+}
+
+fun Number.fsdp(context: Context): Float = fastFluidPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Number.fsdpa(context: Context): Float = fastFluidPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Number.fsdpi(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Number.fsdpia(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
@@ -284,7 +307,7 @@ fun Number.fsdpLwia(context: Context): Float = this.toDynamicFluidPx(context, Dp
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**.
  * Usage example: `32.hdp(context)`.
  */
-fun Number.fhdp(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.HEIGHT)
+fun Number.fhdp(context: Context): Float = fastFluidPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Number.fhdpa(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Number.fhdpi(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Number.fhdpia(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
@@ -316,7 +339,7 @@ fun Number.fhdpPwia(context: Context): Float = this.toDynamicFluidPx(context, Dp
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**.
  * Usage example: `100.wdp(context)`.
  */
-fun Number.fwdp(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.WIDTH)
+fun Number.fwdp(context: Context): Float = fastFluidPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Number.fwdpa(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Number.fwdpi(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Number.fwdpia(context: Context): Float = this.toDynamicFluidPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
