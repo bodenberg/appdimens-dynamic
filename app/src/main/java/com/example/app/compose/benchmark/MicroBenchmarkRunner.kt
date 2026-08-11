@@ -126,6 +126,14 @@ private const val WARMUP_ITERATIONS = 10_000
 private const val MEASURE_ITERATIONS = 100_000
 
 /**
+ * EN Value used for the single-value with/without aspect-ratio comparison.
+ *    Distinct from the per-type values (100/50/30/40) so both measurements start cold.
+ * PT Valor usado na comparação de valor único com/sem aspect ratio.
+ *    Diferente dos valores por tipo (100/50/30/40) para que ambas medições comecem frias.
+ */
+private const val SINGLE_VALUE = 64f
+
+/**
  * EN Runs the full microbenchmark suite off the main thread and returns structured results.
  *    Sequence: warmup (discarded) → sdp timing → hdp timing → wdp timing → sdpa timing.
  *
@@ -216,6 +224,27 @@ suspend fun runMicroBenchmark(
     val sdpaElapsedNs = System.nanoTime() - sdpaStartNs
     val sdpaAvgNs = sdpaElapsedNs / MEASURE_ITERATIONS
 
+    // ── Single value: same value, with vs without AR ─────────────────────────
+    // EN Back-to-back timing of ONE value through both paths — the direct cost
+    //    comparison a developer sees for a single sdp call with/without AR.
+    // PT Cronometragem consecutiva de UM valor em ambos os caminhos — a comparação
+    //    direta de custo que o desenvolvedor vê numa única chamada sdp com/sem AR.
+    var singleNoArAcc = 0f
+    val singleNoArStartNs = System.nanoTime()
+    repeat(MEASURE_ITERATIONS) {
+        singleNoArAcc += ops.sdp(context, SINGLE_VALUE.toInt())
+    }
+    val singleNoArElapsedNs = System.nanoTime() - singleNoArStartNs
+    val singleNoArAvgNs = singleNoArElapsedNs / MEASURE_ITERATIONS
+
+    var singleWithArAcc = 0f
+    val singleWithArStartNs = System.nanoTime()
+    repeat(MEASURE_ITERATIONS) {
+        singleWithArAcc += ops.sdpa(context, SINGLE_VALUE.toInt())
+    }
+    val singleWithArElapsedNs = System.nanoTime() - singleWithArStartNs
+    val singleWithArAvgNs = singleWithArElapsedNs / MEASURE_ITERATIONS
+
     val endWall = System.currentTimeMillis()
     val totalWallMs = endWall - startWall
 
@@ -224,12 +253,14 @@ suspend fun runMicroBenchmark(
     } catch (_: SecurityException) {
     }
 
-    // ── Combined average across all 4 types ──────────────────────────────────
-    val totalOps = MEASURE_ITERATIONS * 4
-    val combinedAvgNs = (sdpElapsedNs + hdpElapsedNs + wdpElapsedNs + sdpaElapsedNs) / totalOps
+    // ── Combined average across all measured blocks ──────────────────────────
+    val totalOps = MEASURE_ITERATIONS * 6
+    val combinedNs = sdpElapsedNs + hdpElapsedNs + wdpElapsedNs + sdpaElapsedNs +
+        singleNoArElapsedNs + singleWithArElapsedNs
+    val combinedAvgNs = combinedNs / totalOps
 
     // ── Anti-dead-code accumulator checksum ──────────────────────────────────
-    val checksum = sdpAcc + hdpAcc + wdpAcc + sdpaAcc
+    val checksum = sdpAcc + hdpAcc + wdpAcc + sdpaAcc + singleNoArAcc + singleWithArAcc
 
     // ── Logcat export ─────────────────────────────────────────────────────────
     Log.i(TAG, "╔══════════════════ MICRO BENCHMARK RESULT ══════════════════╗")
@@ -239,6 +270,8 @@ suspend fun runMicroBenchmark(
     Log.i(TAG, "║ hdp  (bypass): ${hdpAvgNs.formatNs()}/op")
     Log.i(TAG, "║ wdp  (bypass): ${wdpAvgNs.formatNs()}/op")
     Log.i(TAG, "║ sdpa (cache) : ${sdpaAvgNs.formatNs()}/op")
+    Log.i(TAG, "║ single $SINGLE_VALUE no-AR: ${singleNoArAvgNs.formatNs()}/op")
+    Log.i(TAG, "║ single $SINGLE_VALUE +AR  : ${singleWithArAvgNs.formatNs()}/op")
     Log.i(TAG, "║ Total wall time: ${totalWallMs}ms")
     Log.i(TAG, "║ Accumulator checksum: $checksum")
     Log.i(TAG, "╚════════════════════════════════════════════════════════════╝")
@@ -251,6 +284,9 @@ suspend fun runMicroBenchmark(
         hdpBypassAvgNs  = hdpAvgNs,
         wdpBypassAvgNs  = wdpAvgNs,
         sdpaCacheAvgNs  = sdpaAvgNs,
+        singleNoArAvgNs = singleNoArAvgNs,
+        singleWithArAvgNs = singleWithArAvgNs,
+        singleValue     = SINGLE_VALUE,
         accumulatorChecksum = checksum,
         mode            = mode,
     )

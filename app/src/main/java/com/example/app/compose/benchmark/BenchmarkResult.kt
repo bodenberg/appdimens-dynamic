@@ -25,6 +25,9 @@ package com.example.app.compose.benchmark
  * @param hdpBypassAvgNs EN Average ns per hdp() call (bypass path). PT Média ns por chamada hdp() (bypass).
  * @param wdpBypassAvgNs EN Average ns per wdp() call (bypass path). PT Média ns por chamada wdp() (bypass).
  * @param sdpaCacheAvgNs EN Average ns per sdpa() call (cache path).  PT Média ns por chamada sdpa() (cache).
+ * @param singleNoArAvgNs EN Average ns per single-value resolution WITHOUT aspect ratio. PT Média ns por resolução de um único valor SEM aspect ratio.
+ * @param singleWithArAvgNs EN Average ns per single-value resolution WITH aspect ratio. PT Média ns por resolução de um único valor COM aspect ratio.
+ * @param singleValue EN The value used for the single-value with/without AR comparison. PT Valor usado na comparação com/sem AR de valor único.
  * @param accumulatorChecksum EN Accumulator value to prove results were consumed (anti-dead-code). PT Valor acumulador.
  */
 data class MicroBenchmarkResult(
@@ -35,6 +38,9 @@ data class MicroBenchmarkResult(
     val hdpBypassAvgNs: Long,
     val wdpBypassAvgNs: Long,
     val sdpaCacheAvgNs: Long,
+    val singleNoArAvgNs: Long,
+    val singleWithArAvgNs: Long,
+    val singleValue: Float,
     val accumulatorChecksum: Float,
     val mode: BenchmarkCalculationMode = BenchmarkCalculationMode.SCALED,
 )

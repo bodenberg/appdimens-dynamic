@@ -527,6 +527,18 @@ private fun MicroResultSection(
                     PathRow(label = "sw+a (AR)", avgNs = r.sdpaCacheAvgNs, color = AccentAmber)
 
                     Spacer(Modifier.height(4.dp))
+                    HorizontalDivider(color = SurfaceBorder)
+                    Text(
+                        "Single value ${r.singleValue.toInt()} — with vs without AR",
+                        color      = TextSecondary,
+                        fontSize   = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier   = Modifier.padding(top = 4.dp)
+                    )
+                    PathRow(label = "no AR", avgNs = r.singleNoArAvgNs, color = AccentGreen)
+                    PathRow(label = "with AR", avgNs = r.singleWithArAvgNs, color = AccentAmber)
+
+                    Spacer(Modifier.height(4.dp))
                     Text(
                         "Checksum: ${"%.0f".format(r.accumulatorChecksum)} (anti dead-code proof)",
                         color    = TextSecondary,

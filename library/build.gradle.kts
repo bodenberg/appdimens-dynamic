@@ -18,7 +18,7 @@ val isJitPack = System.getenv("JITPACK") == "true"
         || System.getenv("ci") == "true"
 
 mavenPublishing {
-    coordinates("io.github.bodenberg", "appdimens-dynamic", providers.gradleProperty("appdimens.version").orElse("3.1.7").get())
+    coordinates("io.github.bodenberg", "appdimens-dynamic", providers.gradleProperty("appdimens.version").orElse("3.1.8").get())
 
     configure(
         AndroidSingleVariantLibrary()
@@ -184,18 +184,12 @@ kotlin {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.runtime)
 
     implementation(libs.androidx.window)
-
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.core)
+    implementation(libs.androidx.annotation)
 
     //dokkaPlugin(libs.android.documentation.plugin)
     testImplementation(libs.junit)

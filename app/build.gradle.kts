@@ -124,7 +124,6 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.profileinstaller)
     testImplementation(libs.junit)
     // Pin the Compose BOM for the androidTest configuration too; ui-test-junit4
     // has no version of its own and was resolving as ui-test-junit4: (empty).
