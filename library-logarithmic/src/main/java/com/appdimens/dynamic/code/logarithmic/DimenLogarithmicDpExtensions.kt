@@ -226,8 +226,32 @@ internal fun getQualifierValue(qualifier: DpQualifier, configuration: Configurat
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
  * Exemplo de uso: `16.sdp(context)`.
  */
-fun Number.logsdp(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.SMALL_WIDTH)
-fun Number.logsdpa(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+private fun Number.fastLogarithmicPx(context: Context, qualifier: DpQualifier, applyAspectRatio: Boolean): Float {
+    if (DimenCache.isScalingEnabled() && (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)) {
+        val m = DimenCache.coherentMetrics(context)
+        val base = this.toFloat()
+        val scale = if (qualifier == DpQualifier.SMALL_WIDTH) {
+            m.logarithmicScale
+        } else {
+            val dim = if (qualifier == DpQualifier.WIDTH) m.screenWidthDp.toFloat() else m.screenHeightDp.toFloat()
+            val sens = 0.4f
+            val inv = DimenCache.INV_BASE_RATIO
+            if (dim > DesignScaleConstants.BASE_WIDTH_DP) {
+                1f + sens * kotlin.math.ln(dim * inv)
+            } else if (dim > 0f) {
+                1f - sens * kotlin.math.ln(DesignScaleConstants.BASE_WIDTH_DP / dim)
+            } else {
+                1f
+            }
+        }
+        val out = base * scale
+        return if (applyAspectRatio) out * m.defaultAspectRatioMultiplier * m.density else out * m.density
+    }
+    return this.toDynamicLogarithmicPx(context, qualifier, applyAspectRatio = applyAspectRatio)
+}
+
+fun Number.logsdp(context: Context): Float = fastLogarithmicPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Number.logsdpa(context: Context): Float = fastLogarithmicPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Number.logsdpi(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Number.logsdpia(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
@@ -285,7 +309,7 @@ fun Number.logsdpLwia(context: Context): Float = this.toDynamicLogarithmicPx(con
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**.
  * Usage example: `32.hdp(context)`.
  */
-fun Number.loghdp(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.HEIGHT)
+fun Number.loghdp(context: Context): Float = fastLogarithmicPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Number.loghdpa(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Number.loghdpi(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Number.loghdpia(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
@@ -317,7 +341,7 @@ fun Number.loghdpPwia(context: Context): Float = this.toDynamicLogarithmicPx(con
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**.
  * Usage example: `100.wdp(context)`.
  */
-fun Number.logwdp(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.WIDTH)
+fun Number.logwdp(context: Context): Float = fastLogarithmicPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Number.logwdpa(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Number.logwdpi(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Number.logwdpia(context: Context): Float = this.toDynamicLogarithmicPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)

@@ -226,8 +226,17 @@ internal fun getQualifierValue(qualifier: DpQualifier, configuration: Configurat
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
  * Exemplo de uso: `16.sdp(context)`.
  */
-fun Number.dgsdp(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.SMALL_WIDTH)
-fun Number.dgsdpa(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+private fun Number.fastDiagonalPx(context: Context, qualifier: DpQualifier, applyAspectRatio: Boolean): Float {
+    if (DimenCache.isScalingEnabled() && (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)) {
+        val m = DimenCache.coherentMetrics(context)
+        val out = this.toFloat() * m.diagonalScale
+        return if (applyAspectRatio) out * m.defaultAspectRatioMultiplier * m.density else out * m.density
+    }
+    return this.toDynamicDiagonalPx(context, qualifier, applyAspectRatio = applyAspectRatio)
+}
+
+fun Number.dgsdp(context: Context): Float = fastDiagonalPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Number.dgsdpa(context: Context): Float = fastDiagonalPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Number.dgsdpi(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Number.dgsdpia(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
@@ -285,7 +294,7 @@ fun Number.dgsdpLwia(context: Context): Float = this.toDynamicDiagonalPx(context
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**.
  * Usage example: `32.hdp(context)`.
  */
-fun Number.dghdp(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.HEIGHT)
+fun Number.dghdp(context: Context): Float = fastDiagonalPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Number.dghdpa(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Number.dghdpi(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Number.dghdpia(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
@@ -317,7 +326,7 @@ fun Number.dghdpPwia(context: Context): Float = this.toDynamicDiagonalPx(context
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**.
  * Usage example: `100.wdp(context)`.
  */
-fun Number.dgwdp(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.WIDTH)
+fun Number.dgwdp(context: Context): Float = fastDiagonalPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Number.dgwdpa(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Number.dgwdpi(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Number.dgwdpia(context: Context): Float = this.toDynamicDiagonalPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)

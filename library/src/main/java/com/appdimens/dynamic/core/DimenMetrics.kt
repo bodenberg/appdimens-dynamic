@@ -47,6 +47,20 @@ data class DimenMetrics(
     val density: Float = (densityDpi.toFloat() / 160f).takeIf { it.isFinite() && it > 0f } ?: 1f
     val scale: Float = smallestWidthDp * DimenCache.INV_BASE_RATIO
 
+    /**
+     * EN Precomputed WIDTH/HEIGHT factors: the hot lane pays one `iget` instead of an
+     *    int → float conversion plus a multiply on every resolution. Values are
+     *    bit-identical to `screenWidthDp * INV_BASE_RATIO` / `screenHeightDp * INV_BASE_RATIO`.
+     * PT Fatores WIDTH/HEIGHT pré-calculados: o caminho quente paga um `iget` em vez de
+     *    conversão int → float mais uma multiplicação por resolução. Valores
+     *    bit-idênticos a `screenWidthDp * INV_BASE_RATIO` / `screenHeightDp * INV_BASE_RATIO`.
+     */
+    @PublishedApi
+    internal val screenWidthFactor: Float = screenWidthDp * DimenCache.INV_BASE_RATIO
+
+    @PublishedApi
+    internal val screenHeightFactor: Float = screenHeightDp * DimenCache.INV_BASE_RATIO
+
     val normalizedAspectRatio: Float by lazy {
         val raw = if (minDimensionDp > 0f) maxDimensionDp / minDimensionDp else 1f
         (raw / DesignScaleConstants.REFERENCE_ASPECT_RATIO)

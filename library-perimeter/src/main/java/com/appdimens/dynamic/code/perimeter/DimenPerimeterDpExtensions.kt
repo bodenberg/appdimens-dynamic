@@ -226,8 +226,17 @@ internal fun getQualifierValue(qualifier: DpQualifier, configuration: Configurat
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
  * Exemplo de uso: `16.sdp(context)`.
  */
-fun Number.prsdp(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.SMALL_WIDTH)
-fun Number.prsdpa(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+private fun Number.fastPerimeterPx(context: Context, qualifier: DpQualifier, applyAspectRatio: Boolean): Float {
+    if (DimenCache.isScalingEnabled() && (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)) {
+        val m = DimenCache.coherentMetrics(context)
+        val out = this.toFloat() * m.perimeterScale
+        return if (applyAspectRatio) out * m.defaultAspectRatioMultiplier * m.density else out * m.density
+    }
+    return this.toDynamicPerimeterPx(context, qualifier, applyAspectRatio = applyAspectRatio)
+}
+
+fun Number.prsdp(context: Context): Float = fastPerimeterPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Number.prsdpa(context: Context): Float = fastPerimeterPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Number.prsdpi(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Number.prsdpia(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
@@ -285,7 +294,7 @@ fun Number.prsdpLwia(context: Context): Float = this.toDynamicPerimeterPx(contex
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**.
  * Usage example: `32.hdp(context)`.
  */
-fun Number.prhdp(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.HEIGHT)
+fun Number.prhdp(context: Context): Float = fastPerimeterPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Number.prhdpa(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Number.prhdpi(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Number.prhdpia(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
@@ -317,7 +326,7 @@ fun Number.prhdpPwia(context: Context): Float = this.toDynamicPerimeterPx(contex
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**.
  * Usage example: `100.wdp(context)`.
  */
-fun Number.prwdp(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.WIDTH)
+fun Number.prwdp(context: Context): Float = fastPerimeterPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Number.prwdpa(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Number.prwdpi(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Number.prwdpia(context: Context): Float = this.toDynamicPerimeterPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)

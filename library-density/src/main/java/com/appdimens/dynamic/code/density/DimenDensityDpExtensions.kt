@@ -225,8 +225,38 @@ internal fun getQualifierValue(qualifier: DpQualifier, configuration: Configurat
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
  * Exemplo de uso: `16.sdp(context)`.
  */
-fun Number.dsdp(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.SMALL_WIDTH)
-fun Number.dsdpa(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+/**
+ * EN Fast default-path resolution for the plain dsdp/dhdpa/dwdp/dsdpa entries.
+ *    For these entries the guard inside [toDynamicDensityPx] only varies at runtime
+ *    by [DimenCache.isEnabled] — the inverter is DEFAULT, ignoreMultiWindows is false,
+ *    customSensitivityK is null and the qualifier satisfies the fast condition by
+ *    construction — so the scaffolding (resources + buildKey + getOrPut) is skipped:
+ *    one coherent metrics read + the exact same kernel math. Bit-identical to the
+ *    legacy result for every input; identical full path when the cache is disabled.
+ * PT Resolução de caminho padrão rápido para as entradas simples dsdp/dhdpa/dwdp/dsdpa.
+ *    Nessas entradas a guarda de [toDynamicDensityPx] só varia em runtime por
+ *    [DimenCache.isEnabled] — inverter DEFAULT, ignoreMultiWindows=false,
+ *    customSensitivityK=null e qualifier satisfaz a condição fast por construção —
+ *    então o scaffolding (resources + buildKey + getOrPut) é pulado: uma leitura
+ *    coerente de métricas + exatamente a mesma matemática do kernel. Bit-idêntico ao
+ *    resultado legado para toda entrada; caminho completo idêntico com cache desabilitado.
+ */
+private fun Number.fastDensityPx(
+    context: Context,
+    qualifier: DpQualifier,
+    applyAspectRatio: Boolean,
+): Float {
+    if (DimenCache.isScalingEnabled() && (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)) {
+        val m = DimenCache.coherentMetrics(context)
+        val out = this.toFloat() * m.density
+        if (applyAspectRatio) return out * m.defaultAspectRatioMultiplier * m.density
+        return out * m.density
+    }
+    return this.toDynamicDensityPx(context, qualifier, applyAspectRatio = applyAspectRatio)
+}
+
+fun Number.dsdp(context: Context): Float = fastDensityPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Number.dsdpa(context: Context): Float = fastDensityPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Number.dsdpi(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Number.dsdpia(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
@@ -284,7 +314,7 @@ fun Number.dsdpLwia(context: Context): Float = this.toDynamicDensityPx(context, 
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**.
  * Usage example: `32.hdp(context)`.
  */
-fun Number.dhdp(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.HEIGHT)
+fun Number.dhdp(context: Context): Float = fastDensityPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Number.dhdpa(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Number.dhdpi(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Number.dhdpia(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
@@ -316,7 +346,7 @@ fun Number.dhdpPwia(context: Context): Float = this.toDynamicDensityPx(context, 
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**.
  * Usage example: `100.wdp(context)`.
  */
-fun Number.dwdp(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.WIDTH)
+fun Number.dwdp(context: Context): Float = fastDensityPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Number.dwdpa(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Number.dwdpi(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Number.dwdpia(context: Context): Float = this.toDynamicDensityPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)

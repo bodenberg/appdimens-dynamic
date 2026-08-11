@@ -215,6 +215,32 @@ internal fun getQualifierValue(qualifier: DpQualifier, configuration: Configurat
 // PT Extensões Android padrão para dimensionamento dinâmico rápido (baseado em Views).
 
 /**
+ * EN Ultra-fast default-path resolution shared by the plain sdp/sdpa/wdp/hdp entries.
+ *    For these four entries the guard inside [toDynamicScaledPx] only varies at runtime
+ *    by [DimenCache.isEnabled] — the inverter is DEFAULT, ignoreMultiWindows is false,
+ *    customSensitivityK is null, and the qualifier satisfies the fast condition by
+ *    construction — so the other checks are skipped and the compiler can fold the
+ *    qualifier constant. Semantics are preserved: with the cache disabled the exact
+ *    full path runs.
+ * PT Resolução de caminho padrão ultra-rápida compartilhada pelas entradas simples
+ *    sdp/sdpa/wdp/hdp. Nessas quatro entradas a guarda de [toDynamicScaledPx] só varia
+ *    em runtime por [DimenCache.isEnabled] — o inverter é DEFAULT, ignoreMultiWindows é
+ *    false, customSensitivityK é null e o qualifier satisfaz a condição fast por
+ *    construção — então as demais verificações são puladas e o compilador pode
+ *    constant-foldar o qualifier. Semântica preservada: com cache desabilitado, roda
+ *    exatamente o caminho completo.
+ */
+private inline fun Number.fastScaledPx(
+    context: Context,
+    qualifier: DpQualifier,
+    applyAspectRatio: Boolean,
+): Float = if (DimenCache.isEnabled) {
+    DimenCache.resolveScaledFastPx(this.toFloat(), context, qualifier, applyAspectRatio)
+} else {
+    this.toDynamicScaledPx(context, qualifier, applyAspectRatio = applyAspectRatio)
+}
+
+/**
  * EN
  * Extension for Int with dynamic scaling based on the **Smallest Width (swDP)**.
  * Usage example: `16.sdp(context)`.
@@ -223,17 +249,17 @@ internal fun getQualifierValue(qualifier: DpQualifier, configuration: Configurat
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
  * Exemplo de uso: `16.sdp(context)`.
  */
-fun Number.sdp(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH)
-fun Number.sdpa(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+fun Number.sdp(context: Context): Float = fastScaledPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Number.sdpa(context: Context): Float = fastScaledPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Number.sdpi(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Number.sdpia(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
-fun Int.sdp(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH)
-fun Int.sdpa(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+fun Int.sdp(context: Context): Float = fastScaledPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Int.sdpa(context: Context): Float = fastScaledPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Int.sdpi(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Int.sdpia(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
-fun Float.sdp(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH)
-fun Float.sdpa(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+fun Float.sdp(context: Context): Float = fastScaledPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Float.sdpa(context: Context): Float = fastScaledPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Float.sdpi(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Float.sdpia(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
@@ -291,16 +317,16 @@ fun Number.sdpLwia(context: Context): Float = this.toDynamicScaledPx(context, Dp
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**.
  * Usage example: `32.hdp(context)`.
  */
-fun Number.hdp(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT)
+fun Number.hdp(context: Context): Float = fastScaledPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Number.hdpa(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Number.hdpi(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Number.hdpia(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
 
-fun Int.hdp(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT)
+fun Int.hdp(context: Context): Float = fastScaledPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Int.hdpa(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Int.hdpi(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Int.hdpia(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
-fun Float.hdp(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT)
+fun Float.hdp(context: Context): Float = fastScaledPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Float.hdpa(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Float.hdpi(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Float.hdpia(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
@@ -332,16 +358,16 @@ fun Number.hdpPwia(context: Context): Float = this.toDynamicScaledPx(context, Dp
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**.
  * Usage example: `100.wdp(context)`.
  */
-fun Number.wdp(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH)
+fun Number.wdp(context: Context): Float = fastScaledPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Number.wdpa(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Number.wdpi(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Number.wdpia(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
-fun Int.wdp(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH)
+fun Int.wdp(context: Context): Float = fastScaledPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Int.wdpa(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Int.wdpi(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Int.wdpia(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
-fun Float.wdp(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH)
+fun Float.wdp(context: Context): Float = fastScaledPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Float.wdpa(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Float.wdpi(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Float.wdpia(context: Context): Float = this.toDynamicScaledPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)

@@ -6,25 +6,28 @@
 #   implementation("io.github.bodenberg:appdimens-dynamic:x.y.z")
 #
 # Satellite AARs (appdimens-dynamic-<strategy>) ship their own consumer-rules.pro
-# for that strategy's public API; core keeps below remain the shared baseline.
+# for that strategy's public API.
 #
-# Design principle: keep the minimum surface needed for correctness.
-# Do NOT impose -optimizationpasses or -allowaccessmodification here —
-# those are app-level decisions, not library decisions.
+# Design principle (3.1.8): keep ONLY what is proven necessary. Direct bytecode
+# references — including the @PublishedApi internals reached through inlined
+# function bodies, which are expanded into the app's bytecode at compile time —
+# are discovered by R8 full mode on its own (Android recommendation: keep rules
+# are for reflection / JNI / name-based access, not for direct calls).
+#   https://developer.android.com/topic/performance/app-optimization/keep-rules-overview
+#
+# Everything below exists because a real runtime failure (or a deliberate
+# performance contract) was demonstrated without it. Do NOT add package-wide
+# keeps "for safety" — they silently inflate every consumer app's DEX.
 ################################################################################
 
 
 ################################################################################
 # 1. PUBLIC API SURFACE (principal = common + scaled + plain packages present here)
 #
-#    Classes under .code.** / .compose.** in this AAR are the scaled (+ related)
-#    developer-facing API. Satellite strategies keep their own packages in their
-#    own AARs. R8 must not rename or remove public/protected members the app calls
-#    by name (Kotlin extensions, @Composable functions, Java-style static methods).
-#
-#    -keep (not -keepnames) because full mode may also _remove_ members that it
-#    determines are unreachable from the app's entry points. We want to prevent
-#    both removal and renaming.
+#    Satellites keep their own packages in their own AARs. -keepnames (not
+#    -keep): unreachable members may still be removed, but names used by
+#    Java/Kotlin call sites that resolved at compile time are never renamed
+#    (mapping-file consumers and non-inlined binaries depend on it).
 ################################################################################
 
 -keepnames public class com.appdimens.dynamic.code.** { public protected *; }
@@ -33,115 +36,7 @@
 
 
 ################################################################################
-# 2. DIMENCACHE — @PublishedApi internal members
-#
-#    Kotlin `inline fun` expands into the consuming app's bytecode at compile
-#    time. The inlined body references @PublishedApi internal members of
-#    DimenCache directly: factors, shards, CT_* int constants, buildKey(),
-#    getOrPutInternal(), currentScale, currentArMultiplier, etc.
-#
-#    Without these keeps, R8 full mode sees those members referenced only from
-#    the app's expanded bytecode — not from any non-inline path — and may decide
-#    they are dead in the library's class files, removing them before the app
-#    gets a chance to use them. The result is NoSuchFieldError / NoSuchMethod-
-#    Error at runtime.
-#
-#    We keep the entire DimenCache object and its nested classes rather than
-#    listing members one by one, so that future additions to the @PublishedApi
-#    surface are automatically protected without a consumer-rules update.
-################################################################################
-
--keep class com.appdimens.dynamic.core.DimenCache { *; }
--keep class com.appdimens.dynamic.core.DimenCache$* { *; }
-
-# Strategy factor SPI — satellites register contributors; R8 must not strip the registry
-# or SharedScreenMetrics used from inline / cross-module call sites. Kept by NAME only:
-# members are referenced directly (no reflection/ServiceLoader is used), so renaming must
-# be prevented but dead members may still be removed. -keepnames (not -keep) is enough:
-# call sites are always in the same R8 pass as the library classes.
--keepnames class com.appdimens.dynamic.core.StrategyFactorRegistry { *; }
--keepnames class com.appdimens.dynamic.core.SharedScreenMetrics { *; }
--keepnames class com.appdimens.dynamic.core.StrategyFactorContributor { *; }
-
-# ScreenFactors padding fields (_p0.._p7): R8 full mode strips @JvmField fields
-# it identifies as write-only (never read by name). These fields are never read —
-# their only purpose is to occupy memory and prevent CPU false sharing on ARM64.
-# ScreenFactors is retained for source compatibility only; the active kernel reads
-# the snapshot-partitioned DimenMetrics (3.1.7+), so this rule is belt-and-braces.
--keepclassmembers class com.appdimens.dynamic.core.DimenCache$ScreenFactors {
-    <fields>;
-}
-
-# CalcType / ValueType ordinals are packed into 64-bit cache keys. They are
-# nested enums under DimenCache — already fully covered by the DimenCache$*
-# rule above (no separate enum member rules: R8 treats **[] $VALUES as
-# non-matching on Kotlin enums and reports "matches no class members").
-
-
-################################################################################
-# 3. COMMON ENUMS
-#
-#    DpQualifier, Inverter, Orientation, UiModeType, UnitType ordinals are
-#    encoded into cache keys and used in when-expressions throughout the
-#    builder chain. Renaming or reordering entries causes wrong dispatch and
-#    silent scaling errors that are extremely hard to debug.
-################################################################################
-
-# Use <fields>/<methods> instead of Java-style values/valueOf/$VALUES patterns:
-# Kotlin stores $VALUES privately; the $ in **[] $VALUES confuses R8's matcher.
--keepclassmembers enum com.appdimens.dynamic.common.* {
-    <fields>;
-    <methods>;
-}
-
-# Ordinals used in resize math — full keep so private enum synthetics survive.
--keepnames class com.appdimens.dynamic.core.AutoResizePercentBasis { *; }
-
-
-################################################################################
-# 4. SEALED CLASS — ResizeBound
-#
-#    R8 full mode eliminates sealed subclasses it never sees instantiated in the
-#    current analysis scope. ResizeBound.FixedDp, FixedSp and Percent are all
-#    instantiated inside the library's own helper functions (resizeFixedDp, etc.)
-#    which the app calls — but R8 may not trace through those constructors when
-#    processing the app if the helpers are inlined away differently.
-#    Keeping the sealed hierarchy costs < 200 bytes and prevents runtime ClassNot-
-#    FoundException in when-expressions over ResizeBound.
-################################################################################
-
--keepnames class com.appdimens.dynamic.core.ResizeBound { *; }
--keepnames class com.appdimens.dynamic.core.ResizeBound$* { *; }
--keepnames class com.appdimens.dynamic.core.ResizeBoundKt { *; }
-
-
-################################################################################
-# 5. CORE PLUMBING — Compose integration
-#
-#    Renaming is prevented for the whole core package by name; the only class
-#    that needs full -keep retention is DimenCache (see §2 — its members are
-#    referenced from inlined @PublishedApi bodies the R8 analysis can lose).
-#    Everything else in core is referenced directly at call sites, so dead
-#    members may still be removed, but names are never renamed.
-################################################################################
-
-# 5.1 CompositionLocals (AppDimensProvider), stamps, plumbing, AR lookup and
-#     design constants are all reachable by direct reference; name preservation
-#     is all that is required to keep them callable from consuming apps.
--keepnames class com.appdimens.dynamic.core.CompositionLocalsKt { *; }
--keepnames class com.appdimens.dynamic.core.ComposeDimenRememberKt { *; }
--keepnames class com.appdimens.dynamic.core.ComposeRememberStampsKt { *; }
--keepnames class com.appdimens.dynamic.core.DimenCalculationPlumbing { *; }
--keepnames class com.appdimens.dynamic.core.ResizeMathKt { *; }
--keepnames class com.appdimens.dynamic.core.PercentSpaceMathKt { *; }
--keepnames class com.appdimens.dynamic.core.AspectRatioLookup { *; }
--keepnames class com.appdimens.dynamic.core.AspectRatioLookupKt { *; }
--keepnames class com.appdimens.dynamic.core.DesignScaleConstants { *; }
--keepnames class com.appdimens.dynamic.core.DimenMetrics { *; }
-
-
-################################################################################
-# 6. KOTLIN METADATA
+# 2. KOTLIN METADATA
 #
 #    kotlin.Metadata is the annotation the Kotlin compiler writes on every
 #    class. Without it, kotlinx.reflect, Compose tooling, and some annotation
@@ -150,54 +45,59 @@
 ################################################################################
 
 -keep class kotlin.Metadata { *; }
--keep class kotlin.jvm.internal.** { *; }
 
 
 ################################################################################
-# 7. PARCELIZE / SERIALIZABLE
+# 3. CACHE-KEY ENUMS
 #
-#    AppDimens does not currently expose Parcelable or Serializable public types,
-#    but these rules protect any future addition. -keepnames (not -keep) is
-#    sufficient here: we only need to prevent renaming, not removal, for classes
-#    the app never instantiates directly.
+#    DpQualifier, Inverter, UiModeType, UnitType ordinals are encoded into
+#    cache keys and used in when-expressions throughout the builder chain.
+#    Renaming entries causes wrong dispatch and silent scaling errors. Use
+#    <fields>/<methods> instead of Java-style values/valueOf/$VALUES patterns:
+#    Kotlin stores $VALUES privately and the $ confuses R8's matcher.
 ################################################################################
 
--keepnames class * implements android.os.Parcelable
--keepnames interface * implements android.os.Parcelable
--keepclassmembers class * implements android.os.Parcelable {
-    public static final android.os.Parcelable$Creator *;
+-keepclassmembers enum com.appdimens.dynamic.common.* {
+    <fields>;
+    <methods>;
 }
 
--keepnames class * implements java.io.Serializable
--keepnames interface * implements java.io.Serializable
--keepclassmembers class * implements java.io.Serializable {
-    static final long serialVersionUID;
-    private void writeObject(java.io.ObjectOutputStream);
-    private void readObject(java.io.ObjectInputStream);
-    java.lang.Object writeReplace();
-    java.lang.Object readResolve();
+# AutoResizePercentBasis ordinals are used in resize math.
+-keepnames class com.appdimens.dynamic.core.AutoResizePercentBasis { *; }
+
+
+################################################################################
+# 4. SEALED CLASS — ResizeBound
+#
+#    R8 full mode eliminates sealed subclasses it never sees instantiated in
+#    the current analysis scope; the resize helpers instantiate the subclasses
+#    indirectly and a lost branch surfaces as ClassNotFoundException in the
+#    when-expression. Keeping the sealed hierarchy costs < 200 bytes.
+################################################################################
+
+-keepnames class com.appdimens.dynamic.core.ResizeBound { *; }
+-keepnames class com.appdimens.dynamic.core.ResizeBound$* { *; }
+-keepnames class com.appdimens.dynamic.core.ResizeBoundKt { *; }
+
+
+################################################################################
+# 5. ScreenFactors PADDING FIELDS (_p0.._p7)
+#
+#    R8 full mode strips @JvmField fields it identifies as write-only. These
+#    fields are never read by name — their only purpose is to occupy memory and
+#    prevent CPU false sharing on ARM64. Losing them silently undoes the
+#    padding contract without any crash, so this rule is kept on purpose.
+#    (Everything else on DimenCache/plumbing is reachable by direct reference
+#    from inlined bytecode and needs no keep rule.)
+################################################################################
+
+-keepclassmembers class com.appdimens.dynamic.core.DimenCache$ScreenFactors {
+    <fields>;
 }
 
 
 ################################################################################
-# 8. PROFILE INSTALLER / TRACING (reflection-driven)
-#
-#    androidx.profileinstaller (pulled in by macrobenchmark apps and by apps
-#    embedding baseline profiles) and androidx.startup invoke androidx.tracing
-#    at runtime. In R8 full mode these call sites are invisible to static
-#    analysis, so both packages get stripped from a minified release and the
-#    process crashes with NoClassDefFoundError: androidx/tracing/Trace the
-#    moment instrumentation (or the profile installer) starts.
-#    Keeping both packages adds <10 KB and protects any app that uses
-#    BaselineProfileRule or embedded baseline profiles.
-################################################################################
-
--keep class androidx.tracing.** { *; }
--keep class androidx.profileinstaller.** { *; }
-
-
-################################################################################
-# 9. SUPPRESS NOTES — full mode is noisier than compat mode
+# 6. SUPPRESS NOTES — full mode is noisier than compat mode
 #
 #    -dontnote SUPPRESSES MESSAGES ONLY. It does not remove any protection.
 #    These notes appear because android.jar stubs are present in the library

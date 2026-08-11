@@ -9,7 +9,7 @@ This guide explains **why** and **how** to use R8/minify, **what changes** when 
 
 Each published AAR ships its own `consumer-rules.pro`:
 
-- **`appdimens-dynamic`** — `common`, scaled `code`/`compose`, `DimenCache`, `StrategyFactorRegistry`, Compose locals
+- **`appdimens-dynamic`** — `common`, scaled `code`/`compose`, plus the few proven-specific core rules (cache-key enums, `ResizeBound`, `ScreenFactors` padding, `kotlin.Metadata`)
 - **`appdimens-dynamic-<strategy>`** — that strategy’s public `code` / `compose` API (core rules arrive transitively)
 
 Gradle merges consumer rules from the modules you depend on.
@@ -115,12 +115,16 @@ published**.
   (AndroidX-style). Renaming still happens once, in the **consuming app's own
   R8 pass**, where the app's mapping file applies. This is what keeps stack
   traces sane and eliminates every double-obfuscation edge case.
-- **Keeps** = the cross-module contract:
-  - public API packages (`code.**`, `compose.**`, `common.**`) — full keep, so
-    a published AAR never strips public members;
+- **Keeps** = the cross-module contract, now with **`allowoptimization`**
+  (since 3.1.8 — a bare `-keep` also forbids R8 from *optimizing* the kept
+  members, and the hot path lives inside them):
+  - public API packages (`code.**`, `compose.**`, `common.**`) — kept, so a
+    published AAR never strips public members, but their bodies stay
+    optimizable;
   - **the whole `core.**` engine** — satellites compile against it and inline
-    its `@PublishedApi` members; a member removed here would fail only at
-    consumer runtime, so none may be removed at build time.
+    its `@PublishedApi` members; a member removed or renamed here would fail
+    only at consumer runtime, so none may be removed, but all may be
+    optimized.
 
 **Result:** every app that depends on AppDimens gets pre-optimized bytecode —
 even in **debug** builds without minify — and the app's own release R8 pass
@@ -145,8 +149,13 @@ Gradle **packages** it into the **AAR**. When an app enables **minify/R8** on **
 **What this file is for:**
 
 - The **minimum** set of rules so the **published library** stays correct inside **any** consuming app under R8 (including **full mode**).
-- Public API surfaces (kept **by name** with `-keepnames`: the app's R8 may drop library members that app does not use, but may never rename them).
-- `DimenCache` and nested classes, **padding fields** on `ScreenFactors`, enums whose ordinals are packed into cache keys, `ResizeBound`, Kotlin metadata, tracing/profile-installer packages.
+- Since 3.1.8 the file is **almost empty by design**: the `@PublishedApi` internals reached through inlined extension bodies are expanded into the app's bytecode at compile time, so R8 discovers them as plain direct references and keeps them automatically. All reflection/JNI-driven keeps were removed (`kotlin.jvm.internal.**`, generic `Parcelable`/`Serializable`, `androidx.tracing`/`androidx.profileinstaller` — the latter belong to the libraries that own them).
+- Remaining specific rules, each with a demonstrated runtime or performance failure behind it:
+  - public API surfaces (`-keepnames`: the app's R8 may drop library members the app does not use, but may never rename them);
+  - `kotlin.Metadata` (reflective reads by Compose tooling / `kotlinx.reflect`);
+  - enums whose **ordinals are packed into cache keys** (renaming breaks dispatch);
+  - the `ResizeBound` sealed hierarchy (R8 full mode can eliminate uninstantiated sealed subclasses → `ClassNotFoundException`);
+  - `ScreenFactors` **padding fields** (write-only by design; a plain `-keep` prevents R8 from stripping the ARM64 false-sharing protection).
 
 **Design choice:** Consumer rules intentionally **do not** force app-wide policies like `-optimizationpasses` on the app—those remain **app** decisions. They also deliberately **do not** keep satellite-internal helper packages: all satellite references are plain static bytecode (no reflection), so the app's R8 shrinks them freely.
 

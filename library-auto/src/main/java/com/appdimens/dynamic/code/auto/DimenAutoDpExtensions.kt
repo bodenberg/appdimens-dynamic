@@ -225,8 +225,32 @@ internal fun getQualifierValue(qualifier: DpQualifier, configuration: Configurat
  * Extensão para Int com dimensionamento dinâmico baseado na **Smallest Width (swDP)**.
  * Exemplo de uso: `16.sdp(context)`.
  */
-fun Number.asdp(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.SMALL_WIDTH)
-fun Number.asdpa(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
+private fun Number.fastAutoPx(context: Context, qualifier: DpQualifier, applyAspectRatio: Boolean): Float {
+    if (DimenCache.isScalingEnabled() && (qualifier == DpQualifier.SMALL_WIDTH || !applyAspectRatio)) {
+        val m = DimenCache.coherentMetrics(context)
+        val base = this.toFloat()
+        val dim = when (qualifier) {
+            DpQualifier.SMALL_WIDTH -> m.smallestScreenWidthDp.toFloat()
+            DpQualifier.WIDTH -> m.screenWidthDp.toFloat()
+            DpQualifier.HEIGHT -> m.screenHeightDp.toFloat()
+        }
+        val inv = DimenCache.INV_BASE_RATIO
+        val transition = 480f
+        val sensitivity = 0.4f
+        val scale = if (dim <= transition) {
+            dim * inv
+        } else {
+            transition * inv + sensitivity * kotlin.math.ln(1f + (dim - transition) * inv)
+        }
+        var out = base * scale
+        if (applyAspectRatio) out *= m.defaultAspectRatioMultiplier
+        return out * m.density
+    }
+    return this.toDynamicAutoPx(context, qualifier, applyAspectRatio = applyAspectRatio)
+}
+
+fun Number.asdp(context: Context): Float = fastAutoPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = false)
+fun Number.asdpa(context: Context): Float = fastAutoPx(context, DpQualifier.SMALL_WIDTH, applyAspectRatio = true)
 fun Number.asdpi(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true)
 fun Number.asdpia(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.SMALL_WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)
 
@@ -284,7 +308,7 @@ fun Number.asdpLwia(context: Context): Float = this.toDynamicAutoPx(context, DpQ
  * Extension for Int with dynamic scaling based on the **Screen Height (hDP)**.
  * Usage example: `32.hdp(context)`.
  */
-fun Number.ahdp(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.HEIGHT)
+fun Number.ahdp(context: Context): Float = fastAutoPx(context, DpQualifier.HEIGHT, applyAspectRatio = false)
 fun Number.ahdpa(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.HEIGHT, applyAspectRatio = true)
 fun Number.ahdpi(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true)
 fun Number.ahdpia(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.HEIGHT, ignoreMultiWindows = true, applyAspectRatio = true)
@@ -316,7 +340,7 @@ fun Number.ahdpPwia(context: Context): Float = this.toDynamicAutoPx(context, DpQ
  * Extension for Int with dynamic scaling based on the **Screen Width (wDP)**.
  * Usage example: `100.wdp(context)`.
  */
-fun Number.awdp(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.WIDTH)
+fun Number.awdp(context: Context): Float = fastAutoPx(context, DpQualifier.WIDTH, applyAspectRatio = false)
 fun Number.awdpa(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.WIDTH, applyAspectRatio = true)
 fun Number.awdpi(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true)
 fun Number.awdpia(context: Context): Float = this.toDynamicAutoPx(context, DpQualifier.WIDTH, ignoreMultiWindows = true, applyAspectRatio = true)

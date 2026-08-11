@@ -327,13 +327,20 @@ object DimenCache {
      * covers the typical single-Activity app (hit → zero allocation); a weak map
      * covers multi-window apps where two windows alternate.
      */
-    @Volatile
+    /**
+     * EN Single @Volatile holder pairing the window context with its metrics so the
+     *    hot lane pays ONE volatile load instead of two. The fields are final, so the
+     *    single volatile write publishes both safely (no torn context/metrics pair).
+     * PT Portador único @Volatile unindo contexto e métricas da janela para o caminho
+     *    quente pagar UMA leitura volátil em vez de duas. Os campos são finais, então
+     *    a única escrita volátil publica ambos com segurança (sem par rasgado).
+     */
     @PublishedApi
-    internal var fastWindowContext: Context? = null
+    internal class FastWindowSlot(val context: Context?, val metrics: DimenMetrics)
 
     @Volatile
     @PublishedApi
-    internal var fastWindowMetrics: DimenMetrics? = null
+    internal var fastWindowSlot: FastWindowSlot? = null
 
     private val metricsByWindowContext =
         Collections.synchronizedMap(WeakHashMap<Context, DimenMetrics>())
@@ -370,11 +377,11 @@ object DimenCache {
     @PublishedApi
     internal fun metricsFor(context: Context?): DimenMetrics {
         if (context == null) return fallbackMetrics
-        val fast = fastWindowMetrics
-        if (fast != null && fastWindowContext === context) {
+        val fast = fastWindowSlot
+        if (fast != null && fast.context === context) {
             val cfg = context.resources.configuration
-            if (fastMatch(fast, cfg, mwModeFor(context))) {
-                return fast
+            if (fastMatch(fast.metrics, cfg, mwModeFor(context))) {
+                return fast.metrics
             }
         }
         // Slow path: (re)build and memo. The weak map handles an app with several
@@ -383,8 +390,7 @@ object DimenCache {
         if (cached != null) {
             val cfg = context.resources.configuration
             if (fastMatch(cached, cfg, mwModeFor(context))) {
-                fastWindowContext = context
-                fastWindowMetrics = cached
+                fastWindowSlot = FastWindowSlot(context, cached)
                 return cached
             }
         }
@@ -393,8 +399,7 @@ object DimenCache {
             isInMultiWindowMode = DimenCalculationPlumbing.isInMultiWindowMode(context),
         )
         metricsByWindowContext[context] = rebuilt
-        fastWindowContext = context
-        fastWindowMetrics = rebuilt
+        fastWindowSlot = FastWindowSlot(context, rebuilt)
         return rebuilt
     }
 
@@ -572,12 +577,32 @@ object DimenCache {
     @PublishedApi
     internal inline fun metricsCoherentFor(context: Context?): DimenMetrics {
         metricsScope.get()?.let { return it }
-        val fast = fastWindowMetrics
-        if (fast != null && fastWindowContext === context && (validationTick++ and 0xF) != 0) {
-            return fast
+        val slot = fastWindowSlot
+        if (slot != null && slot.context === context && (validationTick++ and 0xF) != 0) {
+            return slot.metrics
         }
         return metricsFor(context)
     }
+
+    /**
+     * EN Public bridge used by satellite modules (separate Gradle modules cannot see
+     *    `internal` members) to resolve the coherent per-window metrics for their fast
+     *    lanes — same source as [metricsCoherentFor].
+     * PT Ponte pública usada pelos módulos satélite (módulos Gradle separados não veem
+     *    membros `internal`) para resolver as métricas coerentes por janela de seus
+     *    fast lanes — mesma fonte de [metricsCoherentFor].
+     */
+    @JvmStatic
+    fun coherentMetrics(context: Context?): DimenMetrics = metricsCoherentFor(context)
+
+    /**
+     * EN Public bridge for the feature toggle (internal in this module) so satellite
+     *    fast lanes can replicate the exact cache-enabled semantics of their fallbacks.
+     * PT Ponte pública para o toggle de recurso (internal neste módulo) para que os fast
+     *    lanes dos satélites repliquem a semântica exata de cache habilitado dos fallbacks.
+     */
+    @JvmStatic
+    fun isScalingEnabled(): Boolean = isEnabled
 
     /**
      * EN Single-multiply multiplier for SMALL_WIDTH / WIDTH / HEIGHT without custom
@@ -592,10 +617,21 @@ object DimenCache {
         m: DimenMetrics,
         qualifier: DpQualifier,
         applyAspectRatio: Boolean,
-    ): Float = when (qualifier) {
-        DpQualifier.SMALL_WIDTH -> if (applyAspectRatio) m.defaultScaledAspectRatioMultiplier else m.scale
-        DpQualifier.WIDTH -> m.screenWidthDp * INV_BASE_RATIO
-        DpQualifier.HEIGHT -> m.screenHeightDp * INV_BASE_RATIO
+    ): Float {
+        if (qualifier === DpQualifier.SMALL_WIDTH) {
+            return if (applyAspectRatio) m.defaultScaledAspectRatioMultiplier else m.scale
+        }
+        // EN Identity compares instead of `when` on an enum: `when` compiles to an
+        //    ordinal() virtual call + switch-table array load on every resolution.
+        //    WIDTH/HEIGHT read precomputed factors (bit-identical, one `iget`).
+        // PT Comparações de identidade no lugar de `when` sobre enum: `when` compila
+        //    para chamada virtual ordinal() + leitura de array de switch por resolução.
+        //    WIDTH/HEIGHT leem fatores pré-calculados (bit-idênticos, um `iget`).
+        return if (qualifier === DpQualifier.WIDTH) {
+            m.screenWidthFactor
+        } else {
+            m.screenHeightFactor
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
