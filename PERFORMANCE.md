@@ -33,7 +33,7 @@ The library features a **Lock-Free Snapshot-Partitioned Cache** with an intellig
 > [!IMPORTANT]
 > **Measurement**: `benchlab` module, **release** build (`minifyEnabled = true` + R8), run headlessly via the `AUTO_START` intent extra — **3 independent test passes (T1/T2/T3) × 2 full rounds**, 50,000 iterations per timing cell. The comparison is **Dynamic 3.1.8** vs **Concorrente 1** vs **Concorrente 2**. This data was produced by **BenchLab**.
 
-**Device:** Xiaomi 2107113SG (Redmi Note 11) · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
+**Device:** Xiaomi 2107113SG · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
 
 ### Methodology
 
@@ -53,7 +53,7 @@ All measurements come from the two harnesses running on the same physical device
 
 | Aspect | Scenario |
 |---|---|
-| **Device** | Xiaomi 2107113SG (Redmi Note 11) · Qualcomm bengal (Snapdragon 680-class) · max 2.8 GHz |
+| **Device** | Xiaomi 2107113SG · Qualcomm bengal (Snapdragon 680-class) · max 2.8 GHz |
 | **Window** | sw=393dp · w=393dp · h=842dp · density 2.75 (1080×2400 @ 440 dpi) |
 | **Build** | Release APK + R8 (`minifyEnabled = true`) on both harnesses |
 | **Sessions** | Current test runs only (2026-08-13) — no debug builds, no previous versions |
@@ -121,7 +121,7 @@ The T1 → T3 spread within each round (e.g. sdp 26 → 5 ns) is the ART JIT war
 
 Stress test executed via the **Micro + Macro Benchmark Dashboard** in the `app` module. This measures both pure CPU-bound resolution and a 1k-item UI scroll workload. **This data was produced by the BenchmarkActivity.**
 
-**Device:** Xiaomi 2107113SG (Redmi Note 11) · release APK + R8.
+**Device:** Xiaomi 2107113SG · release APK + R8.
 
 ### Calculation Test (Scaled: sw+h+w, +AR, 40,000 calls)
 
@@ -194,7 +194,7 @@ For eligible `CalcType`s on the default path (`shouldBypassCache`), `getOrPut` r
 
 ## 6. Benchmark Variability
 
-Benchmark numbers in this document reflect measurements taken on a specific device (Xiaomi 2107113SG · Redmi Note 11 · Qualcomm bengal · 2.8 GHz max) under controlled conditions. **Results will vary** based on:
+Benchmark numbers in this document reflect measurements taken on a specific device (Xiaomi 2107113SG · Qualcomm bengal · 2.8 GHz max) under controlled conditions. **Results will vary** based on:
 
 - **Device class**: budget ARM Cortex-A55 clusters can be 5–10× slower on cache lookups
 - **JIT warm-up state**: first-run (cold JIT) latency can be 3–10× higher than steady-state (visible in the T1 vs T3 spread within each round)
