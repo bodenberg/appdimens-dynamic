@@ -79,11 +79,13 @@ class BenchmarkActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val autoStart = intent.getBooleanExtra("AUTO_START_FULL", false)
         val autoStartMicro = intent.getBooleanExtra("AUTO_START_MICRO", false)
+        val autoStartCompare = intent.getBooleanExtra("AUTO_START_COMPARE", false)
         setContent {
             AppDimensProvider {
                 BenchmarkDashboardScreen(
                     autoStart = autoStart,
-                    autoStartMicro = autoStartMicro
+                    autoStartMicro = autoStartMicro,
+                    autoStartCompare = autoStartCompare
                 )
             }
         }
@@ -104,7 +106,7 @@ class BenchmarkActivity : ComponentActivity() {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BenchmarkDashboardScreen(autoStart: Boolean = false, autoStartMicro: Boolean = false) {
+fun BenchmarkDashboardScreen(autoStart: Boolean = false, autoStartMicro: Boolean = false, autoStartCompare: Boolean = false) {
     val context     = LocalContext.current
     val listState   = rememberLazyListState()
     val scope       = rememberCoroutineScope()
@@ -128,6 +130,9 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false, autoStartMicro: Boolean
         if (autoStartMicro) {
             android.util.Log.i("APPDIMENS_AUTO", "Auto-start MICRO triggered via Intent extra.")
             controller.runMicroOnly(calculationMode)
+        } else if (autoStartCompare) {
+            android.util.Log.i("APPDIMENS_AUTO", "Auto-start COMPARE triggered via Intent extra.")
+            controller.runComparison(calculationMode)
         } else if (autoStart) {
             android.util.Log.i("APPDIMENS_AUTO", "Auto-start triggered via Intent extra.")
             controller.runFull(calculationMode)

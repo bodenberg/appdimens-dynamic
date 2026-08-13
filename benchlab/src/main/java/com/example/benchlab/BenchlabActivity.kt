@@ -96,8 +96,8 @@ private val ColorChaintech = AccentPurple
 class BenchlabActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // EN Headless automation: AUTO_START=true triggers the 2 tests immediately.
-        // PT Automação headless: AUTO_START=true dispara os 2 testes imediatamente.
+        // EN Headless automation: AUTO_START=true triggers the 3 tests immediately.
+        // PT Automação headless: AUTO_START=true dispara os 3 testes imediatamente.
         val autoStart = intent.getBooleanExtra("AUTO_START", false)
         setContent {
             AppDimensProvider {
@@ -180,8 +180,8 @@ private fun BenchlabScreen(autoStart: Boolean = false) {
     val probeActive by controller.probeActive.collectAsState()
     val isRunning = phase != BenchPhase.IDLE && phase != BenchPhase.DONE
 
-    // EN Headless automation: run the 2 tests as soon as the screen is composed.
-    // PT Automação headless: executa os 2 testes assim que a tela é composta.
+    // EN Headless automation: run the 3 tests as soon as the screen is composed.
+    // PT Automação headless: executa os 3 testes assim que a tela é composta.
     LaunchedEffect(Unit) {
         if (autoStart) controller.run()
     }
@@ -326,7 +326,7 @@ private fun ActionPanel(
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            "Dynamic 3.1.8 × SDPS 3.1.6 × Chaintech 1.0.7 — 2 testes",
+            "Dynamic 3.1.8 × SDPS 3.1.6 × Chaintech 1.0.7 — 3 testes",
             color = TextSecondary, fontSize = 11.sp,
             modifier = Modifier.padding(bottom = 12.dp)
         )
@@ -346,7 +346,7 @@ private fun ActionPanel(
         ) {
             Icon(Icons.Default.PlayArrow, null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(6.dp))
-            Text("Rodar 2 testes", fontWeight = FontWeight.Bold)
+            Text("Rodar 3 testes", fontWeight = FontWeight.Bold)
         }
 
         Spacer(Modifier.height(8.dp))
@@ -452,42 +452,42 @@ private fun DpResolutionSection(result: CompetitorBenchmarkResult?, withAr: Bool
                         LibBlock(
                             libName = "Dynamic 3.1.8",
                             libColor = ColorAppDimens,
-                            dp1T1 = r.test1.dp1AppDimens, dp1T2 = r.test2.dp1AppDimens,
-                            dp10T1 = r.test1.dp10AppDimens, dp10T2 = r.test2.dp10AppDimens,
-                            dp100T1 = r.test1.dp100AppDimens, dp100T2 = r.test2.dp100AppDimens,
+                            dp1T1 = r.test1.dp1AppDimens, dp1T2 = r.test2.dp1AppDimens, dp1T3 = r.test3.dp1AppDimens,
+                            dp10T1 = r.test1.dp10AppDimens, dp10T2 = r.test2.dp10AppDimens, dp10T3 = r.test3.dp10AppDimens,
+                            dp100T1 = r.test1.dp100AppDimens, dp100T2 = r.test2.dp100AppDimens, dp100T3 = r.test3.dp100AppDimens,
                         )
                         HorizontalDivider(color = SurfaceBorder)
                         LibBlock(
                             libName = "SDPS 3.1.6",
                             libColor = ColorSdps,
-                            dp1T1 = r.test1.dp1Sdps, dp1T2 = r.test2.dp1Sdps,
-                            dp10T1 = r.test1.dp10Sdps, dp10T2 = r.test2.dp10Sdps,
-                            dp100T1 = r.test1.dp100Sdps, dp100T2 = r.test2.dp100Sdps,
+                            dp1T1 = r.test1.dp1Sdps, dp1T2 = r.test2.dp1Sdps, dp1T3 = r.test3.dp1Sdps,
+                            dp10T1 = r.test1.dp10Sdps, dp10T2 = r.test2.dp10Sdps, dp10T3 = r.test3.dp10Sdps,
+                            dp100T1 = r.test1.dp100Sdps, dp100T2 = r.test2.dp100Sdps, dp100T3 = r.test3.dp100Sdps,
                         )
                         HorizontalDivider(color = SurfaceBorder)
                         LibBlock(
                             libName = "Chaintech 1.0.7",
                             libColor = ColorChaintech,
-                            dp1T1 = r.test1.dp1Chaintech, dp1T2 = r.test2.dp1Chaintech,
-                            dp10T1 = r.test1.dp10Chaintech, dp10T2 = r.test2.dp10Chaintech,
-                            dp100T1 = r.test1.dp100Chaintech, dp100T2 = r.test2.dp100Chaintech,
+                            dp1T1 = r.test1.dp1Chaintech, dp1T2 = r.test2.dp1Chaintech, dp1T3 = r.test3.dp1Chaintech,
+                            dp10T1 = r.test1.dp10Chaintech, dp10T2 = r.test2.dp10Chaintech, dp10T3 = r.test3.dp10Chaintech,
+                            dp100T1 = r.test1.dp100Chaintech, dp100T2 = r.test2.dp100Chaintech, dp100T3 = r.test3.dp100Chaintech,
                         )
                     } else {
                         // ── sdpa: per-library blocks ────────────────────────
                         LibBlock(
                             libName = "Dynamic 3.1.8 (AR)",
                             libColor = ColorAppDimens,
-                            dp1T1 = r.test1.dp1AppDimensAr, dp1T2 = r.test2.dp1AppDimensAr,
-                            dp10T1 = r.test1.dp10AppDimensAr, dp10T2 = r.test2.dp10AppDimensAr,
-                            dp100T1 = r.test1.dp100AppDimensAr, dp100T2 = r.test2.dp100AppDimensAr,
+                            dp1T1 = r.test1.dp1AppDimensAr, dp1T2 = r.test2.dp1AppDimensAr, dp1T3 = r.test3.dp1AppDimensAr,
+                            dp10T1 = r.test1.dp10AppDimensAr, dp10T2 = r.test2.dp10AppDimensAr, dp10T3 = r.test3.dp10AppDimensAr,
+                            dp100T1 = r.test1.dp100AppDimensAr, dp100T2 = r.test2.dp100AppDimensAr, dp100T3 = r.test3.dp100AppDimensAr,
                         )
                         HorizontalDivider(color = SurfaceBorder)
                         LibBlock(
                             libName = "SDPS 3.1.6 (AR)",
                             libColor = ColorSdps,
-                            dp1T1 = r.test1.dp1SdpsAr, dp1T2 = r.test2.dp1SdpsAr,
-                            dp10T1 = r.test1.dp10SdpsAr, dp10T2 = r.test2.dp10SdpsAr,
-                            dp100T1 = r.test1.dp100SdpsAr, dp100T2 = r.test2.dp100SdpsAr,
+                            dp1T1 = r.test1.dp1SdpsAr, dp1T2 = r.test2.dp1SdpsAr, dp1T3 = r.test3.dp1SdpsAr,
+                            dp10T1 = r.test1.dp10SdpsAr, dp10T2 = r.test2.dp10SdpsAr, dp10T3 = r.test3.dp10SdpsAr,
+                            dp100T1 = r.test1.dp100SdpsAr, dp100T2 = r.test2.dp100SdpsAr, dp100T3 = r.test3.dp100SdpsAr,
                         )
                     }
                 }
@@ -500,9 +500,9 @@ private fun DpResolutionSection(result: CompetitorBenchmarkResult?, withAr: Bool
 private fun LibBlock(
     libName: String,
     libColor: Color,
-    dp1T1: Float, dp1T2: Float,
-    dp10T1: Float, dp10T2: Float,
-    dp100T1: Float, dp100T2: Float,
+    dp1T1: Float, dp1T2: Float, dp1T3: Float,
+    dp10T1: Float, dp10T2: Float, dp10T3: Float,
+    dp100T1: Float, dp100T2: Float, dp100T3: Float,
 ) {
     Column(
         modifier = Modifier
@@ -518,18 +518,18 @@ private fun LibBlock(
             fontFamily = FontFamily.Monospace
         )
         Spacer(Modifier.height(6.dp))
-        DpRow2("1dp", dp1T1, dp1T2, libColor)
+        DpRow3("1dp", dp1T1, dp1T2, dp1T3, libColor)
         Spacer(Modifier.height(4.dp))
-        DpRow2("10dp", dp10T1, dp10T2, libColor)
+        DpRow3("10dp", dp10T1, dp10T2, dp10T3, libColor)
         Spacer(Modifier.height(4.dp))
-        DpRow2("100dp", dp100T1, dp100T2, libColor)
+        DpRow3("100dp", dp100T1, dp100T2, dp100T3, libColor)
     }
 }
 
 @Composable
-private fun DpRow2(
+private fun DpRow3(
     dpLabel: String,
-    t1: Float, t2: Float,
+    t1: Float, t2: Float, t3: Float,
     libColor: Color,
 ) {
     Row(
@@ -540,16 +540,21 @@ private fun DpRow2(
             dpLabel,
             color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Monospace,
-            modifier = Modifier.weight(0.15f)
+            modifier = Modifier.weight(0.13f)
         )
-        Column(modifier = Modifier.weight(0.425f)) {
+        Column(modifier = Modifier.weight(0.29f)) {
             Text("T1", color = TextSecondary, fontSize = 8.sp, fontFamily = FontFamily.Monospace)
             Text("%.4f px".format(t1), color = libColor, fontSize = 10.sp,
                 fontWeight = FontWeight.Medium, fontFamily = FontFamily.Monospace)
         }
-        Column(modifier = Modifier.weight(0.425f)) {
+        Column(modifier = Modifier.weight(0.29f)) {
             Text("T2", color = TextSecondary, fontSize = 8.sp, fontFamily = FontFamily.Monospace)
             Text("%.4f px".format(t2), color = libColor, fontSize = 10.sp,
+                fontWeight = FontWeight.Medium, fontFamily = FontFamily.Monospace)
+        }
+        Column(modifier = Modifier.weight(0.29f)) {
+            Text("T3", color = TextSecondary, fontSize = 8.sp, fontFamily = FontFamily.Monospace)
+            Text("%.4f px".format(t3), color = libColor, fontSize = 10.sp,
                 fontWeight = FontWeight.Medium, fontFamily = FontFamily.Monospace)
         }
     }
@@ -577,6 +582,8 @@ private fun TimingSection(result: CompetitorBenchmarkResult?) {
                     TimingRow("T1", r.timeTest1.appDimensNs, r.timeTest1.sdpsNs, r.timeTest1.chaintechNs, AccentCyan.copy(alpha = 0.04f))
                     HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
                     TimingRow("T2", r.timeTest2.appDimensNs, r.timeTest2.sdpsNs, r.timeTest2.chaintechNs, Color.Transparent)
+                    HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
+                    TimingRow("T3", r.timeTest3.appDimensNs, r.timeTest3.sdpsNs, r.timeTest3.chaintechNs, Color.Transparent)
                     HorizontalDivider(color = SurfaceBorder)
                     TimingRow("Média", r.avgAppDimensNs, r.avgSdpsNs, r.avgChaintechNs, Color.Transparent, isHighlight = true)
 
@@ -589,6 +596,8 @@ private fun TimingSection(result: CompetitorBenchmarkResult?) {
                     TimingRow2("T1", r.timeTest1.appDimensArNs, r.timeTest1.sdpsArNs, AccentAmber.copy(alpha = 0.04f))
                     HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
                     TimingRow2("T2", r.timeTest2.appDimensArNs, r.timeTest2.sdpsArNs, Color.Transparent)
+                    HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
+                    TimingRow2("T3", r.timeTest3.appDimensArNs, r.timeTest3.sdpsArNs, Color.Transparent)
                     HorizontalDivider(color = SurfaceBorder)
                     TimingRow2("Média", r.avgAppDimensArNs, r.avgSdpsArNs, Color.Transparent, isHighlight = true)
                 }
@@ -833,7 +842,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     sb.appendLine("═══════════════════════════════════════════════════════")
     sb.appendLine("  BenchLab — Relatório de Benchmark")
     sb.appendLine("  Dynamic 3.1.8 × SDPS 3.1.6 × Chaintech 1.0.7")
-    sb.appendLine("  2 testes independentes")
+    sb.appendLine("  3 testes independentes")
     sb.appendLine("═══════════════════════════════════════════════════════")
     sb.appendLine()
     sb.appendLine("Dispositivo: sw=${r.windowSw}dp w=${r.windowW}dp h=${r.windowH}dp density=${"%.2f".format(r.density)}")
@@ -845,27 +854,29 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     for (lib in listOf("Dynamic" to "Dynamic 3.1.8", "SDPS" to "SDPS 3.1.6", "Chaintech" to "Chaintech 1.0.7")) {
         sb.appendLine("  ${lib.second}:")
         for ((dpLabel, dp) in listOf("1dp" to 1, "10dp" to 10, "100dp" to 100)) {
-            val t1 = when (dp) { 1 -> if (lib.first == "Dynamic") r.test1.dp1AppDimens else if (lib.first == "SDPS") r.test1.dp1Sdps else r.test1.dp1Chaintech
-                                  10 -> if (lib.first == "Dynamic") r.test1.dp10AppDimens else if (lib.first == "SDPS") r.test1.dp10Sdps else r.test1.dp10Chaintech
-                                  else -> if (lib.first == "Dynamic") r.test1.dp100AppDimens else if (lib.first == "SDPS") r.test1.dp100Sdps else r.test1.dp100Chaintech }
-            val t2 = when (dp) { 1 -> if (lib.first == "Dynamic") r.test2.dp1AppDimens else if (lib.first == "SDPS") r.test2.dp1Sdps else r.test2.dp1Chaintech
-                                  10 -> if (lib.first == "Dynamic") r.test2.dp10AppDimens else if (lib.first == "SDPS") r.test2.dp10Sdps else r.test2.dp10Chaintech
-                                  else -> if (lib.first == "Dynamic") r.test2.dp100AppDimens else if (lib.first == "SDPS") r.test2.dp100Sdps else r.test2.dp100Chaintech }
-            sb.appendLine("    $dpLabel: T1=%.4f px  T2=%.4f px".format(t1, t2))
+            fun valAt(t: DpResolution3): Float = when (dp) {
+                1 -> if (lib.first == "Dynamic") t.dp1AppDimens else if (lib.first == "SDPS") t.dp1Sdps else t.dp1Chaintech
+                10 -> if (lib.first == "Dynamic") t.dp10AppDimens else if (lib.first == "SDPS") t.dp10Sdps else t.dp10Chaintech
+                else -> if (lib.first == "Dynamic") t.dp100AppDimens else if (lib.first == "SDPS") t.dp100Sdps else t.dp100Chaintech
+            }
+            val t1 = valAt(r.test1)
+            val t2 = valAt(r.test2)
+            val t3 = valAt(r.test3)
+            sb.appendLine("    $dpLabel: T1=%.4f px  T2=%.4f px  T3=%.4f px".format(t1, t2, t3))
         }
         sb.appendLine()
     }
 
     // Timing
     sb.appendLine("── Tempo por chamada de 1dp (sdp) ──")
-    sb.appendLine("  Dynamic:  T1=${r.timeTest1.appDimensNs.formatNs()}  T2=${r.timeTest2.appDimensNs.formatNs()}  Média=${r.avgAppDimensNs.formatNs()}")
-    sb.appendLine("  SDPS:     T1=${r.timeTest1.sdpsNs.formatNs()}  T2=${r.timeTest2.sdpsNs.formatNs()}  Média=${r.avgSdpsNs.formatNs()}")
-    sb.appendLine("  Chaintech:T1=${r.timeTest1.chaintechNs.formatNs()}  T2=${r.timeTest2.chaintechNs.formatNs()}  Média=${r.avgChaintechNs.formatNs()}")
+    sb.appendLine("  Dynamic:  T1=${r.timeTest1.appDimensNs.formatNs()}  T2=${r.timeTest2.appDimensNs.formatNs()}  T3=${r.timeTest3.appDimensNs.formatNs()}  Média=${r.avgAppDimensNs.formatNs()}")
+    sb.appendLine("  SDPS:     T1=${r.timeTest1.sdpsNs.formatNs()}  T2=${r.timeTest2.sdpsNs.formatNs()}  T3=${r.timeTest3.sdpsNs.formatNs()}  Média=${r.avgSdpsNs.formatNs()}")
+    sb.appendLine("  Chaintech:T1=${r.timeTest1.chaintechNs.formatNs()}  T2=${r.timeTest2.chaintechNs.formatNs()}  T3=${r.timeTest3.chaintechNs.formatNs()}  Média=${r.avgChaintechNs.formatNs()}")
     sb.appendLine()
 
     sb.appendLine("── Tempo por chamada de 1dp (sdpa/AR) ──")
-    sb.appendLine("  Dynamic:  T1=${r.timeTest1.appDimensArNs.formatNs()}  T2=${r.timeTest2.appDimensArNs.formatNs()}  Média=${r.avgAppDimensArNs.formatNs()}")
-    sb.appendLine("  SDPS:     T1=${r.timeTest1.sdpsArNs.formatNs()}  T2=${r.timeTest2.sdpsArNs.formatNs()}  Média=${r.avgSdpsArNs.formatNs()}")
+    sb.appendLine("  Dynamic:  T1=${r.timeTest1.appDimensArNs.formatNs()}  T2=${r.timeTest2.appDimensArNs.formatNs()}  T3=${r.timeTest3.appDimensArNs.formatNs()}  Média=${r.avgAppDimensArNs.formatNs()}")
+    sb.appendLine("  SDPS:     T1=${r.timeTest1.sdpsArNs.formatNs()}  T2=${r.timeTest2.sdpsArNs.formatNs()}  T3=${r.timeTest3.sdpsArNs.formatNs()}  Média=${r.avgSdpsArNs.formatNs()}")
     sb.appendLine()
 
     // Ratios

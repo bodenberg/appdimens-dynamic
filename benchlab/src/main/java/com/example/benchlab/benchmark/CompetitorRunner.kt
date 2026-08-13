@@ -2,12 +2,12 @@
  * @author Bodenberg
  *
  * EN Off-main benchmark core for the 3-way comparison.
- *    Runs 2 independent test passes, each measuring:
+ *    Runs 3 independent test passes, each measuring:
  *    - Dp resolution values for 1dp, 10dp, 100dp in all three libraries
  *    - Time per single dp call in AppDimens + SDPS (Chaintech measured by probe)
  *
  * PT Núcleo off-main do benchmark de 3 vias.
- *    Executa 2 passes de teste independentes, cada um medindo:
+ *    Executa 3 passes de teste independentes, cada um medindo:
  *    - Valores de resolução dp para 1dp, 10dp, 100dp nas três bibliotecas
  *    - Tempo por chamada única de dp em AppDimens + SDPS (Chaintech medido pela sonda)
  */
@@ -21,7 +21,7 @@ import kotlinx.coroutines.withContext
 import kotlin.system.measureNanoTime
 
 private const val TAG = "BENCHLAB"
-private const val TEST_RUNS = 2
+private const val TEST_RUNS = 3
 private const val WARMUP_COUNT = 5_000
 private const val MEASURE_COUNT = 50_000
 
@@ -56,7 +56,7 @@ suspend fun runCompetitorBenchmark(
     }
     delay(100)
 
-    // ── MEASURE 2 TEST RUNS ─────────────────────────────────────────────────
+    // ── MEASURE 3 TEST RUNS ─────────────────────────────────────────────────
     val testResults = mutableListOf<DpResolution3>()
     val timeResults = mutableListOf<SingleDpTiming3>()
 
@@ -64,7 +64,8 @@ suspend fun runCompetitorBenchmark(
         onPhaseChange(
             when (run) {
                 1 -> BenchPhase.TEST1
-                else -> BenchPhase.TEST2
+                2 -> BenchPhase.TEST2
+                else -> BenchPhase.TEST3
             }
         )
 
@@ -141,8 +142,10 @@ suspend fun runCompetitorBenchmark(
     CompetitorBenchmarkResult(
         test1 = testResults[0],
         test2 = testResults[1],
+        test3 = testResults[2],
         timeTest1 = timeResults[0],
         timeTest2 = timeResults[1],
+        timeTest3 = timeResults[2],
         avgAppDimensNs = avgApp,
         avgSdpsNs = avgSdps,
         avgChaintechNs = avgChain,

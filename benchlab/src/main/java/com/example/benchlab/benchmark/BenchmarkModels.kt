@@ -13,20 +13,22 @@
  */
 package com.example.benchlab.benchmark
 
-/** EN Phases of the benchmark pipeline (2 test runs). PT Fases do pipeline do benchmark (2 testes). */
+/** EN Phases of the benchmark pipeline (3 test runs). PT Fases do pipeline do benchmark (3 testes). */
 enum class BenchPhase {
     IDLE,
     WARMUP,
     TEST1,
     TEST2,
+    TEST3,
     DONE;
 
     val displayLabel: String
         get() = when (this) {
             IDLE   -> "Idle — toque em Run"
             WARMUP -> "Aquecendo as 3 bibliotecas…"
-            TEST1  -> "Teste 1/2 — medindo valores e tempos…"
-            TEST2  -> "Teste 2/2 — medindo valores e tempos…"
+            TEST1  -> "Teste 1/3 — medindo valores e tempos…"
+            TEST2  -> "Teste 2/3 — medindo valores e tempos…"
+            TEST3  -> "Teste 3/3 — medindo valores e tempos…"
             DONE   -> "Pronto"
         }
 
@@ -34,8 +36,9 @@ enum class BenchPhase {
         get() = when (this) {
             IDLE   -> 0f
             WARMUP -> 0.10f
-            TEST1  -> 0.45f
-            TEST2  -> 0.80f
+            TEST1  -> 0.35f
+            TEST2  -> 0.60f
+            TEST3  -> 0.85f
             DONE   -> 1f
         }
 }
@@ -74,24 +77,26 @@ data class SingleDpTiming3(
 )
 
 /**
- * EN Full 3-way comparison benchmark result with 2 independent test runs.
- * PT Resultado completo do benchmark comparativo de 3 vias com 2 testes independentes.
+ * EN Full 3-way comparison benchmark result with 3 independent test runs.
+ * PT Resultado completo do benchmark comparativo de 3 vias com 3 testes independentes.
  *
- * @param test1/test2 EN Resolution results for each test run. PT Resultados de resolução de cada teste.
- * @param timeTest1/timeTest2 EN Timing results for each test run. PT Resultados de tempo de cada teste.
- * @param avgAppDimensNs EN Average ns per dp (sdp) across 2 tests. PT Média ns por dp (sdp) nos 2 testes.
- * @param avgSdpsNs EN Average ns per dp (sdp) across 2 tests. PT Média ns por dp (sdp) nos 2 testes.
- * @param avgChaintechNs EN Average ns per dp (sdp) across 2 tests. PT Média ns por dp (sdp) nos 2 testes.
- * @param avgAppDimensArNs EN Average ns per dp (sdpa/AR) across 2 tests. PT Média ns por dp (sdpa/AR) nos 2 testes.
- * @param avgSdpsArNs EN Average ns per dp (sdpa/AR) across 2 tests. PT Média ns por dp (sdpa/AR) nos 2 testes.
+ * @param test1/test2/test3 EN Resolution results for each test run. PT Resultados de resolução de cada teste.
+ * @param timeTest1/timeTest2/timeTest3 EN Timing results for each test run. PT Resultados de tempo de cada teste.
+ * @param avgAppDimensNs EN Average ns per dp (sdp) across 3 tests. PT Média ns por dp (sdp) nos 3 testes.
+ * @param avgSdpsNs EN Average ns per dp (sdp) across 3 tests. PT Média ns por dp (sdp) nos 3 testes.
+ * @param avgChaintechNs EN Average ns per dp (sdp) across 3 tests. PT Média ns por dp (sdp) nos 3 testes.
+ * @param avgAppDimensArNs EN Average ns per dp (sdpa/AR) across 3 tests. PT Média ns por dp (sdpa/AR) nos 3 testes.
+ * @param avgSdpsArNs EN Average ns per dp (sdpa/AR) across 3 tests. PT Média ns por dp (sdpa/AR) nos 3 testes.
  * @param windowSw/windowW/windowH EN Device window at capture time. PT Janela do device na captura.
  * @param density EN Display density at capture time. PT Densidade do display na captura.
  */
 data class CompetitorBenchmarkResult(
     val test1: DpResolution3,
     val test2: DpResolution3,
+    val test3: DpResolution3,
     val timeTest1: SingleDpTiming3,
     val timeTest2: SingleDpTiming3,
+    val timeTest3: SingleDpTiming3,
     val avgAppDimensNs: Long,
     val avgSdpsNs: Long,
     val avgChaintechNs: Long,

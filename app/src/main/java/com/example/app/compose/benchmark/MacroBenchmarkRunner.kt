@@ -34,16 +34,18 @@ suspend fun runMacroBenchmark(
     listState.scrollToItem(0)
     kotlinx.coroutines.delay(200)
 
-    // Measure scroll performance
+    // Measure scroll performance — full round trip: down to the last item AND back up
+    // to the first item. The return trip (subida) is part of the measured duration.
     val startTime = System.currentTimeMillis()
 
     // Scroll to bottom
     listState.animateScrollToItem(MACRO_ITEM_COUNT - 1)
-    
-    val scrollDurationMs = System.currentTimeMillis() - startTime
 
-    // Return the scroll to the first item so the list is not left stuck on the last item
-    listState.scrollToItem(0)
+    // Scroll back to the first item so the list is not left stuck on the last item.
+    // This return trip is counted in the measured duration.
+    listState.animateScrollToItem(0)
+
+    val scrollDurationMs = System.currentTimeMillis() - startTime
 
     // Calculate metrics
     val totalFrames = MACRO_ITEM_COUNT // Simplified: assume 1 frame per item
