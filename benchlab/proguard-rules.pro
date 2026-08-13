@@ -10,11 +10,11 @@
 -keep class com.appdimens.dynamic.** { *; }
 -dontwarn com.appdimens.dynamic.**
 
-# Legacy SDPS 3.1.6
+# Concorrente 1 (legacy published artifact)
 -keep class com.appdimens.sdps.** { *; }
 -dontwarn com.appdimens.sdps.**
 
-# Chaintech SDP-SSP
+# Concorrente 2
 -keep class network.chaintech.** { *; }
 -dontwarn network.chaintech.**
 

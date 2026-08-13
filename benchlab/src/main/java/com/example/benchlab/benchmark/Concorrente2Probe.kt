@@ -1,8 +1,8 @@
 /**
  * @author Bodenberg
  *
- * EN Composable probe for Chaintech SDP-SSP Compose Multiplatform 1.0.7.
- *    Unlike AppDimens/SDPS, the Chaintech `.sdp` extension is `@Composable`
+ * EN Composable probe for Concorrente 2.
+ *    Unlike AppDimens/Concorrente 1, the Concorrente 2 `.sdp` extension is `@Composable`
  *    (it reads LocalConfiguration to scale by min(w,h)/300), so its cost can only
  *    be measured inside composition. The probe runs on the main thread:
  *    - warms up the extension call site,
@@ -10,8 +10,8 @@
  *    - resolves raw px for 1dp, 10dp, 100dp (precision input),
  *    and reports the result once via [onResult].
  *
- * PT Sonda composable para Chaintech SDP-SSP Compose Multiplatform 1.0.7.
- *    Diferente de AppDimens/SDPS, a extensão `.sdp` da Chaintech é `@Composable`
+ * PT Sonda composable para a Concorrente 2.
+ *    Diferente de AppDimens/Concorrente 1, a extensão `.sdp` da Concorrente 2 é `@Composable`
  *    (lê LocalConfiguration para escalar por min(w,h)/300), então seu custo só pode
  *    ser medido dentro da composição. A sonda roda na main thread:
  *    - aquece o call site da extensão,
@@ -34,16 +34,16 @@ private const val PROBE_REPEAT = 10_000
 private const val PROBE_WARMUP = 1_000
 
 /**
- * EN Measures the Chaintech extension inside composition. Compose only this probe
+ * EN Measures the Concorrente 2 extension inside composition. Compose only this probe
  *    while [active] is true; it self-guards so the timed loop runs exactly once.
  *
  * @param active EN Whether to run the probe. PT Se a sonda deve rodar.
  * @param onResult EN Callback with the measured result. PT Callback com o resultado medido.
  */
 @Composable
-fun ChaintechProbe(
+fun Concorrente2Probe(
     active: Boolean,
-    onResult: (ChaintechProbeResult) -> Unit,
+    onResult: (Concorrente2ProbeResult) -> Unit,
 ) {
     val density = LocalDensity.current
     var measured by remember(active) { mutableStateOf(false) }
@@ -71,7 +71,7 @@ fun ChaintechProbe(
 
         measured = true
         SideEffect {
-            onResult(ChaintechProbeResult(
+            onResult(Concorrente2ProbeResult(
                 sdpAvgNs = sdpAvgNs,
                 dp1Px = dp1Px,
                 dp10Px = dp10Px,

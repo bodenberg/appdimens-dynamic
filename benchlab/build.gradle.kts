@@ -1,11 +1,9 @@
 /**
  * EN Benchmark module — compares AppDimens Dynamic 3.1.8 (local)
- *    vs the legacy published SDPS 3.1.6 artifact vs Chaintech SDP-SSP Compose
- *    Multiplatform 1.0.7 on real devices.
+ *    vs Concorrente 1 (legacy published artifact) vs Concorrente 2 on real devices.
  *
- * PT Módulo de benchmark — compara AppDimens Dynamic 3.1.8 (local) vs o
- *    artefato legado publicado SDPS 3.1.6 vs o Chaintech SDP-SSP Compose
- *    Multiplatform 1.0.7 em dispositivos reais.
+ * PT Módulo de benchmark — compara AppDimens Dynamic 3.1.8 (local) vs
+ *    Concorrente 1 (artefato legado publicado) vs Concorrente 2 em dispositivos reais.
  */
 plugins {
     alias(libs.plugins.android.application)
@@ -83,10 +81,10 @@ dependencies {
     // AppDimens Dynamic 3.1.8 — main library under test (core + scaled).
     api(project(":library"))
 
-    // Legacy published artifact: io.github.bodenberg:appdimens-sdps:3.1.6 (com.appdimens.sdps.*).
+    // Concorrente 1 — legacy published artifact: io.github.bodenberg:appdimens-sdps:3.1.6 (com.appdimens.sdps.*).
     implementation(libs.appdimens.sdps.legacy)
 
-    // Competitor: Chaintech SDP-SSP Compose Multiplatform 1.0.7 (Android artifact).
+    // Concorrente 2 — Android artifact (network.chaintech:sdp-ssp-compose-multiplatform-android:1.0.7).
     implementation("network.chaintech:sdp-ssp-compose-multiplatform-android:1.0.7")
 
     implementation(libs.androidx.core.ktx)

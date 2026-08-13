@@ -72,12 +72,12 @@ Do not use always-bypass types on the default path to measure **snapshot-cache**
 
 With the **fast lane**, the dominant resolutions (`sdp` / `hdp` / `wdp`, and `sdpa` = SMALL_WIDTH + AR) are a single float multiply over the coherent per-window `DimenMetrics` snapshot — no key encoding, no `getOrPut`, no `remember` machinery. Data below comes from the **current test runs** of the two harnesses:
 
-**BenchLab** (3-way competitor: Dynamic vs SDPS 3.1.6 vs Chaintech 1.0.7, 3 test passes × 2 rounds):
+**BenchLab** (3-way competitor: Dynamic vs Concorrente 1 vs Concorrente 2, 3 test passes × 2 rounds):
 
-- **Time per single 1dp call (sdp), Round 1**: Dynamic T1/T2/T3 = 26 / 11 / 5 ns vs SDPS 3,392 / 2,934 / 2,754 ns vs Chaintech 1,205 ns → **avg 14 ns vs 3,026 ns vs 1,205 ns**.
-- **Time per single 1dp call (sdp), Round 2**: Dynamic T1/T2/T3 = 26 / 14 / 5 ns vs SDPS 3,330 / 2,989 / 2,738 ns vs Chaintech 1,141 ns → **avg 15 ns vs 3,019 ns vs 1,141 ns**.
-- **Time per single 1dp call (sdpa/AR)**: Round 1 avg **71 ns** vs SDPS **2,949 ns**; Round 2 avg **82 ns** vs SDPS **2,969 ns**.
-- **Resolution parity (px, deterministic across all tests and both rounds)**: sdp 1/10/100dp = 3.6025 / 36.025 / 360.25 px on all three libraries; sdpa 1/10/100dp = Dynamic 3.7289135 / 37.289135 / 372.89136 vs SDPS 3.7289138 / 37.289135 / 372.89206.
+- **Time per single 1dp call (sdp), Round 1**: Dynamic T1/T2/T3 = 26 / 11 / 5 ns vs Concorrente 1 3,392 / 2,934 / 2,754 ns vs Concorrente 2 1,205 ns → **avg 14 ns vs 3,026 ns vs 1,205 ns**.
+- **Time per single 1dp call (sdp), Round 2**: Dynamic T1/T2/T3 = 26 / 14 / 5 ns vs Concorrente 1 3,330 / 2,989 / 2,738 ns vs Concorrente 2 1,141 ns → **avg 15 ns vs 3,019 ns vs 1,141 ns**.
+- **Time per single 1dp call (sdpa/AR)**: Round 1 avg **71 ns** vs Concorrente 1 **2,949 ns**; Round 2 avg **82 ns** vs Concorrente 1 **2,969 ns**.
+- **Resolution parity (px, deterministic across all tests and both rounds)**: sdp 1/10/100dp = 3.6025 / 36.025 / 360.25 px on all three libraries; sdpa 1/10/100dp = Dynamic 3.7289135 / 37.289135 / 372.89136 vs Concorrente 1 3.7289138 / 37.289135 / 372.89206.
 - **Device**: Xiaomi 2107113SG (Redmi Note 11) · sw=393dp w=393dp h=842dp · density 2.75.
 
 **BenchmarkActivity** (Calculation + Micro + Macro, same device):
@@ -85,7 +85,7 @@ With the **fast lane**, the dominant resolutions (`sdp` / `hdp` / `wdp`, and `sd
 - **Calculation Test** (40,000 calls): avg resolution **~32–91 ns** (latest on-screen value: **32 ns**).
 - **Micro combined avg**: **~29–39 ns/op**; families sdp 24–49, hdp 31–42, wdp 23–38, sdpa 24–38; single value no-AR 30–41, +AR 30–42; direct ext `100.sdp(ctx)` 7–13, direct api 8–26 ns.
 - **Macro scroll (1k-item LazyColumn)**: **~1,490 ms** — includes the **full round trip** (scroll down to the last item and back up to the first item); the return trip (subida) is counted in the measured duration.
-- **Compare (Dynamic × SDPS)**: avg **23 ns vs 2,903 ns** → **~126×**.
+- **Compare (Dynamic × Concorrente 1)**: avg **23 ns vs 2,903 ns** → **~126×**.
 
 **Fast-lane validation**: the fast lane uses event-driven config validation (`ensureConfigWatcher`) — a `ComponentCallbacks2` listener registered on the Application invalidates fast slots synchronously on any real configuration change. A ThreadLocal variant was explored and **rejected**: two hash-table lookups per call lost to the single acquire-load + release-store on a core-local cache line in the single-threaded main-thread case, and added cold-start cost.
 

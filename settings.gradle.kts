@@ -34,6 +34,6 @@ include(":library-resize")
 include(":library-units")
 include(":parity")
 
-// EN Benchmark module (3.1.8 vs 3.1.6 vs Chaintech 1.0.7).
-// PT Módulo de benchmark (3.1.8 vs 3.1.6 vs Chaintech 1.0.7).
+// EN Benchmark module (3.1.8 vs Concorrente 1 vs Concorrente 2).
+// PT Módulo de benchmark (3.1.8 vs Concorrente 1 vs Concorrente 2).
 include(":benchlab")
