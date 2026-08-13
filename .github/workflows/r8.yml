@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 env:
-  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g"
+  # Keep in sync with gradle.properties — GRADLE_OPTS overrides it.
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx8g"
 
 jobs:
   release-build:
