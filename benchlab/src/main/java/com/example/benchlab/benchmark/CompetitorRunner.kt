@@ -123,7 +123,10 @@ suspend fun runCompetitorBenchmark(
         Log.i(TAG, "Test $run: dp1=app=$dp1App sdps=$dp1Leg chain=${chaintechResult.dp1Px} " +
             "dp10=app=$dp10App sdps=$dp10Leg chain=${chaintechResult.dp10Px} " +
             "dp100=app=$dp100App sdps=$dp100Leg chain=${chaintechResult.dp100Px} " +
-            "time: app=${appSingleNs}ns sdps=${sdpsSingleNs}ns chain=${chaintechResult.sdpAvgNs}ns")
+            "ar: dp1=app=$dp1AppAr sdps=$dp1LegAr dp10=app=$dp10AppAr sdps=$dp10LegAr " +
+            "dp100=app=$dp100AppAr sdps=$dp100LegAr " +
+            "time: app=${appSingleNs}ns sdps=${sdpsSingleNs}ns chain=${chaintechResult.sdpAvgNs}ns " +
+            "ar: app=${appSingleArNs}ns sdps=${sdpsSingleArNs}ns")
     }
 
     val avgApp = timeResults.map { it.appDimensNs }.average().toLong()
@@ -159,6 +162,8 @@ suspend fun runCompetitorBenchmark(
             windowW = config.screenWidthDp.coerceAtLeast(0),
             windowH = config.screenHeightDp.coerceAtLeast(0),
             density = dm.density,
-        )
+        ).also { r ->
+            Log.i(TAG, "Device: sw=${r.windowSw}dp w=${r.windowW}dp h=${r.windowH}dp density=${"%.2f".format(r.density)}")
+        }
     }
 }

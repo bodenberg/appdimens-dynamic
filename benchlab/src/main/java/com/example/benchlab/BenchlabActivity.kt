@@ -96,9 +96,12 @@ private val ColorChaintech = AccentPurple
 class BenchlabActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // EN Headless automation: AUTO_START=true triggers the 2 tests immediately.
+        // PT Automação headless: AUTO_START=true dispara os 2 testes imediatamente.
+        val autoStart = intent.getBooleanExtra("AUTO_START", false)
         setContent {
             AppDimensProvider {
-                BenchlabScreen()
+                BenchlabScreen(autoStart = autoStart)
             }
         }
     }
@@ -165,7 +168,7 @@ private class BenchlabController(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BenchlabScreen() {
+private fun BenchlabScreen(autoStart: Boolean = false) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val scope = rememberCoroutineScope()
     val controller = remember { BenchlabController(scope, context.applicationContext) }
@@ -176,6 +179,12 @@ private fun BenchlabScreen() {
     val result by controller.result.collectAsState()
     val probeActive by controller.probeActive.collectAsState()
     val isRunning = phase != BenchPhase.IDLE && phase != BenchPhase.DONE
+
+    // EN Headless automation: run the 2 tests as soon as the screen is composed.
+    // PT Automação headless: executa os 2 testes assim que a tela é composta.
+    LaunchedEffect(Unit) {
+        if (autoStart) controller.run()
+    }
 
     var screenshotSaving by remember { mutableStateOf(false) }
     var reportSaving by remember { mutableStateOf(false) }

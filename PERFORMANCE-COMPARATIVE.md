@@ -82,6 +82,41 @@ Executed via `./gradlew :library:testDebugUnitTest` (principal); satellite formu
 
 ---
 
+## 3a. BenchLab 3-Way Competitor Measurement (2026-08-13 — release APK + R8)
+
+> [!IMPORTANT]
+> **Measurement**: `benchlab` module, **release** build (`minifyEnabled = true` + R8), headless `AUTO_START` intent extra — **2 independent test passes (T1/T2)**, 50,000 iterations per timing cell. Dynamic 3.1.8 vs published legacy artifact **SDPS 3.1.6** vs **Chaintech SDP-SSP Compose Multiplatform 1.0.7** on the same device as §3/§5a.
+
+**Device:** Xiaomi 2107113SG (Redmi Note 11) · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
+
+**Time per single 1dp call (sdp — no AR):**
+
+| Test | Dynamic 3.1.8 | SDPS 3.1.6 | Chaintech 1.0.7 |
+| :--- | :---: | :---: | :---: |
+| **T1** | **8 ns** | 3,749 ns | 3,546 ns |
+| **T2** | **8 ns** | 3,768 ns | 3,546 ns |
+| **Média** | **8 ns** | **3,758 ns** | **3,546 ns** |
+
+**Time per single 1dp call (sdpa — with AR, Dynamic × SDPS):**
+
+| Test | Dynamic 3.1.8 | SDPS 3.1.6 |
+| :--- | :---: | :---: |
+| **T1** | **8 ns** | 3,944 ns |
+| **T2** | **9 ns** | 3,911 ns |
+| **Média** | **8 ns** | **3,927 ns** |
+
+**Resolution values (px) — identical across both tests (deterministic):**
+
+| dp | Dynamic 3.1.8 (sdp) | SDPS 3.1.6 (sdp) | Chaintech (sdp) | Dynamic (sdpa) | SDPS (sdpa) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **1dp** | 3.6025 | 3.6025 | 3.6025 | 3.7289135 | 3.7289138 |
+| **10dp** | 36.025 | 36.0249 | 36.025 | 37.289135 | 37.289135 |
+| **100dp** | 360.25 | 360.25 | 360.25 | 372.89136 | 372.89206 |
+
+> **How to read**: Dynamic's numbers are the **3.1.8 inlined fast lane** (single float multiply over the coherent per-window snapshot). SDPS 3.1.6 (legacy table-based artifact) and Chaintech (per-call `@Composable` scaling, measured inside composition) pay per-call dispatch/table work — µs range. **Dynamic is ~440–470× faster on the warm pass.** The `AUTO_START` extra logs the full T1/T2 cells + `Device: …` to logcat (`adb logcat -s BENCHLAB`) for reproducible headless capture.
+
+---
+
 ## 4. Optimization Analysis
 
 ### F1 — Public getBatch()
@@ -273,5 +308,5 @@ Treat figures as reference points, not guarantees.
 
 ---
 
-*Report generated on: 2026-08-09 · AppDimens Dynamic Performance Lab · Xiaomi 2107113SG (Qualcomm bengal · 2.8 GHz max) · Physical Hardware — release APK + AOT `speed`, 3 runs per cell*
+*Report generated on: 2026-08-13 · AppDimens Dynamic Performance Lab · Xiaomi 2107113SG (Qualcomm bengal · 2.8 GHz max) · Physical Hardware — release APK + R8 · BenchLab 3-way competitor measurement (§3a) · JVM 17 host*
 *Compiled with: Kotlin 2.x · JVM 17 · ART · Gradle 9.x*

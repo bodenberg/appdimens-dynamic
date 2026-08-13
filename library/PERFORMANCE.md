@@ -68,7 +68,18 @@ Each AAR ships `consumer-rules.pro`. Core/scaled rules come from `appdimens-dyna
 
 Do not use always-bypass types on the default path to measure **snapshot-cache** throughput. Use custom sensitivity, non-default qualifiers, or non-bypass `CalcType`s (`AUTO`, `FLUID`, …) when measuring cache hits.
 
-### Measured numbers (2026-08-09 — Xiaomi 2107113SG, release APK + AOT `speed`, 3 runs)
+### Measured numbers (2026-08-13 — Xiaomi 2107113SG, benchlab release APK + R8, 2 test passes)
+
+The `benchlab` module compares **Dynamic 3.1.8** vs the published legacy artifact **SDPS 3.1.6** vs **Chaintech SDP-SSP Compose Multiplatform 1.0.7** on-device (headless `AUTO_START` extra, `adb logcat -s BENCHLAB`):
+
+- **Time per single 1dp call (sdp)**: Dynamic **8 ns** (T1) / **8 ns** (T2) vs SDPS 3,749 / 3,768 ns vs Chaintech 3,546 / 3,546 ns → **avg 8 ns vs 3,758 ns vs 3,546 ns**.
+- **Time per single 1dp call (sdpa/AR)**: Dynamic **8 / 9 ns** vs SDPS 3,944 / 3,911 ns → **avg 8 ns vs 3,927 ns**.
+- **Resolution parity (px, deterministic across tests)**: sdp 1/10/100dp = 3.6025 / 36.025 / 360.25 px on all three libraries; sdpa 1/10/100dp = Dynamic 3.7289135 / 37.289135 / 372.89136 vs SDPS 3.7289138 / 37.289135 / 372.89206.
+- **Device**: Xiaomi 2107113SG (Redmi Note 11) · sw=393dp w=393dp h=842dp · density 2.75.
+
+See [PERFORMANCE.md §2-C](../PERFORMANCE.md) / [PERFORMANCE-COMPARATIVE.md §3a](../PERFORMANCE-COMPARATIVE.md) for the full tables and reading guidance.
+
+### Earlier measurement (2026-08-09 — Xiaomi 2107113SG, release APK + AOT `speed`, 3 runs)
 
 With the **3.1.8 fast lane**, the dominant resolutions (`sdp` / `hdp` / `wdp`, and `sdpa` = SMALL_WIDTH + AR) are a single float multiply over the coherent per-window `DimenMetrics` snapshot — no key encoding, no `getOrPut`, no `remember` machinery:
 

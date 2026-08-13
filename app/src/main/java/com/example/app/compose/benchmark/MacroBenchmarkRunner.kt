@@ -42,6 +42,9 @@ suspend fun runMacroBenchmark(
     
     val scrollDurationMs = System.currentTimeMillis() - startTime
 
+    // Return the scroll to the first item so the list is not left stuck on the last item
+    listState.scrollToItem(0)
+
     // Calculate metrics
     val totalFrames = MACRO_ITEM_COUNT // Simplified: assume 1 frame per item
     val droppedFrames = 0 // Would need frame callback for accurate measurement

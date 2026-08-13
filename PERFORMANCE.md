@@ -88,6 +88,39 @@ Measurements captured on physical hardware in a stabilized state.
 | **Batch Cached (100 items - AR)** | **242 ns** | **Optimized** 🏎️ |
 | **Persistence Load** | **— (removed in 3.1.8)** | **N/A** ✅ |
 
+### C. BenchLab 3-Way Competitor Comparison (2026-08-13 — release APK + R8)
+
+> [!IMPORTANT]
+> **Measurement**: `benchlab` module, **release** build (`minifyEnabled = true` + R8), run headlessly via `AUTO_START` intent extra — **2 independent test passes** (T1/T2), 50,000 iterations per timing cell. Same physical device as §A/§3. Dynamic 3.1.8 vs the published legacy artifact **SDPS 3.1.6** vs **Chaintech SDP-SSP Compose Multiplatform 1.0.7**.
+
+**Device:** Xiaomi 2107113SG (Redmi Note 11) · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
+
+**Time per single 1dp call (sdp — no AR):**
+
+| Test | Dynamic 3.1.8 | SDPS 3.1.6 | Chaintech 1.0.7 |
+| :--- | :---: | :---: | :---: |
+| **T1** | **8 ns** | 3,749 ns | 3,546 ns |
+| **T2** | **8 ns** | 3,768 ns | 3,546 ns |
+| **Média** | **8 ns** | **3,758 ns** | **3,546 ns** |
+
+**Time per single 1dp call (sdpa — with AR, Dynamic × SDPS):**
+
+| Test | Dynamic 3.1.8 | SDPS 3.1.6 |
+| :--- | :---: | :---: |
+| **T1** | **8 ns** | 3,944 ns |
+| **T2** | **9 ns** | 3,911 ns |
+| **Média** | **8 ns** | **3,927 ns** |
+
+**Resolution values (px) — identical across both tests (deterministic):**
+
+| dp | Dynamic 3.1.8 (sdp) | SDPS 3.1.6 (sdp) | Chaintech (sdp) | Dynamic (sdpa) | SDPS (sdpa) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **1dp** | 3.6025 | 3.6025 | 3.6025 | 3.7289135 | 3.7289138 |
+| **10dp** | 36.025 | 36.0249 | 36.025 | 37.289135 | 37.289135 |
+| **100dp** | 360.25 | 360.25 | 360.25 | 372.89136 | 372.89206 |
+
+> **How to read**: the Dynamic numbers are the **3.1.8 inlined fast lane** (one float multiply over the coherent per-window snapshot). SDPS 3.1.6 (legacy table-based artifact) and Chaintech (per-call `@Composable` scaling, measured inside composition) pay per-call dispatch/table work, so they measure in the µs range — **Dynamic is ~440–470× faster on the warm pass**. The `AUTO_START` extra also logs `Device: …` + the full T1/T2 cells to logcat (`adb logcat -s BENCHLAB`) for reproducible headless capture.
+
 ---
 
 ## 3. Real-World UI Performance (Jetpack Compose)
@@ -167,4 +200,4 @@ graph TD
 ```
 
 ---
-*Report Updated: 2026-08-09 · AppDimens Dynamic · AppDimens Performance Lab · Xiaomi 2107113SG (Qualcomm bengal · 2.8 GHz max) physical hardware · release APK + AOT speed*
+*Report Updated: 2026-08-13 · AppDimens Dynamic · AppDimens Performance Lab · Xiaomi 2107113SG (Qualcomm bengal · 2.8 GHz max) physical hardware · release APK + R8 · BenchLab 3-way competitor measurement (§2-C)*
