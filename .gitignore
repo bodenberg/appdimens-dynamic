@@ -39,6 +39,8 @@ test.md
 # Local code-review reports (never committed)
 CODE-REVIEW.md
 RELATORIO_COMPLETO.md
+relatorio_completo.md
+relatorio_*.md
 # Generated Dokka HTML (local)
 DOCUMENTATION2/
 .antigravitycli

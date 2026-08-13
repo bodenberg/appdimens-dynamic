@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/bodenberg/appdimens-dynamic/releases" title="Releases">
-    <img src="https://img.shields.io/badge/version-3.1.7-blue.svg" alt="Version 3.1.7">
+    <img src="https://img.shields.io/badge/version-3.1.8-blue.svg" alt="Version 3.1.8">
   </a>
   &nbsp;
   <a href="LICENSE" title="Apache License 2.0">
@@ -70,15 +70,15 @@ Write values like `16.sdp` and the library scales them from the current screen *
 
 ---
 
-## Installation (v3.1.7)
+## Installation (v3.1.8)
 
-**3.1.7** keeps the modular packaging introduced in **3.1.6**: the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
+**3.1.8** keeps the modular packaging introduced in **3.1.6**: the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
 
 ### With BOM
 
 ```kotlin
 dependencies {
-    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.7"))
+    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.8"))
 
     implementation("io.github.bodenberg:appdimens-dynamic")
 
@@ -103,7 +103,7 @@ dependencies {
 If you import `com.appdimens.dynamic.compose.<strategy>` (or `code.<strategy>`) without adding the matching artifact, the Gradle check `checkAppDimensModules` fails with a line such as:
 
 ```text
-Missing AppDimens module for import …percent… — add: implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.7")
+Missing AppDimens module for import …percent… — add: implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.8")
 ```
 
 Apply the same check in your app with:
@@ -118,9 +118,9 @@ Runtime helper: `com.appdimens.dynamic.core.MissingModule` (package → Maven co
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.1.7")
-    implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.7")
-    // same satellites as above, each with :3.1.7
+    implementation("io.github.bodenberg:appdimens-dynamic:3.1.8")
+    implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.8")
+    // same satellites as above, each with :3.1.8
 }
 ```
 
@@ -169,7 +169,7 @@ Box(
 
 ### `AppDimensProvider`
 
-Use it when you call **`.sdpMode`**, **`.sdpScreen`**, **`.sspMode`**, **`.sspScreen`**, or similar **facilitators** that depend on **UI mode / fold state**. It sets `LocalUiModeType` once for the tree instead of resolving mode on every call, and (since 3.1.7) provides `LocalDimenMetrics` — a coherent per-window snapshot that every `rememberDimen*` helper uses.
+Use it when you call **`.sdpMode`**, **`.sdpScreen`**, **`.sspMode`**, **`.sspScreen`**, or similar **facilitators** that depend on **UI mode / fold state**. It sets `LocalUiModeType` once for the tree instead of resolving mode on every call, and (since 3.1.8) provides `LocalDimenMetrics` — a coherent per-window snapshot that every `rememberDimen*` helper uses.
 
 ```kotlin
 import com.appdimens.dynamic.core.AppDimensProvider
@@ -183,7 +183,7 @@ setContent {
 
 ### `DimenCache.invalidateOnConfigChange`
 
-Since **3.1.7** the cache is **partitioned per window snapshot** (`DimenMetrics`): every resolution is keyed by the exact configuration it was computed for, so a rotated, resized, or recreated window can never read a stale value. Explicit invalidation is therefore **not required for correctness** — this API is retained as a compatibility hook and no longer wipes other windows’ hot entries.
+Since **3.1.8** the cache is **partitioned per window snapshot** (`DimenMetrics`): every resolution is keyed by the exact configuration it was computed for, so a rotated, resized, or recreated window can never read a stale value. Explicit invalidation is therefore **not required for correctness** — this API is retained as a compatibility hook and no longer wipes other windows’ hot entries.
 
 Call it when the **same Activity** stays alive across **rotation, split-screen, or density/font changes** and you want to refresh internal bookkeeping. If the Activity is **recreated** on config change (default), you don’t need it. Details: [library/PERFORMANCE.md](library/PERFORMANCE.md).
 
@@ -349,7 +349,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 | Resource | Use for |
 |----------|---------|
 | [DOCUMENTATION/README.md](DOCUMENTATION/README.md) | Per-strategy explanations |
-| [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) | Gradle/Maven module graph (3.1.7) |
+| [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) | Gradle/Maven module graph (3.1.8) |
 | [COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) | Every Compose property & facilitator (scaled catalog + prefix map) |
 | [DOCUMENTATION/index.md](DOCUMENTATION/index.md) | Markdown API index (KDoc export) |
 | [appdimens3.web.app](https://appdimens3.web.app/) | Searchable KDoc |
@@ -360,7 +360,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 
 ## Optional: cache & performance
 
-- Results are cached in **`DimenCache`** — lock-free, **partitioned per window/configuration snapshot** (no disk persistence since 3.1.7).
+- Results are cached in **`DimenCache`** — lock-free, **partitioned per window/configuration snapshot** (no disk persistence since 3.1.8).
 - Some paths **skip** storing in the snapshot cache when a cheap multiply is enough — see [library/PERFORMANCE.md](library/PERFORMANCE.md).
 - **Batch / low-level keys:** not needed for normal app code; library extensions already use the cache.
 
@@ -383,7 +383,20 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 - Code-only scaling (no XML dimen grids) · **SDP / HDP / WDP** + **14** scaling modes  
 - **Aspect ratio** & **multi-window** flags · **Inverters** & **facilitators** · **Foldable** awareness via WindowManager  
 - **Physical units** · **Resize** helpers · **DimenScaled** chains  
-- **3.1.7:** per-window `DimenMetrics` snapshots · atomic snapshot-partitioned cache · exact `ln` aspect-ratio math · persistence removed · multi-window / Compose correctness and leak fixes  
+
+### What's New in 3.1.8
+
+| Change | Description |
+|--------|-------------|
+| **Event-driven config watcher** | Replaces the sampled per-window validation (`validationTick`). A `ComponentCallbacks2` listener registered on the Application invalidates fast slots synchronously on any real configuration change — zero sampling cost on the hot lane. |
+| **Specialized kernels** | `resolveSdpPx`, `resolveSdpDp`, `resolveSdpaPx`, `resolveSdpaDp`, `resolveHdpPx`, `resolveHdpDp`, `resolveWdpPx`, `resolveWdpDp` — one kernel per family/qualifier, zero branches, volatile load + identity compare + legacy multiply order. |
+| **`fastMetricsForCode`** | Non-Compose fast-lane resolution: skips the ThreadLocal probe entirely — one volatile load, one identity compare, two float multiplies on the hit path. |
+| **`metricsCoherentFor` simplified** | No more validation tick sampling; just identity check against the fast slot. |
+| **DimenMetrics eager computation** | `normalizedAspectRatio` and `logNormalizedAspectRatio` changed from `lazy` to plain `val` — removes the hidden `synchronized` probe from the SDPA fast lane. |
+| **DimenSdpExtensions specialized routing** | `fastScaledPx` replaced by `sdpPx`, `sdpaPx`, `hdpPx`, `wdpPx` — each routes straight to its branch-free specialized kernel. |
+| **`invalidateOnConfigChange` enhanced** | Now also nulls `fastWindowSlot` and `fastMwContext` — event-driven coherence. |
+| **Comparison benchmark** | On-device 3.1.8 vs 3.1.6 speed + precision comparison with 2 test runs. |
+| **BenchLab module** | New competitor benchmark: Dynamic vs SDPS vs Chaintech — full scroll screenshot + report export. |
 
 ---
 

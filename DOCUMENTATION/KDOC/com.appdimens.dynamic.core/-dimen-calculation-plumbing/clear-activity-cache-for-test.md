@@ -6,4 +6,4 @@
 
 EN Kept as a source-compatible test hook. There is no longer a Context→Activity cache: a weak key paired with the same Activity as value would retain the key indirectly.
 
-PT Hook de teste mantido por compatibilidade de fonte; o cache Context→Activity foi removido na 3.1.7.
+PT Hook de teste mantido por compatibilidade de fonte; o cache Context→Activity foi removido na 3.1.8.

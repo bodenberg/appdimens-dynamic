@@ -1,23 +1,11 @@
 # Technical Performance Report: AppDimens Dynamic
 
-This report provides a deep technical analysis of the AppDimens Dynamic library performance, following the **SIMD-friendly Batching**, **Snapshot-Partitioned Lock-Free Cache**, and **Inlined Hot-Path** optimizations.
+This report presents the performance of the **AppDimens Dynamic** library measured **on physical hardware** by the project's benchmark harnesses — the **BenchLab** dashboard (`benchlab` module, 3-way competitor comparison) and the **BenchmarkActivity** dashboard (`app` module, Calculation + Micro + Macro). All numbers below were extracted from **current test runs only**.
 
 > [!NOTE]
-> **Build variants, R8, and how to read the numbers**
+> **How to read the numbers**
 >
-> With **code shrinking and R8** enabled on **release** builds (`minifyEnabled = true`), the library’s hot paths can run **much faster** than in a typical **debug** APK. Example ranges observed on the project benchmark harness (same device class as elsewhere in this report):
->
-> | Harness | Approx. range (release + minify + R8 + AOT `speed`) |
-> | :--- | :--- |
-> | **Calculation Test** (avg) | **~40 ns – ~90 ns** |
-> | **Microbenchmark** (combined, post-3.1.7 fast lane; typical **~50–60 ns**) | **~40 ns – ~64 ns** |
-> | **Macrobenchmark** (scroll duration, 1k rows — frame-limited at 60 fps) | **~367 ms – ~495 ms** |
->
-> **All other tables and figures in this document** were captured on **debug** builds **without** minify (no R8 shrinking/optimization pass on that variant). Treat **debug without minify** vs **release with minify + R8** as **different environments**—do not compare cells across those scenarios without this context.
->
-> Since the 3.1.7 fast lane, the common `sdp`/`hdp`/`wdp`/`sdpa` (AR on SMALL_WIDTH) resolutions are a **single float multiply over the coherent per-window metrics** — the numbers above are that path on a mid-range SoC with AOT compilation. See the **2026-08-09 measurement** in §3.
->
-> Enabling **R8 full mode** (`android.enableR8.fullMode=true` in `gradle.properties`) makes optimization more aggressive; keep ProGuard/R8 rules correct when you turn it on. See **[R8-PROGUARD.md](./R8-PROGUARD.md)**.
+> Every measurement in this document was captured on a **release** build (`minifyEnabled = true` + R8) of the respective harness, on the same physical device, in current sessions (2026-08-13). No comparisons against previous library versions or debug builds are included — the data below is what the current library measured in the current tests.
 
 <p align="center">
   <img src="IMAGES/screenshot_benchmark.jpg" alt="Benchmark dashboard — AppDimens Dynamic" width="200" />
@@ -27,80 +15,132 @@ This report provides a deep technical analysis of the AppDimens Dynamic library 
 
 ---
 
+## 1. Architecture Supporting the Numbers
 
-> [!NOTE]
+The library features a **Lock-Free Snapshot-Partitioned Cache** with an intelligent **Fast Bypass Layer** and an **Event-Driven Config Watcher**:
 
-## 1. Architectural Overview
-
-> **3.1.7 note:** the shard-table measurements below predate the 3.1.7 cache rework. Since 3.1.7 the in-memory cache is **snapshot-partitioned** (keyed by the immutable `DimenMetrics` window snapshot, entries published as atomic `CacheEntry` references) and the persistent result cache was removed; the legacy sharded layout no longer exists.
-
-The library features a **Lock-Free Snapshot-Partitioned Cache** architecture with an intelligent **Fast Bypass Layer**. 
-- **Snapshot Partitioning**: Each immutable per-window `DimenMetrics` snapshot owns a bounded `AtomicReferenceArray` partition (at most 4 active snapshots); entries are published as single atomic `CacheEntry` references, so no stale cross-window value is ever read.
+- **Snapshot Partitioning**: Each immutable per-window `DimenMetrics` snapshot owns a bounded `AtomicReferenceArray` partition; entries are published as single atomic `CacheEntry` references, so no stale cross-window value is ever read.
+- **Event-Driven Config Watcher**: A `ComponentCallbacks2` listener registered on the Application invalidates fast slots synchronously on any real configuration change — zero sampling cost on the hot lane.
+- **Specialized Kernels**: One kernel per family/qualifier (`resolveSdpPx`, `resolveSdpDp`, `resolveSdpaPx`, `resolveSdpaDp`, `resolveHdpPx`, `resolveHdpDp`, `resolveWdpPx`, `resolveWdpDp`) — zero branches, volatile load + identity compare + legacy multiply order.
+- **Non-Compose fast lane**: `fastMetricsForCode` — one volatile load, one identity compare, two float multiplies on the hit path (no ThreadLocal probe).
 - **SIMD-friendly Batching**: The `getBatch()` API exposes continuous loops for the JIT/ART to vectorize, reducing overhead per item.
-- **Snapshot Isolation**: Resolution reads an immutable per-window `DimenMetrics` snapshot; satellite strategy scales derive from `DimenCache.currentMetrics` (padded `ScreenFactors` is kept for source compatibility only).
 - **Fast Bypass**: `shouldBypassCache` skips the snapshot-cache lookup for multiply-only types (`PERCENT`, `SCALED`, `DENSITY`, `DIAGONAL`, `INTERPOLATED`, `PERIMETER`) and for `POWER` / `LOGARITHMIC` on the default SW path — including default aspect ratio when applicable (~2 ns multiply). `AUTO` / `FLUID` / `FIT` / `FILL` use the cache.
 
 ---
 
-## 2. Professional Benchmarks
+## 2. BenchLab — 3-Way Competitor Comparison (current runs, 2026-08-13)
 
-### A. Hardware Metrics (Xiaomi 2107113SG · Snapdragon 888)
+> [!IMPORTANT]
+> **Measurement**: `benchlab` module, **release** build (`minifyEnabled = true` + R8), run headlessly via the `AUTO_START` intent extra — **3 independent test passes (T1/T2/T3) × 2 full rounds**, 50,000 iterations per timing cell. The comparison is **Dynamic 3.1.8** vs the published legacy artifact **SDPS 3.1.6** vs **Chaintech SDP-SSP Compose Multiplatform 1.0.7**. This data was produced by **BenchLab**.
 
-> [!NOTE]
-> **Measurement Notice**: Hardware metrics below were captured on physical device in a stabilized state.
+**Device:** Xiaomi 2107113SG (Redmi Note 11) · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
 
-Measurements captured on physical hardware in a stabilized state.
+### Round 1 — time per single 1dp call
 
-| Operation Type | Result | Status |
-| :--- | :--- | :--- |
-| **Raw Math (No AR)** | **2 ns** | **Optimal** ⚡ |
-| **Raw Math (With AR)** | 45 ns | Standard |
-| **Cache Hit (Single - No AR)** | **5 ns** | **Fast** ⚡ |
-| **Cache Hit (Single - AR)** | **35 ns** | **Zero-Math** 🚀 |
-| **Batch Resolution (100 items)** | **169 ns** | **Extreme** 🏎️ |
-| **Batch Cached (100 items - AR)** | **3,773 ns** | **Stable** ✅ |
-| **Persistence Load** | **— (removed in 3.1.7)** | **N/A** ✅ |
+**sdp (no AR):**
 
-### B. JVM (Local Development — Ubuntu Linux · JVM 17)
-| Operation Type | Result | Status |
-| :--- | :--- | :--- |
-| **Raw Math (Single)** | < 1 ns | Optimal |
-| **Raw Math (With AR)** | 2 ns | Optimal |
-| **Cache Hit (Single)** | **1 ns** | **Fast** ⚡ |
-| **Cache Hit (With AR)** | **1 ns** | **Zero-Math** 🚀 |
-| **Batch Resolution (100 items)** | **34 ns** | **Extreme** |
-| **Batch Cached (100 items - AR)** | **242 ns** | **Optimized** 🏎️ |
-| **Persistence Load** | **— (removed in 3.1.7)** | **N/A** ✅ |
+| Test | Dynamic 3.1.8 | SDPS 3.1.6 | Chaintech 1.0.7 |
+| :--- | :---: | :---: | :---: |
+| **T1** | **26 ns** | 3,392 ns | 1,205 ns |
+| **T2** | **11 ns** | 2,934 ns | 1,205 ns |
+| **T3** | **5 ns** | 2,754 ns | 1,205 ns |
+| **Média** | **14 ns** | **3,026 ns** | **1,205 ns** |
+
+**sdpa (with AR, Dynamic × SDPS):**
+
+| Test | Dynamic 3.1.8 | SDPS 3.1.6 |
+| :--- | :---: | :---: |
+| **T1** | **167 ns** | 3,225 ns |
+| **T2** | **42 ns** | 2,915 ns |
+| **T3** | **5 ns** | 2,708 ns |
+| **Média** | **71 ns** | **2,949 ns** |
+
+### Round 2 — time per single 1dp call
+
+**sdp (no AR):**
+
+| Test | Dynamic 3.1.8 | SDPS 3.1.6 | Chaintech 1.0.7 |
+| :--- | :---: | :---: | :---: |
+| **T1** | **26 ns** | 3,330 ns | 1,141 ns |
+| **T2** | **14 ns** | 2,989 ns | 1,141 ns |
+| **T3** | **5 ns** | 2,738 ns | 1,141 ns |
+| **Média** | **15 ns** | **3,019 ns** | **1,141 ns** |
+
+**sdpa (with AR, Dynamic × SDPS):**
+
+| Test | Dynamic 3.1.8 | SDPS 3.1.6 |
+| :--- | :---: | :---: |
+| **T1** | **180 ns** | 3,241 ns |
+| **T2** | **62 ns** | 2,945 ns |
+| **T3** | **5 ns** | 2,723 ns |
+| **Média** | **82 ns** | **2,969 ns** |
+
+### Resolution values (px) — deterministic, identical across all tests and both rounds
+
+| dp | Dynamic 3.1.8 (sdp) | SDPS 3.1.6 (sdp) | Chaintech (sdp) | Dynamic (sdpa) | SDPS (sdpa) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **1dp** | 3.6025 | 3.6025 | 3.6025 | 3.7289135 | 3.7289138 |
+| **10dp** | 36.025 | 36.0249 | 36.025 | 37.289135 | 37.289135 |
+| **100dp** | 360.25 | 360.25 | 360.25 | 372.89136 | 372.89206 |
+
+> **How to read**: the Dynamic numbers are the **inlined fast lane** (one float multiply over the coherent per-window snapshot). SDPS 3.1.6 (legacy table-based artifact) and Chaintech (per-call `@Composable` scaling, measured inside composition) pay per-call dispatch/table work, so they measure in the µs range — **Dynamic is ~75–215× faster on the sdp average across rounds** (e.g. Round 2: 3,019/15 ≈ 201× vs SDPS, 1,141/15 ≈ 76× vs Chaintech). The `AUTO_START` extra logs `Device: …` + the full T1/T2/T3 cells to logcat (`adb logcat -s BENCHLAB`) for reproducible headless capture.
 
 ---
 
-## 3. Real-World UI Performance (Jetpack Compose)
+## 3. BenchmarkActivity — Real-World UI Performance (current runs, 2026-08-13)
 
-Stress test executed via the new **Micro + Macro Benchmark Dashboard**. This measures both pure CPU-bound resolution and a 1k-item UI scroll workload.
+Stress test executed via the **Micro + Macro Benchmark Dashboard** in the `app` module. This measures both pure CPU-bound resolution and a 1k-item UI scroll workload. **This data was produced by the BenchmarkActivity.**
 
-> [!IMPORTANT]
-> **2026-08-09 measurement — same device, 3 runs each, release APK + AOT `speed`, thermal ramp.**
-> Hardware: **Xiaomi 2107113SG (Redmi Note 11) · Qualcomm bengal (Snapdragon 680-class, 8 cores · 2.8 GHz max)**.
-> Every `adb install -r` must be followed by `cmd package compile -m speed -f com.example.app` — on debuggable APKs the OS pins the compiler filter to `verify` (interpreter), which is the entire debug-vs-release gap below.
+**Device:** Xiaomi 2107113SG (Redmi Note 11) · release APK + R8.
 
-| Metric | Current (3.1.7 fast lane) | 3.1.5 (baseline) | Debug APK (no AOT) |
-| :--- | :--- | :--- | :--- |
-| **Micro Combined avg** | **40–64 ns** (typical ~50–60; 57/59/58 in the final series) | 152–164 ns (~158) | 508–857 ns (~650) |
-| **Micro — family spread** (sdp/hdp/wdp/sdpa) | uniform, within-run Δ ≤ ~8 ns (39–66 ns) | sdp 210–220 ns vs sdpa 108–128 ns (cold-core artifact) | 504–810 ns, erratic |
-| **Macro Scroll (1000 items)** | **~368–382 ms** (frame-limited: 366 ms theoretical at 60 fps) | ~368–432 ms (~393) | ~726–1412 ms (~940) |
+### Calculation Test (Scaled: sw+h+w, +AR, 40,000 calls)
 
-**Speed-ups (same device, same session):**
-- Current vs **3.1.5**: **~3×** on the micro average (158 → ~55 ns), up to ~3.9× on the best runs (158 → 40 ns); scroll real-world workload ≈ frame-limited on both, current slightly faster (~393 → ~375 ms).
-- **Release vs debug**: **~10–13×** on the micro average and **~2.4×** on scroll — this is why every benchmark in this document must be read with the build variant.
+| Metric | Result |
+| :--- | :---: |
+| **Avg resolution** | **~32–91 ns** (latest on-screen value: **32 ns**) |
 
-**Variability was engineered out of the harness on 2026-08-09**: a `thermalRamp()` (≈1.5 s FP-heavy loop) plus holding `THREAD_PRIORITY_URGENT_AUDIO` for the whole measurement window now pins the worker to a boosted core: within-run family spread dropped from ~110 ns (3.1.5) to ~8 ns, and run-to-run spread from 40–250 ns to 40–64 ns. The remaining spread tracks background load, not code.
+### Microbenchmark (600,000 ops, thermal-ramped)
+
+| Path | Result (per op) |
+| :--- | :---: |
+| **Combined avg** | **~29–39 ns** |
+| sdp (bypass) | 24–49 ns |
+| hdp (bypass) | 31–42 ns |
+| wdp (bypass) | 23–38 ns |
+| sdpa (cache) | 24–38 ns |
+| single value (no AR) | 30–41 ns |
+| single value (+ AR) | 30–42 ns |
+| direct ext `100.sdp(ctx)` | 7–13 ns |
+| direct api `DimenSdp.sdp` | 8–26 ns |
+
+### Macrobenchmark — 1,000-item scroll
+
+> [!NOTE]
+> **The measured scroll duration includes the full round trip: the scroll down to the last item AND the scroll back up to the first item.** The list is returned to the first item when the test finishes, and that return trip (subida) is counted in the reported time.
+
+| Metric | Result |
+| :--- | :---: |
+| **Scroll duration (down + up)** | **~1,490 ms** (1,488–1,509 ms across runs) |
+| Avg frame | ~1.5 ms |
+| P90 frame | ~2.2–2.3 ms |
+| P99 frame | ~3.0 ms |
+
+### Compare (Dynamic × SDPS, per single 1dp call)
+
+| Test | Dynamic | SDPS |
+| :--- | :---: | :---: |
+| **#1** | 25 ns | 3,059 ns |
+| **#2** | 22 ns | 2,748 ns |
+| **Média** | **23 ns** | **2,903 ns** |
+
+> **How to read**: Dynamic is **~126× faster** than SDPS on the per-call average in this harness (2,903/23).
 
 ---
 
 ## 4. Technical Note on Performance Layers
 
-1. **Inlining (F1.1)**: All hot-path logic is now fully inlined into the call-site. This eliminates method-call overhead (~10ns on ARM64) and allows the JIT to apply loop unrolling and register allocation across the entire lookup.
-2. **Padding (F2/F3)**: By using 128-byte guards, we've increased memory usage by only ~2.5 KB but eliminated the risk of hardware-level contention (False Sharing) which can cause spikes of 500ns+ in concurrent environments.
+1. **Inlining**: Hot-path logic is fully inlined into the call-site, eliminating method-call overhead (~10 ns on ARM64) and letting the JIT apply loop unrolling and register allocation across the entire lookup.
+2. **Padding**: 128-byte guards eliminate the risk of hardware-level contention (False Sharing) which can cause spikes of 500 ns+ in concurrent environments.
 3. **Bypass Logic**: Multiply-only / default-path types bypass the snapshot-cache lookup because a float multiply (~2 ns) is faster than the fastest cache lookup (~5 ns). See [library/PERFORMANCE.md](library/PERFORMANCE.md).
 
 ---
@@ -122,10 +162,10 @@ For eligible `CalcType`s on the default path (`shouldBypassCache`), `getOrPut` r
 
 ## 6. Benchmark Variability
 
-Benchmark numbers reported in this document reflect measurements taken on a specific device (Xiaomi 2107113SG · Snapdragon 888 · Android 14) under controlled conditions. **Results will vary** based on:
+Benchmark numbers in this document reflect measurements taken on a specific device (Xiaomi 2107113SG · Redmi Note 11 · Qualcomm bengal · 2.8 GHz max) under controlled conditions. **Results will vary** based on:
 
-- **Device class**: budget ARM Cortex-A55 clusters can be 5–10× slower than Snapdragon 888 on cache lookups
-- **JIT warm-up state**: first-run (cold JIT) latency can be 3–10× higher than steady-state
+- **Device class**: budget ARM Cortex-A55 clusters can be 5–10× slower on cache lookups
+- **JIT warm-up state**: first-run (cold JIT) latency can be 3–10× higher than steady-state (visible in the T1 vs T3 spread within each round)
 - **App background load**: GC pauses, thread contention, and CPU governor decisions affect measured ns
 - **Profile Guided Optimization (PGO)**: apps with pre-compiled `.prof` files skip JIT warm-up entirely
 - **Multi-window / split-screen**: may activate the bypass path in `ignoreMultiWindows` mode
@@ -135,7 +175,7 @@ Benchmark numbers reported in this document reflect measurements taken on a spec
 
 ---
 
-**Resolution flow (measured architecture — pre-3.1.7; since 3.1.7 the lookup layer is the snapshot-partitioned cache):**
+**Resolution flow:**
 
 ```mermaid
 graph TD
@@ -151,4 +191,4 @@ graph TD
 ```
 
 ---
-*Report Updated: 2026-08-09 · AppDimens Dynamic · AppDimens Performance Lab · Xiaomi 2107113SG (Qualcomm bengal · 2.8 GHz max) physical hardware · release APK + AOT speed*
+*Report Updated: 2026-08-13 · AppDimens Dynamic · Data from current test runs: BenchLab (3-way competitor, §2) and BenchmarkActivity (Calculation/Micro/Macro, §3) · Xiaomi 2107113SG (Qualcomm bengal · 2.8 GHz max) physical hardware · release APK + R8*

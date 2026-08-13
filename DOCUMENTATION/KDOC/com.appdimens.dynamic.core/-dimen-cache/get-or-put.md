@@ -12,7 +12,7 @@ Additional overloads:
 
 EN Reads from the cache or computes (and stores) a new value. **Lock-free.**
 
-Since 3.1.7 the lookup is resolved against the window snapshot derived from [context]; a key is never served from a partition of a different size, density, font scale, or multi-window state. Non-finite results are never stored.
+Since 3.1.8 the lookup is resolved against the window snapshot derived from [context]; a key is never served from a partition of a different size, density, font scale, or multi-window state. Non-finite results are never stored.
 
 Cached or freshly-computed raw Float result
 

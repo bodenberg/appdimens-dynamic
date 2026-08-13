@@ -54,6 +54,13 @@ suspend fun runCalculationBenchmark(
     // ── MEASUREMENT ─────────────────────────────────────────────────────────
     onPhaseChange(BenchmarkPhase.CALC_RUN)
 
+    // Capture resolution values
+    val sdpPx  = ops.sdp(context, 100)
+    val hdpPx  = ops.hdp(context, 50)
+    val wdpPx  = ops.wdp(context, 30)
+    val sdpaPx = ops.sdpa(context, 40)
+
+    val startWall = System.currentTimeMillis()
     val totalNs = measureNanoTime {
         repeat(REPEAT_COUNT) {
             // NOTE: cheap calc types without AR may bypass shard storage in DimenCache.getOrPut;
@@ -64,6 +71,7 @@ suspend fun runCalculationBenchmark(
             ops.sdpa(context, 40)
         }
     }
+    val wallMs = System.currentTimeMillis() - startWall
 
     val totalOps = REPEAT_COUNT * CALLS_PER_BLOCK
     val avg = totalNs / totalOps
@@ -76,9 +84,13 @@ suspend fun runCalculationBenchmark(
     Log.i(TAG, "Calculation Result: $avg ns avg/resolution ($throughputStr)")
 
     CalculationBenchmarkResult(
-        avgNsPerRes = avg,
-        totalOps    = totalOps,
-        throughput  = throughputStr,
-        mode        = mode,
+        sdpPx     = sdpPx,
+        hdpPx     = hdpPx,
+        wdpPx     = wdpPx,
+        sdpaPx    = sdpaPx,
+        avgNsPerOp = avg,
+        totalOps  = totalOps,
+        wallMs    = wallMs,
+        mode      = mode,
     )
 }

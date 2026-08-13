@@ -31,7 +31,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
@@ -81,11 +79,13 @@ class BenchmarkActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val autoStart = intent.getBooleanExtra("AUTO_START_FULL", false)
         val autoStartMicro = intent.getBooleanExtra("AUTO_START_MICRO", false)
+        val autoStartCompare = intent.getBooleanExtra("AUTO_START_COMPARE", false)
         setContent {
             AppDimensProvider {
                 BenchmarkDashboardScreen(
                     autoStart = autoStart,
-                    autoStartMicro = autoStartMicro
+                    autoStartMicro = autoStartMicro,
+                    autoStartCompare = autoStartCompare
                 )
             }
         }
@@ -106,7 +106,7 @@ class BenchmarkActivity : ComponentActivity() {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BenchmarkDashboardScreen(autoStart: Boolean = false, autoStartMicro: Boolean = false) {
+fun BenchmarkDashboardScreen(autoStart: Boolean = false, autoStartMicro: Boolean = false, autoStartCompare: Boolean = false) {
     val context     = LocalContext.current
     val listState   = rememberLazyListState()
     val scope       = rememberCoroutineScope()
@@ -118,7 +118,7 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false, autoStartMicro: Boolean
 
     // EN Instantiate controller — stable across recompositions
     // PT Instanciar controlador — estável entre recomposições
-    val controller = remember { BenchmarkController(scope, context, listState) }
+    val controller = remember { BenchmarkController(scope, context.applicationContext, listState) }
 
     val phase  by controller.phase.collectAsState()
     val result by controller.result.collectAsState()
@@ -130,6 +130,9 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false, autoStartMicro: Boolean
         if (autoStartMicro) {
             android.util.Log.i("APPDIMENS_AUTO", "Auto-start MICRO triggered via Intent extra.")
             controller.runMicroOnly(calculationMode)
+        } else if (autoStartCompare) {
+            android.util.Log.i("APPDIMENS_AUTO", "Auto-start COMPARE triggered via Intent extra.")
+            controller.runComparison(calculationMode)
         } else if (autoStart) {
             android.util.Log.i("APPDIMENS_AUTO", "Auto-start triggered via Intent extra.")
             controller.runFull(calculationMode)
@@ -180,7 +183,8 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false, autoStartMicro: Boolean
                         onFull         = { controller.runFull(calculationMode) },
                         onCalc         = { controller.runCalculationOnly(calculationMode) },
                         onMicro        = { controller.runMicroOnly(calculationMode) },
-                        onMacro        = { controller.runMacroOnly() }
+                        onMacro        = { controller.runMacroOnly() },
+                        onCompare      = { controller.runComparison(calculationMode) }
                     )
                 }
 
@@ -205,6 +209,9 @@ fun BenchmarkDashboardScreen(autoStart: Boolean = false, autoStartMicro: Boolean
 
                 // ── Macro Results Section ──────────────────────────────────
                 item { MacroResultSection(result = result.macro) }
+
+                // ── Comparison Results Section (3.1.8 vs 3.1.6) ───────────
+                item { ComparisonResultSection(result = result.comparison) }
 
                 // ── Divider before stress list ─────────────────────────────
                 item {
@@ -237,7 +244,8 @@ private fun ControlPanel(
     onFull: () -> Unit,
     onCalc: () -> Unit,
     onMicro: () -> Unit,
-    onMacro: () -> Unit
+    onMacro: () -> Unit,
+    onCompare: () -> Unit
 ) {
     DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
         Text(
@@ -342,6 +350,19 @@ private fun ControlPanel(
                 onClick   = onMacro
             )
         }
+
+        Spacer(Modifier.height(8.dp))
+
+        // EN Side-by-side comparison: library 3.1.8 vs legacy SDPS 3.1.6.
+        // PT Comparativo lado a lado: biblioteca 3.1.8 vs SDPS 3.1.6 legado.
+        BenchmarkButton(
+            label    = "Compare",
+            subLabel = "3.1.8 × 3.1.6 · speed + precision",
+            color    = AccentRed,
+            enabled  = !isRunning,
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+            onClick  = onCompare
+        )
     }
 }
 
@@ -474,13 +495,13 @@ private fun CalculationResultSection(
             result?.let { r ->
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     MetricRow("Mode",           r.mode.displayLabel, AccentGreen)
-                    MetricRow("Avg resolution", r.avgNsPerRes.formatNs(), AccentGreen, isHighlight = true)
+                    MetricRow("Avg resolution", r.avgNsPerOp.formatNs(), AccentGreen, isHighlight = true)
                     MetricRow("Total calls",    "${"%,d".format(r.totalOps)}",   AccentGreen)
                     
                     Spacer(Modifier.height(4.dp))
                     HorizontalDivider(color = SurfaceBorder)
                     Text(
-                        r.throughput,
+                        "sdp=${"%.4f".format(r.sdpPx)}  hdp=${"%.4f".format(r.hdpPx)}  wdp=${"%.4f".format(r.wdpPx)}  sdpa=${"%.4f".format(r.sdpaPx)}",
                         color      = TextSecondary,
                         fontSize   = 10.sp,
                         fontFamily = FontFamily.Monospace,
@@ -520,18 +541,16 @@ private fun MicroResultSection(
             result?.let { r ->
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     MetricRow("Mode",          r.mode.displayLabel, AccentPurple)
-                    MetricRow("Combined avg",  r.avgNsPerOp.formatNs(), AccentPurple, isHighlight = true)
-                    MetricRow("Total ops",     "${"%,d".format(r.totalOps)} ops", AccentPurple)
-                    MetricRow("Wall time",     "${r.totalTimeMs} ms", AccentPurple)
+                    MetricRow("Combined avg",  r.combinedAvgNs.formatNs(), AccentPurple, isHighlight = true)
 
                     Spacer(Modifier.height(4.dp))
                     Text("Call-type breakdown", color = TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     HorizontalDivider(color = SurfaceBorder)
 
-                    PathRow(label = "sw   (no AR)", avgNs = r.sdpBypassAvgNs, color = AccentGreen)
-                    PathRow(label = "h    (no AR)", avgNs = r.hdpBypassAvgNs, color = AccentGreen)
-                    PathRow(label = "w    (no AR)", avgNs = r.wdpBypassAvgNs, color = AccentGreen)
-                    PathRow(label = "sw+a (AR)", avgNs = r.sdpaCacheAvgNs, color = AccentAmber)
+                    PathRow(label = "sw   (no AR)", avgNs = r.sdpAvgNs, color = AccentGreen)
+                    PathRow(label = "h    (no AR)", avgNs = r.hdpAvgNs, color = AccentGreen)
+                    PathRow(label = "w    (no AR)", avgNs = r.wdpAvgNs, color = AccentGreen)
+                    PathRow(label = "sw+a (AR)", avgNs = r.sdpaAvgNs, color = AccentAmber)
 
                     Spacer(Modifier.height(4.dp))
                     HorizontalDivider(color = SurfaceBorder)
@@ -578,9 +597,9 @@ private fun MacroResultSection(result: MacroBenchmarkResult?) {
             result?.let { r ->
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     MetricRow("Scroll duration",  "${r.scrollDurationMs} ms",         AccentCyan, isHighlight = true)
-                    MetricRow("Items rendered",   "${"%,d".format(r.itemsRendered)}",  AccentCyan)
-                    MetricRow("Cost per item",    r.estimatedCostPerItemUs.formatUs(), AccentAmber)
-                    MetricRow("Est. frames @60fps","~${r.estimatedFrames} frames",     AccentGreen)
+                    MetricRow("Total frames",     "${"%,d".format(r.totalFrames)}",  AccentCyan)
+                    MetricRow("Cost per item",    "~${"%.1f".format(r.avgFrameMs * 1000 / 1000)} µs", AccentAmber)
+                    MetricRow("Est. frames @60fps","~${"%d".format((r.scrollDurationMs * 60 / 1000).toInt())} frames", AccentGreen)
 
                     Spacer(Modifier.height(4.dp))
                     HorizontalDivider(color = SurfaceBorder)
@@ -593,6 +612,231 @@ private fun MacroResultSection(result: MacroBenchmarkResult?) {
                     )
                 }
             }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPARISON RESULTS SECTION (Dynamic 3.1.8 vs SDPS 3.1.6)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun ComparisonResultSection(result: ComparisonBenchmarkResult?) {
+    DashboardSectionHeader(
+        icon  = "⚖️",
+        label = "Comparativo — Dynamic (ref) × SDPS 3.1.6",
+        color = AccentRed
+    )
+
+    DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+        AnimatedVisibility(visible = result == null) {
+            Text(
+                "Clique em Compare para rodar os 3 testes e ver a comparação.",
+                color    = TextSecondary,
+                fontSize = 12.sp
+            )
+        }
+        AnimatedVisibility(visible = result != null) {
+            result?.let { r ->
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+                    // ── Device info (compact) ──────────────────────────────
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(SurfaceBorder.copy(alpha = 0.3f))
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("sw=${r.windowSw}dp  w=${r.windowW}dp  h=${r.windowH}dp", color = TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                        Text("density=${"%.2f".format(r.density)}", color = TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                    }
+
+                    // ── TABLE 1: Dp Resolution Values (1dp, 10dp, 100dp) ──
+                    Text("Valores de resolução (sdp)", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    DpResolutionTable(r)
+
+                    // ── TABLE 2: Time per Single Dp Call ───────────────────
+                    Text("Tempo por chamada única de 1dp", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    TimingTable(r)
+
+                    // ── Average banner ─────────────────────────────────────
+                    val ratioFaster = r.avgLegacyNsPerDp > r.avgCurrentNsPerDp
+                    val ratioColor = if (ratioFaster) AccentGreen else AccentRed
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(ratioColor.copy(alpha = 0.10f))
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(if (ratioFaster) "⚡" else "🐢", fontSize = 14.sp)
+                        Spacer(Modifier.width(8.dp))
+                        val ratio = if (r.avgCurrentNsPerDp > 0) r.avgLegacyNsPerDp.toFloat() / r.avgCurrentNsPerDp.toFloat() else 1f
+                        Text(
+                            if (ratioFaster) "Dynamic é ×${"%.1f".format(ratio)} mais rápido"
+                            else "Dynamic é ×${"%.1f".format(1f / ratio)} mais lento",
+                            color      = ratioColor,
+                            fontSize   = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily.Monospace
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ── Dp Resolution Table ──────────────────────────────────────────────────────
+
+@Composable
+private fun DpResolutionTable(r: ComparisonBenchmarkResult) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .border(1.dp, SurfaceBorder, RoundedCornerShape(10.dp))
+    ) {
+        // Header row
+        TableRow(
+            cells = listOf("dp" to 0.15f, "Dynamic" to 0.425f, "SDPS" to 0.425f),
+            isHeader = true
+        )
+        HorizontalDivider(color = SurfaceBorder)
+
+        // 1dp row — 2 tests
+        DpGroup(dp = "1", test1Cur = r.test1.dp1Current, test1Leg = r.test1.dp1Legacy,
+            test2Cur = r.test2.dp1Current, test2Leg = r.test2.dp1Legacy)
+        HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
+
+        // 10dp row — 2 tests
+        DpGroup(dp = "10", test1Cur = r.test1.dp10Current, test1Leg = r.test1.dp10Legacy,
+            test2Cur = r.test2.dp10Current, test2Leg = r.test2.dp10Legacy)
+        HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
+
+        // 100dp row — 2 tests
+        DpGroup(dp = "100", test1Cur = r.test1.dp100Current, test1Leg = r.test1.dp100Legacy,
+            test2Cur = r.test2.dp100Current, test2Leg = r.test2.dp100Legacy)
+    }
+}
+
+@Composable
+private fun DpGroup(
+    dp: String,
+    test1Cur: Float, test1Leg: Float,
+    test2Cur: Float, test2Leg: Float,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(AccentCyan.copy(alpha = 0.04f))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        // dp label + values for 2 tests
+        Row(Modifier.fillMaxWidth()) {
+            Text(dp, color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.15f))
+            Column(modifier = Modifier.weight(0.425f)) {
+                TestValue("T1", test1Cur, AccentCyan)
+                TestValue("T2", test2Cur, AccentCyan)
+            }
+            Column(modifier = Modifier.weight(0.425f)) {
+                TestValue("T1", test1Leg, AccentAmber)
+                TestValue("T2", test2Leg, AccentAmber)
+            }
+        }
+    }
+}
+
+@Composable
+private fun TestValue(label: String, value: Float, color: Color) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 1.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, color = TextSecondary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+        Text("${"%.4f".format(value)} px", color = color, fontSize = 10.sp,
+            fontWeight = FontWeight.Medium, fontFamily = FontFamily.Monospace)
+    }
+}
+
+// ── Timing Table ──────────────────────────────────────────────────────────────
+
+@Composable
+private fun TimingTable(r: ComparisonBenchmarkResult) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .border(1.dp, SurfaceBorder, RoundedCornerShape(10.dp))
+    ) {
+        // Header row
+        TableRow(
+            cells = listOf("Teste" to 0.2f, "Dynamic" to 0.4f, "SDPS" to 0.4f),
+            isHeader = true
+        )
+        HorizontalDivider(color = SurfaceBorder)
+
+        // Test 1
+        TableRow(cells = listOf(
+            "#1" to 0.2f,
+            r.timeTest1.currentNsPerDp.formatNs() to 0.4f,
+            r.timeTest1.legacyNsPerDp.formatNs() to 0.4f
+        ), rowColor = AccentCyan.copy(alpha = 0.04f))
+        HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
+
+        // Test 2
+        TableRow(cells = listOf(
+            "#2" to 0.2f,
+            r.timeTest2.currentNsPerDp.formatNs() to 0.4f,
+            r.timeTest2.legacyNsPerDp.formatNs() to 0.4f
+        ))
+        HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
+
+        HorizontalDivider(color = SurfaceBorder)
+
+        // Average row
+        TableRow(cells = listOf(
+            "Média" to 0.2f,
+            r.avgCurrentNsPerDp.formatNs() to 0.4f,
+            r.avgLegacyNsPerDp.formatNs() to 0.4f
+        ), isHighlight = true)
+    }
+}
+
+@Composable
+private fun TableRow(
+    cells: List<Pair<String, Float>>,
+    isHeader: Boolean = false,
+    isHighlight: Boolean = false,
+    rowColor: Color = Color.Transparent
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(rowColor)
+            .padding(horizontal = 10.dp, vertical = if (isHeader) 6.dp else 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        cells.forEach { (text, weight) ->
+            Text(
+                text,
+                color = when {
+                    isHeader -> TextSecondary
+                    isHighlight -> AccentGreen
+                    else -> TextPrimary
+                },
+                fontSize = if (isHeader) 10.sp else 11.sp,
+                fontWeight = if (isHeader || isHighlight) FontWeight.Bold else FontWeight.Medium,
+                fontFamily = FontFamily.Monospace,
+                modifier = Modifier.weight(weight)
+            )
         }
     }
 }

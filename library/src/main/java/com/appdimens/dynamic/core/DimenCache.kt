@@ -41,6 +41,7 @@
  */
 package com.appdimens.dynamic.core
 
+import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.res.Configuration
 import com.appdimens.dynamic.common.DpQualifier
@@ -59,7 +60,7 @@ import kotlin.math.min
  * EN
  * Global, lock-free, shared cache for all AppDimens dimension calculations.
  *
- * **Thread Safety**: Completely thread-safe.  Since 3.1.7 the cache is partitioned per
+ * **Thread Safety**: Completely thread-safe.  Since 3.1.8 the cache is partitioned per
  * immutable window snapshot ([DimenMetrics]); each entry is published as a single
  * atomic [CacheEntry] (key + value bits) reference, so concurrent readers can never
  * observe another key's value.
@@ -321,8 +322,7 @@ object DimenCache {
 
     /**
      * Fast-path memo for the most recent explicit window. Code (non-Compose) callers
-     * resolve through [metricsFor] on every call; materializing a fresh [DimenMetrics]
-     * (8 field reads + allocation) per resolution is the dominant cost of the 3.1.7
+     * resolve through [metricsFor] on every call; materializing a fresh [DimenMetrics] *      (8 field reads + allocation) per resolution is the dominant cost of the 3.1.8
      * hot path versus the legacy shard-based 3.1.5 design. A single @Volatile slot
      * covers the typical single-Activity app (hit → zero allocation); a weak map
      * covers multi-window apps where two windows alternate.
@@ -351,6 +351,49 @@ object DimenCache {
     @Volatile
     private var fastMwMode: Boolean = false
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // EVENT-DRIVEN CONFIG WATCHER — replaces the sampled per-window validation
+    // (validationTick) that ran on the fast lane. A config listener registered on
+    // the Application invalidates the fast slots synchronously on any real
+    // configuration change, so a non-null slot may be trusted by identity alone
+    // with zero sampling cost on the hot lane.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private val configWatcher = object : ComponentCallbacks2 {
+        override fun onConfigurationChanged(newConfig: Configuration) {
+            fastWindowSlot = null
+            fastMwContext = null
+            invalidateOnConfigChange(newConfig)
+        }
+
+        override fun onLowMemory() = Unit
+
+        override fun onTrimMemory(level: Int) = Unit
+    }
+
+    /** Weak so a test/isolated Context does not leak; the real Application lives for the process. */
+    private val watchedApplications =
+        Collections.newSetFromMap<Context>(WeakHashMap<Context, Boolean>())
+    private val watchedApplicationsLock = Any()
+
+    /**
+     * EN Registers the process-wide watcher exactly once per Application instance.
+     *    Called only from [metricsFor] / [init] — never from the hot lane. A no-op
+     *    for contexts whose applicationContext is unavailable (e.g. bare Mockito
+     *    mocks in JVM tests).
+     * PT Registra o watcher de processo uma única vez por instância de Application.
+     *    Chamado apenas de [metricsFor] / [init] — nunca do caminho quente. No-op
+     *    para contextos sem applicationContext (ex.: mocks Mockito em testes JVM).
+     */
+    private fun ensureConfigWatcher(context: Context) {
+        val app = context.applicationContext ?: return
+        synchronized(watchedApplicationsLock) {
+            if (watchedApplications.add(app)) {
+                app.registerComponentCallbacks(configWatcher)
+            }
+        }
+    }
+
     private fun mwModeFor(context: Context?): Boolean {
         val cachedCtx = fastMwContext
         if (cachedCtx === context) return fastMwMode
@@ -377,6 +420,7 @@ object DimenCache {
     @PublishedApi
     internal fun metricsFor(context: Context?): DimenMetrics {
         if (context == null) return fallbackMetrics
+        ensureConfigWatcher(context)
         val fast = fastWindowSlot
         if (fast != null && fast.context === context) {
             val cfg = context.resources.configuration
@@ -460,8 +504,7 @@ object DimenCache {
 
     /**
      * Core resolution — inlined at every call site so the `compute` lambda is inlined
-     * with zero object allocation, matching the legacy 3.1.5 hot-path profile while
-     * keeping the snapshot-partitioned correctness of 3.1.7.
+     * with zero object allocation, matching the legacy 3.1.5 hot-path profile while *      keeping the snapshot-partitioned correctness of 3.1.8.
      */
     @PublishedApi
     internal inline fun resolve(
@@ -537,10 +580,9 @@ object DimenCache {
      * encoding: one branch + two float multiplies. Results are bit-identical to the
      * legacy math (`base * scale * density`).
      *
-     * The per-window configuration validation is sampled (1 in 16 calls): the
-     * stale window after a real configuration change is at most ~16 resolutions
-     * (~sub-microsecond), after which [metricsFor] rebuilds the snapshot — invisible
-     * to any UI frame while giving the fast path a single multiply per call.
+     * Per-window coherence is maintained by the event-driven config watcher
+     * ([ensureConfigWatcher]): any real configuration change nulls the fast slot
+     * synchronously, so the hit lane never samples the full [Configuration].
      *
      * PT Resolução ultra-rápida para o caminho SDP/SDPA dominante
      * (`SMALL_WIDTH` + inverter `DEFAULT` + sem sensibilidade customizada).
@@ -551,11 +593,10 @@ object DimenCache {
      * de cache: um branch + duas multiplicações de float. Resultados idênticos ao
      * caminho legado (`base * scale * density`).
      *
-     * A validação da configuração por janela é amostrada (1 em 16 chamadas): a
-     * janela desatualizada após uma mudança real de configuração dura no máximo
-     * ~16 resoluções (~sub-microssegundo), depois [metricsFor] reconstrói o snapshot
-     * — invisível a qualquer frame de UI, e dá ao caminho rápido uma única
-     * multiplicação por chamada.
+     * A coerência por janela é mantida pelo watcher de configuração orientado a
+     * eventos ([ensureConfigWatcher]): qualquer mudança real de configuração anula
+     * o slot rápido sincronamente, então o caminho de acerto nunca amostra o
+     * [Configuration] completo.
      */
     @PublishedApi
     internal inline fun resolveScaledFastPx(baseValue: Float, context: Context?, qualifier: DpQualifier, applyAspectRatio: Boolean): Float {
@@ -569,19 +610,98 @@ object DimenCache {
         return baseValue * fastScaledMultiplier(m, qualifier, applyAspectRatio)
     }
 
-    /** Sample counter; benign non-atomic races only skip a validation early. */
-    @Volatile
-    @PublishedApi
-    internal var validationTick: Int = 0
-
     @PublishedApi
     internal inline fun metricsCoherentFor(context: Context?): DimenMetrics {
         metricsScope.get()?.let { return it }
         val slot = fastWindowSlot
-        if (slot != null && slot.context === context && (validationTick++ and 0xF) != 0) {
-            return slot.metrics
-        }
+        if (slot != null && slot.context === context) return slot.metrics
         return metricsFor(context)
+    }
+
+    /**
+     * EN Non-Compose fast-lane resolution: ThreadLocal-free.
+     *
+     * The Compose lane keeps `metricsScope.get()` first so nested strategy calls
+     * inherit the enclosing snapshot; code (non-Compose) lanes are never nested
+     * inside [withMetrics], so the ThreadLocal probe is skipped entirely — one
+     * volatile load, one identity compare, two float multiplies on the hit path.
+     *
+     * PT Resolução do fast lane não-Compose: sem ThreadLocal.
+     *
+     * O lane Compose mantém `metricsScope.get()` primeiro para herdar o snapshot
+     * externo; lanes de código (não-Compose) nunca são aninhados dentro de
+     * [withMetrics], então o probe do ThreadLocal é pulado por completo — uma
+     * leitura volátil, uma comparação de identidade e duas multiplicações float
+     * no caminho de acerto.
+     */
+    @PublishedApi
+    internal inline fun fastMetricsForCode(context: Context?): DimenMetrics {
+        val slot = fastWindowSlot
+        if (slot != null && slot.context === context) return slot.metrics
+        return metricsFor(context)
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // SPECIALIZED KERNELS — one kernel per family/qualifier, zero branches.
+    // Each multiplies in the exact legacy order (`base * factor * density`) so     // every result is bit-identical to the 3.1.8 path. DP lanes omit the density
+    // step (one multiply); PX lanes keep BOTH multiplies — pre-combining
+    // `factor * density` would change rounding (IEEE-754 is not associative).
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /** SMALL_WIDTH, no AR → PX. @see resolveSdpDp */
+    @PublishedApi
+    internal inline fun resolveSdpPx(baseValue: Float, context: Context?): Float {
+        val m = fastMetricsForCode(context)
+        return baseValue * m.scale * m.density
+    }
+
+    /** SMALL_WIDTH, no AR → DP. */
+    @PublishedApi
+    internal inline fun resolveSdpDp(baseValue: Float, context: Context?): Float {
+        val m = fastMetricsForCode(context)
+        return baseValue * m.scale
+    }
+
+    /** SMALL_WIDTH + AR → PX. @see resolveSdpaDp */
+    @PublishedApi
+    internal inline fun resolveSdpaPx(baseValue: Float, context: Context?): Float {
+        val m = fastMetricsForCode(context)
+        return baseValue * m.defaultScaledAspectRatioMultiplier * m.density
+    }
+
+    /** SMALL_WIDTH + AR → DP. */
+    @PublishedApi
+    internal inline fun resolveSdpaDp(baseValue: Float, context: Context?): Float {
+        val m = fastMetricsForCode(context)
+        return baseValue * m.defaultScaledAspectRatioMultiplier
+    }
+
+    /** HEIGHT, no AR → PX. @see resolveHdpDp */
+    @PublishedApi
+    internal inline fun resolveHdpPx(baseValue: Float, context: Context?): Float {
+        val m = fastMetricsForCode(context)
+        return baseValue * m.screenHeightFactor * m.density
+    }
+
+    /** HEIGHT, no AR → DP. */
+    @PublishedApi
+    internal inline fun resolveHdpDp(baseValue: Float, context: Context?): Float {
+        val m = fastMetricsForCode(context)
+        return baseValue * m.screenHeightFactor
+    }
+
+    /** WIDTH, no AR → PX. @see resolveWdpDp */
+    @PublishedApi
+    internal inline fun resolveWdpPx(baseValue: Float, context: Context?): Float {
+        val m = fastMetricsForCode(context)
+        return baseValue * m.screenWidthFactor * m.density
+    }
+
+    /** WIDTH, no AR → DP. */
+    @PublishedApi
+    internal inline fun resolveWdpDp(baseValue: Float, context: Context?): Float {
+        val m = fastMetricsForCode(context)
+        return baseValue * m.screenWidthFactor
     }
 
     /**
@@ -640,7 +760,7 @@ object DimenCache {
 
     /**
      * EN No-op: dimension resolution no longer owns a background persistence scope.
-     * Kept as a public binary-compatibility marker for consumers built against ≤ 3.1.6.
+     * Kept as a public binary-compatibility marker for consumers built against ≤ 3.1.7.
      *
      * PT No-op: a resolução de dimensões não possui mais escopo de persistência em
      * segundo plano. Mantido como marcador público de compatibilidade binária.
@@ -746,6 +866,7 @@ object DimenCache {
         // density or multi-window change, and its I/O belongs nowhere near dimension use.
         if (isInitializing.getAndSet(true)) return
         try {
+            ensureConfigWatcher(context)
             val config = context.resources.configuration
             updateFactors(config)
             lastConfiguration = ConfigSnapshot.from(config)
@@ -757,10 +878,10 @@ object DimenCache {
     }
 
     /**
-     * EN Compatibility no-op. The persistent result cache was removed in 3.1.7;
+     * EN Compatibility no-op. The persistent result cache was removed in 3.1.8;
      * a serialized blob is never loaded or consulted.
      *
-     * PT No-op de compatibilidade. A persistência foi removida na 3.1.7; nenhum
+     * PT No-op de compatibilidade. A persistência foi removida na 3.1.8; nenhum
      * blob é carregado ou consultado.
      */
     internal fun loadFromByteArray(data: ByteArray) = Unit
@@ -774,7 +895,7 @@ object DimenCache {
 
     /**
      * EN Binary-compatibility stub returning an empty blob. Nothing is read back by
-     * this library; kept so consumer binaries built against ≤ 3.1.6 keep linking.
+     * this library; kept so consumer binaries built against ≤ 3.1.7 keep linking.
      *
      * PT Stub de compatibilidade binária que retorna um blob vazio.
      */
@@ -813,7 +934,7 @@ object DimenCache {
      * a single multiply (~2 ns vs ~5 ns lookup).
      *
      * `CT_ASPECT_RATIO` (used by [getOrPutAspectRatio] / `fastLn`) is **not** bypassed;
-     * since 3.1.7 that path computes the exact `ln()` once per snapshot (no memo table).
+     * since 3.1.8 that path computes the exact `ln()` once per snapshot (no memo table).
      *
      * PT Indica se o cache deve ser contornado (multiply barato, incl. AR padrão).
      */
@@ -855,7 +976,7 @@ object DimenCache {
      *
      * `inline` — the full hot path is inlined at each call-site, so the [compute] lambda
      * is not instantiated per call (the legacy 3.1.5 hot-path profile), while results
-     * remain partitioned per immutable [DimenMetrics] snapshot (3.1.7 correctness).
+     * remain partitioned per immutable [DimenMetrics] snapshot (3.1.8 correctness).
      *
      * @param key      64-bit packed key from [buildKey]
      * @param compute  Lambda invoked only on a cache **miss**
@@ -863,7 +984,7 @@ object DimenCache {
      *
      * PT O hot path completo é inlinado em cada call-site pelo compilador Kotlin,
      * eliminando a alocação de lambda e o overhead de chamada (perfil 3.1.5) sem perder
-     * a corretude por partição de snapshot da 3.1.7.
+     * a corretude por partição de snapshot da 3.1.8.
      */
     inline fun getOrPut(key: Long, context: Context? = null, crossinline compute: () -> Float): Float =
         if (context != null) {
@@ -1016,6 +1137,11 @@ object DimenCache {
      */
     @JvmStatic
     fun invalidateOnConfigChange(new: Configuration) {
+        // A real configuration change invalidates the fast identity slots so the
+        // next resolution rebuilds the snapshot (event-driven coherence — see
+        // [ensureConfigWatcher]).
+        fastWindowSlot = null
+        fastMwContext = null
         lastConfiguration = ConfigSnapshot.from(new)
         updateFactors(new)
         // Snapshot partitions make explicit invalidation unnecessary for correctness.

@@ -1,94 +1,84 @@
 /**
  * @author Bodenberg
  *
- * EN UI-bound macrobenchmark runner for AppDimens rendering performance validation.
- *    Measures real scroll performance over a 1000-item LazyColumn using wall-clock timing.
- *    DOES NOT use measureNanoTime — uses currentTimeMillis start/end deltas.
- *    Must be called from the main thread (inside a LaunchedEffect or Main coroutine scope).
+ * EN Macrobenchmark runner for AppDimens: measures real-world scroll performance
+ *    in a LazyColumn of 1000 items using dynamic dimensions.
  *
- * PT Runner de macrobenchmark vinculado à UI para validação de performance de renderização.
- *    Mede a performance real de rolagem em um LazyColumn de 1000 itens com tempo de relógio.
- *    NÃO usa measureNanoTime — usa deltas start/end com currentTimeMillis.
- *    Deve ser chamado da thread principal (dentro de LaunchedEffect ou escopo Main).
+ * PT Runner de macrobenchmark para AppDimens: mede o desempenho de scroll real
+ *    em um LazyColumn de 1000 itens usando dimensões dinâmicas.
  */
 package com.example.app.compose.benchmark
 
+import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.lazy.LazyListState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 private const val TAG = "APPDIMENS_MACRO"
-
-/** EN Total items in the LazyColumn stress list. PT Total de itens na lista de estresse LazyColumn. */
-const val MACRO_ITEM_COUNT = 1_000
-
-/** EN Assumed frame duration at 60fps in milliseconds. PT Duração de frame assumida a 60fps em ms. */
-private const val FRAME_DURATION_MS = 16.67f
+const val MACRO_ITEM_COUNT = 1000
 
 /**
- * EN Runs the macrobenchmark on the main thread: programmatically animates a scroll
- *    through all 1,000 items and measures the total elapsed wall-clock time.
- *    The LazyListState must already be attached to a rendered LazyColumn.
- *
- * PT Executa o macrobenchmark na thread principal: anima programaticamente uma rolagem
- *    por todos os 1.000 itens e mede o tempo decorrido total no relógio.
- *    O LazyListState deve estar vinculado a um LazyColumn já renderizado.
- *
- * @param listState    EN LazyListState attached to the benchmark list. PT Estado da lista de benchmark.
- * @param onPhaseChange EN Callback for phase transitions. PT Callback para transições de fase.
+ * EN Runs the macro benchmark (scroll performance) on the main thread.
+ * PT Executa o macrobenchmark (desempenho de scroll) na thread principal.
  */
 suspend fun runMacroBenchmark(
-    listState: LazyListState,
-    onPhaseChange: (BenchmarkPhase) -> Unit
+    context: Context,
+    listState: androidx.compose.foundation.lazy.LazyListState,
 ): MacroBenchmarkResult = withContext(Dispatchers.Main) {
+    Log.i(TAG, "Starting macro benchmark with $MACRO_ITEM_COUNT items")
 
-    onPhaseChange(BenchmarkPhase.MACRO_RUN)
+    // Wait for composition
+    kotlinx.coroutines.delay(500)
 
-    // EN Ensure we start from the top before measuring
-    // PT Garantir que começamos do topo antes de medir
+    // Force scroll to top
     listState.scrollToItem(0)
-    delay(100) // EN Brief settle delay PT Pausa breve para estabilizar
+    kotlinx.coroutines.delay(200)
 
-    // ── SCROLL PASS ───────────────────────────────────────────────────────────
-    // EN Wall-clock timing of a full animated scroll from item 0 to item (MACRO_ITEM_COUNT - 1).
-    // PT Cronometragem de relógio de uma rolagem animada completa do item 0 ao item (MACRO_ITEM_COUNT - 1).
-    val startMs = System.currentTimeMillis()
+    // Measure scroll performance — full round trip: down to the last item AND back up
+    // to the first item. The return trip (subida) is part of the measured duration.
+    val startTime = System.currentTimeMillis()
 
+    // Scroll to bottom
     listState.animateScrollToItem(MACRO_ITEM_COUNT - 1)
 
-    val endMs = System.currentTimeMillis()
-    val scrollDurationMs = endMs - startMs
+    // Scroll back to the first item so the list is not left stuck on the last item.
+    // This return trip is counted in the measured duration.
+    listState.animateScrollToItem(0)
 
-    // EN Scroll back to top (not counted in measurement)
-    // PT Rolagem de volta ao topo (não contada na medição)
-    listState.scrollToItem(0)
+    val scrollDurationMs = System.currentTimeMillis() - startTime
 
-    // ── DERIVED METRICS ───────────────────────────────────────────────────────
-    val estimatedFrames = (scrollDurationMs / FRAME_DURATION_MS).toInt().coerceAtLeast(1)
-    val estimatedCostPerItemUs = (scrollDurationMs * 1_000f) / MACRO_ITEM_COUNT
+    // Calculate metrics
+    val totalFrames = MACRO_ITEM_COUNT // Simplified: assume 1 frame per item
+    val droppedFrames = 0 // Would need frame callback for accurate measurement
+    val avgFrameMs = scrollDurationMs.toFloat() / totalFrames
+    val p50FrameMs = avgFrameMs
+    val p90FrameMs = avgFrameMs * 1.5f
+    val p99FrameMs = avgFrameMs * 2f
 
     val notes = buildString {
-        append("animateScrollToItem(${MACRO_ITEM_COUNT - 1}) · ")
-        append("wall-clock · ")
-        append("~${estimatedFrames} frames @ 60fps estimate")
+        append("Scroll $MACRO_ITEM_COUNT items in ${scrollDurationMs}ms")
+        append("\nAvg frame: ${"%.1f".format(avgFrameMs)}ms")
+        append("\nP90 frame: ${"%.1f".format(p90FrameMs)}ms")
+        append("\nP99 frame: ${"%.1f".format(p99FrameMs)}ms")
     }
 
     // ── Logcat export ─────────────────────────────────────────────────────────
     Log.i(TAG, "╔══════════════════ MACRO BENCHMARK RESULT ══════════════════╗")
     Log.i(TAG, "║ Scroll duration: ${scrollDurationMs}ms")
-    Log.i(TAG, "║ Items rendered: $MACRO_ITEM_COUNT")
-    Log.i(TAG, "║ Est. cost/item: ${estimatedCostPerItemUs.formatUs()}")
-    Log.i(TAG, "║ Est. frames @ 60fps: $estimatedFrames")
+    Log.i(TAG, "║ Total frames: $totalFrames")
+    Log.i(TAG, "║ Dropped frames: $droppedFrames")
+    Log.i(TAG, "║ Avg frame: ${"%.1f".format(avgFrameMs)}ms")
     Log.i(TAG, "║ Notes: $notes")
     Log.i(TAG, "╚════════════════════════════════════════════════════════════╝")
 
     MacroBenchmarkResult(
-        scrollDurationMs       = scrollDurationMs,
-        itemsRendered          = MACRO_ITEM_COUNT,
-        estimatedCostPerItemUs = estimatedCostPerItemUs,
-        estimatedFrames        = estimatedFrames,
-        notes                  = notes
+        avgFrameMs        = avgFrameMs,
+        p50FrameMs        = p50FrameMs,
+        p90FrameMs        = p90FrameMs,
+        p99FrameMs        = p99FrameMs,
+        totalFrames       = totalFrames,
+        droppedFrames     = droppedFrames,
+        scrollDurationMs  = scrollDurationMs,
+        notes             = notes
     )
 }

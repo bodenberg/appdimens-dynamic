@@ -45,7 +45,7 @@ const val REFERENCE_ASPECT_RATIO = 1.78f
 
 ## 3. Global Precomputation Matrix
 
-Since **3.1.7** the source of truth is the immutable **`DimenMetrics`** window snapshot, built once per window/configuration change (screen size, smallest width, density, font scale, orientation, ui mode, multi-window). Derived factors are computed once when the snapshot is created; satellite strategy scales are derived lazily from `DimenCache.currentMetrics` at resolution time. `DimenCache.updateFactors()` and `StrategyFactorRegistry` remain as source-compatibility hooks only.
+Since **3.1.8** the source of truth is the immutable **`DimenMetrics`** window snapshot, built once per window/configuration change (screen size, smallest width, density, font scale, orientation, ui mode, multi-window). Derived factors are computed once when the snapshot is created; satellite strategy scales are derived lazily from `DimenCache.currentMetrics` at resolution time. `DimenCache.updateFactors()` and `StrategyFactorRegistry` remain as source-compatibility hooks only.
 
 ```mermaid
 journey

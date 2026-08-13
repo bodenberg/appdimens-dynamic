@@ -61,17 +61,25 @@ data class DimenMetrics(
     @PublishedApi
     internal val screenHeightFactor: Float = screenHeightDp * DimenCache.INV_BASE_RATIO
 
-    val normalizedAspectRatio: Float by lazy {
+    /**
+     * EN Plain `val` (not `lazy`): every real snapshot reads [defaultAspectRatioMultiplier]
+     *    / [defaultScaledAspectRatioMultiplier] at construction, so the lazy
+     *    double-checked-read would be paid anyway — eagerly computing removes the
+     *    hidden `synchronized` probe from the SDPA fast lane.
+     * PT `val` puro (não `lazy`): todo snapshot real lê [defaultAspectRatioMultiplier]
+     *    / [defaultScaledAspectRatioMultiplier] na construção, então a leitura lazy
+     *    seria paga de qualquer forma — calcular de forma antecipada remove o probe
+     *    `synchronized` oculto do fast lane SDPA.
+     */
+    val normalizedAspectRatio: Float = run {
         val raw = if (minDimensionDp > 0f) maxDimensionDp / minDimensionDp else 1f
         (raw / DesignScaleConstants.REFERENCE_ASPECT_RATIO)
             .takeIf { it.isFinite() && it > 0f }
             ?: 1f
     }
 
-    /** Exact natural logarithm — computed only when an AR multiplier is actually read. */
-    val logNormalizedAspectRatio: Float by lazy {
-        ln(normalizedAspectRatio.toDouble()).toFloat()
-    }
+    /** Exact natural logarithm — computed once when the snapshot is created. */
+    val logNormalizedAspectRatio: Float = ln(normalizedAspectRatio.toDouble()).toFloat()
 
     /**
      * EN Plain `val` (not `lazy`) so the hot SDPA fast path never pays the lazy

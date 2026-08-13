@@ -9,8 +9,8 @@ Generated **KDoc package index** below. For product scope, architecture, and for
 | [PRD.md](PRD.md) | Product requirements (FR/NFR) |
 | [PDR.md](PDR.md) | Technical design, development plan, traceability matrix, AI prompt rules |
 | [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) | Formulas, constants, the `DimenMetrics` window snapshot + per-strategy calculation kernels |
-| [**Modules** — Maven/Gradle graph](MODULES.md) | Artifact matrix and install (`3.1.7`) |
-| [**Skill** — `appdimens-library-workflow`](../skills/SKILL.md) | Agent workflow for AppDimens integration/migration (Compose vs `code`, scaling vs resize, preflight); companion [reference.md](../skills/reference.md) (package map, strategy → doc links at Git ref `3.1.7`) |
+| [**Modules** — Maven/Gradle graph](MODULES.md) | Artifact matrix and install (`3.1.8`) |
+| [**Skill** — `appdimens-library-workflow`](../skills/SKILL.md) | Agent workflow for AppDimens integration/migration (Compose vs `code`, scaling vs resize, preflight); companion [reference.md](../skills/reference.md) (package map, strategy → doc links at Git ref `3.1.8`) |
 
 Narrative strategy guides and the full doc hub: [README.md](README.md).
 

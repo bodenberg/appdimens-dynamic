@@ -107,7 +107,7 @@ dependencies {
     api(project(":library-units"))
 
     // Maven Central (release consumers) — preferred with BOM:
-    // implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.7"))
+    // implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.8"))
     // implementation("io.github.bodenberg:appdimens-dynamic")
     // implementation("io.github.bodenberg:appdimens-dynamic-percent")
     // …
@@ -124,6 +124,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    // Legacy published artifact (com.appdimens.sdps.*, 3.1.6) — drives the on-device
+    // "Compare" benchmark (3.1.8 speed/precision vs the historical SDPS library).
+    implementation(libs.appdimens.sdps.legacy)
     testImplementation(libs.junit)
     // Pin the Compose BOM for the androidTest configuration too; ui-test-junit4
     // has no version of its own and was resolving as ui-test-junit4: (empty).
