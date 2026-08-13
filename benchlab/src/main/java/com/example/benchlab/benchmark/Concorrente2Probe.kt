@@ -1,23 +1,25 @@
 /**
  * @author Bodenberg
  *
- * EN Composable probe for Concorrente 2.
- *    Unlike AppDimens/Concorrente 1, the Concorrente 2 `.sdp` extension is `@Composable`
+ * EN Legacy composable probe for Concorrente 2 (Chaintech) — original code.
+ *    Unlike AppDimens/Concorrente 1, the Chaintech `.sdp` extension is `@Composable`
  *    (it reads LocalConfiguration to scale by min(w,h)/300), so its cost can only
  *    be measured inside composition. The probe runs on the main thread:
  *    - warms up the extension call site,
  *    - times a tight loop of `100.sdp` resolutions,
  *    - resolves raw px for 1dp, 10dp, 100dp (precision input),
  *    and reports the result once via [onResult].
+ *    Kept for the legacy T1/T2/T3 tests (continuity with previous reports).
  *
- * PT Sonda composable para a Concorrente 2.
- *    Diferente de AppDimens/Concorrente 1, a extensão `.sdp` da Concorrente 2 é `@Composable`
+ * PT Sonda composable legada para a Concorrente 2 (Chaintech) — código original.
+ *    Diferente de AppDimens/Concorrente 1, a extensão `.sdp` da Chaintech é `@Composable`
  *    (lê LocalConfiguration para escalar por min(w,h)/300), então seu custo só pode
  *    ser medido dentro da composição. A sonda roda na main thread:
  *    - aquece o call site da extensão,
  *    - cronometra um loop fechado de resoluções `100.sdp`,
  *    - resolve px brutos para 1dp, 10dp, 100dp (entrada de precisão),
  *    e reporta o resultado uma vez via [onResult].
+ *    Mantida para os testes legados T1/T2/T3 (continuidade com relatórios anteriores).
  */
 package com.example.benchlab.benchmark
 
@@ -34,8 +36,8 @@ private const val PROBE_REPEAT = 10_000
 private const val PROBE_WARMUP = 1_000
 
 /**
- * EN Measures the Concorrente 2 extension inside composition. Compose only this probe
- *    while [active] is true; it self-guards so the timed loop runs exactly once.
+ * EN Measures the Chaintech extension inside composition (legacy). Compose only this
+ *    probe while [active] is true; it self-guards so the timed loop runs exactly once.
  *
  * @param active EN Whether to run the probe. PT Se a sonda deve rodar.
  * @param onResult EN Callback with the measured result. PT Callback com o resultado medido.

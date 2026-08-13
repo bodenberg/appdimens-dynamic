@@ -1,13 +1,25 @@
 /**
  * @author Bodenberg
  *
- * EN Benchmark dashboard: AppDimens Dynamic 3.1.8 vs Concorrente 1 vs
- *    Concorrente 2 — values + timing
- *    on real devices. Supports full-scroll screenshot and report export.
+ * EN Benchmark dashboard: AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 vs
+ *    Chaintech 1.0.7.
+ *    Shows:
+ *    - NEW methodology: Benchmark A (Compose API, main thread) and
+ *      Benchmark B (Engine, off-main) with median/min/P90/max stats,
+ *      order rotation, anti-DCE checksums and two workloads;
+ *    - LEGACY methodology: original T1/T2/T3 tests (resolution values +
+ *      time per single call) kept for continuity with previous reports.
+ *    Supports full-scroll screenshot and report export.
  *
- * PT Dashboard de benchmark: AppDimens Dynamic 3.1.8 vs Concorrente 1 vs
- *    Concorrente 2 — valores + tempo em
- *    dispositivos reais. Suporta screenshot de scroll completo e exportação de relatório.
+ * PT Dashboard de benchmark: AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 vs
+ *    Chaintech 1.0.7.
+ *    Exibe:
+ *    - Metodologia NOVA: Benchmark A (API Compose, main thread) e
+ *      Benchmark B (Motor, off-main) com estatísticas mediana/min/P90/max,
+ *      rotação de ordem, checksums anti-DCE e dois workloads;
+ *    - Metodologia LEGADA: testes originais T1/T2/T3 (valores de resolução +
+ *      tempo por chamada única) mantidos por continuidade com relatórios anteriores.
+ *    Suporta screenshot de scroll completo e exportação de relatório.
  */
 package com.example.benchlab
 
@@ -36,7 +48,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -86,8 +97,8 @@ private val AccentRed     = Color(0xFFFF5252)
 
 // Library colors
 private val ColorAppDimens    = AccentCyan
-private val ColorConcorrente1 = AccentAmber
-private val ColorConcorrente2 = AccentPurple
+private val ColorSdps         = AccentAmber
+private val ColorChaintech    = AccentPurple
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ACTIVITY
@@ -96,8 +107,8 @@ private val ColorConcorrente2 = AccentPurple
 class BenchlabActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // EN Headless automation: AUTO_START=true triggers the 3 tests immediately.
-        // PT Automação headless: AUTO_START=true dispara os 3 testes imediatamente.
+        // EN Headless automation: AUTO_START=true triggers the benchmark immediately.
+        // PT Automação headless: AUTO_START=true dispara o benchmark imediatamente.
         val autoStart = intent.getBooleanExtra("AUTO_START", false)
         setContent {
             AppDimensProvider {
@@ -124,41 +135,65 @@ private class BenchlabController(
     private val _probeActive = MutableStateFlow(false)
     val probeActive: StateFlow<Boolean> = _probeActive.asStateFlow()
 
-    private var probeDeferred: CompletableDeferred<Concorrente2ProbeResult>? = null
+    private val _legacyProbeActive = MutableStateFlow(false)
+    val legacyProbeActive: StateFlow<Boolean> = _legacyProbeActive.asStateFlow()
+
+    private var probeDeferred: CompletableDeferred<ComposeProbeResult>? = null
+    private var legacyProbeDeferred: CompletableDeferred<Concorrente2ProbeResult>? = null
 
     fun run() {
         scope.launch {
             reset()
             try {
+                Log.i("BENCHLAB", "run(): started (AUTO_START path)")
+                // Benchmark A — Compose API (chunked probe, main thread)
                 _phase.value = BenchPhase.WARMUP
-                val deferred = CompletableDeferred<Concorrente2ProbeResult>()
+                val deferred = CompletableDeferred<ComposeProbeResult>()
                 probeDeferred = deferred
                 _probeActive.value = true
-                val conc2 = withTimeoutOrNull(15_000) { deferred.await() }
-                    ?: throw IllegalStateException("Concorrente 2 probe timed out")
+                val compose = withTimeoutOrNull(120_000) { deferred.await() }
+                    ?: throw IllegalStateException("Compose probe timed out")
 
-                val result = runCompetitorBenchmark(context, conc2) { _phase.value = it }
-                _result.value = result
+                // Benchmark B — Engine (off main thread)
+                val core = runCoreEngineBenchmark(context) { _phase.value = it }
+
+                // Legacy T1/T2/T3 tests (original methodology)
+                val legacyDeferred = CompletableDeferred<Concorrente2ProbeResult>()
+                legacyProbeDeferred = legacyDeferred
+                _legacyProbeActive.value = true
+                val conc2 = withTimeoutOrNull(15_000) { legacyDeferred.await() }
+                    ?: throw IllegalStateException("Legacy probe timed out")
+                val legacy = runLegacyBenchmark(context, conc2) { _phase.value = it }
+
+                _result.value = assembleResult(compose, core, legacy, context)
                 _phase.value = BenchPhase.DONE
             } catch (t: Throwable) {
                 Log.e("BENCHLAB", "benchmark failed", t)
                 _phase.value = BenchPhase.DONE
             } finally {
                 _probeActive.value = false
+                _legacyProbeActive.value = false
                 probeDeferred = null
+                legacyProbeDeferred = null
             }
         }
     }
 
-    fun onConcorrente2Measured(r: Concorrente2ProbeResult) {
+    fun onComposeMeasured(r: ComposeProbeResult) {
         probeDeferred?.complete(r)
+    }
+
+    fun onLegacyMeasured(r: Concorrente2ProbeResult) {
+        legacyProbeDeferred?.complete(r)
     }
 
     private fun reset() {
         _phase.value = BenchPhase.IDLE
         _result.value = null
         _probeActive.value = false
+        _legacyProbeActive.value = false
         probeDeferred = null
+        legacyProbeDeferred = null
     }
 }
 
@@ -178,10 +213,11 @@ private fun BenchlabScreen(autoStart: Boolean = false) {
     val phase by controller.phase.collectAsState()
     val result by controller.result.collectAsState()
     val probeActive by controller.probeActive.collectAsState()
+    val legacyProbeActive by controller.legacyProbeActive.collectAsState()
     val isRunning = phase != BenchPhase.IDLE && phase != BenchPhase.DONE
 
-    // EN Headless automation: run the 3 tests as soon as the screen is composed.
-    // PT Automação headless: executa os 3 testes assim que a tela é composta.
+    // EN Headless automation: run the benchmark as soon as the screen is composed.
+    // PT Automação headless: executa o benchmark assim que a tela é composta.
     LaunchedEffect(Unit) {
         if (autoStart) controller.run()
     }
@@ -189,9 +225,18 @@ private fun BenchlabScreen(autoStart: Boolean = false) {
     var screenshotSaving by remember { mutableStateOf(false) }
     var reportSaving by remember { mutableStateOf(false) }
 
-    Concorrente2Probe(
+    // EN New-methodology 3-way probe (chunked, main thread).
+    // PT Sonda 3-vias da metodologia nova (fatiada, main thread).
+    ComposeCompetitorProbe(
         active = probeActive,
-        onResult = controller::onConcorrente2Measured,
+        onResult = controller::onComposeMeasured,
+    )
+
+    // EN Legacy Chaintech probe (used by the T1/T2/T3 tests).
+    // PT Sonda legada da Chaintech (usada pelos testes T1/T2/T3).
+    Concorrente2Probe(
+        active = legacyProbeActive,
+        onResult = controller::onLegacyMeasured,
     )
 
     MaterialTheme(
@@ -228,7 +273,6 @@ private fun BenchlabScreen(autoStart: Boolean = false) {
                             screenshotSaving = true
                             scope.launch {
                                 try {
-                                    // Capture the graphics layer to bitmap
                                     val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
                                         .copy(Bitmap.Config.ARGB_8888, false)
                                     saveBitmapToGallery(context, bitmap, "benchlab_${System.currentTimeMillis()}.png")
@@ -271,17 +315,42 @@ private fun BenchlabScreen(autoStart: Boolean = false) {
                 // ── Status ──────────────────────────────────────────────────
                 item { StatusPanel(phase = phase, isRunning = isRunning) }
 
-                // ── Dp Resolution Table (sdp — no AR) ──────────────────────
-                item { DpResolutionSection(result = result, withAr = false) }
+                // ── Methodology explanation ────────────────────────────────
+                item { MethodologyCard() }
 
-                // ── Dp Resolution Table (sdpa — with AR) ───────────────────
-                item { DpResolutionSection(result = result, withAr = true) }
+                // ── NEW: Benchmark A — Compose API ─────────────────────────
+                item { ComposeApiSection(result = result) }
 
-                // ── Timing Table ────────────────────────────────────────────
-                item { TimingSection(result = result) }
+                // ── NEW: Benchmark B — Engine ───────────────────────────────
+                item { CoreEngineSection(result = result) }
 
-                // ── Average Banner ──────────────────────────────────────────
-                item { AverageBanner(result = result) }
+                // ── NEW: Ratio banners (medians) ────────────────────────────
+                item { RatioSection(result = result) }
+
+                // ── NEW: Anti-DCE checksums ─────────────────────────────────
+                item { ChecksumSection(result = result) }
+
+                // ── LEGACY: group divider ──────────────────────────────────
+                item {
+                    SectionHeader(
+                        icon = "📜",
+                        label = "Testes legados T1–T3 (metodologia original)",
+                        color = TextSecondary,
+                        caption = "Execuções originais preservadas para continuidade com relatórios anteriores (média de 3 testes, tempo por chamada única)."
+                    )
+                }
+
+                // ── LEGACY: Dp Resolution (sdp — no AR) ───────────────────
+                item { LegacyDpResolutionSection(result = result, withAr = false) }
+
+                // ── LEGACY: Dp Resolution (sdpa — with AR) ─────────────────
+                item { LegacyDpResolutionSection(result = result, withAr = true) }
+
+                // ── LEGACY: Timing table ────────────────────────────────────
+                item { LegacyTimingSection(result = result) }
+
+                // ── LEGACY: Average banner ──────────────────────────────────
+                item { LegacyAverageBanner(result = result) }
 
                 // ── Device Info ─────────────────────────────────────────────
                 item { DeviceInfo(result = result) }
@@ -326,12 +395,11 @@ private fun ActionPanel(
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            "Dynamic 3.1.8 × Concorrente 1 × Concorrente 2 — 3 testes",
+            "Dynamic 3.1.8 × SDPS 3.1.6 × Chaintech 1.0.7 — 2 benchmarks + testes legados",
             color = TextSecondary, fontSize = 11.sp,
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        // ── Run Button ──────────────────────────────────────────────────
         Button(
             onClick = onRun,
             enabled = !isRunning,
@@ -346,14 +414,12 @@ private fun ActionPanel(
         ) {
             Icon(Icons.Default.PlayArrow, null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(6.dp))
-            Text("Rodar 3 testes", fontWeight = FontWeight.Bold)
+            Text("Rodar benchmark completo", fontWeight = FontWeight.Bold)
         }
 
         Spacer(Modifier.height(8.dp))
 
-        // ── Screenshot + Export Row ─────────────────────────────────────
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Screenshot Button
             OutlinedButton(
                 onClick = onScreenshot,
                 enabled = hasResult && !screenshotSaving,
@@ -368,7 +434,6 @@ private fun ActionPanel(
                 Text("📷 Screenshot", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
             }
 
-            // Export Report Button
             OutlinedButton(
                 onClick = onExportReport,
                 enabled = hasResult,
@@ -431,11 +496,293 @@ private fun StatusPanel(phase: BenchPhase, isRunning: Boolean) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// DP RESOLUTION TABLE
+// METHODOLOGY EXPLANATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun DpResolutionSection(result: CompetitorBenchmarkResult?, withAr: Boolean) {
+private fun MethodologyCard() {
+    DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+        Text("Como ler estes resultados", color = AccentGreen, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(6.dp))
+        Text(
+            "Benchmark A — API Compose (main thread): as 3 bibliotecas rodam no mesmo composable, " +
+                "com warm-up idêntico (20.000), 9 amostras de 50.000 iterações, ordem rotacionada e " +
+                "checksum anti-DCE em todos os loops. A medição é fatiada em 5.000 ops/frame para a " +
+                "UI não congelar; o tempo por fatia exclui os gaps entre frames.",
+            color = TextSecondary, fontSize = 11.sp, lineHeight = 16.sp
+        )
+        Spacer(Modifier.height(6.dp))
+        Text(
+            "Mediana = custo steady-state amortizado (ns/op). Interrupções isoladas do scheduler/GC " +
+                "não afetam a mediana — por isso ela é o número principal; min/P90/max mostram a dispersão.",
+            color = TextSecondary, fontSize = 11.sp, lineHeight = 16.sp
+        )
+        Spacer(Modifier.height(6.dp))
+        Text(
+            "Benchmark B — Motor (Dispatchers.Default): Dynamic × SDPS fora da UI. " +
+                "Chaintech não possui API não-Compose → N/A.",
+            color = TextSecondary, fontSize = 11.sp, lineHeight = 16.sp
+        )
+        Spacer(Modifier.height(6.dp))
+        Text(
+            "Workloads: constant 1dp (call site quente) e mixed values (12 dimensões pré-definidas, " +
+                "espelha uma tela real). Testes legados T1–T3: metodologia original, mantida por continuidade.",
+            color = TextSecondary, fontSize = 11.sp, lineHeight = 16.sp
+        )
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BENCHMARK A — COMPOSE API (main thread)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun ComposeApiSection(result: CompetitorBenchmarkResult?) {
+    SectionHeader(
+        icon = "🧩",
+        label = "Benchmark A — API Compose (main thread)",
+        color = AccentCyan,
+        caption = "As 3 bibliotecas no mesmo composable · warm-up 20.000 idêntico · 9 amostras × 50.000 · ordem rotacionada · mediana como número principal"
+    )
+
+    DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+        AnimatedVisibility(visible = result == null) {
+            Text("Medição das 3 bibliotecas no mesmo composable (ordem rotacionada).", color = TextSecondary, fontSize = 12.sp)
+        }
+        AnimatedVisibility(visible = result != null) {
+            result?.let { r ->
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    WorkloadBlock(
+                        title = "Constant 1dp — hot",
+                        caption = "50.000 resoluções repetidas do mesmo valor (teto absoluto)",
+                        items = listOf(
+                            Triple("Dynamic 3.1.8", ColorAppDimens, r.composeApi.dynamic.constant1dp),
+                            Triple("SDPS 3.1.6", ColorSdps, r.composeApi.sdps.constant1dp),
+                            Triple("Chaintech 1.0.7", ColorChaintech, r.composeApi.chaintech.constant1dp),
+                        )
+                    )
+                    WorkloadBlock(
+                        title = "Mixed values (12 dimensões)",
+                        caption = "Valores 1–100dp pré-definidos, espelha uma tela real",
+                        items = listOf(
+                            Triple("Dynamic 3.1.8", ColorAppDimens, r.composeApi.dynamic.mixedValues),
+                            Triple("SDPS 3.1.6", ColorSdps, r.composeApi.sdps.mixedValues),
+                            Triple("Chaintech 1.0.7", ColorChaintech, r.composeApi.chaintech.mixedValues),
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BENCHMARK B — ENGINE (off main thread)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun CoreEngineSection(result: CompetitorBenchmarkResult?) {
+    SectionHeader(
+        icon = "⚙️",
+        label = "Benchmark B — Motor (Dispatchers.Default)",
+        color = AccentAmber,
+        caption = "Dynamic × SDPS fora da composição · mesma metodologia (9 × 50.000, rotação, anti-DCE) · Chaintech: N/A — API exige Composition"
+    )
+
+    DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+        AnimatedVisibility(visible = result == null) {
+            Text("Dynamic × SDPS fora da composição. Chaintech: N/A (exige Composition).", color = TextSecondary, fontSize = 12.sp)
+        }
+        AnimatedVisibility(visible = result != null) {
+            result?.let { r ->
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    WorkloadBlock(
+                        title = "Constant 1dp — hot",
+                        caption = "50.000 resoluções repetidas do mesmo valor (teto absoluto)",
+                        items = listOf(
+                            Triple("Dynamic 3.1.8", ColorAppDimens, r.coreEngine.dynamic.constant1dp),
+                            Triple("SDPS 3.1.6", ColorSdps, r.coreEngine.sdps.constant1dp),
+                        )
+                    )
+                    WorkloadBlock(
+                        title = "Mixed values (12 dimensões)",
+                        caption = "Valores 1–100dp pré-definidos, espelha uma tela real",
+                        items = listOf(
+                            Triple("Dynamic 3.1.8", ColorAppDimens, r.coreEngine.dynamic.mixedValues),
+                            Triple("SDPS 3.1.6", ColorSdps, r.coreEngine.sdps.mixedValues),
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WORKLOAD BLOCKS (stats cards)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun WorkloadBlock(
+    title: String,
+    caption: String,
+    items: List<Triple<String, Color, TimingStats>>,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(SurfaceBorder.copy(alpha = 0.15f))
+            .border(1.dp, SurfaceBorder, RoundedCornerShape(12.dp))
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+    ) {
+        Text(title, color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        Text(caption, color = TextSecondary, fontSize = 9.sp)
+        Spacer(Modifier.height(8.dp))
+        items.forEachIndexed { index, (name, color, stats) ->
+            if (index > 0) {
+                HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
+                Spacer(Modifier.height(6.dp))
+            }
+            LibStatsCard(name = name, color = color, stats = stats)
+        }
+    }
+}
+
+@Composable
+private fun LibStatsCard(name: String, color: Color, stats: TimingStats) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(color.copy(alpha = 0.05f))
+            .border(1.dp, color.copy(alpha = 0.18f), RoundedCornerShape(10.dp))
+            .padding(horizontal = 10.dp, vertical = 8.dp)
+    ) {
+        Text(name, color = color, fontSize = 11.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+        Spacer(Modifier.height(6.dp))
+        Row(modifier = Modifier.fillMaxWidth()) {
+            StatCell(label = "Mediana", value = stats.medianNs.formatNs(), color = TextPrimary, isHighlight = true, modifier = Modifier.weight(1f))
+            StatCell(label = "Min", value = stats.minNs.formatNs(), color = TextSecondary, modifier = Modifier.weight(1f))
+            StatCell(label = "P90", value = stats.p90Ns.formatNs(), color = TextSecondary, modifier = Modifier.weight(1f))
+            StatCell(label = "Max", value = stats.maxNs.formatNs(), color = TextSecondary, modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+private fun StatCell(label: String, value: String, color: Color, modifier: Modifier, isHighlight: Boolean = false) {
+    Column(modifier = modifier) {
+        Text(label, color = TextSecondary, fontSize = 8.sp, fontFamily = FontFamily.Monospace)
+        Text(value, color = if (isHighlight) AccentGreen else color, fontSize = 11.sp,
+            fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium,
+            fontFamily = FontFamily.Monospace)
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RATIO BANNERS (based on new-methodology medians)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun RatioSection(result: CompetitorBenchmarkResult?) {
+    SectionHeader(
+        icon = "⚡",
+        label = "Comparativo (mediana dos novos benchmarks)",
+        color = AccentGreen,
+        caption = "Razões calculadas sobre as medianas — não sobre médias"
+    )
+
+    result?.let { r ->
+        DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+            Text("Benchmark A — API Compose", color = AccentCyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(4.dp))
+            DynamicRatioLine(r.composeApi.dynamic.constant1dp.medianNs, r.composeApi.sdps.constant1dp.medianNs, "SDPS 3.1.6", "Compose · constant 1dp")
+            Spacer(Modifier.height(4.dp))
+            DynamicRatioLine(r.composeApi.dynamic.constant1dp.medianNs, r.composeApi.chaintech.constant1dp.medianNs, "Chaintech 1.0.7", "Compose · constant 1dp")
+            Spacer(Modifier.height(4.dp))
+            DynamicRatioLine(r.composeApi.dynamic.mixedValues.medianNs, r.composeApi.sdps.mixedValues.medianNs, "SDPS 3.1.6", "Compose · mixed values")
+            Spacer(Modifier.height(4.dp))
+            DynamicRatioLine(r.composeApi.dynamic.mixedValues.medianNs, r.composeApi.chaintech.mixedValues.medianNs, "Chaintech 1.0.7", "Compose · mixed values")
+
+            Spacer(Modifier.height(8.dp))
+
+            Text("Benchmark B — Motor", color = AccentAmber, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(4.dp))
+            DynamicRatioLine(r.coreEngine.dynamic.constant1dp.medianNs, r.coreEngine.sdps.constant1dp.medianNs, "SDPS 3.1.6", "Motor · constant 1dp")
+            Spacer(Modifier.height(4.dp))
+            DynamicRatioLine(r.coreEngine.dynamic.mixedValues.medianNs, r.coreEngine.sdps.mixedValues.medianNs, "SDPS 3.1.6", "Motor · mixed values")
+        }
+    }
+}
+
+@Composable
+private fun DynamicRatioLine(dynamicMedian: Double, otherMedian: Double, otherName: String, context: String) {
+    if (dynamicMedian <= 0.0 || otherMedian <= 0.0) return
+    val faster = dynamicMedian < otherMedian
+    val ratio = if (faster) otherMedian / dynamicMedian else dynamicMedian / otherMedian
+    val text = if (faster) {
+        "Dynamic é ×%.1f mais rápido que %s (%s)".format(ratio, otherName, context)
+    } else {
+        "Dynamic é ×%.1f mais lento que %s (%s)".format(ratio, otherName, context)
+    }
+    RatioBanner(
+        emoji = if (faster) "⚡" else "🐢",
+        text = text,
+        color = if (faster) AccentGreen else AccentRed
+    )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ANTI-DCE CHECKSUMS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun ChecksumSection(result: CompetitorBenchmarkResult?) {
+    SectionHeader(
+        icon = "🔢",
+        label = "Anti-DCE checksums",
+        color = AccentGreen,
+        caption = "Soma acumulada das resoluções nos loops cronometrados — prova de que as chamadas foram executadas e consumidas. Dynamic/SDPS somam px; Chaintech soma dp (.value)."
+    )
+
+    DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+        AnimatedVisibility(visible = result == null) {
+            Text("Checksum dos acumuladores (prova que as chamadas foram executadas).", color = TextSecondary, fontSize = 12.sp)
+        }
+        AnimatedVisibility(visible = result != null) {
+            result?.let { r ->
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    ChecksumRow("Compose · Dynamic 3.1.8", r.composeApi.dynamic, ColorAppDimens)
+                    ChecksumRow("Compose · SDPS 3.1.6", r.composeApi.sdps, ColorSdps)
+                    ChecksumRow("Compose · Chaintech 1.0.7", r.composeApi.chaintech, ColorChaintech)
+                    HorizontalDivider(color = SurfaceBorder)
+                    ChecksumRow("Motor · Dynamic 3.1.8", r.coreEngine.dynamic, ColorAppDimens)
+                    ChecksumRow("Motor · SDPS 3.1.6", r.coreEngine.sdps, ColorSdps)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChecksumRow(label: String, lib: LibraryTiming, color: Color) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, color = color, fontSize = 10.sp, fontWeight = FontWeight.Medium,
+            fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.45f))
+        Text("1dp: %.1f".format(lib.constantChecksum), color = TextSecondary, fontSize = 10.sp,
+            fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.28f))
+        Text("mix: %.1f".format(lib.mixedChecksum), color = TextSecondary, fontSize = 10.sp,
+            fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.27f))
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LEGACY: DP RESOLUTION TABLE (T1/T2/T3)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun LegacyDpResolutionSection(result: CompetitorBenchmarkResult?, withAr: Boolean) {
     val label = if (withAr) "Valores de resolução sdpa (com AR → px)" else "Valores de resolução sdp (sem AR → px)"
     val color = if (withAr) AccentAmber else AccentGreen
     SectionHeader(icon = if (withAr) "📐AR" else "📐", label = label, color = color)
@@ -448,46 +795,44 @@ private fun DpResolutionSection(result: CompetitorBenchmarkResult?, withAr: Bool
             result?.let { r ->
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     if (!withAr) {
-                        // ── sdp: per-library blocks ─────────────────────────
                         LibBlock(
                             libName = "Dynamic 3.1.8",
                             libColor = ColorAppDimens,
-                            dp1T1 = r.test1.dp1AppDimens, dp1T2 = r.test2.dp1AppDimens, dp1T3 = r.test3.dp1AppDimens,
-                            dp10T1 = r.test1.dp10AppDimens, dp10T2 = r.test2.dp10AppDimens, dp10T3 = r.test3.dp10AppDimens,
-                            dp100T1 = r.test1.dp100AppDimens, dp100T2 = r.test2.dp100AppDimens, dp100T3 = r.test3.dp100AppDimens,
+                            dp1T1 = r.legacy.test1.dp1AppDimens, dp1T2 = r.legacy.test2.dp1AppDimens, dp1T3 = r.legacy.test3.dp1AppDimens,
+                            dp10T1 = r.legacy.test1.dp10AppDimens, dp10T2 = r.legacy.test2.dp10AppDimens, dp10T3 = r.legacy.test3.dp10AppDimens,
+                            dp100T1 = r.legacy.test1.dp100AppDimens, dp100T2 = r.legacy.test2.dp100AppDimens, dp100T3 = r.legacy.test3.dp100AppDimens,
                         )
                         HorizontalDivider(color = SurfaceBorder)
                         LibBlock(
-                            libName = "Concorrente 1",
-                            libColor = ColorConcorrente1,
-                            dp1T1 = r.test1.dp1Concorrente1, dp1T2 = r.test2.dp1Concorrente1, dp1T3 = r.test3.dp1Concorrente1,
-                            dp10T1 = r.test1.dp10Concorrente1, dp10T2 = r.test2.dp10Concorrente1, dp10T3 = r.test3.dp10Concorrente1,
-                            dp100T1 = r.test1.dp100Concorrente1, dp100T2 = r.test2.dp100Concorrente1, dp100T3 = r.test3.dp100Concorrente1,
+                            libName = "SDPS 3.1.6",
+                            libColor = ColorSdps,
+                            dp1T1 = r.legacy.test1.dp1Concorrente1, dp1T2 = r.legacy.test2.dp1Concorrente1, dp1T3 = r.legacy.test3.dp1Concorrente1,
+                            dp10T1 = r.legacy.test1.dp10Concorrente1, dp10T2 = r.legacy.test2.dp10Concorrente1, dp10T3 = r.legacy.test3.dp10Concorrente1,
+                            dp100T1 = r.legacy.test1.dp100Concorrente1, dp100T2 = r.legacy.test2.dp100Concorrente1, dp100T3 = r.legacy.test3.dp100Concorrente1,
                         )
                         HorizontalDivider(color = SurfaceBorder)
                         LibBlock(
-                            libName = "Concorrente 2",
-                            libColor = ColorConcorrente2,
-                            dp1T1 = r.test1.dp1Concorrente2, dp1T2 = r.test2.dp1Concorrente2, dp1T3 = r.test3.dp1Concorrente2,
-                            dp10T1 = r.test1.dp10Concorrente2, dp10T2 = r.test2.dp10Concorrente2, dp10T3 = r.test3.dp10Concorrente2,
-                            dp100T1 = r.test1.dp100Concorrente2, dp100T2 = r.test2.dp100Concorrente2, dp100T3 = r.test3.dp100Concorrente2,
+                            libName = "Chaintech 1.0.7",
+                            libColor = ColorChaintech,
+                            dp1T1 = r.legacy.test1.dp1Concorrente2, dp1T2 = r.legacy.test2.dp1Concorrente2, dp1T3 = r.legacy.test3.dp1Concorrente2,
+                            dp10T1 = r.legacy.test1.dp10Concorrente2, dp10T2 = r.legacy.test2.dp10Concorrente2, dp10T3 = r.legacy.test3.dp10Concorrente2,
+                            dp100T1 = r.legacy.test1.dp100Concorrente2, dp100T2 = r.legacy.test2.dp100Concorrente2, dp100T3 = r.legacy.test3.dp100Concorrente2,
                         )
                     } else {
-                        // ── sdpa: per-library blocks ────────────────────────
                         LibBlock(
                             libName = "Dynamic 3.1.8 (AR)",
                             libColor = ColorAppDimens,
-                            dp1T1 = r.test1.dp1AppDimensAr, dp1T2 = r.test2.dp1AppDimensAr, dp1T3 = r.test3.dp1AppDimensAr,
-                            dp10T1 = r.test1.dp10AppDimensAr, dp10T2 = r.test2.dp10AppDimensAr, dp10T3 = r.test3.dp10AppDimensAr,
-                            dp100T1 = r.test1.dp100AppDimensAr, dp100T2 = r.test2.dp100AppDimensAr, dp100T3 = r.test3.dp100AppDimensAr,
+                            dp1T1 = r.legacy.test1.dp1AppDimensAr, dp1T2 = r.legacy.test2.dp1AppDimensAr, dp1T3 = r.legacy.test3.dp1AppDimensAr,
+                            dp10T1 = r.legacy.test1.dp10AppDimensAr, dp10T2 = r.legacy.test2.dp10AppDimensAr, dp10T3 = r.legacy.test3.dp10AppDimensAr,
+                            dp100T1 = r.legacy.test1.dp100AppDimensAr, dp100T2 = r.legacy.test2.dp100AppDimensAr, dp100T3 = r.legacy.test3.dp100AppDimensAr,
                         )
                         HorizontalDivider(color = SurfaceBorder)
                         LibBlock(
-                            libName = "Concorrente 1 (AR)",
-                            libColor = ColorConcorrente1,
-                            dp1T1 = r.test1.dp1Concorrente1Ar, dp1T2 = r.test2.dp1Concorrente1Ar, dp1T3 = r.test3.dp1Concorrente1Ar,
-                            dp10T1 = r.test1.dp10Concorrente1Ar, dp10T2 = r.test2.dp10Concorrente1Ar, dp10T3 = r.test3.dp10Concorrente1Ar,
-                            dp100T1 = r.test1.dp100Concorrente1Ar, dp100T2 = r.test2.dp100Concorrente1Ar, dp100T3 = r.test3.dp100Concorrente1Ar,
+                            libName = "SDPS 3.1.6 (AR)",
+                            libColor = ColorSdps,
+                            dp1T1 = r.legacy.test1.dp1Concorrente1Ar, dp1T2 = r.legacy.test2.dp1Concorrente1Ar, dp1T3 = r.legacy.test3.dp1Concorrente1Ar,
+                            dp10T1 = r.legacy.test1.dp10Concorrente1Ar, dp10T2 = r.legacy.test2.dp10Concorrente1Ar, dp10T3 = r.legacy.test3.dp10Concorrente1Ar,
+                            dp100T1 = r.legacy.test1.dp100Concorrente1Ar, dp100T2 = r.legacy.test2.dp100Concorrente1Ar, dp100T3 = r.legacy.test3.dp100Concorrente1Ar,
                         )
                     }
                 }
@@ -561,12 +906,12 @@ private fun DpRow3(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// TIMING TABLE
+// LEGACY: TIMING TABLE (T1/T2/T3 + Média)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun TimingSection(result: CompetitorBenchmarkResult?) {
-    SectionHeader(icon = "⏱️", label = "Tempo por chamada de 1dp (sdp + sdpa/AR)", color = AccentAmber)
+private fun LegacyTimingSection(result: CompetitorBenchmarkResult?) {
+    SectionHeader(icon = "⏱️", label = "Tempo por chamada de 1dp (legado — sdp + sdpa/AR)", color = AccentAmber)
 
     DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
         AnimatedVisibility(visible = result == null) {
@@ -575,31 +920,29 @@ private fun TimingSection(result: CompetitorBenchmarkResult?) {
         AnimatedVisibility(visible = result != null) {
             result?.let { r ->
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // ── sdp (no AR) ──────────────────────────────────────
                     Text("sdp (sem AR)", color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                    TableHeader(columns = listOf("Teste" to 0.15f, "Dynamic" to 0.28f, "Concorrente 1" to 0.28f, "Concorrente 2" to 0.29f))
+                    TableHeader(columns = listOf("Teste" to 0.15f, "Dynamic" to 0.28f, "SDPS" to 0.28f, "Chaintech" to 0.29f))
                     HorizontalDivider(color = SurfaceBorder)
-                    TimingRow("T1", r.timeTest1.appDimensNs, r.timeTest1.concorrente1Ns, r.timeTest1.concorrente2Ns, AccentCyan.copy(alpha = 0.04f))
+                    LegacyTimingRow("T1", r.legacy.timeTest1.appDimensNs, r.legacy.timeTest1.concorrente1Ns, r.legacy.timeTest1.concorrente2Ns, AccentCyan.copy(alpha = 0.04f))
                     HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
-                    TimingRow("T2", r.timeTest2.appDimensNs, r.timeTest2.concorrente1Ns, r.timeTest2.concorrente2Ns, Color.Transparent)
+                    LegacyTimingRow("T2", r.legacy.timeTest2.appDimensNs, r.legacy.timeTest2.concorrente1Ns, r.legacy.timeTest2.concorrente2Ns, Color.Transparent)
                     HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
-                    TimingRow("T3", r.timeTest3.appDimensNs, r.timeTest3.concorrente1Ns, r.timeTest3.concorrente2Ns, Color.Transparent)
+                    LegacyTimingRow("T3", r.legacy.timeTest3.appDimensNs, r.legacy.timeTest3.concorrente1Ns, r.legacy.timeTest3.concorrente2Ns, Color.Transparent)
                     HorizontalDivider(color = SurfaceBorder)
-                    TimingRow("Média", r.avgAppDimensNs, r.avgConcorrente1Ns, r.avgConcorrente2Ns, Color.Transparent, isHighlight = true)
+                    LegacyTimingRow("Média", r.legacy.avgAppDimensNs, r.legacy.avgConcorrente1Ns, r.legacy.avgConcorrente2Ns, Color.Transparent, isHighlight = true)
 
                     Spacer(Modifier.height(8.dp))
 
-                    // ── sdpa (with AR) ────────────────────────────────────
-                    Text("sdpa (com AR — Dynamic × Concorrente 1)", color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                    TableHeader(columns = listOf("Teste" to 0.15f, "Dynamic" to 0.425f, "Concorrente 1" to 0.425f))
+                    Text("sdpa (com AR — Dynamic × SDPS)", color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    TableHeader(columns = listOf("Teste" to 0.15f, "Dynamic" to 0.425f, "SDPS" to 0.425f))
                     HorizontalDivider(color = SurfaceBorder)
-                    TimingRow2("T1", r.timeTest1.appDimensArNs, r.timeTest1.concorrente1ArNs, AccentAmber.copy(alpha = 0.04f))
+                    LegacyTimingRow2("T1", r.legacy.timeTest1.appDimensArNs, r.legacy.timeTest1.concorrente1ArNs, AccentAmber.copy(alpha = 0.04f))
                     HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
-                    TimingRow2("T2", r.timeTest2.appDimensArNs, r.timeTest2.concorrente1ArNs, Color.Transparent)
+                    LegacyTimingRow2("T2", r.legacy.timeTest2.appDimensArNs, r.legacy.timeTest2.concorrente1ArNs, Color.Transparent)
                     HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
-                    TimingRow2("T3", r.timeTest3.appDimensArNs, r.timeTest3.concorrente1ArNs, Color.Transparent)
+                    LegacyTimingRow2("T3", r.legacy.timeTest3.appDimensArNs, r.legacy.timeTest3.concorrente1ArNs, Color.Transparent)
                     HorizontalDivider(color = SurfaceBorder)
-                    TimingRow2("Média", r.avgAppDimensArNs, r.avgConcorrente1ArNs, Color.Transparent, isHighlight = true)
+                    LegacyTimingRow2("Média", r.legacy.avgAppDimensArNs, r.legacy.avgConcorrente1ArNs, Color.Transparent, isHighlight = true)
                 }
             }
         }
@@ -607,7 +950,7 @@ private fun TimingSection(result: CompetitorBenchmarkResult?) {
 }
 
 @Composable
-private fun TimingRow(
+private fun LegacyTimingRow(
     label: String,
     appNs: Long, conc1Ns: Long, conc2Ns: Long,
     rowColor: Color,
@@ -627,17 +970,17 @@ private fun TimingRow(
         Text(appNs.formatNs(), color = ColorAppDimens, fontSize = 11.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium,
             fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.28f))
-        Text(conc1Ns.formatNs(), color = ColorConcorrente1, fontSize = 11.sp,
+        Text(conc1Ns.formatNs(), color = ColorSdps, fontSize = 11.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium,
             fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.28f))
-        Text(conc2Ns.formatNs(), color = ColorConcorrente2, fontSize = 11.sp,
+        Text(conc2Ns.formatNs(), color = ColorChaintech, fontSize = 11.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium,
             fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.29f))
     }
 }
 
 @Composable
-private fun TimingRow2(
+private fun LegacyTimingRow2(
     label: String,
     appNs: Long, conc1Ns: Long,
     rowColor: Color,
@@ -657,57 +1000,58 @@ private fun TimingRow2(
         Text(appNs.formatNs(), color = ColorAppDimens, fontSize = 11.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium,
             fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.425f))
-        Text(conc1Ns.formatNs(), color = ColorConcorrente1, fontSize = 11.sp,
+        Text(conc1Ns.formatNs(), color = ColorSdps, fontSize = 11.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium,
             fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.425f))
     }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// AVERAGE BANNER
+// LEGACY: AVERAGE BANNER (based on legacy averages)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun AverageBanner(result: CompetitorBenchmarkResult?) {
+private fun LegacyAverageBanner(result: CompetitorBenchmarkResult?) {
     result?.let { r ->
         DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
-            // ── sdp (no AR) ──────────────────────────────────────────────
-            Text("sdp (sem AR)", color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Text("Comparativo legado (média T1–T3)", color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(4.dp))
 
-            val ratioVsConcorrente1 = if (r.avgAppDimensNs > 0) r.avgConcorrente1Ns.toFloat() / r.avgAppDimensNs.toFloat() else 1f
-            val fasterVsConcorrente1 = r.avgAppDimensNs < r.avgConcorrente1Ns
+            Text("sdp (sem AR)", color = TextSecondary, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(4.dp))
+
+            val ratioVsSdps = if (r.legacy.avgAppDimensNs > 0) r.legacy.avgConcorrente1Ns.toFloat() / r.legacy.avgAppDimensNs.toFloat() else 1f
+            val fasterVsSdps = r.legacy.avgAppDimensNs < r.legacy.avgConcorrente1Ns
             RatioBanner(
-                emoji = if (fasterVsConcorrente1) "⚡" else "🐢",
-                text = if (fasterVsConcorrente1) "Dynamic é ×%.1f mais rápido que Concorrente 1".format(ratioVsConcorrente1)
-                       else "Dynamic é ×%.1f mais lento que Concorrente 1".format(1f / ratioVsConcorrente1),
-                color = if (fasterVsConcorrente1) AccentGreen else AccentRed
+                emoji = if (fasterVsSdps) "⚡" else "🐢",
+                text = if (fasterVsSdps) "Dynamic é ×%.1f mais rápido que SDPS".format(ratioVsSdps)
+                       else "Dynamic é ×%.1f mais lento que SDPS".format(1f / ratioVsSdps),
+                color = if (fasterVsSdps) AccentGreen else AccentRed
             )
 
             Spacer(Modifier.height(4.dp))
 
-            val ratioVsConcorrente2 = if (r.avgAppDimensNs > 0) r.avgConcorrente2Ns.toFloat() / r.avgAppDimensNs.toFloat() else 1f
-            val fasterVsConcorrente2 = r.avgAppDimensNs < r.avgConcorrente2Ns
+            val ratioVsChaintech = if (r.legacy.avgAppDimensNs > 0) r.legacy.avgConcorrente2Ns.toFloat() / r.legacy.avgAppDimensNs.toFloat() else 1f
+            val fasterVsChaintech = r.legacy.avgAppDimensNs < r.legacy.avgConcorrente2Ns
             RatioBanner(
-                emoji = if (fasterVsConcorrente2) "🚀" else "🐢",
-                text = if (fasterVsConcorrente2) "Dynamic é ×%.1f mais rápido que Concorrente 2".format(ratioVsConcorrente2)
-                       else "Dynamic é ×%.1f mais lento que Concorrente 2".format(1f / ratioVsConcorrente2),
-                color = if (fasterVsConcorrente2) AccentGreen else AccentRed
+                emoji = if (fasterVsChaintech) "🚀" else "🐢",
+                text = if (fasterVsChaintech) "Dynamic é ×%.1f mais rápido que Chaintech".format(ratioVsChaintech)
+                       else "Dynamic é ×%.1f mais lento que Chaintech".format(1f / ratioVsChaintech),
+                color = if (fasterVsChaintech) AccentGreen else AccentRed
             )
 
             Spacer(Modifier.height(8.dp))
 
-            // ── sdpa (with AR) ───────────────────────────────────────────
-            Text("sdpa (com AR)", color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Text("sdpa (com AR)", color = TextSecondary, fontSize = 10.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(4.dp))
 
-            val ratioArVsConcorrente1 = if (r.avgAppDimensArNs > 0) r.avgConcorrente1ArNs.toFloat() / r.avgAppDimensArNs.toFloat() else 1f
-            val fasterArVsConcorrente1 = r.avgAppDimensArNs < r.avgConcorrente1ArNs
+            val ratioArVsSdps = if (r.legacy.avgAppDimensArNs > 0) r.legacy.avgConcorrente1ArNs.toFloat() / r.legacy.avgAppDimensArNs.toFloat() else 1f
+            val fasterArVsSdps = r.legacy.avgAppDimensArNs < r.legacy.avgConcorrente1ArNs
             RatioBanner(
-                emoji = if (fasterArVsConcorrente1) "⚡" else "🐢",
-                text = if (fasterArVsConcorrente1) "Dynamic é ×%.1f mais rápido que Concorrente 1".format(ratioArVsConcorrente1)
-                       else "Dynamic é ×%.1f mais lento que Concorrente 1".format(1f / ratioArVsConcorrente1),
-                color = if (fasterArVsConcorrente1) AccentGreen else AccentRed
+                emoji = if (fasterArVsSdps) "⚡" else "🐢",
+                text = if (fasterArVsSdps) "Dynamic é ×%.1f mais rápido que SDPS (AR)".format(ratioArVsSdps)
+                       else "Dynamic é ×%.1f mais lento que SDPS (AR)".format(1f / ratioArVsSdps),
+                color = if (fasterArVsSdps) AccentGreen else AccentRed
             )
         }
     }
@@ -734,14 +1078,17 @@ private fun DeviceInfo(result: CompetitorBenchmarkResult?) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun SectionHeader(icon: String, label: String, color: Color) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)
-    ) {
-        Text(icon, fontSize = 16.sp)
-        Spacer(Modifier.width(8.dp))
-        Text(label, color = color, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+private fun SectionHeader(icon: String, label: String, color: Color, caption: String? = null) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(icon, fontSize = 16.sp)
+            Spacer(Modifier.width(8.dp))
+            Text(label, color = color, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+        }
+        if (caption != null) {
+            Spacer(Modifier.height(3.dp))
+            Text(caption, color = TextSecondary, fontSize = 10.sp, lineHeight = 14.sp)
+        }
     }
 }
 
@@ -803,8 +1150,6 @@ private fun RatioBanner(emoji: String, text: String, color: Color) {
 // SCREENSHOT + REPORT EXPORT
 // ═══════════════════════════════════════════════════════════════════════════════
 
-
-
 private suspend fun saveBitmapToGallery(
     context: android.content.Context,
     bitmap: Bitmap,
@@ -838,60 +1183,123 @@ private suspend fun saveBitmapToGallery(
 }
 
 private fun generateReport(r: CompetitorBenchmarkResult): String {
+    data class RatioLine(val label: String, val dynamicNs: Double, val otherNs: Double, val otherName: String)
+
     val sb = StringBuilder()
     sb.appendLine("═══════════════════════════════════════════════════════")
     sb.appendLine("  BenchLab — Relatório de Benchmark")
-    sb.appendLine("  Dynamic 3.1.8 × Concorrente 1 × Concorrente 2")
-    sb.appendLine("  3 testes independentes")
+    sb.appendLine("  Dynamic 3.1.8 × SDPS 3.1.6 × Chaintech 1.0.7")
+    sb.appendLine("  Benchmark A (Compose API) + Benchmark B (Motor) + Testes legados T1-T3")
     sb.appendLine("═══════════════════════════════════════════════════════")
     sb.appendLine()
     sb.appendLine("Dispositivo: sw=${r.windowSw}dp w=${r.windowW}dp h=${r.windowH}dp density=${"%.2f".format(r.density)}")
     sb.appendLine()
-
-    // Resolution values
-    sb.appendLine("── Valores de resolução (sdp) ──")
+    sb.appendLine("Metodologia (novos benchmarks):")
+    sb.appendLine("  Benchmark A — API Compose (main thread): as 3 bibliotecas no mesmo composable")
+    sb.appendLine("  Benchmark B — Motor (Dispatchers.Default): Dynamic x SDPS apenas (Chaintech N/A)")
+    sb.appendLine("  Warm-up idêntico: ${"%,d".format(BENCH_WARMUP_COUNT).replace(',', '.')} resoluções de 1dp por biblioteca")
+    sb.appendLine("  Amostras: $BENCH_SAMPLE_COUNT por workload")
+    sb.appendLine("  Iterações/amostra: ${"%,d".format(BENCH_MEASURE_COUNT).replace(',', '.')}")
+    sb.appendLine("  Fatiamento: ${"%,d".format(BENCH_CHUNK_OPS).replace(',', '.')} ops/frame (UI responsiva; tempo por fatia exclui gaps)")
+    sb.appendLine("  Anti-DCE: acumulador de checksum em todos os loops cronometrados")
+    sb.appendLine("  Rotação de ordem: Dynamic → SDPS → Chaintech / SDPS → Chaintech → Dynamic / Chaintech → Dynamic → SDPS")
+    sb.appendLine("  Número principal: mediana (ns/op steady-state amortizado); min/P90/max = dispersão")
+    sb.appendLine("  Workloads: constant 1dp (call site quente) + mixed values (12 dimensões pré-definidas)")
+    sb.appendLine("  Testes legados T1-T3: metodologia original (média de 3 execuções), por continuidade")
     sb.appendLine()
-    for (lib in listOf("Dynamic" to "Dynamic 3.1.8", "Concorrente 1" to "Concorrente 1", "Concorrente 2" to "Concorrente 2")) {
-        sb.appendLine("  ${lib.second}:")
-        for ((dpLabel, dp) in listOf("1dp" to 1, "10dp" to 10, "100dp" to 100)) {
-            fun valAt(t: DpResolution3): Float = when (dp) {
-                1 -> if (lib.first == "Dynamic") t.dp1AppDimens else if (lib.first == "Concorrente 1") t.dp1Concorrente1 else t.dp1Concorrente2
-                10 -> if (lib.first == "Dynamic") t.dp10AppDimens else if (lib.first == "Concorrente 1") t.dp10Concorrente1 else t.dp10Concorrente2
-                else -> if (lib.first == "Dynamic") t.dp100AppDimens else if (lib.first == "Concorrente 1") t.dp100Concorrente1 else t.dp100Concorrente2
-            }
-            val t1 = valAt(r.test1)
-            val t2 = valAt(r.test2)
-            val t3 = valAt(r.test3)
-            sb.appendLine("    $dpLabel: T1=%.4f px  T2=%.4f px  T3=%.4f px".format(t1, t2, t3))
-        }
+
+    sb.appendLine("── Benchmark A — API Compose (main thread) ──")
+    sb.appendLine()
+    for ((name, lib) in listOf("Dynamic 3.1.8" to r.composeApi.dynamic, "SDPS 3.1.6" to r.composeApi.sdps, "Chaintech 1.0.7" to r.composeApi.chaintech)) {
+        sb.appendLine("  $name:")
+        sb.appendLine("    Constant 1dp: mediana=${lib.constant1dp.medianNs.formatNs()}  min=${lib.constant1dp.minNs.formatNs()}  P90=${lib.constant1dp.p90Ns.formatNs()}  max=${lib.constant1dp.maxNs.formatNs()}")
+        sb.appendLine("    Mixed values: mediana=${lib.mixedValues.medianNs.formatNs()}  min=${lib.mixedValues.minNs.formatNs()}  P90=${lib.mixedValues.p90Ns.formatNs()}  max=${lib.mixedValues.maxNs.formatNs()}")
         sb.appendLine()
     }
 
-    // Timing
-    sb.appendLine("── Tempo por chamada de 1dp (sdp) ──")
-    sb.appendLine("  Dynamic:        T1=${r.timeTest1.appDimensNs.formatNs()}  T2=${r.timeTest2.appDimensNs.formatNs()}  T3=${r.timeTest3.appDimensNs.formatNs()}  Média=${r.avgAppDimensNs.formatNs()}")
-    sb.appendLine("  Concorrente 1:  T1=${r.timeTest1.concorrente1Ns.formatNs()}  T2=${r.timeTest2.concorrente1Ns.formatNs()}  T3=${r.timeTest3.concorrente1Ns.formatNs()}  Média=${r.avgConcorrente1Ns.formatNs()}")
-    sb.appendLine("  Concorrente 2:  T1=${r.timeTest1.concorrente2Ns.formatNs()}  T2=${r.timeTest2.concorrente2Ns.formatNs()}  T3=${r.timeTest3.concorrente2Ns.formatNs()}  Média=${r.avgConcorrente2Ns.formatNs()}")
+    sb.appendLine("── Benchmark B — Motor (Dispatchers.Default) ──")
+    sb.appendLine("  Chaintech: N/A — API exige Composition")
+    sb.appendLine()
+    for ((name, lib) in listOf("Dynamic 3.1.8" to r.coreEngine.dynamic, "SDPS 3.1.6" to r.coreEngine.sdps)) {
+        sb.appendLine("  $name:")
+        sb.appendLine("    Constant 1dp: mediana=${lib.constant1dp.medianNs.formatNs()}  min=${lib.constant1dp.minNs.formatNs()}  P90=${lib.constant1dp.p90Ns.formatNs()}  max=${lib.constant1dp.maxNs.formatNs()}")
+        sb.appendLine("    Mixed values: mediana=${lib.mixedValues.medianNs.formatNs()}  min=${lib.mixedValues.minNs.formatNs()}  P90=${lib.mixedValues.p90Ns.formatNs()}  max=${lib.mixedValues.maxNs.formatNs()}")
+        sb.appendLine()
+    }
+
+    sb.appendLine("── Anti-DCE checksums ──")
+    sb.appendLine("  Compose:  Dynamic=${"%.1f".format(r.composeApi.dynamic.constantChecksum)}/${"%.1f".format(r.composeApi.dynamic.mixedChecksum)}  SDPS=${"%.1f".format(r.composeApi.sdps.constantChecksum)}/${"%.1f".format(r.composeApi.sdps.mixedChecksum)}  Chaintech=${"%.1f".format(r.composeApi.chaintech.constantChecksum)}/${"%.1f".format(r.composeApi.chaintech.mixedChecksum)}")
+    sb.appendLine("  Motor:    Dynamic=${"%.1f".format(r.coreEngine.dynamic.constantChecksum)}/${"%.1f".format(r.coreEngine.dynamic.mixedChecksum)}  SDPS=${"%.1f".format(r.coreEngine.sdps.constantChecksum)}/${"%.1f".format(r.coreEngine.sdps.mixedChecksum)}")
     sb.appendLine()
 
-    sb.appendLine("── Tempo por chamada de 1dp (sdpa/AR) ──")
-    sb.appendLine("  Dynamic:        T1=${r.timeTest1.appDimensArNs.formatNs()}  T2=${r.timeTest2.appDimensArNs.formatNs()}  T3=${r.timeTest3.appDimensArNs.formatNs()}  Média=${r.avgAppDimensArNs.formatNs()}")
-    sb.appendLine("  Concorrente 1:  T1=${r.timeTest1.concorrente1ArNs.formatNs()}  T2=${r.timeTest2.concorrente1ArNs.formatNs()}  T3=${r.timeTest3.concorrente1ArNs.formatNs()}  Média=${r.avgConcorrente1ArNs.formatNs()}")
-    sb.appendLine()
-
-    // Ratios
-    sb.appendLine("── Comparativo (sdp) ──")
-    if (r.avgAppDimensNs > 0) {
-        val ratioConcorrente1 = r.avgConcorrente1Ns.toFloat() / r.avgAppDimensNs.toFloat()
-        val ratioConcorrente2 = r.avgConcorrente2Ns.toFloat() / r.avgAppDimensNs.toFloat()
-        sb.appendLine("  Dynamic vs Concorrente 1:     ×${"%.1f".format(ratioConcorrente1)} ${if (ratioConcorrente1 > 1) "mais rápido" else "mais lento"}")
-        sb.appendLine("  Dynamic vs Concorrente 2:     ×${"%.1f".format(ratioConcorrente2)} ${if (ratioConcorrente2 > 1) "mais rápido" else "mais lento"}")
+    sb.appendLine("── Comparativo (mediana dos novos benchmarks) ──")
+    val comparisons = listOf(
+        RatioLine("Compose · constant 1dp", r.composeApi.dynamic.constant1dp.medianNs, r.composeApi.sdps.constant1dp.medianNs, "SDPS 3.1.6"),
+        RatioLine("Compose · constant 1dp", r.composeApi.dynamic.constant1dp.medianNs, r.composeApi.chaintech.constant1dp.medianNs, "Chaintech 1.0.7"),
+        RatioLine("Compose · mixed values", r.composeApi.dynamic.mixedValues.medianNs, r.composeApi.sdps.mixedValues.medianNs, "SDPS 3.1.6"),
+        RatioLine("Compose · mixed values", r.composeApi.dynamic.mixedValues.medianNs, r.composeApi.chaintech.mixedValues.medianNs, "Chaintech 1.0.7"),
+        RatioLine("Motor · constant 1dp", r.coreEngine.dynamic.constant1dp.medianNs, r.coreEngine.sdps.constant1dp.medianNs, "SDPS 3.1.6"),
+        RatioLine("Motor · mixed values", r.coreEngine.dynamic.mixedValues.medianNs, r.coreEngine.sdps.mixedValues.medianNs, "SDPS 3.1.6"),
+    )
+    for ((label, dyn, other, name) in comparisons) {
+        if (dyn > 0.0 && other > 0.0) {
+            val ratio = if (dyn < other) other / dyn else dyn / other
+            val verdict = if (dyn < other) "mais rápido" else "mais lento"
+            sb.appendLine("  Dynamic vs $name ($label): ×${"%.1f".format(ratio)} $verdict")
+        }
     }
     sb.appendLine()
-    sb.appendLine("── Comparativo (sdpa/AR) ──")
-    if (r.avgAppDimensArNs > 0) {
-        val ratioArConcorrente1 = r.avgConcorrente1ArNs.toFloat() / r.avgAppDimensArNs.toFloat()
-        sb.appendLine("  Dynamic vs Concorrente 1: ×${"%.1f".format(ratioArConcorrente1)} ${if (ratioArConcorrente1 > 1) "mais rápido" else "mais lento"}")
+
+    sb.appendLine("── Testes legados T1–T3 (metodologia original) ──")
+    sb.appendLine()
+    sb.appendLine("  Valores de resolução (sdp):")
+    val sdpGetters = listOf(
+        "Dynamic 3.1.8" to Triple(
+            { t: DpResolution3 -> t.dp1AppDimens }, { t: DpResolution3 -> t.dp10AppDimens }, { t: DpResolution3 -> t.dp100AppDimens }),
+        "SDPS 3.1.6" to Triple(
+            { t: DpResolution3 -> t.dp1Concorrente1 }, { t: DpResolution3 -> t.dp10Concorrente1 }, { t: DpResolution3 -> t.dp100Concorrente1 }),
+        "Chaintech 1.0.7" to Triple(
+            { t: DpResolution3 -> t.dp1Concorrente2 }, { t: DpResolution3 -> t.dp10Concorrente2 }, { t: DpResolution3 -> t.dp100Concorrente2 }),
+    )
+    for ((name, getters) in sdpGetters) {
+        val (get1, get10, get100) = getters
+        sb.appendLine("    $name: 1dp T1=%.4f T2=%.4f T3=%.4f | 10dp T1=%.4f T2=%.4f T3=%.4f | 100dp T1=%.4f T2=%.4f T3=%.4f".format(
+            get1(r.legacy.test1), get1(r.legacy.test2), get1(r.legacy.test3),
+            get10(r.legacy.test1), get10(r.legacy.test2), get10(r.legacy.test3),
+            get100(r.legacy.test1), get100(r.legacy.test2), get100(r.legacy.test3)))
+    }
+    sb.appendLine()
+    sb.appendLine("  Valores de resolução (sdpa/AR):")
+    sb.appendLine("    Dynamic 3.1.8: 1dp T1=%.4f T2=%.4f T3=%.4f | 10dp T1=%.4f T2=%.4f T3=%.4f | 100dp T1=%.4f T2=%.4f T3=%.4f".format(
+        r.legacy.test1.dp1AppDimensAr, r.legacy.test2.dp1AppDimensAr, r.legacy.test3.dp1AppDimensAr,
+        r.legacy.test1.dp10AppDimensAr, r.legacy.test2.dp10AppDimensAr, r.legacy.test3.dp10AppDimensAr,
+        r.legacy.test1.dp100AppDimensAr, r.legacy.test2.dp100AppDimensAr, r.legacy.test3.dp100AppDimensAr))
+    sb.appendLine("    SDPS 3.1.6: 1dp T1=%.4f T2=%.4f T3=%.4f | 10dp T1=%.4f T2=%.4f T3=%.4f | 100dp T1=%.4f T2=%.4f T3=%.4f".format(
+        r.legacy.test1.dp1Concorrente1Ar, r.legacy.test2.dp1Concorrente1Ar, r.legacy.test3.dp1Concorrente1Ar,
+        r.legacy.test1.dp10Concorrente1Ar, r.legacy.test2.dp10Concorrente1Ar, r.legacy.test3.dp10Concorrente1Ar,
+        r.legacy.test1.dp100Concorrente1Ar, r.legacy.test2.dp100Concorrente1Ar, r.legacy.test3.dp100Concorrente1Ar))
+    sb.appendLine()
+    sb.appendLine("  Tempo por chamada de 1dp (sdp):")
+    sb.appendLine("    Dynamic:  T1=${r.legacy.timeTest1.appDimensNs.formatNs()}  T2=${r.legacy.timeTest2.appDimensNs.formatNs()}  T3=${r.legacy.timeTest3.appDimensNs.formatNs()}  Média=${r.legacy.avgAppDimensNs.formatNs()}")
+    sb.appendLine("    SDPS:     T1=${r.legacy.timeTest1.concorrente1Ns.formatNs()}  T2=${r.legacy.timeTest2.concorrente1Ns.formatNs()}  T3=${r.legacy.timeTest3.concorrente1Ns.formatNs()}  Média=${r.legacy.avgConcorrente1Ns.formatNs()}")
+    sb.appendLine("    Chaintech: T1=${r.legacy.timeTest1.concorrente2Ns.formatNs()}  T2=${r.legacy.timeTest2.concorrente2Ns.formatNs()}  T3=${r.legacy.timeTest3.concorrente2Ns.formatNs()}  Média=${r.legacy.avgConcorrente2Ns.formatNs()}")
+    sb.appendLine()
+    sb.appendLine("  Tempo por chamada de 1dp (sdpa/AR):")
+    sb.appendLine("    Dynamic:  T1=${r.legacy.timeTest1.appDimensArNs.formatNs()}  T2=${r.legacy.timeTest2.appDimensArNs.formatNs()}  T3=${r.legacy.timeTest3.appDimensArNs.formatNs()}  Média=${r.legacy.avgAppDimensArNs.formatNs()}")
+    sb.appendLine("    SDPS:     T1=${r.legacy.timeTest1.concorrente1ArNs.formatNs()}  T2=${r.legacy.timeTest2.concorrente1ArNs.formatNs()}  T3=${r.legacy.timeTest3.concorrente1ArNs.formatNs()}  Média=${r.legacy.avgConcorrente1ArNs.formatNs()}")
+    sb.appendLine()
+    sb.appendLine("  Comparativo legado (média T1–T3):")
+    if (r.legacy.avgAppDimensNs > 0 && r.legacy.avgConcorrente1Ns > 0) {
+        val ratioSdps = r.legacy.avgConcorrente1Ns.toFloat() / r.legacy.avgAppDimensNs.toFloat()
+        sb.appendLine("    Dynamic vs SDPS (sdp): ×${"%.1f".format(ratioSdps)} ${if (ratioSdps > 1) "mais rápido" else "mais lento"}")
+    }
+    if (r.legacy.avgAppDimensNs > 0 && r.legacy.avgConcorrente2Ns > 0) {
+        val ratioChain = r.legacy.avgConcorrente2Ns.toFloat() / r.legacy.avgAppDimensNs.toFloat()
+        sb.appendLine("    Dynamic vs Chaintech (sdp): ×${"%.1f".format(ratioChain)} ${if (ratioChain > 1) "mais rápido" else "mais lento"}")
+    }
+    if (r.legacy.avgAppDimensArNs > 0 && r.legacy.avgConcorrente1ArNs > 0) {
+        val ratioAr = r.legacy.avgConcorrente1ArNs.toFloat() / r.legacy.avgAppDimensArNs.toFloat()
+        sb.appendLine("    Dynamic vs SDPS (sdpa): ×${"%.1f".format(ratioAr)} ${if (ratioAr > 1) "mais rápido" else "mais lento"}")
     }
 
     sb.appendLine()

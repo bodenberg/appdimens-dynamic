@@ -1,15 +1,21 @@
 /**
  * @author Bodenberg
  *
- * EN Off-main benchmark core for the 3-way comparison.
+ * EN Legacy off-main benchmark core (original T1/T2/T3 methodology).
  *    Runs 3 independent test passes, each measuring:
  *    - Dp resolution values for 1dp, 10dp, 100dp in all three libraries
- *    - Time per single dp call in AppDimens + Concorrente 1 (Concorrente 2 measured by probe)
+ *    - Time per single dp call in AppDimens + SDPS (Chaintech measured by probe)
+ *    Kept as-is (Long ns averages, measureNanoTime, delay(100) between
+ *    warm-up and measurement) for continuity with previously published
+ *    results. The NEW methodology lives in ComposeCompetitorProbe + CoreEngineRunner.
  *
- * PT Núcleo off-main do benchmark de 3 vias.
+ * PT Núcleo off-main legado do benchmark (metodologia original T1/T2/T3).
  *    Executa 3 passes de teste independentes, cada um medindo:
  *    - Valores de resolução dp para 1dp, 10dp, 100dp nas três bibliotecas
- *    - Tempo por chamada única de dp em AppDimens + Concorrente 1 (Concorrente 2 medido pela sonda)
+ *    - Tempo por chamada única de dp em AppDimens + SDPS (Chaintech medido pela sonda)
+ *    Mantido como estava (médias Long ns, measureNanoTime, delay(100) entre
+ *    warm-up e medição) por continuidade com resultados já publicados.
+ *    A metodologia NOVA vive em ComposeCompetitorProbe + CoreEngineRunner.
  */
 package com.example.benchlab.benchmark
 
@@ -29,24 +35,24 @@ private const val MEASURE_COUNT = 50_000
 private val DP_VALUES = intArrayOf(1, 10, 100)
 
 /**
- * EN Runs the full comparison benchmark off the main thread.
- * PT Executa o benchmark comparativo completo fora da thread principal.
+ * EN Runs the legacy T1/T2/T3 comparison benchmark off the main thread.
+ * PT Executa o benchmark comparativo legado T1/T2/T3 fora da thread principal.
  *
  * @param context EN Android context. PT Contexto Android.
- * @param concorrente2Result EN Pre-measured Concorrente 2 data from the composable probe. PT Dados pré-mensurados da Concorrente 2 da sonda composable.
+ * @param concorrente2Result EN Pre-measured Chaintech data from the legacy composable probe. PT Dados pré-medidos da Chaintech da sonda composable legada.
  * @param onPhaseChange EN Callback for phase transitions. PT Callback para transições de fase.
  */
-suspend fun runCompetitorBenchmark(
+suspend fun runLegacyBenchmark(
     context: Context,
     concorrente2Result: Concorrente2ProbeResult,
     onPhaseChange: (BenchPhase) -> Unit
-): CompetitorBenchmarkResult = withContext(Dispatchers.Default) {
+): LegacyTestResult = withContext(Dispatchers.Default) {
 
     val app = com.appdimens.dynamic.code.DimenSdp
     val concorrente1 = com.appdimens.sdps.code.DimenSdp
 
     // ── WARMUP ──────────────────────────────────────────────────────────────
-    onPhaseChange(BenchPhase.WARMUP)
+    onPhaseChange(BenchPhase.TEST1)
     repeat(WARMUP_COUNT) {
         for (dp in DP_VALUES) {
             app.sdp(context, dp); concorrente1.sdp(context, dp)
@@ -112,7 +118,7 @@ suspend fun runCompetitorBenchmark(
             repeat(MEASURE_COUNT) { concorrente1.sdpa(context, 1) }
         } / MEASURE_COUNT
 
-        // Concorrente 2 time is fixed from the probe (already measured once)
+        // Chaintech time is fixed from the probe (already measured once)
         timeResults += SingleDpTiming3(
             appDimensNs = appSingleNs,
             concorrente1Ns = concorrente1SingleNs,
@@ -121,7 +127,7 @@ suspend fun runCompetitorBenchmark(
             concorrente1ArNs = concorrente1SingleArNs,
         )
 
-        Log.i(TAG, "Test $run: dp1=app=$dp1App conc1=$dp1Conc1 conc2=${concorrente2Result.dp1Px} " +
+        Log.i(TAG, "Legacy Test $run: dp1=app=$dp1App conc1=$dp1Conc1 conc2=${concorrente2Result.dp1Px} " +
             "dp10=app=$dp10App conc1=$dp10Conc1 conc2=${concorrente2Result.dp10Px} " +
             "dp100=app=$dp100App conc1=$dp100Conc1 conc2=${concorrente2Result.dp100Px} " +
             "ar: dp1=app=$dp1AppAr conc1=$dp1Conc1Ar dp10=app=$dp10AppAr conc1=$dp10Conc1Ar " +
@@ -136,10 +142,10 @@ suspend fun runCompetitorBenchmark(
     val avgAppAr = timeResults.map { it.appDimensArNs }.average().toLong()
     val avgConcorrente1Ar = timeResults.map { it.concorrente1ArNs }.average().toLong()
 
-    Log.i(TAG, "Compare avg: appDimens=${avgApp}ns conc1=${avgConcorrente1}ns conc2=${avgConcorrente2}ns " +
+    Log.i(TAG, "Legacy compare avg: appDimens=${avgApp}ns conc1=${avgConcorrente1}ns conc2=${avgConcorrente2}ns " +
         "appDimensAr=${avgAppAr}ns conc1Ar=${avgConcorrente1Ar}ns")
 
-    CompetitorBenchmarkResult(
+    LegacyTestResult(
         test1 = testResults[0],
         test2 = testResults[1],
         test3 = testResults[2],
@@ -151,22 +157,5 @@ suspend fun runCompetitorBenchmark(
         avgConcorrente2Ns = avgConcorrente2,
         avgAppDimensArNs = avgAppAr,
         avgConcorrente1ArNs = avgConcorrente1Ar,
-        windowSw = 0,
-        windowW = 0,
-        windowH = 0,
-        density = 0f,
-    ).let { result ->
-        val config = context.resources.configuration
-        val dm = context.resources.displayMetrics
-        val sw = config.smallestScreenWidthDp.takeIf { it > 0 }
-            ?: minOf(config.screenWidthDp, config.screenHeightDp).coerceAtLeast(0)
-        result.copy(
-            windowSw = sw,
-            windowW = config.screenWidthDp.coerceAtLeast(0),
-            windowH = config.screenHeightDp.coerceAtLeast(0),
-            density = dm.density,
-        ).also { r ->
-            Log.i(TAG, "Device: sw=${r.windowSw}dp w=${r.windowW}dp h=${r.windowH}dp density=${"%.2f".format(r.density)}")
-        }
-    }
+    )
 }
