@@ -9,7 +9,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 
 /**
- * Result-cache persistence was removed in 3.1.7. The public entry points are kept as
+ * Result-cache persistence was removed in 3.1.8. The public entry points are kept as
  * binary-compatibility no-ops: these tests lock in the contract that they never perform
  * I/O, never resurrect stale values, and never disturb the in-memory snapshot cache.
  */

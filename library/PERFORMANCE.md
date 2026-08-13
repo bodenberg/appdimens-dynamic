@@ -43,7 +43,7 @@ The in-memory cache is **partitioned per snapshot** (`ConcurrentHashMap<DimenMet
 
 - `layoutRememberStamp` packs SW/W/H/orientation + `mixDpi` — **does not** use `Configuration.hashCode()`
 - Sp paths use `spRememberStamp` (includes fontScale); px paths use `pxRememberStamp` (density only)
-- `rememberDimen*` in 3.1.7 remembers on **two keys** (`cacheKey`, stamp) when `match = true`; `match = false` returns `passthrough` immediately
+- `rememberDimen*` in 3.1.8 remembers on **two keys** (`cacheKey`, stamp) when `match = true`; `match = false` returns `passthrough` immediately
 - `AppDimensProvider` provides `LocalDimenMetrics`, keeping every dimension in a composition on one coherent window snapshot
 
 ## Cached `UiModeType`
@@ -52,7 +52,7 @@ The in-memory cache is **partitioned per snapshot** (`ConcurrentHashMap<DimenMet
 
 ## Persistence
 
-**Removed in 3.1.7.** `DimenCache` no longer persists results to Preferences DataStore. `shutdown()`, `saveToPersistence()` and `serializeToByteArray()` remain as **binary-compatibility no-ops** for consumers built against ≤ 3.1.6; there is no background writer scope and no disk I/O on the dimension path.
+**Removed in 3.1.8.** `DimenCache` no longer persists results to Preferences DataStore. `shutdown()`, `saveToPersistence()` and `serializeToByteArray()` remain as **binary-compatibility no-ops** for consumers built against ≤ 3.1.6; there is no background writer scope and no disk I/O on the dimension path.
 
 ## Other
 
@@ -70,10 +70,13 @@ Do not use always-bypass types on the default path to measure **snapshot-cache**
 
 ### Measured numbers (2026-08-09 — Xiaomi 2107113SG, release APK + AOT `speed`, 3 runs)
 
-With the **3.1.7 fast lane**, the dominant resolutions (`sdp` / `hdp` / `wdp`, and `sdpa` = SMALL_WIDTH + AR) are a single float multiply over the coherent per-window `DimenMetrics` snapshot — no key encoding, no `getOrPut`, no `remember` machinery:
+With the **3.1.8 fast lane**, the dominant resolutions (`sdp` / `hdp` / `wdp`, and `sdpa` = SMALL_WIDTH + AR) are a single float multiply over the coherent per-window `DimenMetrics` snapshot — no key encoding, no `getOrPut`, no `remember` machinery:
 
 - **Micro combined avg**: ~40–64 ns/op (typical ~50–60; families uniform within ~8 ns of each other).
 - **Same-device baseline** (3 runs each): library 3.1.5 ≈ 158 ns/op; **debug APK ≈ 508–857 ns/op** (interpreter — debuggable APKs are pinned to compiler filter `verify`).
 - **Macro scroll (1k-item LazyColumn)**: ~368–382 ms — frame-limited (366 ms floor at 60 fps), ≈ 4% under 3.1.5's ~393 ms and ~2.4× under the ~940 ms debug APK.
-- **Validation**: the fast lane samples the window configuration 1-in-16 resolutions (`validationTick`, shared volatile counter — measured 3.1.7 baseline; a ThreadLocal variant was explored for 3.1.8 and **rejected**: two hash-table lookups per call lost to the single acquire-load + release-store on a core-local cache line in the single-threaded main-thread case, and added cold-start cost) against the same `metricsFor` used by the cache kernel — bit-identical results, sub-microsecond staleness window.
+- **Validation**: the fast lane uses event-driven config validation (`ensureConfigWatcher`) — a `ComponentCallbacks2` listener registered on the Application invalidates fast slots synchronously on any real configuration change. This replaces the previous sampled `validationTick` (1-in-16) with zero sampling cost on the hot lane. A ThreadLocal variant was explored and **rejected**: two hash-table lookups per call lost to the single acquire-load + release-store on a core-local cache line in the single-threaded main-thread case, and added cold-start cost.
+- **Specialized kernels**: `resolveSdpPx`, `resolveSdpDp`, `resolveSdpaPx`, `resolveSdpaDp`, `resolveHdpPx`, `resolveHdpDp`, `resolveWdpPx`, `resolveWdpDp` — one kernel per family/qualifier, zero branches, volatile load + identity compare + legacy multiply order — bit-identical results to the full path.
+- **Non-Compose fast lane**: `fastMetricsForCode` skips the ThreadLocal probe entirely — one volatile load, one identity compare, two float multiplies on the hit path.
+- **DimenMetrics eager AR**: `normalizedAspectRatio` and `logNormalizedAspectRatio` changed from `lazy` to plain `val` — removes the hidden `synchronized` probe from the SDPA fast lane.
 - **Reproducibility**: the harness holds `THREAD_PRIORITY_URGENT_AUDIO` plus a 1.5 s thermal ramp for the whole measurement window; without it cold-core artifacts inflate the first family by ~100 ns and run-to-run spread to 2–4×. On the Redmi 25062RN2DA (Android 16/SDK 36, same SoC) the release numbers are ~117–118 ns/op — still ~10× the fast-lane floor of the multiply itself.

@@ -2,7 +2,15 @@
 
 This folder goes deeper into each **scaling strategy** in [AppDimens Dynamic](../README.md): what it is, the formula, how to import it, and when to pick each mode. Each strategy’s code lives in `com.appdimens.dynamic.compose.<strategy>` and `com.appdimens.dynamic.code.<strategy>` with **no cross-imports** between strategies.
 
-**Modules (3.1.7):** principal `appdimens-dynamic` (scaled + core/common/plain); strategy modules `appdimens-dynamic-<strategy>`; BOM `appdimens-dynamic-bom`. See [README — Installation](../README.md#installation-v317) · [MODULES.md](MODULES.md).
+**Modules (3.1.8):** principal `appdimens-dynamic` (scaled + core/common/plain); strategy modules `appdimens-dynamic-<strategy>`; BOM `appdimens-dynamic-bom`. See [README — Installation](../README.md#installation-v318) · [MODULES.md](MODULES.md).
+
+### 3.1.8 Changes
+
+- **Event-driven config watcher**: Replaces sampled validation (`validationTick`) with synchronous invalidation via `ComponentCallbacks2`.
+- **Specialized kernels**: Zero-branch resolution per family/qualifier (`resolveSdpPx`, `resolveSdpaPx`, etc.).
+- **Non-Compose fast lane**: `fastMetricsForCode` skips ThreadLocal probe.
+- **DimenMetrics eager AR**: `normalizedAspectRatio` / `logNormalizedAspectRatio` changed from `lazy` to plain `val`.
+- **BenchLab module**: New competitor benchmark (Dynamic vs SDPS vs Chaintech) with full scroll screenshot + report export.
 
 **Product docs:** [PRD.md](PRD.md) · [PDR.md](PDR.md) · [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md).
 
@@ -20,7 +28,7 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 
 ## Summary
 
-| Strategy | Maven artifact (3.1.7) | Document |
+| Strategy | Maven artifact (3.1.8) | Document |
 |----------|------------------------|----------|
 | **Unified math (all strategies)** | — | [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md) |
 | **Module graph / packaging** | see [MODULES.md](MODULES.md) | [MODULES.md](MODULES.md) |
@@ -45,7 +53,7 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 - [PRD.md](PRD.md) · [PDR.md](PDR.md)
 
 0. [KDoc API — root index](index.md)  
-0a. [Modules — Maven/Gradle graph (3.1.7)](MODULES.md)  
+0a. [Modules — Maven/Gradle graph (3.1.8)](MODULES.md)  
 0b. [Mathematics & calculus — formal reference](MATHEMATICS-AND-CALCULUS.md)  
 1. [Compose API reference — conventions & scaled catalog](COMPOSE-API-CONVENTIONS.md)  
 2. [Scaled](scaled.md) — recommended starting point  

@@ -4,6 +4,6 @@
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)@[JvmOverloads](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html)fun [clearAll](clear-all.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null)
 
-EN Clears all cache entries. Since 3.1.7 this detaches all snapshot partitions atomically (no disk I/O). Thread-safe.
+EN Clears all cache entries. Since 3.1.8 this detaches all snapshot partitions atomically (no disk I/O). Thread-safe.
 
-PT Limpa todas as entradas. Desde a 3.1.7, remove todas as partições de snapshot atomicamente (sem I/O de disco). Thread-safe.
+PT Limpa todas as entradas. Desde a 3.1.8, remove todas as partições de snapshot atomicamente (sem I/O de disco). Thread-safe.

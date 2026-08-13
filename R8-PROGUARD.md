@@ -130,9 +130,14 @@ published**.
 even in **debug** builds without minify — and the app's own release R8 pass
 shrinks the remaining surface per-app (via `consumer-rules.pro`).
 
-> **3.1.7 note:** persistence was removed from `DimenCache`, and the legacy
+> **3.1.8 note:** persistence was removed from `DimenCache`, and the legacy
 > `androidx.datastore.**` keep blocks have already been dropped from the `.pro`
 > files — no `datastore` references remain in any module rules.
+>
+> **3.1.8 specialized kernels:** The new `resolveSdpPx`, `resolveSdpaPx`, etc.
+> are `@PublishedApi internal inline` — R8 inlines them at call sites, so no
+> additional keep rules are needed. The `ensureConfigWatcher` listener is
+> registered via `ComponentCallbacks2` and kept by the `Application` reference.
 
 ---
 

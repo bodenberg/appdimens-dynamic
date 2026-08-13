@@ -6,9 +6,9 @@ data class [DimenMetrics](index.md)(val screenWidthDp: [Int](https://kotlinlang.
 
 EN A value snapshot, not a process-wide mutable "current screen". The primary constructor intentionally contains only the inputs that affect a result, so Kotlin's generated equality can be used as an exact cache partition key; derived values are calculated once when the snapshot is created.
 
-Since 3.1.7 every dimension is a pure function of the window in which it is rendered: keeping these values together prevents a calculation from observing a mix of old and new configuration fields while a window is being resized, and the cache is partitioned per snapshot ([DimenCache](../-dimen-cache/index.md)).
+Since 3.1.8 every dimension is a pure function of the window in which it is rendered: keeping these values together prevents a calculation from observing a mix of old and new configuration fields while a window is being resized, and the cache is partitioned per snapshot ([DimenCache](../-dimen-cache/index.md)).
 
-PT Snapshot de valores por janela, não um "tela atual" mutável de processo. Igualdade estrutural serve de chave exata de partição do cache (desde a 3.1.7).
+PT Snapshot de valores por janela, não um "tela atual" mutável de processo. Igualdade estrutural serve de chave exata de partição do cache (desde a 3.1.8).
 
 val [density](density.md): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)
 

@@ -59,6 +59,26 @@ enum class BenchmarkPhase {
     MACRO_RUN,
 
     /**
+     * EN Comparison benchmark warmup (both libraries, mixed pattern).
+     * PT Aquecimento do benchmark comparativo (ambas as bibliotecas, padrão misto).
+     */
+    COMPARE_WARMUP,
+
+    /**
+     * EN Comparison benchmark: measuring the 3.1.8 library speed.
+     * PT Benchmark comparativo: medindo a velocidade da biblioteca 3.1.8.
+     */
+    COMPARE_LIB_RUN,
+
+    /**
+     * EN Comparison benchmark: measuring the legacy SDPS 3.1.6 speed.
+     * PT Benchmark comparativo: medindo a velocidade do SDPS 3.1.6 legado.
+     */
+    COMPARE_LEGACY_RUN,
+
+
+
+    /**
      * EN All phases complete. Results are ready for display and export.
      * PT Todas as fases concluídas. Resultados prontos para exibição e exportação.
      */
@@ -78,6 +98,9 @@ val BenchmarkPhase.displayLabel: String
         BenchmarkPhase.MICRO_RUN   -> "Micro: Measuring CPU performance…"
         BenchmarkPhase.MACRO_IDLE  -> "Cooldown: Stabilizing environment…"
         BenchmarkPhase.MACRO_RUN   -> "Macro: Measuring UI scroll performance…"
+        BenchmarkPhase.COMPARE_WARMUP      -> "Compare: Warming up both libraries…"
+        BenchmarkPhase.COMPARE_LIB_RUN     -> "Compare: Measuring library 3.1.8 speed…"
+        BenchmarkPhase.COMPARE_LEGACY_RUN  -> "Compare: Measuring SDPS 3.1.6 speed…"
         BenchmarkPhase.DONE        -> "Done — Results ready"
     }
 
@@ -94,5 +117,8 @@ val BenchmarkPhase.progressFraction: Float
         BenchmarkPhase.MICRO_RUN   -> 0.50f
         BenchmarkPhase.MACRO_IDLE  -> 0.65f
         BenchmarkPhase.MACRO_RUN   -> 0.88f
+        BenchmarkPhase.COMPARE_WARMUP      -> 0.30f
+        BenchmarkPhase.COMPARE_LIB_RUN     -> 0.55f
+        BenchmarkPhase.COMPARE_LEGACY_RUN  -> 0.80f
         BenchmarkPhase.DONE        -> 1f
     }

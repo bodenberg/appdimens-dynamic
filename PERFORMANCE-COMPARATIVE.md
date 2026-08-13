@@ -10,7 +10,7 @@ This report documents the performance results **after applying the 4 optimizatio
 > | Harness | Approx. range (release + minify + R8 + AOT) |
 > | :--- | :--- |
 > | **Calculation Test** (avg) | **~40 ns – ~90 ns** |
-> | **Microbenchmark** (combined, post-3.1.7 fast lane; typical **~50–60 ns**) | **~40 ns – ~64 ns** |
+> | **Microbenchmark** (combined, post-3.1.8 fast lane; typical **~50–60 ns**) | **~40 ns – ~64 ns** |
 > | **Macrobenchmark** (scroll duration, 1k rows — frame-limited at 60 fps) | **~367 ms – ~495 ms** |
 >
 > **Unless a paragraph explicitly says otherwise**, the benchmarks and tables in this document use **debug** builds **without** minify (e.g. `connectedDebugAndroidTest`, debug APK for `BenchmarkActivity`). See **[R8-PROGUARD.md](./R8-PROGUARD.md)** if you enable **R8 full mode** (`android.enableR8.fullMode=true` in `gradle.properties`).
@@ -25,14 +25,20 @@ This report documents the performance results **after applying the 4 optimizatio
 
 ## 1. Applied Optimizations
 
-> **3.1.7 note:** the persistent result cache (Preferences DataStore) was removed and the in-memory cache became **snapshot-partitioned** (keyed by the immutable `DimenMetrics` window snapshot, atomic `CacheEntry` references). Cold-start restore cost and stale-cache risk are gone; cache timing rows below measure the in-memory partitions only.
+> **3.1.8 note:** the persistent result cache (Preferences DataStore) was removed and the in-memory cache became **snapshot-partitioned** (keyed by the immutable `DimenMetrics` window snapshot, atomic `CacheEntry` references). Cold-start restore cost and stale-cache risk are gone; cache timing rows below measure the in-memory partitions only.
+
+### 3.1.8 Optimizations
 
 | Phase | Component | Description |
 | :--: | :--- | :--- |
+| **F0** | `ensureConfigWatcher` | Event-driven `ComponentCallbacks2` — replaces sampled `validationTick` (1-in-16) with synchronous invalidation |
 | **F1** | `DimenCache.getBatch()` | Made the API public for batching N dimensions by the caller |
-| **F2** | `ShardWrapper` *(removed in 3.1.7)* | 128-byte padding per shard eliminated *false sharing* in the legacy ≤ 3.1.6 layout; 3.1.7+ uses snapshot partitions |
+| **F2** | `ShardWrapper` *(removed in 3.1.8)* | 128-byte padding per shard eliminated *false sharing* in the legacy ≤ 3.1.6 layout; 3.1.8+ uses snapshot partitions |
 | **F3** | `ScreenFactors` | All `@Volatile` fields grouped in an object with 128-byte padding (retained for compatibility) |
-| **F4** | `clearAll()` *(changed in 3.1.7)* | Now detaches snapshot partitions atomically; the legacy `lazySet()` + 4× *unrolling* applied to the ≤ 3.1.6 shard arrays |
+| **F4** | `clearAll()` *(changed in 3.1.8)* | Now detaches snapshot partitions atomically; the legacy `lazySet()` + 4× *unrolling* applied to the ≤ 3.1.6 shard arrays |
+| **F5** | Specialized kernels | `resolveSdpPx`, `resolveSdpaPx`, `resolveHdpPx`, `resolveWdpPx` — zero-branch, volatile load + identity compare + legacy multiply order |
+| **F6** | `fastMetricsForCode` | Non-Compose fast-lane: skips ThreadLocal probe — one volatile load, one identity compare |
+| **F7** | DimenMetrics eager AR | `normalizedAspectRatio` / `logNormalizedAspectRatio` changed from `lazy` to plain `val` — removes synchronized probe from SDPA fast lane |
 
 ---
 
@@ -48,7 +54,7 @@ Executed via `./gradlew :library:testDebugUnitTest` (principal); satellite formu
 | **Cache Hit (with AR)** per item | **1 ns** | **Zero-Math** 🚀 |
 | **Batch (100 items, math)** | **34 ns/batch** | **Extreme** 🏎️ |
 | **Batch Cache (100 items, AR)** | **242 ns/batch** | **Stable** ✅ |
-| **Persistence Load** | **— (removed in 3.1.7)** | **N/A** ✅ |
+| **Persistence Load** | **— (removed in 3.1.8)** | **N/A** ✅ |
 
 > `raw_batch_cache_ar` at **242 ns/batch** remains dominated by the 100× AR lookup loop.
 
@@ -70,7 +76,7 @@ Executed via `./gradlew :library:testDebugUnitTest` (principal); satellite formu
 | **Batch Cache (100 items, no AR)** | **431 ns/batch** | **Constant** |
 | **Batch Cache (100 items, with AR)** | **3,773 ns** | **Stable** ✅ |
 | **Batch Mixed (50% AR / 50% without)** | **2,036 ns/batch** | **Stable** ✅ |
-| **Persistence Load** | **— (removed in 3.1.7)** | **N/A** ✅ |
+| **Persistence Load** | **— (removed in 3.1.8)** | **N/A** ✅ |
 
 > **Regression Fix (F1.1, legacy shard architecture ≤ 3.1.6):** Inlining of `getOrPutInternal` and `ShardWrapper` visibility (`internal @PublishedApi`) kept batch AR paths in the ~3.7–3.8 µs range for 100 cached AR lookups; the non-AR hot path (most cases) remains extremely stable at **~5 ns**.
 
@@ -97,9 +103,9 @@ val keys = LongArray(views.size) { i ->
 val results = DimenCache.getBatch(keys, context) { i -> computeDimension(i) }
 ```
 
-### F2 — ShardWrapper (Anti-False-Sharing Padding) — *legacy, removed in 3.1.7*
+### F2 — ShardWrapper (Anti-False-Sharing Padding) — *legacy, removed in 3.1.8*
 
-The 3.1.7 cache rework replaced the sharded layout with **snapshot partitions**: each immutable `DimenMetrics` window snapshot owns a bounded `AtomicReferenceArray` (entries published as single atomic `CacheEntry` references). The padding technique below applied to the ≤ 3.1.6 shard architecture and is kept here for the record:
+The 3.1.8 cache rework replaced the sharded layout with **snapshot partitions**: each immutable `DimenMetrics` window snapshot owns a bounded `AtomicReferenceArray` (entries published as single atomic `CacheEntry` references). The padding technique below applied to the ≤ 3.1.6 shard architecture and is kept here for the record:
 
 **Memory Overhead (≤ 3.1.6):**
 ```
@@ -117,9 +123,9 @@ The 7 shared `@Volatile` fields (`scale`, `arMultiplier`, `aspectRatioMul`, `nor
 
 With `ScreenFactors`, the shared `@Volatile` fields (`scale`, `arMultiplier`, `aspectRatioMul`, `normalizedAr`, `logNormalizedAr`, `density`, `smallestWidthDp`) plus padding sit on isolated lines. `updateFactors()` is rare (configuration changes), so the benefit is preventing sporadic jank rather than steady-state latency.
 
-### F4 — clearAll() with lazySet() + 4× Unrolling — *≤ 3.1.6; superseded in 3.1.7*
+### F4 — clearAll() with lazySet() + 4× Unrolling — *≤ 3.1.6; superseded in 3.1.8*
 
-Since 3.1.7, `clearAll()` simply **detaches all snapshot partitions** (one `ConcurrentHashMap.clear()` with an atomic bootstrap); there are no arrays to zero per entry. The technique below applied to the ≤ 3.1.6 shard arrays:
+Since 3.1.8, `clearAll()` simply **detaches all snapshot partitions** (one `ConcurrentHashMap.clear()` with an atomic bootstrap); there are no arrays to zero per entry. The technique below applied to the ≤ 3.1.6 shard arrays:
 
 `lazySet()` emits an **ordered store** (without a full StoreLoad barrier), making mass zeroing ~2-3× faster than `set()`. The next `getOrPut()` will emit the necessary acquisition barrier.
 
@@ -165,11 +171,11 @@ Since 3.1.7, `clearAll()` simply **detaches all snapshot partitions** (one `Conc
 
 **Steady-state performance:** **~260 ns** combined average per 4-call cycle (hot JIT, dashboard capture · 2026-04-03).
 
-### 5a.1 Post-3.1.7 Fast-Lane Measurement (2026-08-09)
+### 5a.1 Post-3.1.8 Fast-Lane Measurement (2026-08-09)
 
-> The 3.1.7 fast lane turns the dominant `sdp`/`hdp`/`wdp`/`sdpa` (SMALL_WIDTH + AR) resolutions into a **single float multiply** over the coherent per-window `DimenMetrics` snapshot, with a 1-in-16 sampled configuration validation. Same device, **3 runs each**, release APK + AOT `speed` + thermal ramp (see §7):
+> The 3.1.8 fast lane turns the dominant `sdp`/`hdp`/`wdp`/`sdpa` (SMALL_WIDTH + AR) resolutions into a **single float multiply** over the coherent per-window `DimenMetrics` snapshot, with event-driven config validation (`ensureConfigWatcher`). Same device, **3 runs each**, release APK + AOT `speed` + thermal ramp (see §7):
 
-| Harness | Current (3.1.7) | 3.1.5 baseline | Debug (no AOT) |
+| Harness | Current (3.1.8) | 3.1.5 baseline | Debug (no AOT) |
 | :--- | :--- | :--- | :--- |
 | **Micro Combined avg** | 57 / 59 / 58 ns (range 40–64) | 158 / 152 / 164 ns | 749 / 857 / 824 → 508–606 stable |
 | **Family spread (sdp→sdpa)** | ≤ ~8 ns within run | ~110 ns (cold-core ramp) | up to ~300 ns |

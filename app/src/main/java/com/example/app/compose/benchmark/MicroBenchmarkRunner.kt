@@ -18,6 +18,7 @@ import android.util.Log
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
 import com.appdimens.dynamic.code.DimenSdp
+import com.appdimens.dynamic.code.sdp
 import com.appdimens.dynamic.code.auto.DimenAutoDp
 import com.appdimens.dynamic.code.auto.toDynamicAutoPx
 import com.appdimens.dynamic.code.density.DimenDensityDp
@@ -393,6 +394,35 @@ suspend fun runMicroBenchmark(
     val singleWithArElapsedNs = System.nanoTime() - singleWithArStartNs
     val singleWithArAvgNs = singleWithArElapsedNs / MEASURE_ITERATIONS
 
+    // ── Direct-call probes (SCALED only) ─────────────────────────────────────
+    // EN Isolates the wrapper overhead: extension `100.sdp(ctx)` (kernel inlined
+    //    into the loop) vs the public API `DimenSdp.sdp(ctx, 100)` (one non-inline
+    //    hop). Other families keep the Function2 path only.
+    // PT Isola o overhead do wrapper: extensão `100.sdp(ctx)` (kernel inlined no
+    //    loop) vs a API pública `DimenSdp.sdp(ctx, 100)` (um salto não-inline).
+    //    As demais famílias mantêm apenas o caminho Function2.
+    var extSdpAcc = 0f
+    var apiSdpAcc = 0f
+    var extSdpAvgNs: Long? = null
+    var apiSdpAvgNs: Long? = null
+    if (mode == BenchmarkCalculationMode.SCALED) {
+        warmCallSite { 100.sdp(context) }
+        val extStartNs = System.nanoTime()
+        repeat(MEASURE_ITERATIONS) {
+            extSdpAcc += 100.sdp(context)
+        }
+        val extElapsedNs = System.nanoTime() - extStartNs
+        extSdpAvgNs = extElapsedNs / MEASURE_ITERATIONS
+
+        warmCallSite { DimenSdp.sdp(context, 100) }
+        val apiStartNs = System.nanoTime()
+        repeat(MEASURE_ITERATIONS) {
+            apiSdpAcc += DimenSdp.sdp(context, 100)
+        }
+        val apiElapsedNs = System.nanoTime() - apiStartNs
+        apiSdpAvgNs = apiElapsedNs / MEASURE_ITERATIONS
+    }
+
     val endWall = System.currentTimeMillis()
     val totalWallMs = endWall - startWall
 
@@ -408,7 +438,8 @@ suspend fun runMicroBenchmark(
     val combinedAvgNs = combinedNs / totalOps
 
     // ── Anti-dead-code accumulator checksum ──────────────────────────────────
-    val checksum = sdpAcc + hdpAcc + wdpAcc + sdpaAcc + singleNoArAcc + singleWithArAcc
+    val checksum = sdpAcc + hdpAcc + wdpAcc + sdpaAcc + singleNoArAcc + singleWithArAcc +
+        extSdpAcc + apiSdpAcc
 
     // ── Logcat export ─────────────────────────────────────────────────────────
     Log.i(TAG, "╔══════════════════ MICRO BENCHMARK RESULT ══════════════════╗")
@@ -420,21 +451,25 @@ suspend fun runMicroBenchmark(
     Log.i(TAG, "║ sdpa (cache) : ${sdpaAvgNs.formatNs()}/op")
     Log.i(TAG, "║ single $SINGLE_VALUE no-AR: ${singleNoArAvgNs.formatNs()}/op")
     Log.i(TAG, "║ single $SINGLE_VALUE +AR  : ${singleWithArAvgNs.formatNs()}/op")
+    if (mode == BenchmarkCalculationMode.SCALED) {
+        Log.i(TAG, "║ direct ext 100.sdp(ctx) : ${extSdpAvgNs?.formatNs()}/op")
+        Log.i(TAG, "║ direct api DimenSdp.sdp : ${apiSdpAvgNs?.formatNs()}/op")
+    }
     Log.i(TAG, "║ Total wall time: ${totalWallMs}ms")
     Log.i(TAG, "║ Accumulator checksum: $checksum")
     Log.i(TAG, "╚════════════════════════════════════════════════════════════╝")
 
     MicroBenchmarkResult(
-        avgNsPerOp      = combinedAvgNs,
-        totalOps        = totalOps,
-        totalTimeMs     = totalWallMs,
-        sdpBypassAvgNs  = sdpAvgNs,
-        hdpBypassAvgNs  = hdpAvgNs,
-        wdpBypassAvgNs  = wdpAvgNs,
-        sdpaCacheAvgNs  = sdpaAvgNs,
+        sdpAvgNs        = sdpAvgNs,
+        hdpAvgNs        = hdpAvgNs,
+        wdpAvgNs        = wdpAvgNs,
+        sdpaAvgNs       = sdpaAvgNs,
+        combinedAvgNs   = combinedAvgNs,
         singleNoArAvgNs = singleNoArAvgNs,
         singleWithArAvgNs = singleWithArAvgNs,
         singleValue     = SINGLE_VALUE,
+        extSdpAvgNs     = extSdpAvgNs,
+        apiSdpAvgNs     = apiSdpAvgNs,
         accumulatorChecksum = checksum,
         mode            = mode,
     )

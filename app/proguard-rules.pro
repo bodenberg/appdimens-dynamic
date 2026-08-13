@@ -50,3 +50,12 @@
 -printconfiguration build/outputs/mapping/release/configuration.txt
 -printusage build/outputs/mapping/release/usage.txt
 -verbose
+################################################################################
+# 9. LEGACY SDPS 3.1.6 (com.appdimens.sdps.*) — comparison benchmark target.
+#    The published artifact ships its own consumer rules; these extras keep the
+#    exact legacy bytecode semantics (reflection-free, resources-based lookup)
+#    alive in the release minified variant.
+################################################################################
+
+-keep class com.appdimens.sdps.** { *; }
+-dontwarn com.appdimens.sdps.**

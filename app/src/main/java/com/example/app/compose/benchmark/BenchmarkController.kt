@@ -90,7 +90,7 @@ class BenchmarkController(
             delay(COOLDOWN_MS)
 
             // ── Phase 3: Macro ────────────────────────────────────────────
-            val macro = runMacroBenchmark(listState) { _phase.value = it }
+            val macro = runMacroBenchmark(context, listState)
             _result.value = _result.value.copy(macro = macro)
 
             _phase.value = BenchmarkPhase.DONE
@@ -134,8 +134,23 @@ class BenchmarkController(
             reset()
             _phase.value = BenchmarkPhase.MACRO_IDLE
             delay(200L) // EN Brief stabilization. PT Breve estabilização.
-            val macro = runMacroBenchmark(listState) { _phase.value = it }
+            val macro = runMacroBenchmark(context, listState)
             _result.value = _result.value.copy(macro = macro)
+            _phase.value = BenchmarkPhase.DONE
+        }
+    }
+
+    /**
+     * EN Runs the comparison benchmark: library 3.1.8 speed + legacy SDPS 3.1.6
+     *    speed + precision tallies (bit/ulp) against the 3.1.6 reference.
+     * PT Executa o benchmark comparativo: velocidade da biblioteca 3.1.8 + velocidade
+     *    do SDPS 3.1.6 legado + totais de precisão (bit/ulp) contra a referência 3.1.6.
+     */
+    fun runComparison(mode: BenchmarkCalculationMode = BenchmarkCalculationMode.SCALED) {
+        scope.launch {
+            reset()
+            val comparison = runComparisonBenchmark(context, mode) { _phase.value = it }
+            _result.value = _result.value.copy(comparison = comparison)
             _phase.value = BenchmarkPhase.DONE
         }
     }

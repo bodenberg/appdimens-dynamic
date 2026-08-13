@@ -6,7 +6,7 @@ object [DimenCache](index.md)
 
 EN Global, lock-free, shared cache for all AppDimens dimension calculations.
 
-**Thread Safety**: Completely thread-safe. Since 3.1.7 the cache is **partitioned per immutable window snapshot** ([DimenMetrics](../-dimen-metrics/index.md)); each entry is published as a single atomic `CacheEntry` (key + value bits) reference, so concurrent readers can never observe another key's value.
+**Thread Safety**: Completely thread-safe. Since 3.1.8 the cache is **partitioned per immutable window snapshot** ([DimenMetrics](../-dimen-metrics/index.md)); each entry is published as a single atomic `CacheEntry` (key + value bits) reference, so concurrent readers can never observe another key's value.
 
 PT Cache global, lock-free e compartilhado para todos os cálculos de dimensão do AppDimens.
 
@@ -152,7 +152,7 @@ EN Compatibility hook — snapshot partitions make explicit invalidation unneces
 
 internal fun [loadFromByteArray](load-from-byte-array.md)(data: [ByteArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html))
 
-EN Compatibility no-op (persistence removed in 3.1.7).
+EN Compatibility no-op (persistence removed in 3.1.8).
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)fun [peek](peek.md)(key: [Long](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html)): [Float](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html)?
 

@@ -14,7 +14,7 @@ private fun [Context](https://developer.android.com/reference/kotlin/android/con
 
 fun [isInMultiWindowMode](is-in-multi-window-mode.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)?): [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)
 
-EN Returns the real window mode when an Activity is available, without retaining it (public since 3.1.7).
+EN Returns the real window mode when an Activity is available, without retaining it (public since 3.1.8).
 
 fun [isMultiWindowConstrained](is-multi-window-constrained.md)(configuration: [Configuration](https://developer.android.com/reference/kotlin/android/content/res/Configuration.html), ignoreMultiWindows: [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html), context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html)? = null): [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)
 
@@ -28,7 +28,7 @@ fun [smallestSideDp](smallest-side-dp.md)(configuration: [Configuration](https:/
 
 @[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)internal fun [clearActivityCacheForTest](clear-activity-cache-for-test.md)()
 
-EN Source-compatible test hook; the Context→Activity cache was removed in 3.1.7.
+EN Source-compatible test hook; the Context→Activity cache was removed in 3.1.8.
 
 ## Functions
 
