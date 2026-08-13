@@ -38,7 +38,7 @@ The `app` module hosts the production-grade dashboard:
 
 ## 2. BenchLab — Current Results (2026-08-13 · release APK + R8)
 
-**Device:** Xiaomi 2107113SG (Redmi Note 11) · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
+**Device:** Xiaomi 2107113SG · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
 
 ### Methodology
 
@@ -58,7 +58,7 @@ All measurements come from the two harnesses running on the same physical device
 
 | Aspect | Scenario |
 |---|---|
-| **Device** | Xiaomi 2107113SG (Redmi Note 11) · Qualcomm bengal (Snapdragon 680-class) · max 2.8 GHz |
+| **Device** | Xiaomi 2107113SG · Qualcomm bengal (Snapdragon 680-class) · max 2.8 GHz |
 | **Window** | sw=393dp · w=393dp · h=842dp · density 2.75 (1080×2400 @ 440 dpi) |
 | **Build** | Release APK + R8 (`minifyEnabled = true`) on both harnesses |
 | **Sessions** | Current test runs only (2026-08-13) — no debug builds, no previous versions |
@@ -124,7 +124,7 @@ The T1 → T3 spread within each round (e.g. sdp 26 → 5 ns) is the ART JIT war
 
 ## 3. BenchmarkActivity — Current Results (2026-08-13 · release APK + R8)
 
-**Device:** Xiaomi 2107113SG (Redmi Note 11) · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
+**Device:** Xiaomi 2107113SG · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
 
 ### Calculation Test (Scaled: sw+h+w, +AR, 40,000 calls)
 
@@ -245,7 +245,7 @@ For eligible `CalcType`s on the default path (`shouldBypassCache`), `getOrPut` r
 
 ## 7. Benchmark Variability
 
-All numbers in this document were captured on a **Xiaomi 2107113SG (Redmi Note 11 · Qualcomm bengal / Snapdragon 680-class · 2.8 GHz max)**. Real-world results will differ based on:
+All numbers in this document were captured on a **Xiaomi 2107113SG (Qualcomm bengal / Snapdragon 680-class · 2.8 GHz max)**. Real-world results will differ based on:
 
 - **Device class**: budget Cortex-A55 cores can be 5–10× slower on atomic operations
 - **JIT stage**: cold start is 3–10× slower than steady-state hot JIT
