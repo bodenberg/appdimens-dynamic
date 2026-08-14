@@ -2,7 +2,7 @@
 
 This report documents the performance of the **AppDimens Dynamic** library measured **on physical hardware** by the project's benchmark harnesses in **current test runs only** (2026-08-13). Two harnesses produced the data:
 
-- **BenchLab** (`benchlab` module) — 3-way competitor comparison: **Dynamic 3.1.8** × **Concorrente 1** × **Concorrente 2**.
+- **BenchLab** (`benchlab` module) — 3-way competitor comparison: **Dynamic 3.1.8** × **SDPS 3.1.6** × **Lib #2**, via Benchmark A (Compose probe), Benchmark B (Engine) and the legacy T1/T2/T3 tests.
 - **BenchmarkActivity** (`app` module) — Calculation + Micro + Macro dashboard.
 
 > [!NOTE]
@@ -22,7 +22,13 @@ This report documents the performance of the **AppDimens Dynamic** library measu
 
 ### 1.1 BenchLab — 3-way competitor comparison
 
-The `benchlab` module runs **3 independent test passes (T1/T2/T3) × 2 full rounds**, 50,000 iterations per timing cell, headlessly via the `AUTO_START` intent extra. Each test captures dp resolution values (1dp/10dp/100dp, sdp + sdpa) and time per single 1dp call for all three libraries. Results are logged to logcat (`adb logcat -s BENCHLAB`) and shown in the dashboard.
+The `benchlab` module runs **two independent benchmarks plus the legacy tests**, headlessly via the `AUTO_START` intent extra:
+
+- **Benchmark A — Compose API (main thread)**: Dynamic 3.1.8 × SDPS 3.1.6 × Lib #2 measured **together inside the same composition** — identical 20,000-iteration warm-up per library, **9 samples × 50,000 iterations** per sample, per-sample order rotation, anti-DCE checksums, two workloads (constant 1dp + mixed values). The measurement is **chunked at 5,000 ops per frame** (one chunk per recomposition), so the main thread never blocks for more than a few dozen ms — no ANR/freeze, no MIUI/thermal throttling corrupting the environment; per-chunk timing excludes inter-chunk gaps.
+- **Benchmark B — Engine (`Dispatchers.Default`)**: Dynamic × SDPS only, off the main thread (Lib #2 has no non-Compose API → N/A). Same methodology as A.
+- **Legacy T1/T2/T3**: original methodology (mean of 3 passes over 50,000-iteration timing cells), kept for continuity; px resolution values (1/10/100 dp, sdp + sdpa) are captured on every pass.
+
+Results are logged to logcat (`adb logcat -s BENCHLAB`) and shown in the dashboard; the headline number is the **median** (ns/op).
 
 ### 1.2 BenchmarkActivity — Calculation + Micro + Macro
 
@@ -38,19 +44,20 @@ The `app` module hosts the production-grade dashboard:
 
 ## 2. BenchLab — Current Results (2026-08-13 · release APK + R8)
 
-**Device:** Xiaomi 2107113SG · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
+**Device:** Xiaomi 2107113SG (vili) · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
 
 ### Methodology
 
 All three libraries were measured under identical conditions: the same physical device, the same session, and the same **release** build of the harness (`minifyEnabled = true` + R8) — no debug builds, no previous versions, no separate sessions per library. The protocol is:
 
-1. **Warmup (discarded)**: 5,000 iterations resolve 1/10/100 dp through `sdp`/`hdp`/`wdp` in **Dynamic** and **Concorrente 1**, priming the JIT, branch predictors and cache lines before any timing; a 100 ms pause follows. **Concorrente 2** warms its own call site inside its probe (1,000 calls).
-2. **3 test passes (T1/T2/T3) × 2 full rounds**: each pass resolves the px values for 1/10/100 dp — `sdp` (no AR) and `sdpa` (with AR) — and times a single 1 dp call.
-3. **Timing**: per-call ns = `System.nanoTime()` over a 50,000-iteration loop ÷ 50,000. The reported averages are the mean of the 3 passes.
-4. **Fair workload**: the same dp values go through the same call shape in every library, and resolution parity (px) is verified in every pass and round, so the timing comparison covers equivalent scaling work.
-5. **Concorrente 2 probe**: its `.sdp` extension is `@Composable` (reads `LocalConfiguration`), so its cost can only be measured inside composition — a dedicated probe on the main thread runs 1,000 warmup + 10,000 timed calls of `100.sdp` and reports a fixed per-call average reused across passes; its px values (`1/10/100.sdp.toPx()`) come from the same probe.
-6. **sdpa (with AR)** is compared only between **Dynamic** and **Concorrente 1**, since **Concorrente 2** does not offer an sdpa path.
-7. **Reproducibility**: the harness runs headlessly via the `AUTO_START` intent extra and logs every T1/T2/T3 cell plus the device info to logcat (`adb logcat -s BENCHLAB`), so the runs can be recaptured and re-verified.
+1. **Identical warm-up (discarded)**: 20,000 iterations of `1dp` resolution per library in the same composition (Benchmark A) / same loop shape off-main (Benchmark B), priming the JIT, branch predictors and cache lines before any timing.
+2. **9 samples × 50,000 iterations per workload**: constant `1dp` (hot call site) and a **predetermined mixed-value set** (12 dimensions: 1, 4, 8, 10, 12, 16, 20, 24, 32, 48, 64, 100 — no RNG inside the timed region, mirrors a real screen).
+3. **Order rotation**: each library occupies each position equally across samples (3 rotating orders in A, alternating order in B), so no library benefits from a consistent position.
+4. **Anti-DCE checksums**: every timed loop accumulates its result into a checksum reported with the result, so the JIT cannot eliminate the work.
+5. **Chunked measurement (Benchmark A)**: 5,000 ops per composition chunk; per-chunk `System.nanoTime()` summed per sample, excluding inter-chunk gaps.
+6. **Timing**: per-call ns = sample elapsed ÷ 50,000; per workload the reported values are the **median of the 9 samples** (min/P90/max also captured).
+7. **Legacy T1/T2/T3**: original mean-of-3-passes methodology over 50,000-iteration cells, kept for continuity; px resolution parity (1/10/100 dp, sdp + sdpa) is re-verified on every pass.
+8. **Reproducibility**: headless via the `AUTO_START` intent extra; every phase, probe/engine medians, legacy cells and device info are logged to logcat (`adb logcat -s BENCHLAB`).
 
 ### Test Scenario
 
@@ -58,73 +65,87 @@ All measurements come from the two harnesses running on the same physical device
 
 | Aspect | Scenario |
 |---|---|
-| **Device** | Xiaomi 2107113SG · Qualcomm bengal (Snapdragon 680-class) · max 2.8 GHz |
+| **Device** | Xiaomi 2107113SG (vili) · Qualcomm kryo300-class (Snapdragon 888-class, ARMv8.2-A) · max 2.84 GHz |
 | **Window** | sw=393dp · w=393dp · h=842dp · density 2.75 (1080×2400 @ 440 dpi) |
 | **Build** | Release APK + R8 (`minifyEnabled = true`) on both harnesses |
 | **Sessions** | Current test runs only (2026-08-13) — no debug builds, no previous versions |
-| **Harness (comparison)** | BenchLab — off the main thread, headless via `AUTO_START`, 3 passes × 2 rounds, 50,000 iterations per timing cell |
+| **Harness (comparison)** | BenchLab — Benchmark A (Compose probe, chunked 5,000 ops/frame, 540 chunks) + Benchmark B (engine, off-main) + legacy T1/T2/T3, headless via `AUTO_START` |
 | **Harness (dashboard)** | BenchmarkActivity — Calculation (40,000 calls), Micro (600,000 ops), Macro (1,000-item scroll), Compare (2 passes) |
-| **Measurement hygiene** | `THREAD_PRIORITY_URGENT_AUDIO` held for the whole measurement window + 1.5 s FP thermal ramp (forces the CPU governor to peak frequency before timing) |
-| **Warmup** | Discarded warmup before every timed block (5,000–10,000 iterations) + per-block call-site warmup; 500 ms cooldown pauses between phases |
-| **Fairness** | All libraries measured on the same device/session/build, same dp values, same call shape; px resolution parity verified in every pass and round |
+| **Measurement hygiene** | Chunked main-thread measurement (max ~50 ms blocks) — no ANR, no frame-skip avalanches, no MIUI/thermal throttling corrupting the environment |
+| **Warmup** | Discarded 20,000-iteration warm-up per library before every timed block (Benchmarks A and B) |
+| **Fairness** | All libraries measured on the same device/session/build, same dp values, same call shape; px resolution parity verified in every legacy pass |
 
-The T1 → T3 spread within each round (e.g. sdp 26 → 5 ns) is the ART JIT warming up during the measurement window — the standard release install has no pre-compiled PGO profiles, so the steady-state (hot JIT) row is T3. The captured window is a standard portrait phone window (no split-screen / multi-window active during the runs).
+The T1 → T3 spread within the legacy passes (e.g. sdp 20 → 7 ns) is the ART JIT warming up during the measurement window — the standard release install has no pre-compiled PGO profiles, so the steady-state (hot JIT) row is T3. The captured window is a standard portrait phone window (no split-screen / multi-window active during the runs).
 
-### Round 1 — time per single 1dp call
+### Benchmark A — Compose API (main thread, chunked) — median per 1dp call
+
+**Constant 1dp:**
+
+| Library | Median | Min | P90 | Max |
+| :--- | :---: | :---: | :---: | :---: |
+| **Dynamic 3.1.8** | **27.7 ns** | 9.1 ns | 52.7 ns | 82.5 ns |
+| SDPS 3.1.6 | 5.27 µs | 4.11 µs | 6.35 µs | 6.51 µs |
+| Lib #2 | 1.99 µs | 1.35 µs | 2.14 µs | 2.43 µs |
+
+**Mixed values (12 dimensions):**
+
+| Library | Median | Min | P90 | Max |
+| :--- | :---: | :---: | :---: | :---: |
+| **Dynamic 3.1.8** | **30.1 ns** | 21.9 ns | 32.4 ns | 115.4 ns |
+| SDPS 3.1.6 | 5.43 µs | 4.61 µs | 5.63 µs | 5.82 µs |
+| Lib #2 | 1.93 µs | 1.37 µs | 1.97 µs | 2.03 µs |
+
+### Benchmark B — Engine (off main thread) — median per 1dp call
+
+**Constant 1dp:**
+
+| Library | Median |
+| :--- | :---: |
+| **Dynamic 3.1.8** | **6.83 ns** |
+| SDPS 3.1.6 | 3.26 µs |
+
+**Mixed values (12 dimensions):**
+
+| Library | Median |
+| :--- | :---: |
+| **Dynamic 3.1.8** | **8.09 ns** |
+| SDPS 3.1.6 | 3.60 µs |
+
+### Legacy T1/T2/T3 — time per single 1dp call (original methodology, kept for continuity)
 
 **sdp (no AR):**
 
-| Test | Dynamic 3.1.8 | Concorrente 1 | Concorrente 2 |
+| Test | Dynamic 3.1.8 | SDPS 3.1.6 | Lib #2 |
 | :--- | :---: | :---: | :---: |
-| **T1** | **26 ns** | 3,392 ns | 1,205 ns |
-| **T2** | **11 ns** | 2,934 ns | 1,205 ns |
-| **T3** | **5 ns** | 2,754 ns | 1,205 ns |
-| **Média** | **14 ns** | **3,026 ns** | **1,205 ns** |
+| **T1** | **20 ns** | 3,399 ns | 1,114 ns |
+| **T2** | **7 ns** | 3,273 ns | 1,114 ns |
+| **T3** | **7 ns** | 3,278 ns | 1,114 ns |
+| **Média** | **11 ns** | **3,316 ns** | **1,114 ns** |
 
-**sdpa (with AR, Dynamic × Concorrente 1):**
+**sdpa (with AR, Dynamic × SDPS):**
 
-| Test | Dynamic 3.1.8 | Concorrente 1 |
+| Test | Dynamic 3.1.8 | SDPS 3.1.6 |
 | :--- | :---: | :---: |
-| **T1** | **167 ns** | 3,225 ns |
-| **T2** | **42 ns** | 2,915 ns |
-| **T3** | **5 ns** | 2,708 ns |
-| **Média** | **71 ns** | **2,949 ns** |
+| **T1** | **260 ns** | 3,987 ns |
+| **T2** | **61 ns** | 3,637 ns |
+| **T3** | **7 ns** | 3,542 ns |
+| **Média** | **109 ns** | **3,722 ns** |
 
-### Round 2 — time per single 1dp call
+### Resolution values (px) — deterministic, identical across all tests and passes
 
-**sdp (no AR):**
-
-| Test | Dynamic 3.1.8 | Concorrente 1 | Concorrente 2 |
-| :--- | :---: | :---: | :---: |
-| **T1** | **26 ns** | 3,330 ns | 1,141 ns |
-| **T2** | **14 ns** | 2,989 ns | 1,141 ns |
-| **T3** | **5 ns** | 2,738 ns | 1,141 ns |
-| **Média** | **15 ns** | **3,019 ns** | **1,141 ns** |
-
-**sdpa (with AR, Dynamic × Concorrente 1):**
-
-| Test | Dynamic 3.1.8 | Concorrente 1 |
-| :--- | :---: | :---: |
-| **T1** | **180 ns** | 3,241 ns |
-| **T2** | **62 ns** | 2,945 ns |
-| **T3** | **5 ns** | 2,723 ns |
-| **Média** | **82 ns** | **2,969 ns** |
-
-### Resolution values (px) — deterministic, identical across all tests and both rounds
-
-| dp | Dynamic 3.1.8 (sdp) | Concorrente 1 (sdp) | Concorrente 2 (sdp) | Dynamic (sdpa) | Concorrente 1 (sdpa) |
+| dp | Dynamic 3.1.8 (sdp) | SDPS 3.1.6 (sdp) | Lib #2 (sdp) | Dynamic (sdpa) | SDPS 3.1.6 (sdpa) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **1dp** | 3.6025 | 3.6025 | 3.6025 | 3.7289135 | 3.7289138 |
 | **10dp** | 36.025 | 36.0249 | 36.025 | 37.289135 | 37.289135 |
 | **100dp** | 360.25 | 360.25 | 360.25 | 372.89136 | 372.89206 |
 
-> **How to read**: Dynamic's numbers are the **inlined fast lane** (single float multiply over the coherent per-window snapshot). Concorrente 1 (legacy table-based artifact) and Concorrente 2 (per-call `@Composable` scaling, measured inside composition) pay per-call dispatch/table work — µs range. **Dynamic is ~75–215× faster on the sdp average across rounds** (e.g. Round 2: 3,019/15 ≈ 201× vs Concorrente 1, 1,141/15 ≈ 76× vs Concorrente 2).
+> **How to read**: Dynamic's numbers are the **inlined fast lane** (single float multiply over the coherent per-window snapshot). SDPS (legacy table-based artifact) and Lib #2 (per-call `@Composable` scaling, measured inside composition) pay per-call dispatch/table work, so they measure in the µs range — **Dynamic is ~190× faster than SDPS and ~72× faster than Lib #2 on the Compose-probe constant average** (5,268/27.7; 1,988/27.7), **~477× faster than SDPS off-main** (3,260/6.83) and **~301× vs SDPS / ~101× vs Lib #2 on the legacy average** (3,316/11; 1,114/11). The off-main engine numbers (7–8 ns) are lower than the in-composition probe (27–30 ns) because the composition environment carries per-frame/JIT overhead — both measure the same call shape.
 
 ---
 
 ## 3. BenchmarkActivity — Current Results (2026-08-13 · release APK + R8)
 
-**Device:** Xiaomi 2107113SG · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
+**Device:** Xiaomi 2107113SG (vili) · sw=393dp w=393dp h=842dp · density 2.75 (1080×2400 @ 440 dpi).
 
 ### Calculation Test (Scaled: sw+h+w, +AR, 40,000 calls)
 
@@ -221,7 +242,7 @@ The shared `@Volatile` fields (`scale`, `arMultiplier`, `aspectRatioMul`, `norma
 ✅ DimenAndroidPerformanceTest — 2/2 tests on physical device
 ✅ ExampleInstrumentedTest    — passes
 ✅ BenchmarkActivity      — executed successfully on physical device
-✅ BenchLab               — 3 tests × 2 rounds executed successfully (release + R8)
+✅ BenchLab               — Benchmark A (Compose) + Benchmark B (Engine) + legacy T1/T2/T3 executed successfully on physical device (release + R8, headless AUTO_START)
 ```
 
 ---
@@ -245,7 +266,7 @@ For eligible `CalcType`s on the default path (`shouldBypassCache`), `getOrPut` r
 
 ## 7. Benchmark Variability
 
-All numbers in this document were captured on a **Xiaomi 2107113SG (Qualcomm bengal / Snapdragon 680-class · 2.8 GHz max)**. Real-world results will differ based on:
+All numbers in this document were captured on a **Xiaomi 2107113SG (vili · Qualcomm kryo300-class / Snapdragon 888-class · 2.84 GHz max)**. Real-world results will differ based on:
 
 - **Device class**: budget Cortex-A55 cores can be 5–10× slower on atomic operations
 - **JIT stage**: cold start is 3–10× slower than steady-state hot JIT
@@ -258,5 +279,5 @@ Treat figures as reference points, not guarantees.
 
 ---
 
-*Report generated on: 2026-08-13 · AppDimens Dynamic Performance Lab · Xiaomi 2107113SG (Qualcomm bengal · 2.8 GHz max) · Physical Hardware — release APK + R8 · Data from current test runs: BenchLab (§2) and BenchmarkActivity (§3) · JVM 17 host*
+*Report generated on: 2026-08-13 · AppDimens Dynamic Performance Lab · Xiaomi 2107113SG (vili · Qualcomm kryo300-class · 2.84 GHz max) · Physical Hardware — release APK + R8 · Data from current test runs: BenchLab (§2) and BenchmarkActivity (§3) · JVM 17 host*
 *Compiled with: Kotlin 2.x · JVM 17 · ART · Gradle 9.x*

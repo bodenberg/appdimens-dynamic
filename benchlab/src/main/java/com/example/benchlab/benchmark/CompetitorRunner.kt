@@ -4,7 +4,7 @@
  * EN Legacy off-main benchmark core (original T1/T2/T3 methodology).
  *    Runs 3 independent test passes, each measuring:
  *    - Dp resolution values for 1dp, 10dp, 100dp in all three libraries
- *    - Time per single dp call in AppDimens + SDPS (Chaintech measured by probe)
+ *    - Time per single dp call in AppDimens + SDPS (Lib #2 measured by probe)
  *    Kept as-is (Long ns averages, measureNanoTime, delay(100) between
  *    warm-up and measurement) for continuity with previously published
  *    results. The NEW methodology lives in ComposeCompetitorProbe + CoreEngineRunner.
@@ -12,7 +12,7 @@
  * PT Núcleo off-main legado do benchmark (metodologia original T1/T2/T3).
  *    Executa 3 passes de teste independentes, cada um medindo:
  *    - Valores de resolução dp para 1dp, 10dp, 100dp nas três bibliotecas
- *    - Tempo por chamada única de dp em AppDimens + SDPS (Chaintech medido pela sonda)
+ *    - Tempo por chamada única de dp em AppDimens + SDPS (Lib #2 medido pela sonda)
  *    Mantido como estava (médias Long ns, measureNanoTime, delay(100) entre
  *    warm-up e medição) por continuidade com resultados já publicados.
  *    A metodologia NOVA vive em ComposeCompetitorProbe + CoreEngineRunner.
@@ -39,7 +39,7 @@ private val DP_VALUES = intArrayOf(1, 10, 100)
  * PT Executa o benchmark comparativo legado T1/T2/T3 fora da thread principal.
  *
  * @param context EN Android context. PT Contexto Android.
- * @param concorrente2Result EN Pre-measured Chaintech data from the legacy composable probe. PT Dados pré-medidos da Chaintech da sonda composable legada.
+ * @param concorrente2Result EN Pre-measured Lib #2 data from the legacy composable probe. PT Dados pré-medidos da Lib #2 da sonda composable legada.
  * @param onPhaseChange EN Callback for phase transitions. PT Callback para transições de fase.
  */
 suspend fun runLegacyBenchmark(
@@ -118,7 +118,7 @@ suspend fun runLegacyBenchmark(
             repeat(MEASURE_COUNT) { concorrente1.sdpa(context, 1) }
         } / MEASURE_COUNT
 
-        // Chaintech time is fixed from the probe (already measured once)
+        // Lib #2 time is fixed from the probe (already measured once)
         timeResults += SingleDpTiming3(
             appDimensNs = appSingleNs,
             concorrente1Ns = concorrente1SingleNs,

@@ -2,7 +2,7 @@
  * @author Bodenberg
  *
  * EN Off-main benchmark core (Benchmark B — Engine, Dispatchers.Default).
- *    Compares AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 only: Chaintech has
+ *    Compares AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 only: Lib #2 has
  *    no non-Compose API (N/A outside composition), so it is excluded
  *    here instead of being measured under a different methodology.
  *    Same methodology as the Compose probe: identical warm-up, 9 samples,
@@ -11,7 +11,7 @@
  *    Also captures sdpa (aspect ratio) resolution values for both libs.
  *
  * PT Núcleo off-main do benchmark (Benchmark B — Motor, Dispatchers.Default).
- *    Compara AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 apenas: a Chaintech não
+ *    Compara AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 apenas: a Lib #2 não
  *    possui API não-Compose (N/A fora da composição), então é excluída aqui
  *    em vez de ser medida com metodologia diferente.
  *    Mesma metodologia da sonda Compose: warm-up idêntico, 9 amostras,
@@ -112,7 +112,7 @@ suspend fun runCoreEngineBenchmark(
         }
     }
 
-    // ── sdpa resolution values (AR — not available in Chaintech) ──
+    // ── sdpa resolution values (AR — not available in Lib #2) ──
     Log.i(TAG, "Engine: dynamic.const=" + statsOf(dConst, BENCH_MEASURE_COUNT.toLong()).medianNs +
         " sdps.const=" + statsOf(sConst, BENCH_MEASURE_COUNT.toLong()).medianNs +
         " dynamic.mixed=" + statsOf(dMixed, BENCH_MEASURE_COUNT.toLong()).medianNs +

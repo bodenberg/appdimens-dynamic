@@ -2,7 +2,7 @@
  * @author Bodenberg
  *
  * EN Data models + phases for the 3-way competitor benchmark
- *    (AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 vs Chaintech 1.0.7).
+ *    (AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 vs Lib #2).
  *
  *    NEW methodology (headline):
  *    - Benchmark A (Compose API): all three libraries measured together
@@ -10,7 +10,7 @@
  *      identical operation count, order rotation, anti-DCE checksum,
  *      chunked across frames so the UI never freezes.
  *    - Benchmark B (Engine): Dynamic vs SDPS only, off main thread
- *      (Dispatchers.Default). Chaintech has no non-Compose API.
+ *      (Dispatchers.Default). Lib #2 has no non-Compose API.
  *    Headline number is the MEDIAN of N samples (steady-state ns/op),
  *    with min/P90/max as spread. All timing stored as Double ns.
  *
@@ -19,7 +19,7 @@
  *    time per single call (Long ns, average of 3 runs) — original code.
  *
  * PT Modelos de dados + fases do benchmark de 3 vias
- *    (AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 vs Chaintech 1.0.7).
+ *    (AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 vs Lib #2).
  *
  *    Metodologia NOVA (principal):
  *    - Benchmark A (API Compose): as três bibliotecas medidas juntas
@@ -27,7 +27,7 @@
  *      contagem de operações, rotação de ordem, checksum anti-DCE,
  *      fatiado entre frames para a UI nunca congelar.
  *    - Benchmark B (Motor): Dynamic vs SDPS apenas, fora da main thread
- *      (Dispatchers.Default). A Chaintech não possui API não-Compose.
+ *      (Dispatchers.Default). A Lib #2 não possui API não-Compose.
  *    O número principal é a MEDIANA de N amostras (ns/op steady-state),
  *    com min/P90/max como dispersão. Todo tempo armazenado como Double ns.
  *
@@ -116,9 +116,9 @@ data class ComposeApiResult(
 
 /**
  * EN Benchmark B — Engine, off main thread (Dispatchers.Default),
- *    Dynamic vs SDPS only (Chaintech has no non-Compose API → N/A).
+ *    Dynamic vs SDPS only (Lib #2 has no non-Compose API → N/A).
  * PT Benchmark B — Motor, fora da main thread (Dispatchers.Default),
- *    apenas Dynamic vs SDPS (Chaintech não possui API não-Compose → N/A).
+ *    apenas Dynamic vs SDPS (Lib #2 não possui API não-Compose → N/A).
  */
 data class CoreEngineResult(
     val dynamic: LibraryTiming,

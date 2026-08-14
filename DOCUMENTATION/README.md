@@ -10,7 +10,7 @@ This folder goes deeper into each **scaling strategy** in [AppDimens Dynamic](..
 - **Specialized kernels**: Zero-branch resolution per family/qualifier (`resolveSdpPx`, `resolveSdpaPx`, etc.).
 - **Non-Compose fast lane**: `fastMetricsForCode` skips ThreadLocal probe.
 - **DimenMetrics eager AR**: `normalizedAspectRatio` / `logNormalizedAspectRatio` changed from `lazy` to plain `val`.
-- **BenchLab module**: New competitor benchmark (Dynamic vs SDPS vs Chaintech) with full scroll screenshot + report export.
+- **BenchLab module**: New competitor benchmark (Dynamic vs SDPS vs Lib #2) with full scroll screenshot + report export.
 
 **Product docs:** [PRD.md](PRD.md) · [PDR.md](PDR.md) · [MATHEMATICS-AND-CALCULUS.md](MATHEMATICS-AND-CALCULUS.md).
 

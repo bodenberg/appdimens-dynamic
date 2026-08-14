@@ -2,7 +2,7 @@
  * @author Bodenberg
  *
  * EN Benchmark dashboard: AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 vs
- *    Chaintech 1.0.7.
+ *    Lib #2.
  *    Shows:
  *    - NEW methodology: Benchmark A (Compose API, main thread) and
  *      Benchmark B (Engine, off-main) with median/min/P90/max stats,
@@ -12,7 +12,7 @@
  *    Supports full-scroll screenshot and report export.
  *
  * PT Dashboard de benchmark: AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 vs
- *    Chaintech 1.0.7.
+ *    Lib #2.
  *    Exibe:
  *    - Metodologia NOVA: Benchmark A (API Compose, main thread) e
  *      Benchmark B (Motor, off-main) com estatísticas mediana/min/P90/max,
@@ -98,7 +98,7 @@ private val AccentRed     = Color(0xFFFF5252)
 // Library colors
 private val ColorAppDimens    = AccentCyan
 private val ColorSdps         = AccentAmber
-private val ColorChaintech    = AccentPurple
+private val ColorLib2    = AccentPurple
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ACTIVITY
@@ -232,8 +232,8 @@ private fun BenchlabScreen(autoStart: Boolean = false) {
         onResult = controller::onComposeMeasured,
     )
 
-    // EN Legacy Chaintech probe (used by the T1/T2/T3 tests).
-    // PT Sonda legada da Chaintech (usada pelos testes T1/T2/T3).
+    // EN Legacy Lib #2 probe (used by the T1/T2/T3 tests).
+    // PT Sonda legada da Lib #2 (usada pelos testes T1/T2/T3).
     Concorrente2Probe(
         active = legacyProbeActive,
         onResult = controller::onLegacyMeasured,
@@ -395,7 +395,7 @@ private fun ActionPanel(
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            "Dynamic 3.1.8 × SDPS 3.1.6 × Chaintech 1.0.7 — 2 benchmarks + testes legados",
+            "Dynamic 3.1.8 × SDPS 3.1.6 × Lib #2 — 2 benchmarks + testes legados",
             color = TextSecondary, fontSize = 11.sp,
             modifier = Modifier.padding(bottom = 12.dp)
         )
@@ -520,7 +520,7 @@ private fun MethodologyCard() {
         Spacer(Modifier.height(6.dp))
         Text(
             "Benchmark B — Motor (Dispatchers.Default): Dynamic × SDPS fora da UI. " +
-                "Chaintech não possui API não-Compose → N/A.",
+                "Lib #2 não possui API não-Compose → N/A.",
             color = TextSecondary, fontSize = 11.sp, lineHeight = 16.sp
         )
         Spacer(Modifier.height(6.dp))
@@ -558,7 +558,7 @@ private fun ComposeApiSection(result: CompetitorBenchmarkResult?) {
                         items = listOf(
                             Triple("Dynamic 3.1.8", ColorAppDimens, r.composeApi.dynamic.constant1dp),
                             Triple("SDPS 3.1.6", ColorSdps, r.composeApi.sdps.constant1dp),
-                            Triple("Chaintech 1.0.7", ColorChaintech, r.composeApi.chaintech.constant1dp),
+                            Triple("Lib #2", ColorLib2, r.composeApi.chaintech.constant1dp),
                         )
                     )
                     WorkloadBlock(
@@ -567,7 +567,7 @@ private fun ComposeApiSection(result: CompetitorBenchmarkResult?) {
                         items = listOf(
                             Triple("Dynamic 3.1.8", ColorAppDimens, r.composeApi.dynamic.mixedValues),
                             Triple("SDPS 3.1.6", ColorSdps, r.composeApi.sdps.mixedValues),
-                            Triple("Chaintech 1.0.7", ColorChaintech, r.composeApi.chaintech.mixedValues),
+                            Triple("Lib #2", ColorLib2, r.composeApi.chaintech.mixedValues),
                         )
                     )
                 }
@@ -586,12 +586,12 @@ private fun CoreEngineSection(result: CompetitorBenchmarkResult?) {
         icon = "⚙️",
         label = "Benchmark B — Motor (Dispatchers.Default)",
         color = AccentAmber,
-        caption = "Dynamic × SDPS fora da composição · mesma metodologia (9 × 50.000, rotação, anti-DCE) · Chaintech: N/A — API exige Composition"
+        caption = "Dynamic × SDPS fora da composição · mesma metodologia (9 × 50.000, rotação, anti-DCE) · Lib #2: N/A — API exige Composition"
     )
 
     DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
         AnimatedVisibility(visible = result == null) {
-            Text("Dynamic × SDPS fora da composição. Chaintech: N/A (exige Composition).", color = TextSecondary, fontSize = 12.sp)
+            Text("Dynamic × SDPS fora da composição. Lib #2: N/A (exige Composition).", color = TextSecondary, fontSize = 12.sp)
         }
         AnimatedVisibility(visible = result != null) {
             result?.let { r ->
@@ -699,11 +699,11 @@ private fun RatioSection(result: CompetitorBenchmarkResult?) {
             Spacer(Modifier.height(4.dp))
             DynamicRatioLine(r.composeApi.dynamic.constant1dp.medianNs, r.composeApi.sdps.constant1dp.medianNs, "SDPS 3.1.6", "Compose · constant 1dp")
             Spacer(Modifier.height(4.dp))
-            DynamicRatioLine(r.composeApi.dynamic.constant1dp.medianNs, r.composeApi.chaintech.constant1dp.medianNs, "Chaintech 1.0.7", "Compose · constant 1dp")
+            DynamicRatioLine(r.composeApi.dynamic.constant1dp.medianNs, r.composeApi.chaintech.constant1dp.medianNs, "Lib #2", "Compose · constant 1dp")
             Spacer(Modifier.height(4.dp))
             DynamicRatioLine(r.composeApi.dynamic.mixedValues.medianNs, r.composeApi.sdps.mixedValues.medianNs, "SDPS 3.1.6", "Compose · mixed values")
             Spacer(Modifier.height(4.dp))
-            DynamicRatioLine(r.composeApi.dynamic.mixedValues.medianNs, r.composeApi.chaintech.mixedValues.medianNs, "Chaintech 1.0.7", "Compose · mixed values")
+            DynamicRatioLine(r.composeApi.dynamic.mixedValues.medianNs, r.composeApi.chaintech.mixedValues.medianNs, "Lib #2", "Compose · mixed values")
 
             Spacer(Modifier.height(8.dp))
 
@@ -743,7 +743,7 @@ private fun ChecksumSection(result: CompetitorBenchmarkResult?) {
         icon = "🔢",
         label = "Anti-DCE checksums",
         color = AccentGreen,
-        caption = "Soma acumulada das resoluções nos loops cronometrados — prova de que as chamadas foram executadas e consumidas. Dynamic/SDPS somam px; Chaintech soma dp (.value)."
+        caption = "Soma acumulada das resoluções nos loops cronometrados — prova de que as chamadas foram executadas e consumidas. Dynamic/SDPS somam px; Lib #2 soma dp (.value)."
     )
 
     DashboardCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
@@ -755,7 +755,7 @@ private fun ChecksumSection(result: CompetitorBenchmarkResult?) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     ChecksumRow("Compose · Dynamic 3.1.8", r.composeApi.dynamic, ColorAppDimens)
                     ChecksumRow("Compose · SDPS 3.1.6", r.composeApi.sdps, ColorSdps)
-                    ChecksumRow("Compose · Chaintech 1.0.7", r.composeApi.chaintech, ColorChaintech)
+                    ChecksumRow("Compose · Lib #2", r.composeApi.chaintech, ColorLib2)
                     HorizontalDivider(color = SurfaceBorder)
                     ChecksumRow("Motor · Dynamic 3.1.8", r.coreEngine.dynamic, ColorAppDimens)
                     ChecksumRow("Motor · SDPS 3.1.6", r.coreEngine.sdps, ColorSdps)
@@ -812,8 +812,8 @@ private fun LegacyDpResolutionSection(result: CompetitorBenchmarkResult?, withAr
                         )
                         HorizontalDivider(color = SurfaceBorder)
                         LibBlock(
-                            libName = "Chaintech 1.0.7",
-                            libColor = ColorChaintech,
+                            libName = "Lib #2",
+                            libColor = ColorLib2,
                             dp1T1 = r.legacy.test1.dp1Concorrente2, dp1T2 = r.legacy.test2.dp1Concorrente2, dp1T3 = r.legacy.test3.dp1Concorrente2,
                             dp10T1 = r.legacy.test1.dp10Concorrente2, dp10T2 = r.legacy.test2.dp10Concorrente2, dp10T3 = r.legacy.test3.dp10Concorrente2,
                             dp100T1 = r.legacy.test1.dp100Concorrente2, dp100T2 = r.legacy.test2.dp100Concorrente2, dp100T3 = r.legacy.test3.dp100Concorrente2,
@@ -921,7 +921,7 @@ private fun LegacyTimingSection(result: CompetitorBenchmarkResult?) {
             result?.let { r ->
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("sdp (sem AR)", color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                    TableHeader(columns = listOf("Teste" to 0.15f, "Dynamic" to 0.28f, "SDPS" to 0.28f, "Chaintech" to 0.29f))
+                    TableHeader(columns = listOf("Teste" to 0.15f, "Dynamic" to 0.28f, "SDPS" to 0.28f, "Lib #2" to 0.29f))
                     HorizontalDivider(color = SurfaceBorder)
                     LegacyTimingRow("T1", r.legacy.timeTest1.appDimensNs, r.legacy.timeTest1.concorrente1Ns, r.legacy.timeTest1.concorrente2Ns, AccentCyan.copy(alpha = 0.04f))
                     HorizontalDivider(color = SurfaceBorder.copy(alpha = 0.5f))
@@ -973,7 +973,7 @@ private fun LegacyTimingRow(
         Text(conc1Ns.formatNs(), color = ColorSdps, fontSize = 11.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium,
             fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.28f))
-        Text(conc2Ns.formatNs(), color = ColorChaintech, fontSize = 11.sp,
+        Text(conc2Ns.formatNs(), color = ColorLib2, fontSize = 11.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium,
             fontFamily = FontFamily.Monospace, modifier = Modifier.weight(0.29f))
     }
@@ -1031,13 +1031,13 @@ private fun LegacyAverageBanner(result: CompetitorBenchmarkResult?) {
 
             Spacer(Modifier.height(4.dp))
 
-            val ratioVsChaintech = if (r.legacy.avgAppDimensNs > 0) r.legacy.avgConcorrente2Ns.toFloat() / r.legacy.avgAppDimensNs.toFloat() else 1f
-            val fasterVsChaintech = r.legacy.avgAppDimensNs < r.legacy.avgConcorrente2Ns
+            val ratioVsLib2 = if (r.legacy.avgAppDimensNs > 0) r.legacy.avgConcorrente2Ns.toFloat() / r.legacy.avgAppDimensNs.toFloat() else 1f
+            val fasterVsLib2 = r.legacy.avgAppDimensNs < r.legacy.avgConcorrente2Ns
             RatioBanner(
-                emoji = if (fasterVsChaintech) "🚀" else "🐢",
-                text = if (fasterVsChaintech) "Dynamic é ×%.1f mais rápido que Chaintech".format(ratioVsChaintech)
-                       else "Dynamic é ×%.1f mais lento que Chaintech".format(1f / ratioVsChaintech),
-                color = if (fasterVsChaintech) AccentGreen else AccentRed
+                emoji = if (fasterVsLib2) "🚀" else "🐢",
+                text = if (fasterVsLib2) "Dynamic é ×%.1f mais rápido que Lib #2".format(ratioVsLib2)
+                       else "Dynamic é ×%.1f mais lento que Lib #2".format(1f / ratioVsLib2),
+                color = if (fasterVsLib2) AccentGreen else AccentRed
             )
 
             Spacer(Modifier.height(8.dp))
@@ -1188,7 +1188,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     val sb = StringBuilder()
     sb.appendLine("═══════════════════════════════════════════════════════")
     sb.appendLine("  BenchLab — Relatório de Benchmark")
-    sb.appendLine("  Dynamic 3.1.8 × SDPS 3.1.6 × Chaintech 1.0.7")
+    sb.appendLine("  Dynamic 3.1.8 × SDPS 3.1.6 × Lib #2")
     sb.appendLine("  Benchmark A (Compose API) + Benchmark B (Motor) + Testes legados T1-T3")
     sb.appendLine("═══════════════════════════════════════════════════════")
     sb.appendLine()
@@ -1196,13 +1196,13 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     sb.appendLine()
     sb.appendLine("Metodologia (novos benchmarks):")
     sb.appendLine("  Benchmark A — API Compose (main thread): as 3 bibliotecas no mesmo composable")
-    sb.appendLine("  Benchmark B — Motor (Dispatchers.Default): Dynamic x SDPS apenas (Chaintech N/A)")
+    sb.appendLine("  Benchmark B — Motor (Dispatchers.Default): Dynamic x SDPS apenas (Lib #2 N/A)")
     sb.appendLine("  Warm-up idêntico: ${"%,d".format(BENCH_WARMUP_COUNT).replace(',', '.')} resoluções de 1dp por biblioteca")
     sb.appendLine("  Amostras: $BENCH_SAMPLE_COUNT por workload")
     sb.appendLine("  Iterações/amostra: ${"%,d".format(BENCH_MEASURE_COUNT).replace(',', '.')}")
     sb.appendLine("  Fatiamento: ${"%,d".format(BENCH_CHUNK_OPS).replace(',', '.')} ops/frame (UI responsiva; tempo por fatia exclui gaps)")
     sb.appendLine("  Anti-DCE: acumulador de checksum em todos os loops cronometrados")
-    sb.appendLine("  Rotação de ordem: Dynamic → SDPS → Chaintech / SDPS → Chaintech → Dynamic / Chaintech → Dynamic → SDPS")
+    sb.appendLine("  Rotação de ordem: Dynamic → SDPS → Lib #2 / SDPS → Lib #2 → Dynamic / Lib #2 → Dynamic → SDPS")
     sb.appendLine("  Número principal: mediana (ns/op steady-state amortizado); min/P90/max = dispersão")
     sb.appendLine("  Workloads: constant 1dp (call site quente) + mixed values (12 dimensões pré-definidas)")
     sb.appendLine("  Testes legados T1-T3: metodologia original (média de 3 execuções), por continuidade")
@@ -1210,7 +1210,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
 
     sb.appendLine("── Benchmark A — API Compose (main thread) ──")
     sb.appendLine()
-    for ((name, lib) in listOf("Dynamic 3.1.8" to r.composeApi.dynamic, "SDPS 3.1.6" to r.composeApi.sdps, "Chaintech 1.0.7" to r.composeApi.chaintech)) {
+    for ((name, lib) in listOf("Dynamic 3.1.8" to r.composeApi.dynamic, "SDPS 3.1.6" to r.composeApi.sdps, "Lib #2" to r.composeApi.chaintech)) {
         sb.appendLine("  $name:")
         sb.appendLine("    Constant 1dp: mediana=${lib.constant1dp.medianNs.formatNs()}  min=${lib.constant1dp.minNs.formatNs()}  P90=${lib.constant1dp.p90Ns.formatNs()}  max=${lib.constant1dp.maxNs.formatNs()}")
         sb.appendLine("    Mixed values: mediana=${lib.mixedValues.medianNs.formatNs()}  min=${lib.mixedValues.minNs.formatNs()}  P90=${lib.mixedValues.p90Ns.formatNs()}  max=${lib.mixedValues.maxNs.formatNs()}")
@@ -1218,7 +1218,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     }
 
     sb.appendLine("── Benchmark B — Motor (Dispatchers.Default) ──")
-    sb.appendLine("  Chaintech: N/A — API exige Composition")
+    sb.appendLine("  Lib #2: N/A — API exige Composition")
     sb.appendLine()
     for ((name, lib) in listOf("Dynamic 3.1.8" to r.coreEngine.dynamic, "SDPS 3.1.6" to r.coreEngine.sdps)) {
         sb.appendLine("  $name:")
@@ -1228,16 +1228,16 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     }
 
     sb.appendLine("── Anti-DCE checksums ──")
-    sb.appendLine("  Compose:  Dynamic=${"%.1f".format(r.composeApi.dynamic.constantChecksum)}/${"%.1f".format(r.composeApi.dynamic.mixedChecksum)}  SDPS=${"%.1f".format(r.composeApi.sdps.constantChecksum)}/${"%.1f".format(r.composeApi.sdps.mixedChecksum)}  Chaintech=${"%.1f".format(r.composeApi.chaintech.constantChecksum)}/${"%.1f".format(r.composeApi.chaintech.mixedChecksum)}")
+    sb.appendLine("  Compose:  Dynamic=${"%.1f".format(r.composeApi.dynamic.constantChecksum)}/${"%.1f".format(r.composeApi.dynamic.mixedChecksum)}  SDPS=${"%.1f".format(r.composeApi.sdps.constantChecksum)}/${"%.1f".format(r.composeApi.sdps.mixedChecksum)}  Lib #2=${"%.1f".format(r.composeApi.chaintech.constantChecksum)}/${"%.1f".format(r.composeApi.chaintech.mixedChecksum)}")
     sb.appendLine("  Motor:    Dynamic=${"%.1f".format(r.coreEngine.dynamic.constantChecksum)}/${"%.1f".format(r.coreEngine.dynamic.mixedChecksum)}  SDPS=${"%.1f".format(r.coreEngine.sdps.constantChecksum)}/${"%.1f".format(r.coreEngine.sdps.mixedChecksum)}")
     sb.appendLine()
 
     sb.appendLine("── Comparativo (mediana dos novos benchmarks) ──")
     val comparisons = listOf(
         RatioLine("Compose · constant 1dp", r.composeApi.dynamic.constant1dp.medianNs, r.composeApi.sdps.constant1dp.medianNs, "SDPS 3.1.6"),
-        RatioLine("Compose · constant 1dp", r.composeApi.dynamic.constant1dp.medianNs, r.composeApi.chaintech.constant1dp.medianNs, "Chaintech 1.0.7"),
+        RatioLine("Compose · constant 1dp", r.composeApi.dynamic.constant1dp.medianNs, r.composeApi.chaintech.constant1dp.medianNs, "Lib #2"),
         RatioLine("Compose · mixed values", r.composeApi.dynamic.mixedValues.medianNs, r.composeApi.sdps.mixedValues.medianNs, "SDPS 3.1.6"),
-        RatioLine("Compose · mixed values", r.composeApi.dynamic.mixedValues.medianNs, r.composeApi.chaintech.mixedValues.medianNs, "Chaintech 1.0.7"),
+        RatioLine("Compose · mixed values", r.composeApi.dynamic.mixedValues.medianNs, r.composeApi.chaintech.mixedValues.medianNs, "Lib #2"),
         RatioLine("Motor · constant 1dp", r.coreEngine.dynamic.constant1dp.medianNs, r.coreEngine.sdps.constant1dp.medianNs, "SDPS 3.1.6"),
         RatioLine("Motor · mixed values", r.coreEngine.dynamic.mixedValues.medianNs, r.coreEngine.sdps.mixedValues.medianNs, "SDPS 3.1.6"),
     )
@@ -1258,7 +1258,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
             { t: DpResolution3 -> t.dp1AppDimens }, { t: DpResolution3 -> t.dp10AppDimens }, { t: DpResolution3 -> t.dp100AppDimens }),
         "SDPS 3.1.6" to Triple(
             { t: DpResolution3 -> t.dp1Concorrente1 }, { t: DpResolution3 -> t.dp10Concorrente1 }, { t: DpResolution3 -> t.dp100Concorrente1 }),
-        "Chaintech 1.0.7" to Triple(
+        "Lib #2" to Triple(
             { t: DpResolution3 -> t.dp1Concorrente2 }, { t: DpResolution3 -> t.dp10Concorrente2 }, { t: DpResolution3 -> t.dp100Concorrente2 }),
     )
     for ((name, getters) in sdpGetters) {
@@ -1282,7 +1282,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     sb.appendLine("  Tempo por chamada de 1dp (sdp):")
     sb.appendLine("    Dynamic:  T1=${r.legacy.timeTest1.appDimensNs.formatNs()}  T2=${r.legacy.timeTest2.appDimensNs.formatNs()}  T3=${r.legacy.timeTest3.appDimensNs.formatNs()}  Média=${r.legacy.avgAppDimensNs.formatNs()}")
     sb.appendLine("    SDPS:     T1=${r.legacy.timeTest1.concorrente1Ns.formatNs()}  T2=${r.legacy.timeTest2.concorrente1Ns.formatNs()}  T3=${r.legacy.timeTest3.concorrente1Ns.formatNs()}  Média=${r.legacy.avgConcorrente1Ns.formatNs()}")
-    sb.appendLine("    Chaintech: T1=${r.legacy.timeTest1.concorrente2Ns.formatNs()}  T2=${r.legacy.timeTest2.concorrente2Ns.formatNs()}  T3=${r.legacy.timeTest3.concorrente2Ns.formatNs()}  Média=${r.legacy.avgConcorrente2Ns.formatNs()}")
+    sb.appendLine("    Lib #2: T1=${r.legacy.timeTest1.concorrente2Ns.formatNs()}  T2=${r.legacy.timeTest2.concorrente2Ns.formatNs()}  T3=${r.legacy.timeTest3.concorrente2Ns.formatNs()}  Média=${r.legacy.avgConcorrente2Ns.formatNs()}")
     sb.appendLine()
     sb.appendLine("  Tempo por chamada de 1dp (sdpa/AR):")
     sb.appendLine("    Dynamic:  T1=${r.legacy.timeTest1.appDimensArNs.formatNs()}  T2=${r.legacy.timeTest2.appDimensArNs.formatNs()}  T3=${r.legacy.timeTest3.appDimensArNs.formatNs()}  Média=${r.legacy.avgAppDimensArNs.formatNs()}")
@@ -1295,7 +1295,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     }
     if (r.legacy.avgAppDimensNs > 0 && r.legacy.avgConcorrente2Ns > 0) {
         val ratioChain = r.legacy.avgConcorrente2Ns.toFloat() / r.legacy.avgAppDimensNs.toFloat()
-        sb.appendLine("    Dynamic vs Chaintech (sdp): ×${"%.1f".format(ratioChain)} ${if (ratioChain > 1) "mais rápido" else "mais lento"}")
+        sb.appendLine("    Dynamic vs Lib #2 (sdp): ×${"%.1f".format(ratioChain)} ${if (ratioChain > 1) "mais rápido" else "mais lento"}")
     }
     if (r.legacy.avgAppDimensArNs > 0 && r.legacy.avgConcorrente1ArNs > 0) {
         val ratioAr = r.legacy.avgConcorrente1ArNs.toFloat() / r.legacy.avgAppDimensArNs.toFloat()

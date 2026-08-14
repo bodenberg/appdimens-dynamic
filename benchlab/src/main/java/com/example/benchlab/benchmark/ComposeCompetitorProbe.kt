@@ -2,7 +2,7 @@
  * @author Bodenberg
  *
  * EN Composable 3-way probe (Benchmark A — Compose API, main thread).
- *    Measures AppDimens Dynamic 3.1.8, SDPS 3.1.6 and Chaintech 1.0.7
+ *    Measures AppDimens Dynamic 3.1.8, SDPS 3.1.6 and Lib #2
  *    TOGETHER inside the same composition, so all three face the same
  *    environment (main thread, same JIT state, same warm-up, same counts):
  *    - identical warm-up (20,000 resolutions of 1dp per library),
@@ -20,7 +20,7 @@
  *    to a single uninterrupted loop. Reports the result once via [onResult].
  *
  * PT Sonda composable 3-vias (Benchmark A — API Compose, main thread).
- *    Mede AppDimens Dynamic 3.1.8, SDPS 3.1.6 e Chaintech 1.0.7 JUNTAS na
+ *    Mede AppDimens Dynamic 3.1.8, SDPS 3.1.6 e Lib #2 JUNTAS na
  *    mesma composição, para que as três enfrentem o mesmo ambiente
  *    (main thread, mesmo estado de JIT, mesmo warm-up, mesmas contagens):
  *    - warm-up idêntico (20.000 resoluções de 1dp por biblioteca),
@@ -205,25 +205,35 @@ fun ComposeCompetitorProbe(
             else -> {
                 measured = true
                 SideEffect {
-                    Log.i("BENCHLAB", "Compose probe finished: ${schedule.size} chunks measured")
+                    val dConst = statsOf(state.dConst, BENCH_MEASURE_COUNT.toLong())
+                    val dMixed = statsOf(state.dMixed, BENCH_MEASURE_COUNT.toLong())
+                    val sConst = statsOf(state.sConst, BENCH_MEASURE_COUNT.toLong())
+                    val sMixed = statsOf(state.sMixed, BENCH_MEASURE_COUNT.toLong())
+                    val cConst = statsOf(state.cConst, BENCH_MEASURE_COUNT.toLong())
+                    val cMixed = statsOf(state.cMixed, BENCH_MEASURE_COUNT.toLong())
+                    Log.i("BENCHLAB", "Probe A: dynamic.const=${dConst.medianNs} sdps.const=${sConst.medianNs} lib2.const=${cConst.medianNs} dynamic.mixed=${dMixed.medianNs} sdps.mixed=${sMixed.medianNs} lib2.mixed=${cMixed.medianNs}")
+                    Log.i("BENCHLAB", "Probe A stats: dynamic.const=[min=${dConst.minNs},p90=${dConst.p90Ns},max=${dConst.maxNs}] dynamic.mixed=[min=${dMixed.minNs},p90=${dMixed.p90Ns},max=${dMixed.maxNs}]")
+                    Log.i("BENCHLAB", "Probe A stats: sdps.const=[min=${sConst.minNs},p90=${sConst.p90Ns},max=${sConst.maxNs}] sdps.mixed=[min=${sMixed.minNs},p90=${sMixed.p90Ns},max=${sMixed.maxNs}]")
+                    Log.i("BENCHLAB", "Probe A stats: lib2.const=[min=${cConst.minNs},p90=${cConst.p90Ns},max=${cConst.maxNs}] lib2.mixed=[min=${cMixed.minNs},p90=${cMixed.p90Ns},max=${cMixed.maxNs}]")
+                    Log.i("BENCHLAB", "Probe A finished: ${schedule.size} chunks measured")
                     onResult(
                         ComposeProbeResult(
                             composeApi = ComposeApiResult(
                                 dynamic = LibraryTiming(
-                                    constant1dp = statsOf(state.dConst, BENCH_MEASURE_COUNT.toLong()),
-                                    mixedValues = statsOf(state.dMixed, BENCH_MEASURE_COUNT.toLong()),
+                                    constant1dp = dConst,
+                                    mixedValues = dMixed,
                                     constantChecksum = state.dConstAcc + state.warmAcc,
                                     mixedChecksum = state.dMixedAcc + state.warmAcc,
                                 ),
                                 sdps = LibraryTiming(
-                                    constant1dp = statsOf(state.sConst, BENCH_MEASURE_COUNT.toLong()),
-                                    mixedValues = statsOf(state.sMixed, BENCH_MEASURE_COUNT.toLong()),
+                                    constant1dp = sConst,
+                                    mixedValues = sMixed,
                                     constantChecksum = state.sConstAcc + state.warmAcc,
                                     mixedChecksum = state.sMixedAcc + state.warmAcc,
                                 ),
                                 chaintech = LibraryTiming(
-                                    constant1dp = statsOf(state.cConst, BENCH_MEASURE_COUNT.toLong()),
-                                    mixedValues = statsOf(state.cMixed, BENCH_MEASURE_COUNT.toLong()),
+                                    constant1dp = cConst,
+                                    mixedValues = cMixed,
                                     constantChecksum = state.cConstAcc + state.warmAcc,
                                     mixedChecksum = state.cMixedAcc + state.warmAcc,
                                 ),

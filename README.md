@@ -396,7 +396,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 | **DimenSdpExtensions specialized routing** | `fastScaledPx` replaced by `sdpPx`, `sdpaPx`, `hdpPx`, `wdpPx` — each routes straight to its branch-free specialized kernel. |
 | **`invalidateOnConfigChange` enhanced** | Now also nulls `fastWindowSlot` and `fastMwContext` — event-driven coherence. |
 | **Comparison benchmark** | On-device 3.1.8 vs 3.1.6 speed + precision comparison with 2 test runs. |
-| **BenchLab module** | New competitor benchmark: Dynamic vs SDPS vs Chaintech — full scroll screenshot + report export. |
+| **BenchLab module** | New competitor benchmark: Dynamic vs SDPS vs Lib #2 — full scroll screenshot + report export. |
 
 ---
 
