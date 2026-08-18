@@ -145,9 +145,9 @@ object DimenCache {
     @PublishedApi
     internal var diagnosticsEnabled: Boolean = false
 
-    @JvmField val hitCount      = LongAdder()
-    @JvmField val missCount     = LongAdder()
-    @JvmField val evictionCount = LongAdder()
+    @PublishedApi internal val hitCount      = LongAdder()
+    @PublishedApi internal val missCount     = LongAdder()
+    @PublishedApi internal val evictionCount = LongAdder()
 
     /**
      * EN Master switch for the cache system. If disabled, all calls will recompute.
@@ -451,13 +451,24 @@ object DimenCache {
     // against one immutable snapshot for thousands of calls; the CHM hash+equals of
     // DimenMetrics would otherwise run on every cache hit. Multi-window apps simply
     // re-sync this pair each time the active window alternates (correct, and rare).
-    @Volatile
+    //
+    // CRITICAL FIX: metrics + partition must be published as ONE atomic slot.
+    // The previous design used two independent @Volatile fields, which allowed
+    // Thread B to store its partition before Thread A stored its metrics, producing
+    // an incoherent pair (partition_B + metrics_A). A third reader could then look
+    // up metrics_A, hit the identity match, and read partition_B — returning a
+    // result belonging to a different window/snapshot.
     @PublishedApi
-    internal var fastPartitionMetrics: DimenMetrics? = null
+    internal data class FastPartitionSlot(
+        val metrics: DimenMetrics,
+        val partition: SnapshotCache,
+    )
+
+    private val EMPTY_FAST_PARTITION_SLOT = FastPartitionSlot(DimenMetrics.DEFAULT, SnapshotCache(0))
 
     @Volatile
     @PublishedApi
-    internal var fastPartition: SnapshotCache? = null
+    internal var fastPartitionSlot: FastPartitionSlot? = null
 
     @PublishedApi
     internal fun cacheFor(metrics: DimenMetrics): SnapshotCache {
@@ -520,12 +531,16 @@ object DimenCache {
             return withMetrics(metrics) { compute() }
         }
 
-        var partition = fastPartition
-        if (partition === null || fastPartitionMetrics !== metrics) {
-            partition = cacheFor(metrics)
-            fastPartition = partition
-            fastPartitionMetrics = metrics
+        var partitionSlot = fastPartitionSlot
+        if (partitionSlot === null || partitionSlot.metrics !== metrics) {
+            val partition = cacheFor(metrics)
+            // Publish metrics + partition as ONE coherent state.
+            // This eliminates the impossible state partition(B) + metrics(A)
+            // that was possible with two independent atomics.
+            partitionSlot = FastPartitionSlot(metrics, partition)
+            fastPartitionSlot = partitionSlot
         }
+        val partition = partitionSlot.partition
         val slot = slotFor(key)
         val existing = partition.entries.get(slot)
         if (existing?.key == key) {
@@ -1188,8 +1203,7 @@ object DimenCache {
         // an in-flight resolver may finish on an old partition, but it can never publish
         // into the new cache after the clear.
         snapshotCaches.clear()
-        fastPartition = null
-        fastPartitionMetrics = null
+        fastPartitionSlot = null
         resetListeners.forEach { it() }
     }
 

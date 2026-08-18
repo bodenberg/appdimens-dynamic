@@ -4,7 +4,7 @@
 
 # Core cache / plumbing (reachable from inlined @PublishedApi bytecode — the
 # app's R8 pass must keep the classes the app+satellites actually resolve
-# against; 3.1.8 relies on direct references instead of package-wide keeps)
+# against; 3.1.9 relies on direct references instead of package-wide keeps)
 com.appdimens.dynamic.core.DimenCache
 com.appdimens.dynamic.core.DimenMetrics
 com.appdimens.dynamic.core.DesignScaleConstants

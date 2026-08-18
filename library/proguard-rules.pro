@@ -6,7 +6,7 @@
 # PRE-SHRUNK and PRE-OPTIMIZED — every consumer app gets the optimized code even
 # before its own R8 pass (and without the app author configuring anything).
 #
-# Design decisions (3.1.8):
+# Design decisions (3.1.9):
 #
 #  1. -dontobfuscate
 #     Names are never renamed at library build time (AndroidX-style). Renaming

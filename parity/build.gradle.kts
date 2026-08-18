@@ -17,7 +17,7 @@ android {
 }
 
 dependencies {
-    // Local 3.1.8 library under test.
+    // Local 3.1.9 library under test.
     implementation(project(":library"))
     // Legacy published artifact: io.github.bodenberg:appdimens-sdps:3.1.6 (com.appdimens.sdps.*).
     implementation(libs.appdimens.sdps.legacy)

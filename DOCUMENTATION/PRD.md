@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD) — AppDimens Dynamic
 
 > [!NOTE]
-> **Version:** `3.1.8` — modules: [MODULES.md](MODULES.md)
+> **Version:** `3.1.9` — modules: [MODULES.md](MODULES.md)
 > **Related:** [PDR](PDR.md) · [Mathematics](MATHEMATICS-AND-CALCULUS.md) · [API Conventions](COMPOSE-API-CONVENTIONS.md)
 
 ## 1. Executive Summary

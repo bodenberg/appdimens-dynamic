@@ -13,7 +13,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 /**
- * Parity harness: local 3.1.8 (`com.appdimens.dynamic.*`) vs the legacy published
+ * Parity harness: local 3.1.9 (`com.appdimens.dynamic.*`) vs the legacy published
  * artifact `io.github.bodenberg:appdimens-sdps:3.1.6` (`com.appdimens.sdps.*`).
  *
  * Both libraries run in the same JVM against the identical mocked window
@@ -22,7 +22,7 @@ import org.mockito.kotlin.whenever
  *
  * Run with: `./gradlew :parity:test --tests "com.appdimens.parity.*"`
  *
- * PT Harness de paridade: 3.1.8 local (`com.appdimens.dynamic.*`) vs o artefato
+ * PT Harness de paridade: 3.1.9 local (`com.appdimens.dynamic.*`) vs o artefato
  * legado publicado `io.github.bodenberg:appdimens-sdps:3.1.6` (`com.appdimens.sdps.*`).
  *
  * As duas bibliotecas rodam na mesma JVM com a mesma janela mockada (mesmo
@@ -142,11 +142,11 @@ class Legacy316ParityTest {
     }
 
     // EN Per-axis scale artifact: the legacy dimen table divides by 300f while the
-    //    3.1.8 kernel multiplies by INV_BASE_RATIO. For most axes both round to the
+    //    3.1.9 kernel multiplies by INV_BASE_RATIO. For most axes both round to the
     //    same float; when they differ the resolution can differ by 1 ulp. This is the
     //    documented tolerance (never a >1 ulp deviation).
     // PT Artefato de escala por eixo: a tabela de dimen do legado divide por 300f
-    //    enquanto o kernel 3.1.8 multiplica por INV_BASE_RATIO. Na maioria dos eixos
+    //    enquanto o kernel 3.1.9 multiplica por INV_BASE_RATIO. Na maioria dos eixos
     //    ambos arredondam para o mesmo float; quando diferem, a resolução pode
     //    divergir em 1 ulp. Esta é a tolerância documentada (nunca > 1 ulp).
     private fun axisScaleUlpDiverges(axisDp: Int): Boolean =
@@ -172,7 +172,7 @@ class Legacy316ParityTest {
                         else -> window.h
                     }
                     // SDPA re-normalizes through the legacy dimen table (`v/density*300`
-                    // and back), leaving ≤ 2 ulp of rounding noise vs the 3.1.8 formula.
+                    // and back), leaving ≤ 2 ulp of rounding noise vs the 3.1.9 formula.
                     val allowed = if (family == "sdpa") 2
                     else if (axisScaleUlpDiverges(axis)) 1
                     else 0

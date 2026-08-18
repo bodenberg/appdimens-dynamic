@@ -5,11 +5,16 @@ description: Use this skill for any Android responsive layout or scaling questio
 
 # AppDimens Dynamic — project workflow
 
-**Library (3.1.8):** `appdimens-dynamic` (scaled + core), `appdimens-dynamic-<strategy>`, BOM `appdimens-dynamic-bom`. See [MODULES.md](../DOCUMENTATION/MODULES.md).
+**Library (3.1.9):** `appdimens-dynamic` (scaled + core), `appdimens-dynamic-<strategy>`, BOM `appdimens-dynamic-bom`. See [MODULES.md](../DOCUMENTATION/MODULES.md).
 
-**Install:** `platform("…:appdimens-dynamic-bom:3.1.8")` then the modules you need. Kotlin imports unchanged.
+**Install:** `platform("…:appdimens-dynamic-bom:3.1.9")` then the modules you need. Kotlin imports unchanged.
 
 On release bumps, update version URLs in this file, `library-map.md`, and `reference.md` together.
+
+**What's New in 3.1.9:**
+- Atomic fast-partition slot: `metrics + partition` published as one `@Volatile` `FastPartitionSlot` — eliminates the race where a multi-window app could transiently resolve against another window's partition
+- Hardened race tests: any wrong return value fails; each thread must get its own value back; new `concurrentSnapshots_neverReturnValueFromAnotherSnapshot` test
+- Diagnostics counters (`hitCount`/`missCount`/`evictionCount`) moved from public `@JvmField` to `@PublishedApi internal`
 
 **What's New in 3.1.8:**
 - Event-driven config watcher (replaces sampled `validationTick`)
@@ -18,14 +23,14 @@ On release bumps, update version URLs in this file, `library-map.md`, and `refer
 - DimenMetrics eager AR computation — removes `synchronized` probe
 - BenchLab module — competitor benchmark with screenshot + report export
 
-**Authoritative GitHub docs (ref `3.1.8`):**
-- [README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/README.md) — install, `AppDimensProvider`, `DimenCache` (snapshot-partitioned since 3.1.8; event-driven config watcher; specialized kernels)
-- [DOCUMENTATION/MODULES.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/DOCUMENTATION/MODULES.md) — Maven/Gradle graph (principal vs satellites)
-- [DOCUMENTATION/README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/DOCUMENTATION/README.md) — all strategies, decision flow
-- [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) — Compose naming, facilitators, Plain chains, `code` parity
-- [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/DOCUMENTATION/resize.md) — `compose.resize` / `code.resize`
-- [GUIDE-FOR-BEGINNERS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/GUIDE-FOR-BEGINNERS.md) — narrative walkthrough
-- Examples: [Compose](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/app/src/main/java/com/example/app/compose/ExampleActivity.kt) · [Kotlin Views](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/app/src/main/java/com/example/app/kotlin/ExampleActivity.kt) · [Java](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/app/src/main/java/com/example/app/java/ExampleActivity.java)
+**Authoritative GitHub docs (ref `3.1.9`):**
+- [README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/README.md) — install, `AppDimensProvider`, `DimenCache` (snapshot-partitioned since 3.1.8; event-driven config watcher; specialized kernels)
+- [DOCUMENTATION/MODULES.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/DOCUMENTATION/MODULES.md) — Maven/Gradle graph (principal vs satellites)
+- [DOCUMENTATION/README.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/DOCUMENTATION/README.md) — all strategies, decision flow
+- [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) — Compose naming, facilitators, Plain chains, `code` parity
+- [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/DOCUMENTATION/resize.md) — `compose.resize` / `code.resize`
+- [GUIDE-FOR-BEGINNERS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/GUIDE-FOR-BEGINNERS.md) — narrative walkthrough
+- Examples: [Compose](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/app/src/main/java/com/example/app/compose/ExampleActivity.kt) · [Kotlin Views](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/app/src/main/java/com/example/app/kotlin/ExampleActivity.kt) · [Java](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/app/src/main/java/com/example/app/java/ExampleActivity.java)
 
 **Package map and strategy → doc index:** [library-map.md](library-map.md)
 
@@ -34,7 +39,7 @@ On release bumps, update version URLs in this file, `library-map.md`, and `refer
 ## Agent Preflight (run before any non-trivial edit)
 
 1. Read [library-map.md](library-map.md) for package layout and strategy ↔ doc mapping.
-2. For the **specific packages/symbols** you'll touch: browse [`library/`](https://github.com/bodenberg/appdimens-dynamic/tree/3.1.8/library/src/main/java/com/appdimens/dynamic) (principal) or the matching [`library-<strategy>/`](https://github.com/bodenberg/appdimens-dynamic/tree/3.1.8) satellite on GitHub at `3.1.8`, **or** use IDE "Download Sources" / "Navigate to Declaration" on the Maven artifact. For API detail, see [DOCUMENTATION/index.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/DOCUMENTATION/index.md) and per-package pages under [`DOCUMENTATION/KDOC/`](https://github.com/bodenberg/appdimens-dynamic/tree/3.1.8/DOCUMENTATION/KDOC). Do not rely on memory.
+2. For the **specific packages/symbols** you'll touch: browse [`library/`](https://github.com/bodenberg/appdimens-dynamic/tree/3.1.9/library/src/main/java/com/appdimens/dynamic) (principal) or the matching [`library-<strategy>/`](https://github.com/bodenberg/appdimens-dynamic/tree/3.1.8) satellite on GitHub at `3.1.9`, **or** use IDE "Download Sources" / "Navigate to Declaration" on the Maven artifact. For API detail, see [DOCUMENTATION/index.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/DOCUMENTATION/index.md) and per-package pages under [`DOCUMENTATION/KDOC/`](https://github.com/bodenberg/appdimens-dynamic/tree/3.1.9/DOCUMENTATION/KDOC). Do not rely on memory.
 3. Skim the upstream example that matches the user's stack (links above). Restrict deep reading to **relevant packages and call sites** — full module audits only when explicitly requested.
 
 **Hard rule:** never surface `ignoreMultiWindows`, `*i`, or `*ia` suffixes to users.
@@ -65,7 +70,7 @@ Which surface is in scope?
 |--------|---------------|----------|
 | **Jetpack Compose** | `com.appdimens.dynamic.compose.*` | `16.sdp`, `scaledDp { }`; needs `AppDimensProvider` for facilitators |
 | **Kotlin (Views)** | `com.appdimens.dynamic.code.*` | `DimenSdp.sdp(context, 16)`; outputs px for layout |
-| **Java (Views)** | same `code.*` entry points | see [ExampleActivity.java](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/app/src/main/java/com/example/app/java/ExampleActivity.java) |
+| **Java (Views)** | same `code.*` entry points | see [ExampleActivity.java](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/app/src/main/java/com/example/app/java/ExampleActivity.java) |
 
 Record: drives imports, `AppDimensProvider` need, and whether resize runs in `compose.resize` or `code.resize`.
 
@@ -76,7 +81,7 @@ Record: drives imports, `AppDimensProvider` need, and whether resize runs in `co
 Which axis should `DpQualifier`-aware APIs use? (Affects `.sdpQualifier`, `.sdpScreen`, scaled `.sspRotate` vs strategy-prefixed Sp rotates such as `.asspRotate`, and their `code` mirrors.)
 
 - **`SMALL_WIDTH` (default)** — smallest-width (swDP) baseline; correct for most phone/tablet layouts.
-- **Explicit `WIDTH` / `HEIGHT` (or per-call-site mix)** — when design requires width-dp or height-dp branching. Read [COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) and `DpQualifier` KDoc before proposing thresholds.
+- **Explicit `WIDTH` / `HEIGHT` (or per-call-site mix)** — when design requires width-dp or height-dp branching. Read [COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) and `DpQualifier` KDoc before proposing thresholds.
 
 Record before suggesting any `.screen`, `.qualifier`, rotate, or power-curve APIs.
 
@@ -176,7 +181,7 @@ Ask in order, waiting for each answer before continuing:
 4. **Bounds semantics** — clarify `ResizeBound.FixedDp` / `FixedSp` / `Percent` (sw/w/h axis). For percent-in-container resize, clarify `AutoResizePercentBasis` (min/max side, width, height) and use `autoResizeTextSpPercent` (Compose) or `fittingTextSpPercentPx` (code). Remind: `resolveToPx` requires `density > 0`; invalid inputs are clamped (library KDoc).
 5. **Approach check** — global proportional sizing across the screen is usually scaled/percent/fluid, not resize. Reserve resize for fit-to-container problems.
 
-Reference: [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.8/DOCUMENTATION/resize.md)
+Reference: [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.1.9/DOCUMENTATION/resize.md)
 
 ---
 

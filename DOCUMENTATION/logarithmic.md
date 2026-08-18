@@ -1,6 +1,6 @@
 # Logarithmic strategy (`compose.logarithmic` / `code.logarithmic`)
 
-**Artifact:** `io.github.bodenberg:appdimens-dynamic-logarithmic:3.1.8` (`:library-logarithmic`)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-logarithmic:3.1.9` (`:library-logarithmic`)
 See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v317)
 
 **Same API surface as scaled** with prefixes `logsdp` / `loghdp` / `logwdp` / `logssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).

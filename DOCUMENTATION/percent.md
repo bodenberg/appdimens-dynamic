@@ -1,6 +1,6 @@
 # Percent strategy (`compose.percent` / `code.percent`)
 
-**Artifact:** `io.github.bodenberg:appdimens-dynamic-percent:3.1.8` (`:library-percent`)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-percent:3.1.9` (`:library-percent`)
 See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v317)
 
 ## What it is

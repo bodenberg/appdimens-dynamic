@@ -1,7 +1,7 @@
 # Project Design Document (PDR) — AppDimens Dynamic
 
 > [!NOTE]
-> **Version:** `3.1.8` — modules: [MODULES.md](MODULES.md)
+> **Version:** `3.1.9` — modules: [MODULES.md](MODULES.md)
 > **Related:** [PRD](PRD.md) · [Mathematics](MATHEMATICS-AND-CALCULUS.md) · [Performance](../library/PERFORMANCE.md) · [README](../README.md)
 
 This internal architecture document mandates the precise structural logic, technical dependencies, caching behaviors, and quality integration required by the AppDimens Dynamic library modules.
@@ -61,7 +61,7 @@ flowchart TD
 > [!IMPORTANT]
 > **Architectural Invariant:** Code/Modules defined as `compose.<strategy>` **must never** intersect or implicitly construct elements of a differing strategy module. Code routing is strict: `strategy` \(\rightarrow\) `core` \(\rightarrow\) `common`. Satellites depend **only** on the principal artifact — never on each other.
 
-### 2.0 Maven / Gradle module graph (3.1.8)
+### 2.0 Maven / Gradle module graph (3.1.9)
 
 | Gradle project | Maven coordinate | Contents |
 |---|---|---|
@@ -105,7 +105,7 @@ sequenceDiagram
 ## 4. Development Quality & Reliability Matrix
 
 ### 4.1 Release Constraints
-1. **Module Artifacting:** Each Gradle module publishes at `appdimens.version` (`3.1.8`). Coordinates: principal `appdimens-dynamic`, strategy modules `appdimens-dynamic-<strategy>`, BOM `appdimens-dynamic-bom`. See [MODULES.md](MODULES.md).
+1. **Module Artifacting:** Each Gradle module publishes at `appdimens.version` (`3.1.9`). Coordinates: principal `appdimens-dynamic`, strategy modules `appdimens-dynamic-<strategy>`, BOM `appdimens-dynamic-bom`. See [MODULES.md](MODULES.md).
 2. **Obfuscation Integrity:** Per-AAR ProGuard consumer rules (`consumer-rules.pro`) ensure public API parity and runtime stability; satellites keep strategy packages, principal keeps core/scaled/plain. 
 
 ### 4.2 Known Technical Risk Mapping

@@ -1,0 +1,57 @@
+# AppDimens Dynamic
+
+> AppDimens Dynamic is an Android library for responsive `dp`/`sp` scaling with Jetpack Compose and Kotlin/Java (Views) APIs. It ships 14 scaling strategies (Scaled, Percent, Power, Fluid, Auto, Diagonal, Fill, Fit, Interpolated, Logarithmic, Perimeter, Density, Resize, Physical units) over a snapshot-partitioned, lock-free `DimenCache` plus constraint-based resize helpers.
+
+Important notes:
+- Kotlin packages: `com.appdimens.dynamic.compose.*` for Jetpack Compose and `com.appdimens.dynamic.code.*` for Views / Kotlin / Java; strategies do not cross-import.
+- Modular Maven packaging (since 3.1.6): principal artifact `appdimens-dynamic` (common + core + scaled + plain), one satellite per extra strategy (`appdimens-dynamic-<strategy>`), and `appdimens-dynamic-bom` for version alignment. Kotlin imports are unchanged.
+- Current version: **3.1.9** — Min SDK 24, Compile SDK 36, Kotlin & Java 17.
+- The recommended default strategy is **Scaled** (`sdp` / `hdp` / `wdp` / `ssp`, optionally `sdpa` for aspect-ratio tuning); the `a` suffix adds aspect-ratio awareness, `i` / `ia` are internal multi-window flags and should not be surfaced to users.
+- Since 3.1.8 the cache is partitioned per immutable per-window `DimenMetrics` snapshot — explicit invalidation is not required for correctness; `DimenCache.invalidateOnConfigChange` is a compatibility hook.
+- 3.1.9 hardens the single-window fast lane: `metrics + partition` are published as one atomic `@Volatile` `FastPartitionSlot`, eliminating a race that could return a dimension computed for another window/snapshot in multi-window apps.
+
+## Documentation
+
+- [README.md](README.md): Installation (BOM / no-BOM), quick start, all strategies, cache & performance overview
+- [GUIDE-FOR-BEGINNERS.md](GUIDE-FOR-BEGINNERS.md): Step-by-step plain-language guide covering every strategy
+- [DOCUMENTATION/README.md](DOCUMENTATION/README.md): Per-strategy explanations and decision flow
+- [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md): Gradle/Maven module graph, artifact matrix, migration notes
+- [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md): Compose naming conventions, facilitators, Plain chains, `code` parity
+- [DOCUMENTATION/index.md](DOCUMENTATION/index.md): Markdown API package index (KDoc export)
+- [DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md](DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md): Formulas, constants, the `DimenMetrics` window snapshot and per-strategy calculation kernels
+- [DOCUMENTATION/PRD.md](DOCUMENTATION/PRD.md): Product requirements (FR/NFR)
+- [DOCUMENTATION/PDR.md](DOCUMENTATION/PDR.md): Technical design, cache anatomy, quality gates
+- [R8-PROGUARD.md](R8-PROGUARD.md): R8 full mode and ProGuard consumer rules
+- [PERFORMANCE.md](PERFORMANCE.md): On-device technical performance report
+- [PERFORMANCE-COMPARATIVE.md](PERFORMANCE-COMPARATIVE.md): Comparative benchmark report (vs SDPS and Lib #2)
+- [library/PERFORMANCE.md](library/PERFORMANCE.md): Cache internals, performance layers, and hot-path design
+
+## Strategy guides
+
+- [Scaled](DOCUMENTATION/scaled.md): Default linear SDP/HDP/WDP curve around a 300 dp reference
+- [Percent](DOCUMENTATION/percent.md): Literal fractions of a screen axis (`space*`) plus token-style `psdp`/`phdp`/`pwdp`/`pssp`
+- [Power](DOCUMENTATION/power.md): Sublinear growth (exponent < 1) for large screens
+- [Fluid](DOCUMENTATION/fluid.md): Band behavior with linear interpolation between reference widths
+- [Auto](DOCUMENTATION/auto.md): Breakpoint-style blend (linear + log past threshold)
+- [Diagonal](DOCUMENTATION/diagonal.md): Curve on the diagonal screen metric
+- [Fill](DOCUMENTATION/fill.md): Cover-like growth using the largest axis
+- [Fit](DOCUMENTATION/fit.md): Contain-like growth using the smallest axis
+- [Interpolated](DOCUMENTATION/interpolated.md): Piecewise curve between configured points
+- [Logarithmic](DOCUMENTATION/logarithmic.md): Log-shaped curve that dampens growth
+- [Perimeter](DOCUMENTATION/perimeter.md): Scaling on width + height (perimeter)
+- [Density](DOCUMENTATION/density.md): Classic density-based (DPI / 160) scaling
+- [Resize](DOCUMENTATION/resize.md): Constraint-based auto-fit (`autoResize*`, `ResizeBound`) — largest size that still fits
+- [Physical units](DOCUMENTATION/physical-units.md): Real-world mm / cm / inch helpers
+
+## Example code
+
+- [Compose example](app/src/main/java/com/example/app/compose/ExampleActivity.kt): Compose usage including auto-resize demos
+- [Kotlin Views example](app/src/main/java/com/example/app/kotlin/ExampleActivity.kt): `DimenSdp`/`DimenSsp` non-Composable usage
+- [Java example](app/src/main/java/com/example/app/java/ExampleActivity.java): Java usage with Data Binding
+
+## Optional
+
+- [CONTRIBUTING.md](CONTRIBUTING.md): Contribution guidelines and module rules
+- [SECURITY.md](SECURITY.md): Security policy and supported versions
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md): Community code of conduct
+- [LICENSE](LICENSE): Apache License 2.0

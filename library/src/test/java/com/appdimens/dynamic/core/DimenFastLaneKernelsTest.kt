@@ -16,12 +16,12 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 /**
- * 3.1.8 fast-lane kernels ([DimenCache.resolveSdpPx] and siblings) must be
+ * 3.1.9 fast-lane kernels ([DimenCache.resolveSdpPx] and siblings) must be
  * bit-exact against the untouched legacy full path (`toDynamicScaledPx` /
  * `toDynamicScaledDp`) and must follow the event-driven invalidation contract:
  * a configuration change invalidates the fast slot synchronously.
  *
- * PT Os kernels do fast lane 3.1.8 ([DimenCache.resolveSdpPx] e irmãos) devem ser
+ * PT Os kernels do fast lane 3.1.9 ([DimenCache.resolveSdpPx] e irmãos) devem ser
  * bit-exatos em relação ao caminho completo legado intacto (`toDynamicScaledPx` /
  * `toDynamicScaledDp`) e devem seguir o contrato de invalidação orientada a eventos:
  * uma mudança de configuração invalida o slot rápido sincronamente.

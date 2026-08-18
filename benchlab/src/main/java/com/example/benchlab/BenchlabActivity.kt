@@ -1,7 +1,7 @@
 /**
  * @author Bodenberg
  *
- * EN Benchmark dashboard: AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 vs
+ * EN Benchmark dashboard: AppDimens Dynamic 3.1.9 vs SDPS 3.1.6 vs
  *    Lib #2.
  *    Shows:
  *    - NEW methodology: Benchmark A (Compose API, main thread) and
@@ -11,7 +11,7 @@
  *      time per single call) kept for continuity with previous reports.
  *    Supports full-scroll screenshot and report export.
  *
- * PT Dashboard de benchmark: AppDimens Dynamic 3.1.8 vs SDPS 3.1.6 vs
+ * PT Dashboard de benchmark: AppDimens Dynamic 3.1.9 vs SDPS 3.1.6 vs
  *    Lib #2.
  *    Exibe:
  *    - Metodologia NOVA: Benchmark A (API Compose, main thread) e
@@ -395,7 +395,7 @@ private fun ActionPanel(
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            "Dynamic 3.1.8 × SDPS 3.1.6 × Lib #2 — 2 benchmarks + testes legados",
+            "Dynamic 3.1.9 × SDPS 3.1.6 × Lib #2 — 2 benchmarks + testes legados",
             color = TextSecondary, fontSize = 11.sp,
             modifier = Modifier.padding(bottom = 12.dp)
         )
@@ -556,7 +556,7 @@ private fun ComposeApiSection(result: CompetitorBenchmarkResult?) {
                         title = "Constant 1dp — hot",
                         caption = "50.000 resoluções repetidas do mesmo valor (teto absoluto)",
                         items = listOf(
-                            Triple("Dynamic 3.1.8", ColorAppDimens, r.composeApi.dynamic.constant1dp),
+                            Triple("Dynamic 3.1.9", ColorAppDimens, r.composeApi.dynamic.constant1dp),
                             Triple("SDPS 3.1.6", ColorSdps, r.composeApi.sdps.constant1dp),
                             Triple("Lib #2", ColorLib2, r.composeApi.chaintech.constant1dp),
                         )
@@ -565,7 +565,7 @@ private fun ComposeApiSection(result: CompetitorBenchmarkResult?) {
                         title = "Mixed values (12 dimensões)",
                         caption = "Valores 1–100dp pré-definidos, espelha uma tela real",
                         items = listOf(
-                            Triple("Dynamic 3.1.8", ColorAppDimens, r.composeApi.dynamic.mixedValues),
+                            Triple("Dynamic 3.1.9", ColorAppDimens, r.composeApi.dynamic.mixedValues),
                             Triple("SDPS 3.1.6", ColorSdps, r.composeApi.sdps.mixedValues),
                             Triple("Lib #2", ColorLib2, r.composeApi.chaintech.mixedValues),
                         )
@@ -600,7 +600,7 @@ private fun CoreEngineSection(result: CompetitorBenchmarkResult?) {
                         title = "Constant 1dp — hot",
                         caption = "50.000 resoluções repetidas do mesmo valor (teto absoluto)",
                         items = listOf(
-                            Triple("Dynamic 3.1.8", ColorAppDimens, r.coreEngine.dynamic.constant1dp),
+                            Triple("Dynamic 3.1.9", ColorAppDimens, r.coreEngine.dynamic.constant1dp),
                             Triple("SDPS 3.1.6", ColorSdps, r.coreEngine.sdps.constant1dp),
                         )
                     )
@@ -608,7 +608,7 @@ private fun CoreEngineSection(result: CompetitorBenchmarkResult?) {
                         title = "Mixed values (12 dimensões)",
                         caption = "Valores 1–100dp pré-definidos, espelha uma tela real",
                         items = listOf(
-                            Triple("Dynamic 3.1.8", ColorAppDimens, r.coreEngine.dynamic.mixedValues),
+                            Triple("Dynamic 3.1.9", ColorAppDimens, r.coreEngine.dynamic.mixedValues),
                             Triple("SDPS 3.1.6", ColorSdps, r.coreEngine.sdps.mixedValues),
                         )
                     )
@@ -753,11 +753,11 @@ private fun ChecksumSection(result: CompetitorBenchmarkResult?) {
         AnimatedVisibility(visible = result != null) {
             result?.let { r ->
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    ChecksumRow("Compose · Dynamic 3.1.8", r.composeApi.dynamic, ColorAppDimens)
+                    ChecksumRow("Compose · Dynamic 3.1.9", r.composeApi.dynamic, ColorAppDimens)
                     ChecksumRow("Compose · SDPS 3.1.6", r.composeApi.sdps, ColorSdps)
                     ChecksumRow("Compose · Lib #2", r.composeApi.chaintech, ColorLib2)
                     HorizontalDivider(color = SurfaceBorder)
-                    ChecksumRow("Motor · Dynamic 3.1.8", r.coreEngine.dynamic, ColorAppDimens)
+                    ChecksumRow("Motor · Dynamic 3.1.9", r.coreEngine.dynamic, ColorAppDimens)
                     ChecksumRow("Motor · SDPS 3.1.6", r.coreEngine.sdps, ColorSdps)
                 }
             }
@@ -796,7 +796,7 @@ private fun LegacyDpResolutionSection(result: CompetitorBenchmarkResult?, withAr
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     if (!withAr) {
                         LibBlock(
-                            libName = "Dynamic 3.1.8",
+                            libName = "Dynamic 3.1.9",
                             libColor = ColorAppDimens,
                             dp1T1 = r.legacy.test1.dp1AppDimens, dp1T2 = r.legacy.test2.dp1AppDimens, dp1T3 = r.legacy.test3.dp1AppDimens,
                             dp10T1 = r.legacy.test1.dp10AppDimens, dp10T2 = r.legacy.test2.dp10AppDimens, dp10T3 = r.legacy.test3.dp10AppDimens,
@@ -820,7 +820,7 @@ private fun LegacyDpResolutionSection(result: CompetitorBenchmarkResult?, withAr
                         )
                     } else {
                         LibBlock(
-                            libName = "Dynamic 3.1.8 (AR)",
+                            libName = "Dynamic 3.1.9 (AR)",
                             libColor = ColorAppDimens,
                             dp1T1 = r.legacy.test1.dp1AppDimensAr, dp1T2 = r.legacy.test2.dp1AppDimensAr, dp1T3 = r.legacy.test3.dp1AppDimensAr,
                             dp10T1 = r.legacy.test1.dp10AppDimensAr, dp10T2 = r.legacy.test2.dp10AppDimensAr, dp10T3 = r.legacy.test3.dp10AppDimensAr,
@@ -1188,7 +1188,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     val sb = StringBuilder()
     sb.appendLine("═══════════════════════════════════════════════════════")
     sb.appendLine("  BenchLab — Relatório de Benchmark")
-    sb.appendLine("  Dynamic 3.1.8 × SDPS 3.1.6 × Lib #2")
+    sb.appendLine("  Dynamic 3.1.9 × SDPS 3.1.6 × Lib #2")
     sb.appendLine("  Benchmark A (Compose API) + Benchmark B (Motor) + Testes legados T1-T3")
     sb.appendLine("═══════════════════════════════════════════════════════")
     sb.appendLine()
@@ -1210,7 +1210,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
 
     sb.appendLine("── Benchmark A — API Compose (main thread) ──")
     sb.appendLine()
-    for ((name, lib) in listOf("Dynamic 3.1.8" to r.composeApi.dynamic, "SDPS 3.1.6" to r.composeApi.sdps, "Lib #2" to r.composeApi.chaintech)) {
+    for ((name, lib) in listOf("Dynamic 3.1.9" to r.composeApi.dynamic, "SDPS 3.1.6" to r.composeApi.sdps, "Lib #2" to r.composeApi.chaintech)) {
         sb.appendLine("  $name:")
         sb.appendLine("    Constant 1dp: mediana=${lib.constant1dp.medianNs.formatNs()}  min=${lib.constant1dp.minNs.formatNs()}  P90=${lib.constant1dp.p90Ns.formatNs()}  max=${lib.constant1dp.maxNs.formatNs()}")
         sb.appendLine("    Mixed values: mediana=${lib.mixedValues.medianNs.formatNs()}  min=${lib.mixedValues.minNs.formatNs()}  P90=${lib.mixedValues.p90Ns.formatNs()}  max=${lib.mixedValues.maxNs.formatNs()}")
@@ -1220,7 +1220,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     sb.appendLine("── Benchmark B — Motor (Dispatchers.Default) ──")
     sb.appendLine("  Lib #2: N/A — API exige Composition")
     sb.appendLine()
-    for ((name, lib) in listOf("Dynamic 3.1.8" to r.coreEngine.dynamic, "SDPS 3.1.6" to r.coreEngine.sdps)) {
+    for ((name, lib) in listOf("Dynamic 3.1.9" to r.coreEngine.dynamic, "SDPS 3.1.6" to r.coreEngine.sdps)) {
         sb.appendLine("  $name:")
         sb.appendLine("    Constant 1dp: mediana=${lib.constant1dp.medianNs.formatNs()}  min=${lib.constant1dp.minNs.formatNs()}  P90=${lib.constant1dp.p90Ns.formatNs()}  max=${lib.constant1dp.maxNs.formatNs()}")
         sb.appendLine("    Mixed values: mediana=${lib.mixedValues.medianNs.formatNs()}  min=${lib.mixedValues.minNs.formatNs()}  P90=${lib.mixedValues.p90Ns.formatNs()}  max=${lib.mixedValues.maxNs.formatNs()}")
@@ -1254,7 +1254,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     sb.appendLine()
     sb.appendLine("  Valores de resolução (sdp):")
     val sdpGetters = listOf(
-        "Dynamic 3.1.8" to Triple(
+        "Dynamic 3.1.9" to Triple(
             { t: DpResolution3 -> t.dp1AppDimens }, { t: DpResolution3 -> t.dp10AppDimens }, { t: DpResolution3 -> t.dp100AppDimens }),
         "SDPS 3.1.6" to Triple(
             { t: DpResolution3 -> t.dp1Concorrente1 }, { t: DpResolution3 -> t.dp10Concorrente1 }, { t: DpResolution3 -> t.dp100Concorrente1 }),
@@ -1270,7 +1270,7 @@ private fun generateReport(r: CompetitorBenchmarkResult): String {
     }
     sb.appendLine()
     sb.appendLine("  Valores de resolução (sdpa/AR):")
-    sb.appendLine("    Dynamic 3.1.8: 1dp T1=%.4f T2=%.4f T3=%.4f | 10dp T1=%.4f T2=%.4f T3=%.4f | 100dp T1=%.4f T2=%.4f T3=%.4f".format(
+    sb.appendLine("    Dynamic 3.1.9: 1dp T1=%.4f T2=%.4f T3=%.4f | 10dp T1=%.4f T2=%.4f T3=%.4f | 100dp T1=%.4f T2=%.4f T3=%.4f".format(
         r.legacy.test1.dp1AppDimensAr, r.legacy.test2.dp1AppDimensAr, r.legacy.test3.dp1AppDimensAr,
         r.legacy.test1.dp10AppDimensAr, r.legacy.test2.dp10AppDimensAr, r.legacy.test3.dp10AppDimensAr,
         r.legacy.test1.dp100AppDimensAr, r.legacy.test2.dp100AppDimensAr, r.legacy.test3.dp100AppDimensAr))

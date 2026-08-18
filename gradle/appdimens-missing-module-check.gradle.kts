@@ -14,7 +14,7 @@
 import java.util.regex.Pattern
 
 val appDimensVersion: String =
-    providers.gradleProperty("appdimens.version").orElse("3.1.8").get()
+    providers.gradleProperty("appdimens.version").orElse("3.1.9").get()
 
 val strategyArtifacts = mapOf(
     "auto" to "appdimens-dynamic-auto",

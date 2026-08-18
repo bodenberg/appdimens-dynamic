@@ -2,6 +2,7 @@ package com.appdimens.dynamic.core
 
 import com.appdimens.dynamic.common.DpQualifier
 import com.appdimens.dynamic.common.Inverter
+import android.content.res.Configuration
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -32,12 +33,12 @@ class DimenCacheRaceTest {
                             baseValue, false, false, DimenCache.CalcType.FLUID,
                             DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
                         )
-                        val result = DimenCache.getOrPut(key) { baseValue * 2f }
-                        if (result != baseValue * 2f) {
-                            val peeked = DimenCache.peek(key)
-                            if (peeked != null && peeked != baseValue * 2f) {
-                                wrongCount.incrementAndGet()
-                            }
+                        val expected = baseValue * 2f
+                        val result = DimenCache.getOrPut(key) { expected }
+                        // CRITICAL FIX: Any incorrect return is a bug — do not allow
+                        // transient wrong values to pass via a subsequent peek().
+                        if (result != expected) {
+                            wrongCount.incrementAndGet()
                         }
                     }
                 } finally {
@@ -95,7 +96,10 @@ class DimenCacheRaceTest {
                     val idx = t % 2
                     for (i in 0 until iterations) {
                         val result = DimenCache.getOrPut(keys[idx], metrics) { values[idx] }
-                        if (result != values[0] && result != values[1]) {
+                        // CRITICAL FIX: Each thread must get its OWN value back,
+                        // not merely "one of the two valid values". Accepting the
+                        // other key's value hides linearizability violations.
+                        if (result != values[idx]) {
                             wrongCount.incrementAndGet()
                         }
                     }
@@ -111,6 +115,69 @@ class DimenCacheRaceTest {
         assertTrue(
             "Same-slot collision should never produce a value other than the two expected ones, got ${wrongCount.get()} wrong",
             wrongCount.get() == 0
+        )
+    }
+
+    /**
+     * Verifies that the fastPartitionSlot fix correctly isolates two metrics snapshots.
+     * Each snapshot has its own compute function returning a distinct value; under
+     * heavy interleaving, a reader of snapshot A must never see snapshot B's result.
+     */
+    @Test
+    fun concurrentSnapshots_neverReturnValueFromAnotherSnapshot() {
+        val metricsA = DimenMetrics(
+            screenWidthDp = 300, screenHeightDp = 533,
+            smallestScreenWidthDp = 300, densityDpi = 160,
+            fontScaleBits = 1f.toRawBits(),
+            orientation = Configuration.ORIENTATION_PORTRAIT,
+            uiMode = 0, isInMultiWindowMode = false
+        )
+        val metricsB = DimenMetrics(
+            screenWidthDp = 600, screenHeightDp = 960,
+            smallestScreenWidthDp = 600, densityDpi = 320,
+            fontScaleBits = 1f.toRawBits(),
+            orientation = Configuration.ORIENTATION_PORTRAIT,
+            uiMode = 0, isInMultiWindowMode = false
+        )
+
+        val sameKey = DimenCache.buildKey(
+            42f, false, false, DimenCache.CalcType.FLUID,
+            DpQualifier.SMALL_WIDTH, Inverter.DEFAULT, false, DimenCache.ValueType.DP
+        )
+
+        val failures = AtomicInteger(0)
+        val iterations = 20000
+        val threads = 8
+        val latch = CountDownLatch(threads)
+
+        val tasks = (0 until threads).map { worker ->
+            Thread {
+                try {
+                    repeat(iterations) {
+                        val useA = (worker + it) % 2 == 0
+                        val metrics = if (useA) metricsA else metricsB
+                        val expected = if (useA) 111f else 999f
+
+                        val actual = DimenCache.getOrPut(sameKey, metrics) {
+                            expected
+                        }
+
+                        if (actual != expected) {
+                            failures.incrementAndGet()
+                        }
+                    }
+                } finally {
+                    latch.countDown()
+                }
+            }
+        }
+
+        tasks.forEach { it.start() }
+        latch.await()
+
+assertTrue(
+            "Cross-snapshot contamination: wrong values detected",
+            failures.get() == 0
         )
     }
 }

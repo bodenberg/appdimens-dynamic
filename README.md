@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/bodenberg/appdimens-dynamic/releases" title="Releases">
-    <img src="https://img.shields.io/badge/version-3.1.8-blue.svg" alt="Version 3.1.8">
+    <img src="https://img.shields.io/badge/version-3.1.9-blue.svg" alt="Version 3.1.9">
   </a>
   &nbsp;
   <a href="LICENSE" title="Apache License 2.0">
@@ -70,15 +70,15 @@ Write values like `16.sdp` and the library scales them from the current screen *
 
 ---
 
-## Installation (v3.1.8)
+## Installation (v3.1.9)
 
-**3.1.8** keeps the modular packaging introduced in **3.1.6**: the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
+**3.1.9** keeps the modular packaging introduced in **3.1.6**: the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
 
 ### With BOM
 
 ```kotlin
 dependencies {
-    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.8"))
+    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.9"))
 
     implementation("io.github.bodenberg:appdimens-dynamic")
 
@@ -103,7 +103,7 @@ dependencies {
 If you import `com.appdimens.dynamic.compose.<strategy>` (or `code.<strategy>`) without adding the matching artifact, the Gradle check `checkAppDimensModules` fails with a line such as:
 
 ```text
-Missing AppDimens module for import …percent… — add: implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.8")
+Missing AppDimens module for import …percent… — add: implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.9")
 ```
 
 Apply the same check in your app with:
@@ -118,9 +118,9 @@ Runtime helper: `com.appdimens.dynamic.core.MissingModule` (package → Maven co
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.1.8")
-    implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.8")
-    // same satellites as above, each with :3.1.8
+    implementation("io.github.bodenberg:appdimens-dynamic:3.1.9")
+    implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.9")
+    // same satellites as above, each with :3.1.9
 }
 ```
 
@@ -349,7 +349,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 | Resource | Use for |
 |----------|---------|
 | [DOCUMENTATION/README.md](DOCUMENTATION/README.md) | Per-strategy explanations |
-| [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) | Gradle/Maven module graph (3.1.8) |
+| [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) | Gradle/Maven module graph (3.1.9) |
 | [COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) | Every Compose property & facilitator (scaled catalog + prefix map) |
 | [DOCUMENTATION/index.md](DOCUMENTATION/index.md) | Markdown API index (KDoc export) |
 | [appdimens3.web.app](https://appdimens3.web.app/) | Searchable KDoc |
@@ -383,6 +383,14 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 - Code-only scaling (no XML dimen grids) · **SDP / HDP / WDP** + **14** scaling modes  
 - **Aspect ratio** & **multi-window** flags · **Inverters** & **facilitators** · **Foldable** awareness via WindowManager  
 - **Physical units** · **Resize** helpers · **DimenScaled** chains  
+
+### What's New in 3.1.9
+
+| Change | Description |
+|--------|-------------|
+| **Atomic fast-partition slot** | The `metrics + partition` pair of the single-window fast lane is now published as **one** `@Volatile` `FastPartitionSlot` instead of two independent `@Volatile` fields. This eliminates a race where a multi-window app could transiently resolve against another window's partition (`partition(B) + metrics(A)`), returning a dimension computed for a different snapshot. |
+| **Hardened race tests** | `DimenCacheRaceTest` now fails on **any** wrong return value (no transient `peek()` escape hatch), requires each thread to get **its own** value back (not merely one of the valid set), and adds `concurrentSnapshots_neverReturnValueFromAnotherSnapshot` — 8 threads × 20k iterations alternating between two `DimenMetrics` snapshots, asserting zero cross-snapshot contamination. |
+| **Diagnostics counters internal** | `hitCount` / `missCount` / `evictionCount` are now `@PublishedApi internal` instead of `@JvmField` public — no longer part of the public API surface. |
 
 ### What's New in 3.1.8
 

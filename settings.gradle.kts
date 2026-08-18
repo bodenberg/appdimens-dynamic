@@ -34,6 +34,6 @@ include(":library-resize")
 include(":library-units")
 include(":parity")
 
-// EN Benchmark module (3.1.8 vs Concorrente 1 vs Concorrente 2).
-// PT Módulo de benchmark (3.1.8 vs Concorrente 1 vs Concorrente 2).
+// EN Benchmark module (3.1.9 vs Concorrente 1 vs Concorrente 2).
+// PT Módulo de benchmark (3.1.9 vs Concorrente 1 vs Concorrente 2).
 include(":benchlab")

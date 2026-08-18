@@ -1,6 +1,6 @@
 # Diagonal strategy (`compose.diagonal` / `code.diagonal`)
 
-**Artifact:** `io.github.bodenberg:appdimens-dynamic-diagonal:3.1.8` (`:library-diagonal`)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-diagonal:3.1.9` (`:library-diagonal`)
 See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v317)
 
 **Same API surface as scaled** with prefixes `dgsdp` / `dghdp` / `dgwdp` / `dgssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).

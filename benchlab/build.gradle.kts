@@ -1,8 +1,8 @@
 /**
- * EN Benchmark module — compares AppDimens Dynamic 3.1.8 (local)
+ * EN Benchmark module — compares AppDimens Dynamic 3.1.9 (local)
  *    vs Concorrente 1 (legacy published artifact) vs Concorrente 2 on real devices.
  *
- * PT Módulo de benchmark — compara AppDimens Dynamic 3.1.8 (local) vs
+ * PT Módulo de benchmark — compara AppDimens Dynamic 3.1.9 (local) vs
  *    Concorrente 1 (artefato legado publicado) vs Concorrente 2 em dispositivos reais.
  */
 plugins {
@@ -78,7 +78,7 @@ android {
 }
 
 dependencies {
-    // AppDimens Dynamic 3.1.8 — main library under test (core + scaled).
+    // AppDimens Dynamic 3.1.9 — main library under test (core + scaled).
     api(project(":library"))
 
     // Concorrente 1 — legacy published artifact: io.github.bodenberg:appdimens-sdps:3.1.6 (com.appdimens.sdps.*).
