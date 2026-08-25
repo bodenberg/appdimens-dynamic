@@ -3,6 +3,7 @@
 ## Responsive `dp` / `sp` for Android — Jetpack Compose and Kotlin APIs
 
 <p align="center">
+  <img referrerpolicy="no-referrer-when-downgrade" src="https://bodenberg.github.io/a.png?x-pxid=0dcbb321-59c0-4c9b-a579-dafcf771f195" />
   <a href="https://github.com/bodenberg/appdimens-dynamic/releases" title="Releases">
     <img src="https://img.shields.io/badge/version-3.1.9-blue.svg" alt="Version 3.1.9">
   </a>
