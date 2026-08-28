@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.vanniktech.maven.publish)
 }
 
-val libraryVersion: String = providers.gradleProperty("appdimens.version").orElse("3.1.9").get()
+val libraryVersion: String = providers.gradleProperty("appdimens.version").orElse("3.1.9.1").get()
 val isJitPack = System.getenv("JITPACK") == "true"
         || System.getenv("jitpack") == "true"
         || System.getenv("CI") == "true"
