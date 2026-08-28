@@ -1,6 +1,6 @@
 # Scaled strategy (`compose.scaled` / mirrored `code`)
 
-**Artifact:** `io.github.bodenberg:appdimens-dynamic:3.1.9` (`:library`)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic:3.2.0` (`:library`)
 API catalog: [COMPOSE-API-CONVENTIONS.md](COMPOSE-API-CONVENTIONS.md) · modules: [MODULES.md](MODULES.md)
 
 ## What it is

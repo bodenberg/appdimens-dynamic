@@ -8,7 +8,7 @@
 # Satellite AARs (appdimens-dynamic-<strategy>) ship their own consumer-rules.pro
 # for that strategy's public API.
 #
-# Design principle (3.1.9): keep ONLY what is proven necessary. Direct bytecode
+# Design principle (3.2.0): keep ONLY what is proven necessary. Direct bytecode
 # references — including the @PublishedApi internals reached through inlined
 # function bodies, which are expanded into the app's bytecode at compile time —
 # are discovered by R8 full mode on its own (Android recommendation: keep rules
@@ -113,7 +113,7 @@
 
 
 ################################################################################
-# 7. COMPOSE VERSION INDEPENDENCE (3.1.9.1)
+# 7. COMPOSE VERSION INDEPENDENCE (3.2.0)
 #
 #    When the consumer's compose-bom is different from the BOM the AAR was
 #    compiled against (2026.06.01), R8 prints "Missing class" notes for

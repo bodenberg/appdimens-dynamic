@@ -107,7 +107,7 @@ dependencies {
     api(project(":library-units"))
 
     // Maven Central (release consumers) — preferred with BOM:
-    // implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.9"))
+    // implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.2.0"))
     // implementation("io.github.bodenberg:appdimens-dynamic")
     // implementation("io.github.bodenberg:appdimens-dynamic-percent")
     // …

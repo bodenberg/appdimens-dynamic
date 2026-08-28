@@ -5,7 +5,7 @@
 Important notes:
 - Kotlin packages: `com.appdimens.dynamic.compose.*` for Jetpack Compose and `com.appdimens.dynamic.code.*` for Views / Kotlin / Java; strategies do not cross-import.
 - Modular Maven packaging (since 3.1.6): principal artifact `appdimens-dynamic` (common + core + scaled + plain), one satellite per extra strategy (`appdimens-dynamic-<strategy>`), and `appdimens-dynamic-bom` for version alignment. Kotlin imports are unchanged.
-- Current version: **3.1.9** — Min SDK 24, Compile SDK 36, Kotlin & Java 17.
+- Current version: **3.2.0** — Min SDK 24, Compile SDK 37, Kotlin & Java 17.
 - The recommended default strategy is **Scaled** (`sdp` / `hdp` / `wdp` / `ssp`, optionally `sdpa` for aspect-ratio tuning); the `a` suffix adds aspect-ratio awareness, `i` / `ia` are internal multi-window flags and should not be surfaced to users.
 - Since 3.1.8 the cache is partitioned per immutable per-window `DimenMetrics` snapshot — explicit invalidation is not required for correctness; `DimenCache.invalidateOnConfigChange` is a compatibility hook.
 - 3.1.9 hardens the single-window fast lane: `metrics + partition` are published as one atomic `@Volatile` `FastPartitionSlot`, eliminating a race that could return a dimension computed for another window/snapshot in multi-window apps.

@@ -18,7 +18,7 @@ val isJitPack = System.getenv("JITPACK") == "true"
         || System.getenv("ci") == "true"
 
 mavenPublishing {
-    coordinates("io.github.bodenberg", "appdimens-dynamic", providers.gradleProperty("appdimens.version").orElse("3.1.9.1").get())
+    coordinates("io.github.bodenberg", "appdimens-dynamic", providers.gradleProperty("appdimens.version").orElse("3.2.0").get())
 
     configure(
         AndroidSingleVariantLibrary()
@@ -188,7 +188,7 @@ dependencies {
     // not "highest-wins"). Consumers can override by declaring their own
     // compose-bom: Gradle constraint resolution picks the higher version
     // when the consumer's BOM is newer, and falls back to this one when the
-    // consumer omits a BOM. This makes appdimens-dynamic 3.1.9.1 work with
+    // consumer omits a BOM. This makes appdimens-dynamic 3.2.0 work with
     // any Compose version the dev chooses, while still letting the library
     // module build standalone (R8 / release AAR) without a consumer app.
     implementation(platform(libs.androidx.compose.bom))

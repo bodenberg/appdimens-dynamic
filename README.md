@@ -5,7 +5,7 @@
 <p align="center">
   <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=26d589a2-8389-425c-a90d-3e629e399d57" />
   <a href="https://github.com/bodenberg/appdimens-dynamic/releases" title="Releases">
-    <img src="https://img.shields.io/badge/version-3.1.9-blue.svg" alt="Version 3.1.9">
+    <img src="https://img.shields.io/badge/version-3.2.0-blue.svg" alt="Version 3.2.0">
   </a>
   &nbsp;
   <a href="LICENSE" title="Apache License 2.0">
@@ -71,15 +71,15 @@ Write values like `16.sdp` and the library scales them from the current screen *
 
 ---
 
-## Installation (v3.1.9)
+## Installation (v3.2.0)
 
-**3.1.9** keeps the modular packaging introduced in **3.1.6**: the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
+**3.2.0** keeps the modular packaging introduced in **3.1.6**: the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
 
 ### With BOM
 
 ```kotlin
 dependencies {
-    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.9"))
+    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.2.0"))
 
     implementation("io.github.bodenberg:appdimens-dynamic")
 
@@ -104,7 +104,7 @@ dependencies {
 If you import `com.appdimens.dynamic.compose.<strategy>` (or `code.<strategy>`) without adding the matching artifact, the Gradle check `checkAppDimensModules` fails with a line such as:
 
 ```text
-Missing AppDimens module for import …percent… — add: implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.9")
+Missing AppDimens module for import …percent… — add: implementation("io.github.bodenberg:appdimens-dynamic-percent:3.2.0")
 ```
 
 Apply the same check in your app with:
@@ -119,9 +119,9 @@ Runtime helper: `com.appdimens.dynamic.core.MissingModule` (package → Maven co
 
 ```kotlin
 dependencies {
-    implementation("io.github.bodenberg:appdimens-dynamic:3.1.9")
-    implementation("io.github.bodenberg:appdimens-dynamic-percent:3.1.9")
-    // same satellites as above, each with :3.1.9
+    implementation("io.github.bodenberg:appdimens-dynamic:3.2.0")
+    implementation("io.github.bodenberg:appdimens-dynamic-percent:3.2.0")
+    // same satellites as above, each with :3.2.0
 }
 ```
 
@@ -350,7 +350,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 | Resource | Use for |
 |----------|---------|
 | [DOCUMENTATION/README.md](DOCUMENTATION/README.md) | Per-strategy explanations |
-| [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) | Gradle/Maven module graph (3.1.9) |
+| [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md) | Gradle/Maven module graph (3.2.0) |
 | [COMPOSE-API-CONVENTIONS.md](DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) | Every Compose property & facilitator (scaled catalog + prefix map) |
 | [DOCUMENTATION/index.md](DOCUMENTATION/index.md) | Markdown API index (KDoc export) |
 | [appdimens3.web.app](https://appdimens3.web.app/) | Searchable KDoc |
@@ -384,6 +384,14 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 - Code-only scaling (no XML dimen grids) · **SDP / HDP / WDP** + **14** scaling modes  
 - **Aspect ratio** & **multi-window** flags · **Inverters** & **facilitators** · **Foldable** awareness via WindowManager  
 - **Physical units** · **Resize** helpers · **DimenScaled** chains  
+
+### What's New in 3.2.0
+
+| Change | Description |
+|--------|-------------|
+| **Compose-BOM independence** | The library no longer version-pins `androidx.compose:compose-bom`. The BOM is `implementation`-scoped in the library, but the consumer's `compose-bom` (when declared, regardless of version) takes over via Gradle's constraint resolution. The library only ever references Compose's stable public API (`Density`, `Dp`, `CompositionLocal`, `@Composable`, `Modifier`), so any modern Compose version works. |
+| **R8 "Missing class" notes silenced** | Every AAR's `consumer-rules.pro` (principal + 13 satellites) now adds `-dontnote` / `-dontwarn` for `androidx.compose.{runtime,ui,foundation,animation}.**`. This silences the noisy "Missing class" output that R8 emits when the consumer's Compose version differs from the BOM the AAR was compiled against — those notes are never real problems, just artifact-of-different-versions noise. |
+| **Compose-bom version check** | `appdimens-missing-module-check.gradle.kts` now reports the detected `compose-bom` version(s) at build time as a `lifecycle` log line, so consumers can quickly confirm which BOM they resolved against. |
 
 ### What's New in 3.1.9
 
