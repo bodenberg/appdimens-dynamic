@@ -110,3 +110,23 @@
 -dontnote kotlinx.**
 -dontwarn sun.misc.**
 -dontnote sun.misc.**
+
+
+################################################################################
+# 7. COMPOSE VERSION INDEPENDENCE (3.1.9.1)
+#
+#    When the consumer's compose-bom is different from the BOM the AAR was
+#    compiled against (2026.06.01), R8 prints "Missing class" notes for
+#    Compose internals that the consumer's older / newer Compose exposes
+#    under different names. The library only ever references Compose's
+#    stable public API (Density, Dp, CompositionLocal, @Composable, Modifier),
+#    so these notes are never real problems — silence them to keep the
+#    consumer's R8 output clean and avoid the appearance of a real error.
+################################################################################
+
+-dontnote androidx.compose.runtime.**
+-dontnote androidx.compose.ui.**
+-dontnote androidx.compose.foundation.**
+-dontnote androidx.compose.animation.**
+-dontwarn androidx.compose.runtime.**
+-dontwarn androidx.compose.ui.**
