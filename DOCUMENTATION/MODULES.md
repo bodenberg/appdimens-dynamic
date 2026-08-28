@@ -1,4 +1,4 @@
-# AppDimens Dynamic — Gradle / Maven modules (3.1.9)
+# AppDimens Dynamic — Gradle / Maven modules (3.2.0)
 
 ## Module graph
 
@@ -33,13 +33,13 @@ Android Gradle `namespace` values are unique per module (`com.appdimens.dynamic`
 | `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` |
 | `appdimens-dynamic-bom` | Version constraints for the set above (`java-platform`) |
 
-All published coordinates share `appdimens.version` in `gradle.properties` (**3.1.9**). Kotlin packages are unchanged since 3.1.6.
+All published coordinates share `appdimens.version` in `gradle.properties` (**3.2.0**). Kotlin packages are unchanged since 3.1.6.
 
 ## Installation
 
 ```kotlin
 dependencies {
-    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.1.9"))
+    implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.2.0"))
     implementation("io.github.bodenberg:appdimens-dynamic")
     implementation("io.github.bodenberg:appdimens-dynamic-percent")
 }

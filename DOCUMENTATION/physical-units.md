@@ -1,6 +1,6 @@
 # Physical units (`compose` + `code.units`)
 
-**Artifact:** `io.github.bodenberg:appdimens-dynamic-units:3.1.9` (`:library-units`)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-units:3.2.0` (`:library-units`)
 See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v317)
 
 ## What it is

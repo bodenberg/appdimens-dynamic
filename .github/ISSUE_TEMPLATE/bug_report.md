@@ -25,7 +25,7 @@ If applicable, add screenshots to help explain your problem.
 **Device Information (please complete the following information):**
  - Device: [e.g. Pixel 7, Samsung S24]
  - OS: [e.g. Android 14, API 34]
- - Library Version: [e.g. 3.1.9]
+ - Library Version: [e.g. 3.2.0]
  - Kotlin Version: [e.g. 2.4.10]
  - Compose BOM Version: [e.g. 2026.06.01]
 

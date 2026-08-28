@@ -1,6 +1,6 @@
 # Auto strategy (`compose.auto` / `code.auto`)
 
-**Artifact:** `io.github.bodenberg:appdimens-dynamic-auto:3.1.9` (`:library-auto`)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-auto:3.2.0` (`:library-auto`)
 See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v317)
 
 **Same API surface as scaled** with prefixes `asdp` / `ahdp` / `awdp` / `assp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).

@@ -1,6 +1,6 @@
 # Fill strategy (`compose.fill` / `code.fill`)
 
-**Artifact:** `io.github.bodenberg:appdimens-dynamic-fill:3.1.9` (`:library-fill`)
+**Artifact:** `io.github.bodenberg:appdimens-dynamic-fill:3.2.0` (`:library-fill`)
 See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-v317)
 
 **Same API surface as scaled** with prefixes `flsdp` / `flhdp` / `flwdp` / `flssp` / … — see [COMPOSE-API-CONVENTIONS.md §3](COMPOSE-API-CONVENTIONS.md#3-strategy-prefix-map-mirror-of-scaled).
