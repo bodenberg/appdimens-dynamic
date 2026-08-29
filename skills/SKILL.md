@@ -12,9 +12,9 @@ description: Use this skill for any Android responsive layout or scaling questio
 On release bumps, update version URLs in this file, `library-map.md`, and `reference.md` together.
 
 **What's New in 3.2.0:**
-- Compose-BOM independence: `compose-bom` is no longer version-pinned; the consumer's `compose-bom` (when declared, regardless of version) takes over via Gradle constraint resolution
-- R8 "Missing class" notes silenced: every AAR's `consumer-rules.pro` (principal + 13 satellites) adds `-dontnote` / `-dontwarn` for `androidx.compose.{runtime,ui,foundation,animation}.**` so consumer R8 output stays clean when their Compose version differs from the BOM the AAR was compiled against
-- Compose-bom version reported at build time by `appdimens-missing-module-check.gradle.kts` as a `lifecycle` log line
+- Compose-BOM independence: Jetpack Compose is declared as `compileOnly` (runtime, ui, foundation, material3, material-core, activity-compose). The library compiles against the BOM's Compose but **never ships or pins a version** — the published AAR/POM carries no Compose constraint at all. The consumer's Compose (any version) is the single runtime, so there is no version skew and no "class/function not found" regardless of the Compose version the dev chooses.
+- R8 "Missing class" notes silenced: every AAR's `consumer-rules.pro` (principal + 13 satellites) adds `-dontnote` / `-dontwarn` for `androidx.compose.{runtime,ui,foundation,animation}.**` so consumer R8 output stays clean when their Compose version differs from the one the AAR was compiled against.
+- Compose BOM version reported at build time by `appdimens-missing-module-check.gradle.kts` as a `lifecycle` log line (informational only — the library does not enforce it).
 
 **What's New in 3.1.9:**
 - Atomic fast-partition slot: `metrics + partition` published as one `@Volatile` `FastPartitionSlot` — eliminates the race where a multi-window app could transiently resolve against another window's partition

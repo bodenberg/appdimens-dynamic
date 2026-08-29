@@ -184,16 +184,16 @@ kotlin {
 }
 
 dependencies {
-    // Compose BOM is implementation-scoped (Gradle BOMs are version-pinned,
-    // not "highest-wins"). Consumers can override by declaring their own
-    // compose-bom: Gradle constraint resolution picks the higher version
-    // when the consumer's BOM is newer, and falls back to this one when the
-    // consumer omits a BOM. This makes appdimens-dynamic 3.2.0 work with
-    // any Compose version the dev chooses, while still letting the library
-    // module build standalone (R8 / release AAR) without a consumer app.
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.runtime)
+    // Compose is compileOnly-scoped on purpose: the library compiles against the
+    // BOM's Compose but NEVER ships or pins a Compose version. The consumer's
+    // Compose is the single runtime (composables must share one Recomposer), so
+    // version skew / "class or function not found" errors can't happen regardless
+    // of the Compose version the dev chooses. The library still builds standalone
+    // (R8 / release AAR) using its own compile classpath. Consumers (Compose apps)
+    // always provide Compose themselves at compile and runtime.
+    compileOnly(platform(libs.androidx.compose.bom))
+    compileOnly(libs.androidx.compose.ui)
+    compileOnly(libs.androidx.compose.runtime)
 
     implementation(libs.androidx.window)
     implementation(libs.androidx.annotation)
@@ -202,6 +202,12 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui)
+    testImplementation(libs.androidx.compose.runtime)
+    testImplementation(libs.androidx.compose.ui.graphics)
+    testImplementation(libs.androidx.compose.ui.tooling.preview)
+    testImplementation(libs.androidx.compose.material3)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

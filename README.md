@@ -135,7 +135,7 @@ dependencies {
 
 Module graph: [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md).
 
-**Requirements:** Min SDK **24** · Compile SDK **36** · **Kotlin** & **Java 17** · **Jetpack Compose**
+**Requirements:** Min SDK **24** · Compile SDK **36** · **Kotlin** & **Java 17** · **Jetpack Compose** (consumer-provided — the library declares Compose as `compileOnly` and never pins a version, so any Compose version works without conflict)
 
 ---
 
