@@ -53,6 +53,7 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 | Density | `appdimens-dynamic-density` | [density.md](density.md) |
 | Resize (constraint-based auto-fit) | `appdimens-dynamic-resize` | [resize.md](resize.md) |
 | Physical units (mm, cm, in) | `appdimens-dynamic-units` | [physical-units.md](physical-units.md) |
+| **Custom (your own strategies: DSL / JSON / presets)** | `appdimens-dynamic-custom` | [custom.md](custom.md) |
 
 ### Quick links
 
@@ -76,7 +77,8 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 13. [Density](density.md)  
 14. [Resize](resize.md)  
 15. [Physical units](physical-units.md)  
-16. [Mathematics & calculus](MATHEMATICS-AND-CALCULUS.md)  
+16. [Custom strategies](custom.md) — define your own scaling (rules per device / screen, JSON)  
+17. [Mathematics & calculus](MATHEMATICS-AND-CALCULUS.md)  
 
 ## Suggested decision flow
 
@@ -89,6 +91,7 @@ flowchart LR
   start --> scaled
   scaled --> qa
   qa -->|curve_not_right| other
+  other -->|no_built_in_fits| custom[Custom_strategy]
 ```
 
-Always start with **scaled**; switch strategy only where visual QA or requirements (TV, ultrawide, split-screen) need a different growth curve.
+Always start with **scaled**; switch strategy only where visual QA or requirements (TV, ultrawide, split-screen) need a different growth curve. When no built-in curve fits, or one growth law must be shared across apps and platforms, define a [custom strategy](custom.md). Start it from the closest built-in with `extend` / `"extends"`.

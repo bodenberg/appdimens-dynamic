@@ -37,6 +37,7 @@ object MissingModule {
         "power" to "appdimens-dynamic-power",
         "resize" to "appdimens-dynamic-resize",
         "units" to "appdimens-dynamic-units",
+        "custom" to "appdimens-dynamic-custom",
         // scaled / plain / common / core live in the principal artifact
         "scaled" to PRINCIPAL_ARTIFACT,
         "plain" to PRINCIPAL_ARTIFACT,

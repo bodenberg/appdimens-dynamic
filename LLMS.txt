@@ -1,6 +1,6 @@
 # AppDimens Dynamic
 
-> AppDimens Dynamic is an Android library for responsive `dp`/`sp` scaling with Jetpack Compose and Kotlin/Java (Views) APIs. It ships 14 scaling strategies (Scaled, Percent, Power, Fluid, Auto, Diagonal, Fill, Fit, Interpolated, Logarithmic, Perimeter, Density, Resize, Physical units) over a snapshot-partitioned, lock-free `DimenCache` plus constraint-based resize helpers.
+> AppDimens Dynamic is an Android library for responsive `dp`/`sp` scaling with Jetpack Compose and Kotlin/Java (Views) APIs. It ships 14 scaling strategies (Scaled, Percent, Power, Fluid, Auto, Diagonal, Fill, Fit, Interpolated, Logarithmic, Perimeter, Density, Resize, Physical units) plus user-defined **custom strategies** (`appdimens-dynamic-custom`: DSL, JSON, presets, `16.cdp(Brand)` / `14.csp(Brand)`) over a snapshot-partitioned, lock-free `DimenCache` plus constraint-based resize helpers.
 
 Important notes:
 - Kotlin packages: `com.appdimens.dynamic.compose.*` for Jetpack Compose and `com.appdimens.dynamic.code.*` for Views / Kotlin / Java; strategies do not cross-import.
@@ -42,12 +42,14 @@ Important notes:
 - [Density](DOCUMENTATION/density.md): Classic density-based (DPI / 160) scaling
 - [Resize](DOCUMENTATION/resize.md): Constraint-based auto-fit (`autoResize*`, `ResizeBound`) — largest size that still fits
 - [Physical units](DOCUMENTATION/physical-units.md): Real-world mm / cm / inch helpers
+- [Custom strategies](DOCUMENTATION/custom.md): Define your own scaling (`scalingStrategy("brand") { … }`, rules per device class / screen range / orientation, JSON shared with every AppDimens platform, presets `tabletFriendly` `tvSafe` `wearable` `gameHud`…), used as `16.cdp(Brand)`, `14.csp(Brand)`, `ProvideScalingStrategy`, `16.cdp(context, Brand)` (Views → px)
 
 ## Example code
 
 - [Compose example](app/src/main/java/com/example/app/compose/ExampleActivity.kt): Compose usage including auto-resize demos
 - [Kotlin Views example](app/src/main/java/com/example/app/kotlin/ExampleActivity.kt): `DimenSdp`/`DimenSsp` non-Composable usage
 - [Java example](app/src/main/java/com/example/app/java/ExampleActivity.java): Java usage with Data Binding
+- [Custom strategy demo](app/src/main/java/com/example/app/compose/CustomStrategyDemo.kt): DSL strategy, presets, scope and `explainCurrent()`
 
 ## Optional
 
