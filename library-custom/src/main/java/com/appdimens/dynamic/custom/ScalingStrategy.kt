@@ -41,6 +41,8 @@ class ResolvedScaling internal constructor(
     internal val curveFactor: Float,
     internal val aspectRatioMultiplier: Float,
 ) {
+    private val ratio: Float get() = if (referenceDp > 0f) axisDp / referenceDp else 1f
+
     /** EN Scales [base] (dp) → dp. PT Escala [base] (dp) → dp. */
     fun scale(base: Float): Float {
         var out = base * factor
@@ -53,7 +55,13 @@ class ResolvedScaling internal constructor(
             if (max != null && magnitude > max) magnitude = max
             out = if (out < 0f) -magnitude else magnitude
         }
-        config.transform?.let { out = it.transform(base, out, screen) }
+        when (val t = config.transform) {
+            null -> Unit
+            is FormulaTransform -> out = t.expression.evaluate(
+                ScalingExpression.variables(screen, ratio, axisDp, referenceDp, config.reference, base, out, factor),
+            ).toFloat()
+            else -> out = t.transform(base, out, screen)
+        }
         return out
     }
 
@@ -196,7 +204,7 @@ internal object ScalingEngine {
             return ResolvedScaling(screen, cfg, 1f, applied, axisDp, refDp, 1f, 1f)
         }
         val ratio = if (refDp > 0f) axisDp / refDp else 1f
-        val curveFactor = curve(cfg.curve, ratio, axisDp, screen)
+        val curveFactor = curve(cfg.curve, ratio, axisDp, refDp, cfg.reference, screen)
         var factor = curveFactor * cfg.multiplier
         var arMul = 1f
         if (cfg.aspectRatio) {
@@ -210,7 +218,9 @@ internal object ScalingEngine {
         return ResolvedScaling(screen, cfg, factor, applied, axisDp, refDp, curveFactor, arMul)
     }
 
-    fun curve(curve: ScalingCurve, ratio: Float, axisDp: Float, screen: ScreenSnapshot): Float = when (curve) {
+    fun curve(
+        curve: ScalingCurve, ratio: Float, axisDp: Float, refDp: Float, reference: ReferenceScreen, screen: ScreenSnapshot,
+    ): Float = when (curve) {
         ScalingCurve.Linear -> ratio
         is ScalingCurve.Power -> if (ratio > 0f) ratio.toDouble().pow(curve.exponent.toDouble()).toFloat() else 0f
         is ScalingCurve.Logarithmic -> if (ratio > 0f) 1f + curve.k * ln(ratio.toDouble()).toFloat() else 1f
@@ -218,6 +228,8 @@ internal object ScalingEngine {
         is ScalingCurve.Constant -> curve.factor
         is ScalingCurve.Breakpoints -> interpolate(curve.points, axisDp)
         is ScalingCurve.Custom -> curve.function.factor(ratio, screen)
+        is ScalingCurve.Expression ->
+            curve.expression.evaluate(ScalingExpression.variables(screen, ratio, axisDp, refDp, reference)).toFloat()
     }
 
     private fun interpolate(points: List<Breakpoint>, x: Float): Float {

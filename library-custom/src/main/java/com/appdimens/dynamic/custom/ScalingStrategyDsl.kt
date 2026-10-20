@@ -39,6 +39,13 @@ abstract class ScalingCurves internal constructor() {
     fun breakpoints(vararg points: Pair<Number, Number>): ScalingCurve =
         ScalingCurve.Breakpoints(points.map { Breakpoint(it.first.toFloat(), it.second.toFloat()) })
 
+    /**
+     * EN Free formula as text (JSON-serializable): `expression("pow(ratio, 0.8) * (tablet ? 0.9 : 1)")`.
+     * See [ScalingExpression] for variables and functions.
+     * PT Fórmula livre em texto (serializável): veja [ScalingExpression].
+     */
+    fun expression(source: String): ScalingCurve = ScalingCurve.Expression(source)
+
     /** EN Free pure formula `(ratio, screen) -> factor`. PT Fórmula livre e pura. */
     fun custom(function: CurveFunction): ScalingCurve = ScalingCurve.Custom(function)
 }
@@ -76,6 +83,13 @@ abstract class ScalingFields internal constructor() : ScalingCurves() {
 
     /** EN Per-value pure hook (value-dependent → cached). PT Hook puro por valor. */
     fun transform(transform: ValueTransform) = setTransform(transform)
+
+    /**
+     * EN Per-value formula as text (value-dependent → cached), e.g. `formula("max(scaled, base)")`
+     * or a full replacement `formula("base * pow(sw / 360, 0.7) + 2")`.
+     * PT Fórmula por valor em texto (ex.: `formula("max(scaled, base)")`).
+     */
+    fun formula(source: String) = setTransform(FormulaTransform(source))
 
     /** EN Shortcut: multiply the factor. PT Atalho: multiplica o fator. */
     fun multiply(factor: Number) {

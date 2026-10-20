@@ -124,6 +124,7 @@ object ScalingStrategyJson {
         // Explicit nulls/false at the root reset inherited values.
         if (obj.containsKey("clamp") && obj["clamp"] == null) cfg = cfg.copy(minFactor = null, maxFactor = null)
         if (obj.containsKey("valueClamp") && obj["valueClamp"] == null) cfg = cfg.copy(minValue = null, maxValue = null)
+        if (obj.containsKey("formula") && obj["formula"] == null) cfg = cfg.copy(transform = null)
         val rules = (obj["rules"]?.let { list(it, "$path.rules") } ?: emptyList<Any?>()).mapIndexed { i, r ->
             val rule = r as? Map<*, *> ?: throw IllegalArgumentException("$path.rules[$i] must be an object")
             ScalingRule(
@@ -160,7 +161,18 @@ object ScalingStrategyJson {
                 ?: num(obj["sensitivity"], "$path.sensitivity"),
             fontScale = obj["fontScale"]?.let { readFontScale(it, "$path.fontScale") },
             ignoreMultiWindow = obj["ignoreMultiWindow"] as? Boolean,
+            transform = when (val f = obj["formula"]) {
+                null -> null
+                is String -> wrap("$path.formula") { FormulaTransform(f) }
+                else -> throw IllegalArgumentException("$path.formula must be a string")
+            },
         )
+    }
+
+    private inline fun <T> wrap(path: String, block: () -> T): T = try {
+        block()
+    } catch (e: IllegalArgumentException) {
+        throw IllegalArgumentException("$path: ${e.message}", e)
     }
 
     private fun readCurve(value: Any, path: String): ScalingCurve {
@@ -172,6 +184,10 @@ object ScalingStrategyJson {
             "logarithmic" -> ScalingCurve.Logarithmic(num(obj["k"], "$path.k") ?: 0.4f)
             "interpolated" -> ScalingCurve.Interpolated(num(obj["t"], "$path.t") ?: 0.5f)
             "constant" -> ScalingCurve.Constant(num(obj["factor"], "$path.factor") ?: 1f)
+            "expression" -> {
+                val src = obj["expression"] as? String ?: throw IllegalArgumentException("$path.expression is required")
+                wrap("$path.expression") { ScalingCurve.Expression(src) }
+            }
             "breakpoints" -> ScalingCurve.Breakpoints(list(obj["points"], "$path.points").mapIndexed { i, p ->
                 val point = p as? Map<*, *> ?: throw IllegalArgumentException("$path.points[$i] must be an object")
                 Breakpoint(
@@ -179,7 +195,7 @@ object ScalingStrategyJson {
                     num(point["factor"], "$path.points[$i].factor") ?: throw IllegalArgumentException("$path.points[$i].factor is required"),
                 )
             })
-            else -> throw IllegalArgumentException("$path.type '$type' is not one of linear, power, logarithmic, interpolated, constant, breakpoints")
+            else -> throw IllegalArgumentException("$path.type '$type' is not one of linear, power, logarithmic, interpolated, constant, breakpoints, expression")
         }
     }
 
@@ -256,7 +272,7 @@ object ScalingStrategyJson {
     )
 
     private fun StringBuilder.writePatchFields(p: ScalingPatch, defaults: Boolean) {
-        check(p.transform == null) { "ValueTransform lambdas cannot be encoded to JSON" }
+        check(p.transform == null || p.transform is FormulaTransform) { "ValueTransform lambdas cannot be encoded to JSON" }
         p.reference?.let { if (!defaults || it != ReferenceScreen.DEFAULT) append(",\"reference\":{\"width\":").append(n(it.width)).append(",\"height\":").append(n(it.height)).append('}') }
         p.axis?.let { if (!defaults || it != ScalingAxis.SMALLEST_WIDTH) append(",\"axis\":").append(quote(it.jsonName)) }
         p.curve?.let { append(",\"curve\":"); writeCurve(it) }
@@ -278,6 +294,7 @@ object ScalingStrategyJson {
             )
         }
         p.ignoreMultiWindow?.let { if (!defaults || it) append(",\"ignoreMultiWindow\":").append(it) }
+        (p.transform as? FormulaTransform)?.let { append(",\"formula\":").append(quote(it.expression.source)) }
     }
 
     private fun StringBuilder.writeCurve(c: ScalingCurve) {
@@ -289,6 +306,7 @@ object ScalingStrategyJson {
             is ScalingCurve.Constant -> append("{\"type\":\"constant\",\"factor\":").append(n(c.factor)).append('}')
             is ScalingCurve.Breakpoints -> append("{\"type\":\"breakpoints\",\"points\":[")
                 .append(c.points.joinToString(",") { "{\"at\":${n(it.at)},\"factor\":${n(it.factor)}}" }).append("]}")
+            is ScalingCurve.Expression -> append("{\"type\":\"expression\",\"expression\":").append(quote(c.expression.source)).append('}')
             is ScalingCurve.Custom -> throw IllegalStateException("Custom curve lambdas cannot be encoded to JSON")
         }
     }

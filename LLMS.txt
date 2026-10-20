@@ -1,6 +1,6 @@
 # AppDimens Dynamic
 
-> AppDimens Dynamic is an Android library for responsive `dp`/`sp` scaling with Jetpack Compose and Kotlin/Java (Views) APIs. It ships 14 scaling strategies (Scaled, Percent, Power, Fluid, Auto, Diagonal, Fill, Fit, Interpolated, Logarithmic, Perimeter, Density, Resize, Physical units) plus user-defined **custom strategies** (`appdimens-dynamic-custom`: DSL, JSON, presets, `16.cdp(Brand)` / `14.csp(Brand)`) over a snapshot-partitioned, lock-free `DimenCache` plus constraint-based resize helpers.
+> AppDimens Dynamic is an Android library for responsive `dp`/`sp` scaling with Jetpack Compose and Kotlin/Java (Views) APIs. It ships 14 scaling strategies (Scaled, Percent, Power, Fluid, Auto, Diagonal, Fill, Fit, Interpolated, Logarithmic, Perimeter, Density, Resize, Physical units) plus user-defined **custom strategies** (`appdimens-dynamic-custom`: DSL, JSON, free-form text formulas, presets, `16.cdp(Brand)` / `14.csp(Brand)`) over a snapshot-partitioned, lock-free `DimenCache` plus constraint-based resize helpers.
 
 Important notes:
 - Kotlin packages: `com.appdimens.dynamic.compose.*` for Jetpack Compose and `com.appdimens.dynamic.code.*` for Views / Kotlin / Java; strategies do not cross-import.

@@ -345,7 +345,7 @@ import com.appdimens.dynamic.compose.custom.*
 
 val Brand = scalingStrategy("brand") {
     reference(width = 360, height = 640)          // your design frame
-    curve = power(0.8f)                             // linear / power / logarithmic / interpolated / breakpoints / custom { }
+    curve = power(0.8f)                             // linear / power / logarithmic / interpolated / breakpoints / expression("…") / custom { }
     clamp(min = 0.85f, max = 1.6f)
     on(DeviceClass.TABLET, DeviceClass.DESKTOP) { curve = logarithmic(0.4f) }
     on(DeviceClass.WATCH) { axis = ScalingAxis.MIN; reference(192, 192) }
@@ -416,7 +416,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 
 | Change | Description |
 |--------|-------------|
-| **New module `appdimens-dynamic-custom`** | Lets you define your own scaling strategies with a DSL (`scalingStrategy("brand") { … }`) or JSON (one format shared with every AppDimens platform). Curves: linear, power, logarithmic, interpolated, constant, breakpoints, or a pure `custom { }` lambda. Strategies support axes, reference frame, factor/value bounds, aspect ratio, font-scale policy, and rules per device class / screen range / orientation / multi-window. They can extend built-ins or presets. |
+| **New module `appdimens-dynamic-custom`** | Lets you define your own scaling strategies with a DSL (`scalingStrategy("brand") { … }`) or JSON (one format shared with every AppDimens platform). Curves: linear, power, logarithmic, interpolated, constant, breakpoints, a free-form text `expression("…")` (JSON-serializable, same result on every platform), or a pure `custom { }` lambda; plus a per-value `formula("…")`. Strategies support axes, reference frame, factor/value bounds, aspect ratio, font-scale policy, and rules per device class / screen range / orientation / multi-window. They can extend built-ins or presets. |
 | **APIs** | Compose: `16.cdp(Brand)` · `14.csp(Brand)` · `cdpPx` / `cspPx` · `ProvideScalingStrategy` · `Brand.dp(16)` · `explainCurrent()`. Views: `16.cdp(context, Brand)` (px) · `cdpDp` · `csp` · `cspUnits` · Java `DimenCustom`. |
 | **Core: `CalcType.CUSTOM`** | `DimenCache.buildCustomKey` puts the strategy id in the 16 sensitivity bits, so strategies never alias. Factor-only strategies take the one-multiply bypass lane; value-dependent ones are cached per window snapshot. |
 

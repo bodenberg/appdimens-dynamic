@@ -125,6 +125,9 @@ $$Output = T\Big(\operatorname{clamp}_{|\cdot|}\big(b \cdot F,\ V_{min},\ V_{max
 | interpolated(t) | $1 + (r-1)\,t$ | Interpolated with $t = 0.5$ |
 | constant(f) | $f$ | plain dp when $f = 1$ |
 | breakpoints | piecewise-linear over the absolute axis value $A(\text{window})$ | Fluid-like bands |
+| expression | $E(r, \text{window})$ — any user formula written as text | Free-form; evaluated once per window |
+
+A per-value **formula** $F(b, s, f, \text{window})$ (where $s$ is the clamped $b \cdot f$) may replace the final step: $\text{dp} = F(b, \text{clampValue}(b \cdot f), f, \text{window})$. Expressions are evaluated in 64-bit floating point and rounded to `Float` at the end.
 
 The rest of the formula works as follows:
 - **Rules.** Matching rules apply in declaration order before evaluation. Ranges are $[min, max)$.

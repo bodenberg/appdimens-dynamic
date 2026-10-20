@@ -227,6 +227,19 @@ sealed class ScalingCurve {
         override fun toString(): String = "Breakpoints($points)"
     }
 
+    /**
+     * EN Free formula written as text (`"pow(ratio, 0.8) * (tablet ? 0.9 : 1)"`) — see
+     * [ScalingExpression]. Serializable to JSON, identical on every platform.
+     * PT Fórmula livre em texto — serializável em JSON, idêntica em todas as plataformas.
+     */
+    class Expression(val expression: ScalingExpression) : ScalingCurve() {
+        constructor(source: String) : this(ScalingExpression.parse(source, ScalingExpression.CURVE_VARIABLES))
+
+        override fun equals(other: Any?): Boolean = other is Expression && other.expression == expression
+        override fun hashCode(): Int = expression.hashCode()
+        override fun toString(): String = "Expression(${expression.source})"
+    }
+
     /** EN Free formula — see [CurveFunction]. Not serializable to JSON. */
     class Custom(val function: CurveFunction) : ScalingCurve() {
         override fun toString(): String = "Custom"

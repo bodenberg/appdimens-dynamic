@@ -30,7 +30,8 @@ Rules can override any field per **device class** (phone, tablet, desktop, TV, w
 | Aspect ratio | `aspectRatio(sensitivity = 0.004f)` | `"aspectRatio": {"enabled": true, "sensitivity": 0.004}` | off, k = 0.08 / 30 |
 | Font scale (`csp`) | `followFontScale()` · `ignoreFontScale()` · `clampFontScale(1.3f)` | `"fontScale": "follow"` · `"ignore"` · `{"max": 1.3}` | `follow` |
 | Multi-window | `ignoreMultiWindow = true` | `"ignoreMultiWindow": true` | false |
-| Per-value hook | `transform { base, scaled, screen -> … }` | — (code only) | none |
+| Per-value formula | `formula("max(scaled, base)")` | `"formula": "max(scaled, base)"` | none |
+| Per-value hook (code) | `transform { base, scaled, screen -> … }` | — (code only) | none |
 | Rules | `on(…) { … }`, `onScreen(…) { … }`, `landscape { … }` … | `"rules": [{"when": {…}, "set": {…}}]` | none |
 | Parent | `BuiltInStrategies.POWER.extend("x") { … }` | `"extends": "power"` | — |
 
@@ -56,7 +57,37 @@ Rules can override any field per **device class** (phone, tablet, desktop, TV, w
 | `interpolated(t)` | `1 + (r − 1)·t` | Built-in interpolated uses 0.5 |
 | `constant(f)` | `f` | `constant(1f)` = plain dp |
 | `breakpoints(360 to 1, 600 to 1.25)` | piecewise linear over the **absolute** axis value (dp) | clamped to the first and last points |
-| `custom { ratio, screen -> … }` | your formula | must be **pure**; not JSON-serializable |
+| `expression("pow(ratio, 0.8) * (tablet ? 0.9 : 1)")` | your formula, as text | JSON-serializable, same result on every platform — see below |
+| `custom { ratio, screen -> … }` | your formula, as code | must be **pure**; not JSON-serializable |
+
+### Free-form formulas (no limits from the built-in curves)
+
+You are not limited to the built-in curves. Write the formula yourself, as **text** that also works in JSON and gives the same result on every AppDimens platform:
+
+- **Curve expression** returns the **factor** from the screen. It is computed once per window, like any curve, and stays on the one-multiply fast path.
+  `"curve": {"type": "expression", "expression": "pow(ratio, 0.8) * (tablet ? 0.9 : 1)"}`
+- **Formula** returns the **final value** for each input. It can use `base`, `scaled` and `factor`, and replaces or post-processes the result. The strategy then becomes value-dependent, so results are cached per window.
+  `"formula": "base * pow(sw / 360, 0.7) + 2"` · `"formula": "max(scaled, base)"`
+
+| | |
+|---|---|
+| Operators | `+ - * / % ^` (`^` = power, right-associative; `%` keeps the dividend's sign), `== != < <= > >=`, `&& \|\| !`, `cond ? a : b`, `( )` |
+| Functions | `min(a, b, …)` `max(a, b, …)` `clamp(x, lo, hi)` `pow` `sqrt` `ln`/`log` `log10` `log2` `exp` `abs` `sign` `floor` `ceil` `round` (half up) `lerp(a, b, t)` `step(edge, x)` `smoothstep(e0, e1, x)` |
+| Screen variables | `sw` `width` `height` `shortSide` `longSide` `diagonal` `perimeter` `aspectRatio` `density` `fontScale`; flags (1/0): `landscape` `portrait` `multiWindow` `phone` `tablet` `desktop` `tv` `watch` `car` `vr`; constants `pi` `e`, `true` / `false` |
+| Curve variables | screen variables + `ratio` (axis / reference), `axis` (dp), `ref` (reference dp), `refWidth`, `refHeight` |
+| Formula variables | curve variables + `base` (input), `scaled` (base × factor after `valueClamp`), `factor` |
+
+Expressions are parsed when the strategy is created. Unknown variables or functions, wrong arity and syntax errors fail early with the position and the JSON path (e.g. `brand.rules[0].set.curve.expression`). A non-finite factor (for example, a division by zero) throws when the strategy resolves. Rules can swap expressions per device like any other field, and `"formula": null` clears an inherited formula.
+
+For anything the language cannot express, use a code-only lambda: `custom { ratio, screen -> … }` (factor) or `transform { base, scaled, screen -> … }` (value). Both have full access to your code, but they cannot be serialized to JSON.
+
+```kotlin
+val Hud = scalingStrategy("hud") {
+    curve = expression("clamp(pow(shortSide / 360, 0.85) * (1 + 0.05 * log(aspectRatio / 1.78)), 0.8, 2)")
+    formula("round(scaled)")                       // whole dp only
+    on(DeviceClass.TV) { curve = expression("height / 540") }
+}
+```
 
 ### Rules
 
