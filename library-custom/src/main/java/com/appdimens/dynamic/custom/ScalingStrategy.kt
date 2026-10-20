@@ -249,7 +249,7 @@ object ScalingStrategies {
 
     internal fun nextCacheId(): Int {
         val next = cacheIds.getAndIncrement()
-        return if (next <= MAX_CACHE_ID) next else -1
+        return if (next in 0..MAX_CACHE_ID) next else -1
     }
 
     @Volatile
