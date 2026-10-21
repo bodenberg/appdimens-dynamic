@@ -328,8 +328,12 @@ data class ScalingPatch(
     val transform: ValueTransform? = null,
 ) {
     internal val isValueDependent: Boolean
-        get() = minValue != null || maxValue != null || transform != null
+        get() = minValue != null || maxValue != null || transform.isValueDependent
 }
+
+/** EN A proportional text formula (`base * E`) is screen-only; any other transform is not. */
+internal val ValueTransform?.isValueDependent: Boolean
+    get() = this != null && !(this is FormulaTransform && isProportional)
 
 /**
  * EN `when` [condition] matches, apply [patch]. Matching rules apply in declaration order;
@@ -390,7 +394,7 @@ data class ScalingConfig(
 
     /** EN True when some path depends on the value itself (not only on the screen). */
     val isValueDependent: Boolean
-        get() = minValue != null || maxValue != null || transform != null || rules.any { it.patch.isValueDependent }
+        get() = minValue != null || maxValue != null || transform.isValueDependent || rules.any { it.patch.isValueDependent }
 
     /** EN Returns this config with [patch] applied. PT Retorna a config com [patch] aplicado. */
     fun apply(patch: ScalingPatch): ScalingConfig = copy(

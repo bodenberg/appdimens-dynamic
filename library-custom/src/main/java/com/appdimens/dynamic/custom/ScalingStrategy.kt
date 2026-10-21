@@ -43,6 +43,16 @@ class ResolvedScaling internal constructor(
 ) {
     private val ratio: Float get() = if (referenceDp > 0f) axisDp / referenceDp else 1f
 
+    /**
+     * EN `E` of a proportional formula (`base * E`), evaluated once for this window; NaN when the
+     * formula (if any) needs the value. `base * E` then costs one multiply, like a curve.
+     * PT `E` de uma fórmula proporcional, calculado uma vez por janela; NaN caso contrário.
+     */
+    private val formulaCoefficient: Double =
+        (config.transform as? FormulaTransform)?.expression?.baseCoefficient
+            ?.evaluate(ScalingExpression.variables(screen, ratio, axisDp, referenceDp, config.reference))
+            ?: Double.NaN
+
     /** EN Scales [base] (dp) → dp. PT Escala [base] (dp) → dp. */
     fun scale(base: Float): Float {
         var out = base * factor
@@ -57,7 +67,7 @@ class ResolvedScaling internal constructor(
         }
         when (val t = config.transform) {
             null -> Unit
-            is FormulaTransform -> out = t.expression.evaluate(
+            is FormulaTransform -> out = if (t.isProportional) (base.toDouble() * formulaCoefficient).toFloat() else t.expression.evaluate(
                 ScalingExpression.variables(screen, ratio, axisDp, referenceDp, config.reference, base, out, factor),
             ).toFloat()
             else -> out = t.transform(base, out, screen)
@@ -93,6 +103,7 @@ class ResolvedScaling internal constructor(
                 .append(config.maxFactor?.let(::fmt) ?: "-").append(']')
         }
         append(" => factor ").append(fmt(factor))
+        config.transform?.let { append(" then ").append(if (it is FormulaTransform) it.toString() else "transform") }
         if (appliedRules.isNotEmpty()) append(" rules=").append(appliedRules)
     }
 
@@ -318,6 +329,14 @@ object ScalingStrategies {
         return doc.strategies
     }
 
+    /**
+     * EN Strategy whose value is the text [formula] (`"base * pow(sw / 360, 0.8)"`), shared per
+     * text. Java-friendly form of [scalingFormula].
+     * PT Estratégia cujo valor é a [formula] em texto, compartilhada por texto.
+     */
+    @JvmStatic
+    fun formula(formula: String): ScalingStrategy = FormulaStrategies.get(formula)
+
     internal fun derived(id: String, create: () -> ScalingStrategy): ScalingStrategy =
         derivedCache.getOrPut(id, create)
 
@@ -326,6 +345,7 @@ object ScalingStrategies {
     internal fun resetForTest() {
         byId.clear()
         derivedCache.clear()
+        FormulaStrategies.clear()
         defaultStrategy = null
     }
 }

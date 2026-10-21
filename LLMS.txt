@@ -42,7 +42,7 @@ Important notes:
 - [Density](DOCUMENTATION/density.md): Classic density-based (DPI / 160) scaling
 - [Resize](DOCUMENTATION/resize.md): Constraint-based auto-fit (`autoResize*`, `ResizeBound`) — largest size that still fits
 - [Physical units](DOCUMENTATION/physical-units.md): Real-world mm / cm / inch helpers
-- [Custom strategies](DOCUMENTATION/custom.md): Define your own scaling (`scalingStrategy("brand") { … }`, rules per device class / screen range / orientation, JSON shared with every AppDimens platform, presets `tabletFriendly` `tvSafe` `wearable` `gameHud`…), used as `16.cdp(Brand)`, `14.csp(Brand)`, `ProvideScalingStrategy`, `16.cdp(context, Brand)` (Views → px)
+- [Custom strategies](DOCUMENTATION/custom.md): Simplest form: write the formula, e.g. `16.cdp("base * pow(sw / 360, 0.8)")`, `scalingFormula("…")`, or `scalingFormula { base, screen -> … }`. Full form: define your own scaling (`scalingStrategy("brand") { … }`, rules per device class / screen range / orientation, JSON shared with every AppDimens platform, presets `tabletFriendly` `tvSafe` `wearable` `gameHud`…), used as `16.cdp(Brand)`, `14.csp(Brand)`, `ProvideScalingStrategy`, `16.cdp(context, Brand)` (Views → px)
 
 ## Example code
 

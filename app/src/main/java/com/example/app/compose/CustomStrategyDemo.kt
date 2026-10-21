@@ -30,6 +30,7 @@ import com.appdimens.dynamic.compose.custom.explainCurrent
 import com.appdimens.dynamic.custom.CustomPresets
 import com.appdimens.dynamic.custom.DeviceClass
 import com.appdimens.dynamic.custom.ScalingStrategy
+import com.appdimens.dynamic.custom.scalingFormula
 import com.appdimens.dynamic.custom.scalingStrategy
 
 /**
@@ -44,6 +45,12 @@ val DemoBrand: ScalingStrategy = scalingStrategy("demoBrand") {
     on(DeviceClass.TABLET, DeviceClass.DESKTOP, name = "large") { curve = logarithmic(0.4f) }
     landscape { multiply(0.95f) }
 }
+
+/**
+ * EN The simplest form: the formula you write is the value (`base` = the value you pass).
+ * PT A forma mais simples: a fórmula que você escreve é o valor (`base` = o valor passado).
+ */
+val DemoFormula: ScalingStrategy = scalingFormula("base * (tablet ? 0.9 : 1) * clamp(sw / 360, 0.85, 1.6)")
 
 @Composable
 fun CustomStrategyExampleCard() {
@@ -63,6 +70,8 @@ fun CustomStrategyExampleCard() {
                 DemoBox("demoBrand", 48.cdp(DemoBrand))
                 DemoBox("tabletFriendly", 48.cdp(CustomPresets.TABLET_FRIENDLY))
                 DemoBox("gameHud", 48.cdp(CustomPresets.GAME_HUD))
+                DemoBox("formula", 48.cdp(DemoFormula))
+                DemoBox("inline", 48.cdp("base * pow(sw / 360, 0.8)"))
             }
             // EN Every cdp/csp without an explicit strategy inside the scope uses DemoBrand.
             // PT Todo cdp/csp sem estratégia explícita dentro do escopo usa DemoBrand.

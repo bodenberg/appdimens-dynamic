@@ -5,6 +5,43 @@ See [MODULES.md](MODULES.md) · [README installation](../README.md#installation-
 
 The 13 built-in strategies cover most products. When an app (or a design system shared by several apps) needs its **own** growth law, use this module to define your own strategy instead of forking a built-in one. The configuration is identical on every AppDimens platform (Android, KMP, iOS, Flutter, React Native, Web, Games, .NET) and can be loaded from JSON.
 
+## Quick start: just write the formula
+
+The easiest way is to write the formula yourself. You get the value you pass (`base`, for example 16) and the screen, and you return the scaled value. There is nothing to configure.
+
+```kotlin
+import com.appdimens.dynamic.custom.*
+import com.appdimens.dynamic.compose.custom.*
+
+// 1. Inline: the formula is the value
+Modifier.padding(16.cdp("base * pow(sw / 360, 0.8)"))
+Text("Title", fontSize = 20.csp("base * min(sw / 360, 1.3)"))
+
+// 2. Named, to reuse it everywhere
+val Hud = scalingFormula("base * (tablet ? 0.9 : 1) * clamp(sw / 360, 0.85, 1.6)")
+Modifier.size(48.cdp(Hud))
+
+// 3. In code, with no limits (not JSON-serializable)
+val Fancy = scalingFormula { base, screen -> base * (screen.smallestWidthDp / 360f).pow(0.8f) }
+```
+
+Views and Java get **px**: `16.cdp(context, "base * pow(sw / 360, 0.8)")` · `DimenCustom.cdp(context, 16f, DimenCustom.formula("…"))`.
+
+| You write | Means |
+|---|---|
+| `base` | the value you pass (`16` in `16.cdp(…)`) |
+| `sw` · `width` · `height` | smallest width · window width · window height (dp) |
+| `shortSide` · `longSide` · `diagonal` · `aspectRatio` | other window measures |
+| `ratio` | `sw / 300`, the ratio `sdp` uses (so `base * ratio` = `sdp`) |
+| `phone` `tablet` `desktop` `tv` `watch` `car` `vr` · `landscape` `portrait` `multiWindow` | 1 when true, 0 when false |
+| `density` · `fontScale` | screen density · user font scale |
+
+You can use `+ - * / ^`, `cond ? a : b`, `min` `max` `clamp` `pow` `sqrt` `log` `round` `lerp` `smoothstep`, and more (see [Free-form formulas](#free-form-formulas-no-limits-from-the-built-in-curves)). Typos fail right away with the position, for example `unknown variable 'sww'`.
+
+**Fast path.** When the formula has the shape `base * (…)` and the `(…)` part does not read `base`, it costs one multiply per value: the `(…)` part is computed once per window. Any other shape also works and is cached per value and window. `base * sw / 360` is evaluated as written, `(base * sw) / 360`. Write `base * (sw / 360)` for the fast path.
+
+The same text works in the strategies JSON (`{"id": "hud", "formula": "base * pow(sw / 360, 0.8)"}`) and gives the same numbers on every AppDimens platform. If you need more structure (rules per device, factor bounds, font-scale policy), use the full configuration below.
+
 ## What it is
 
 A custom strategy is an immutable, named configuration that turns the window into one **factor**:

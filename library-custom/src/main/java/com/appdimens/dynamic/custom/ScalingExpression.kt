@@ -50,6 +50,24 @@ class ScalingExpression private constructor(val source: String, private val root
     /** EN Evaluates with [vars] (a name → value lookup). PT Avalia com [vars]. */
     fun evaluate(vars: (String) -> Double): Double = root.eval(vars)
 
+    /**
+     * EN Non-null when the whole formula is `base`, `base * E` or `E * base` and `E` reads no
+     * value variable (`base`, `scaled`, `factor`). Such a formula is a pure screen factor, so
+     * strategies evaluate `E` once per window and skip the per-value cache (same result, bit for bit).
+     * PT Não nulo quando a fórmula é `base`, `base * E` ou `E * base` e `E` não lê variáveis de
+     * valor: vira um fator só da tela, calculado uma vez por janela (mesmo resultado).
+     */
+    internal val baseCoefficient: ScalingExpression? by lazy(LazyThreadSafetyMode.PUBLICATION) {
+        val r = root
+        val coefficient = when {
+            r is Var && r.name == "base" -> Num(1.0)
+            r is Binary && r.op == "*" && r.a.isBase() && !r.b.reads(VALUE_VARIABLES) -> r.b
+            r is Binary && r.op == "*" && r.b.isBase() && !r.a.reads(VALUE_VARIABLES) -> r.a
+            else -> null
+        }
+        coefficient?.let { ScalingExpression(source, it) }
+    }
+
     override fun equals(other: Any?): Boolean = other is ScalingExpression && other.source == source
     override fun hashCode(): Int = source.hashCode()
     override fun toString(): String = source
@@ -123,23 +141,34 @@ class ScalingExpression private constructor(val source: String, private val root
         }
 
         private fun flag(screen: ScreenSnapshot, d: DeviceClass) = if (screen.device == d) 1.0 else 0.0
+
+        private val VALUE_VARIABLES = setOf("base", "scaled", "factor")
+
+        private fun Node.isBase() = this is Var && name == "base"
     }
 
     // ── AST ─────────────────────────────────────────────────────────────────
 
     private sealed class Node {
         abstract fun eval(v: (String) -> Double): Double
+
+        /** EN True when this subtree reads any of [names]. */
+        abstract fun reads(names: Set<String>): Boolean
     }
 
     private class Num(val value: Double) : Node() {
         override fun eval(v: (String) -> Double) = value
+        override fun reads(names: Set<String>) = false
     }
 
     private class Var(val name: String) : Node() {
         override fun eval(v: (String) -> Double) = v(name)
+        override fun reads(names: Set<String>) = name in names
     }
 
     private class Unary(val op: Char, val a: Node) : Node() {
+        override fun reads(names: Set<String>) = a.reads(names)
+
         override fun eval(v: (String) -> Double): Double {
             val x = a.eval(v)
             return when (op) {
@@ -151,6 +180,8 @@ class ScalingExpression private constructor(val source: String, private val root
     }
 
     private class Binary(val op: String, val a: Node, val b: Node) : Node() {
+        override fun reads(names: Set<String>) = a.reads(names) || b.reads(names)
+
         override fun eval(v: (String) -> Double): Double {
             when (op) {
                 "&&" -> return if (a.eval(v) != 0.0 && b.eval(v) != 0.0) 1.0 else 0.0
@@ -179,9 +210,12 @@ class ScalingExpression private constructor(val source: String, private val root
 
     private class Ternary(val c: Node, val a: Node, val b: Node) : Node() {
         override fun eval(v: (String) -> Double) = if (c.eval(v) != 0.0) a.eval(v) else b.eval(v)
+        override fun reads(names: Set<String>) = c.reads(names) || a.reads(names) || b.reads(names)
     }
 
     private class Call(val name: String, val args: List<Node>) : Node() {
+        override fun reads(names: Set<String>) = args.any { it.reads(names) }
+
         override fun eval(v: (String) -> Double): Double {
             val x = DoubleArray(args.size) { args[it].eval(v) }
             return when (name) {
@@ -380,6 +414,9 @@ class FormulaTransform(val expression: ScalingExpression) : ValueTransform {
                 if (base != 0f) scaled / base else Float.NaN,
             ),
         ).toFloat()
+
+    /** EN True when the formula is `base × (screen-only E)`: no per-value cache needed. */
+    val isProportional: Boolean get() = expression.baseCoefficient != null
 
     override fun equals(other: Any?): Boolean = other is FormulaTransform && other.expression == expression
     override fun hashCode(): Int = expression.hashCode()

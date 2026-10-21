@@ -82,6 +82,20 @@ fun Number.cspUnits(context: Context, strategy: ScalingStrategy = ScalingStrateg
     }
 }
 
+// EN Inline formulas — the formula **is** the value. PT Fórmulas inline — a fórmula **é** o valor.
+
+/** EN `16.cdp(context, "base * pow(sw / 360, 0.8)")` → px. Shared per text. */
+fun Number.cdp(context: Context, formula: String): Float = cdp(context, ScalingStrategies.formula(formula))
+
+/** EN `16.cdpDp(context, "…")` → dp. */
+fun Number.cdpDp(context: Context, formula: String): Float = cdpDp(context, ScalingStrategies.formula(formula))
+
+/** EN `14.csp(context, "…")` → px for text. */
+fun Number.csp(context: Context, formula: String): Float = csp(context, ScalingStrategies.formula(formula))
+
+/** EN `14.cspUnits(context, "…")` → sp units. */
+fun Number.cspUnits(context: Context, formula: String): Float = cspUnits(context, ScalingStrategies.formula(formula))
+
 // EN Strategy-first facilitators. PT Facilitadores a partir da estratégia.
 
 /** EN `Brand.px(context, 16)` → px. */
@@ -128,6 +142,10 @@ object DimenCustom {
 
     @JvmStatic
     fun strategy(id: String): ScalingStrategy = ScalingStrategies.getOrThrow(id)
+
+    /** EN `DimenCustom.cdp(context, 16f, DimenCustom.formula("base * (sw / 360)"))`. */
+    @JvmStatic
+    fun formula(formula: String): ScalingStrategy = ScalingStrategies.formula(formula)
 
     @JvmStatic
     fun loadAsset(context: Context, path: String): Map<String, ScalingStrategy> = ScalingStrategies.loadAsset(context, path)

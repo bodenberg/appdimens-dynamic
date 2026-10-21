@@ -156,6 +156,29 @@ fun Number.cspPx(strategy: ScalingStrategy): Float {
 @get:Composable
 val Number.cspPx: Float get() = cspPx(currentScalingStrategy)
 
+// EN Inline formulas ───────────────────────────────────────────────────────────
+// PT Fórmulas inline ───────────────────────────────────────────────────────────
+
+/**
+ * EN Scales with a text formula — the formula **is** the value: `16.cdp("base * pow(sw / 360, 0.8)")`.
+ * Shared per text (see [scalingFormula]); write `base * (…)` for the one-multiply fast path.
+ * PT Escala com uma fórmula em texto — a fórmula **é** o valor.
+ */
+@Composable
+fun Number.cdp(formula: String): Dp = cdp(ScalingStrategies.formula(formula))
+
+/** EN `16.cdpPx("base * (sw / 360)")` → px. */
+@Composable
+fun Number.cdpPx(formula: String): Float = cdpPx(ScalingStrategies.formula(formula))
+
+/** EN `14.csp("base * min(sw / 360, 1.3)")` → [TextUnit] (font scale followed). */
+@Composable
+fun Number.csp(formula: String): TextUnit = csp(ScalingStrategies.formula(formula))
+
+/** EN `14.cspPx("…")` → px. */
+@Composable
+fun Number.cspPx(formula: String): Float = cspPx(ScalingStrategies.formula(formula))
+
 // EN Facilitators ──────────────────────────────────────────────────────────────
 // PT Facilitadores ─────────────────────────────────────────────────────────────
 
