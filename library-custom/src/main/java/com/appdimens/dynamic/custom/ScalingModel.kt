@@ -388,6 +388,9 @@ data class ScalingConfig(
     fun validate(): ScalingConfig {
         if (minFactor != null && maxFactor != null) require(minFactor <= maxFactor) { "minFactor must be <= maxFactor" }
         if (minValue != null && maxValue != null) require(minValue <= maxValue) { "minValue must be <= maxValue" }
+        // EN Value bounds clamp the magnitude, so they must not be negative. PT Limites de valor >= 0.
+        require(minValue == null || minValue >= 0f) { "minValue must be >= 0" }
+        require(maxValue == null || maxValue >= 0f) { "maxValue must be >= 0" }
         rules.forEach { apply(it.patch).copy(rules = emptyList()).validate() }
         return this
     }

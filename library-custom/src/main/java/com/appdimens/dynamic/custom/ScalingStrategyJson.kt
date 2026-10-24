@@ -128,8 +128,8 @@ object ScalingStrategyJson {
         val rules = (obj["rules"]?.let { list(it, "$path.rules") } ?: emptyList<Any?>()).mapIndexed { i, r ->
             val rule = r as? Map<*, *> ?: throw IllegalArgumentException("$path.rules[$i] must be an object")
             ScalingRule(
-                condition = readCondition(rule["when"] as? Map<*, *> ?: emptyMap<String, Any>(), "$path.rules[$i].when"),
-                patch = readPatch(rule["set"] as? Map<*, *> ?: throw IllegalArgumentException("$path.rules[$i].set is required"), "$path.rules[$i].set"),
+                condition = readCondition(obj(rule["when"], "$path.rules[$i].when") ?: emptyMap<String, Any>(), "$path.rules[$i].when"),
+                patch = readPatch(obj(rule["set"], "$path.rules[$i].set") ?: throw IllegalArgumentException("$path.rules[$i].set is required"), "$path.rules[$i].set"),
                 name = rule["name"] as? String,
             )
         }
@@ -137,8 +137,8 @@ object ScalingStrategyJson {
     }
 
     private fun readPatch(obj: Map<*, *>, path: String): ScalingPatch {
-        val clamp = obj["clamp"] as? Map<*, *>
-        val valueClamp = obj["valueClamp"] as? Map<*, *>
+        val clamp = obj(obj["clamp"], "$path.clamp")
+        val valueClamp = obj(obj["valueClamp"], "$path.valueClamp")
         val ar = obj["aspectRatio"]
         return ScalingPatch(
             reference = (obj["reference"] as? Map<*, *>)?.let {
@@ -154,13 +154,13 @@ object ScalingStrategyJson {
             aspectRatio = when (ar) {
                 null -> null
                 is Boolean -> ar
-                is Map<*, *> -> (ar["enabled"] as? Boolean) ?: true
+                is Map<*, *> -> bool(ar["enabled"], "$path.aspectRatio.enabled") ?: true
                 else -> throw IllegalArgumentException("$path.aspectRatio must be a boolean or object")
             },
             sensitivity = (ar as? Map<*, *>)?.let { num(it["sensitivity"], "$path.aspectRatio.sensitivity") }
                 ?: num(obj["sensitivity"], "$path.sensitivity"),
             fontScale = obj["fontScale"]?.let { readFontScale(it, "$path.fontScale") },
-            ignoreMultiWindow = obj["ignoreMultiWindow"] as? Boolean,
+            ignoreMultiWindow = bool(obj["ignoreMultiWindow"], "$path.ignoreMultiWindow"),
             transform = when (val f = obj["formula"]) {
                 null -> null
                 is String -> wrap("$path.formula") { FormulaTransform(f) }
@@ -230,8 +230,22 @@ object ScalingStrategyJson {
         val ar = range("aspectRatio")
         return ScreenCondition(
             devices, orientation, sw.first, sw.second, w.first, w.second, h.first, h.second,
-            ar.first, ar.second, obj["multiWindow"] as? Boolean,
+            ar.first, ar.second, bool(obj["multiWindow"], "$path.multiWindow"),
         )
+    }
+
+    /** EN Present values must be objects; `null`/absent → null. */
+    private fun obj(v: Any?, path: String): Map<*, *>? = when (v) {
+        null -> null
+        is Map<*, *> -> v
+        else -> throw IllegalArgumentException("$path must be an object")
+    }
+
+    /** EN Present values must be booleans; `null`/absent → null. */
+    private fun bool(v: Any?, path: String): Boolean? = when (v) {
+        null -> null
+        is Boolean -> v
+        else -> throw IllegalArgumentException("$path must be a boolean")
     }
 
     private fun num(v: Any?, path: String): Float? = when (v) {
@@ -284,6 +298,8 @@ object ScalingStrategyJson {
             append(",\"aspectRatio\":{\"enabled\":").append(p.aspectRatio)
             p.sensitivity?.let { append(",\"sensitivity\":").append(n(it)) }
             append('}')
+        } else if (p.aspectRatio == null && p.sensitivity != null) {
+            append(",\"sensitivity\":").append(n(p.sensitivity))   // EN sensitivity-only patch
         }
         p.fontScale?.let {
             if (!defaults || it != FontScalePolicy.Follow) append(",\"fontScale\":").append(

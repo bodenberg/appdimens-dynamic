@@ -133,6 +133,28 @@ class ScalingFormulaTest {
     }
 
     @Test
+    fun reviewFixes_malformedJsonFailsLoudly_andLoadIsAtomic() {
+        try { ScalingStrategies.loadJson("""{"strategies":[{"id":"x","rules":[{"when":"tablet","set":{"multiplier":2}}]}]}"""); fail("expected an error") } catch (e: IllegalArgumentException) { assertTrue(e.message!!, e.message!!.contains("when must be an object")) }
+        try { ScalingStrategies.loadJson("""{"strategies":[{"id":"x","ignoreMultiWindow":"true"}]}"""); fail("expected an error") } catch (e: IllegalArgumentException) { assertTrue(e.message!!, e.message!!.contains("must be a boolean")) }
+        try { ScalingStrategies.loadJson("""{"strategies":[{"id":"x","clamp":1.5}]}"""); fail("expected an error") } catch (e: IllegalArgumentException) { assertTrue(e.message!!, e.message!!.contains("clamp must be an object")) }
+        try { scalingStrategy("neg", register = false) { clampValue(max = -1) }; fail("expected an error") } catch (e: IllegalArgumentException) { assertTrue(e.message!!, e.message!!.contains("maxValue must be >= 0")) }
+        try { ScalingStrategies.loadJson("""{"default":"missing","strategies":[{"id":"atomic","multiplier":2}]}"""); fail("expected an error") } catch (e: IllegalArgumentException) { assertTrue(e.message!!, e.message!!.contains("missing")) }
+        assertTrue(ScalingStrategies["atomic"] == null)   // nothing registered by the failed load
+        // withAxis is cached per source instance, not per id.
+        val a = scalingStrategy("same", register = false) { multiply(1f) }
+        val b = scalingStrategy("same", register = false) { multiply(2f) }
+        assertEquals(1f, a.withAxis(ScalingAxis.HEIGHT).config.multiplier, 0f)
+        assertEquals(2f, b.withAxis(ScalingAxis.HEIGHT).config.multiplier, 0f)
+        assertSame(b.withAxis(ScalingAxis.HEIGHT), b.withAxis(ScalingAxis.HEIGHT))
+        // A sensitivity-only rule patch survives export + import.
+        val s = ScalingStrategies.loadJson(
+            """{"strategies":[{"id":"sens","aspectRatio":true,"rules":[{"when":{"device":"tablet"},"set":{"sensitivity":0.01}}]}]}""",
+        ).getValue("sens")
+        val again = ScalingStrategies.loadJson("""{"strategies":[${s.toJson()}]}""").getValue("sens")
+        assertEquals(s.factor(tablet), again.factor(tablet), 0f)
+    }
+
+    @Test
     fun textFormula_errorsAreReportedEarly() {
         try {
             scalingFormula("base * sww")
