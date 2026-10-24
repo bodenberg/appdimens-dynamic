@@ -28,6 +28,7 @@ import com.appdimens.dynamic.compose.custom.cdp
 import com.appdimens.dynamic.compose.custom.csp
 import com.appdimens.dynamic.compose.custom.explainCurrent
 import com.appdimens.dynamic.custom.CustomPresets
+import com.appdimens.dynamic.custom.CustomScaleStrategy
 import com.appdimens.dynamic.custom.DeviceClass
 import com.appdimens.dynamic.custom.ScalingStrategy
 import com.appdimens.dynamic.custom.scalingFormula
@@ -52,6 +53,14 @@ val DemoBrand: ScalingStrategy = scalingStrategy("demoBrand") {
  */
 val DemoFormula: ScalingStrategy = scalingFormula("base * (tablet ? 0.9 : 1) * clamp(sw / 360, 0.85, 1.6)")
 
+/**
+ * EN Programmable factor in plain Kotlin: runs once per window, then one multiply per value.
+ * PT Fator programável em Kotlin puro: roda uma vez por janela, depois uma multiplicação por valor.
+ */
+val DemoProduct: ScalingStrategy = CustomScaleStrategy { screen ->
+    (screen.widthDp / 360f).coerceIn(0.85f, 1.80f)
+}
+
 @Composable
 fun CustomStrategyExampleCard() {
     Card(
@@ -72,6 +81,7 @@ fun CustomStrategyExampleCard() {
                 DemoBox("gameHud", 48.cdp(CustomPresets.GAME_HUD))
                 DemoBox("formula", 48.cdp(DemoFormula))
                 DemoBox("inline", 48.cdp("base * pow(sw / 360, 0.8)"))
+                DemoBox("factor", 48.cdp(DemoProduct))
             }
             // EN Every cdp/csp without an explicit strategy inside the scope uses DemoBrand.
             // PT Todo cdp/csp sem estratégia explícita dentro do escopo usa DemoBrand.

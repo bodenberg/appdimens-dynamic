@@ -73,6 +73,39 @@ fun scalingFormula(id: String? = null, register: Boolean = id != null, formula: 
     return strategy
 }
 
+/**
+ * EN Programmable factor: you get the window and return the **factor** that multiplies every
+ * value. Plain Kotlin, so any function, branch or helper of your code works. Must be pure.
+ * PT Fator programável: você recebe a janela e devolve o **fator** que multiplica todo valor.
+ */
+fun interface ScreenFactor {
+    fun factor(screen: ScreenSnapshot): Float
+}
+
+/**
+ * EN Strategy from a programmable factor — the most flexible form, written in code:
+ * ```
+ * val Product = CustomScaleStrategy { screen ->
+ *     (screen.widthDp / 360f).coerceIn(0.85f, 1.80f)
+ * }
+ * Modifier.padding(16.cdp(Product))   // 16 × factor
+ * ```
+ * The factor depends only on the window, so it runs once per window and every value then
+ * costs one multiply (no per-value cache). A non-finite factor throws when the window resolves.
+ * Without an [id] a unique `scale#N` id is generated. Not JSON-serializable: for JSON, use a
+ * text curve (`curve = expression("clamp(width / 360, 0.85, 1.8)")`).
+ *
+ * PT Estratégia a partir de um fator programável — a forma mais flexível, escrita em código.
+ * O fator depende só da janela: roda uma vez por janela e cada valor custa uma multiplicação.
+ */
+@Suppress("FunctionName") // factory named like the type it builds, as in `CoroutineScope()`
+fun CustomScaleStrategy(id: String? = null, register: Boolean = id != null, factor: ScreenFactor): ScalingStrategy {
+    val curve = ScalingCurve.Custom(CurveFunction { _, screen -> factor.factor(screen) })
+    val strategy = ScalingStrategy(id ?: "scale#${lambdaIds.incrementAndGet()}", ScalingConfig(curve = curve))
+    if (register) ScalingStrategies.register(strategy)
+    return strategy
+}
+
 /** EN Shared strategies for inline formulas (`16.cdp("…")`), keyed by the formula text. */
 internal object FormulaStrategies {
     /** EN Bound for distinct texts; past it, strategies are built per call (still correct). */
