@@ -40,6 +40,8 @@ class ResolvedScaling internal constructor(
     internal val referenceDp: Float,
     internal val curveFactor: Float,
     internal val aspectRatioMultiplier: Float,
+    /** EN `ignoreMultiWindow` in multi-window: the value stays unscaled (only value bounds apply). */
+    internal val multiWindowIgnored: Boolean = false,
 ) {
     private val ratio: Float get() = if (referenceDp > 0f) axisDp / referenceDp else 1f
 
@@ -65,6 +67,7 @@ class ResolvedScaling internal constructor(
             if (max != null && magnitude > max) magnitude = max
             out = if (out < 0f) -magnitude else magnitude
         }
+        if (multiWindowIgnored) return out
         when (val t = config.transform) {
             null -> Unit
             is FormulaTransform -> out = if (t.isProportional) (base.toDouble() * formulaCoefficient).toFloat() else t.expression.evaluate(
@@ -212,7 +215,7 @@ internal object ScalingEngine {
         val axisDp = screen.read(cfg.axis)
         val refDp = cfg.reference.read(cfg.axis)
         if (cfg.ignoreMultiWindow && screen.isMultiWindow) {
-            return ResolvedScaling(screen, cfg, 1f, applied, axisDp, refDp, 1f, 1f)
+            return ResolvedScaling(screen, cfg, 1f, applied, axisDp, refDp, 1f, 1f, multiWindowIgnored = true)
         }
         val ratio = if (refDp > 0f) axisDp / refDp else 1f
         val curveFactor = curve(cfg.curve, ratio, axisDp, refDp, cfg.reference, screen)

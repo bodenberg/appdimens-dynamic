@@ -86,7 +86,7 @@ Rules can override any field per **device class** (phone, tablet, desktop, TV, w
 | Value bounds (dp) | `clampValue(min = 10, max = 32)` | `"valueClamp": {"min": 10, "max": 32}` | none |
 | Aspect ratio | `aspectRatio(sensitivity = 0.004f)` | `"aspectRatio": {"enabled": true, "sensitivity": 0.004}` | off, k = 0.08 / 30 |
 | Font scale (`csp`) | `followFontScale()` · `ignoreFontScale()` · `clampFontScale(1.3f)` | `"fontScale": "follow"` · `"ignore"` · `{"max": 1.3}` | `follow` |
-| Multi-window | `ignoreMultiWindow = true` | `"ignoreMultiWindow": true` | false |
+| Multi-window (value stays unscaled; formulas and transforms are skipped; value bounds still apply) | `ignoreMultiWindow = true` | `"ignoreMultiWindow": true` | false |
 | Per-value formula | `formula("max(scaled, base)")` | `"formula": "max(scaled, base)"` | none |
 | Per-value hook (code) | `transform { base, scaled, screen -> … }` | — (code only) | none |
 | Rules | `on(…) { … }`, `onScreen(…) { … }`, `landscape { … }` … | `"rules": [{"when": {…}, "set": {…}}]` | none |

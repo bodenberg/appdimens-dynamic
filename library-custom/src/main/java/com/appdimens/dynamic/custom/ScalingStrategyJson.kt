@@ -208,7 +208,8 @@ object ScalingStrategyJson {
 
     private fun readCondition(obj: Map<*, *>, path: String): ScreenCondition {
         fun range(key: String): Pair<Float?, Float?> {
-            val r = obj[key] as? Map<*, *> ?: return null to null
+            val raw = obj[key] ?: return null to null
+            val r = raw as? Map<*, *> ?: throw IllegalArgumentException("$path.$key must be an object with min/max")
             return num(r["min"], "$path.$key.min") to num(r["max"], "$path.$key.max")
         }
         val devices = when (val d = obj["device"]) {
