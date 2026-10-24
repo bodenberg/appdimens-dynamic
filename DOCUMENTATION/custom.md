@@ -7,55 +7,60 @@ The 13 built-in strategies cover most products. When an app (or a design system 
 
 ## Quick start: just write the formula
 
-The easiest way is to write the formula yourself. You get the value you pass (`base`, for example 16) and the screen, and you return the scaled value. There is nothing to configure.
+The easiest way is to write the math yourself, as ordinary Kotlin on one line. Inside the braces, the IDE autocompletes everything you can use (`base`, `sw`, `width`, `tablet`, `pow`, `clamp`…), and a typo is a compile error. There is nothing to configure.
 
 ```kotlin
 import com.appdimens.dynamic.custom.*
 import com.appdimens.dynamic.compose.custom.*
 
-// 1. Inline: the formula is the value
-Modifier.padding(16.cdp("base * pow(sw / 360, 0.8)"))
-Text("Title", fontSize = 20.csp("base * min(sw / 360, 1.3)"))
+// 1. Formula: the result is the final value (`base` = the value you pass, e.g. 16)
+val Hud = scalingFormula { base * pow(sw / 360f, 0.8f) }
+val Card = scalingFormula { if (tablet) base * 1.2f else base * ratio }
 
-// 2. Named, to reuse it everywhere
-val Hud = scalingFormula("base * (tablet ? 0.9 : 1) * clamp(sw / 360, 0.85, 1.6)")
-Modifier.size(48.cdp(Hud))
+// 2. Factor: the result multiplies every value
+val Product = CustomScaleStrategy { (width / 360f).coerceIn(0.85f, 1.80f) }
+val Living = CustomScaleStrategy { if (tv) height / 540f else ratio }
 
-// 3. In code, with no limits (not JSON-serializable)
-val Fancy = scalingFormula { base, screen -> base * (screen.smallestWidthDp / 360f).pow(0.8f) }
-
-// 4. Programmable factor: return the factor that multiplies every value
-val Product = CustomScaleStrategy { screen ->
-    val width = screen.widthDp
-    (width / 360f).coerceIn(0.85f, 1.80f)
-}
-Modifier.padding(16.cdp(Product))    // 16 × factor
+Modifier.padding(16.cdp(Product))           // 16 × factor
+Text("Score", fontSize = 18.csp(Hud))       // text follows the user font scale
 ```
+
+Declare each strategy once (for example as a top-level `val`), then use it anywhere. Views and Java get **px**: `16.cdp(context, Product)`.
+
+### What you can use inside the braces
+
+| Name | Meaning |
+|---|---|
+| `base` | the value you pass (`16` in `16.cdp(Hud)`), only in `scalingFormula { }` |
+| `sw` · `width` · `height` | smallest width · window width · window height (dp) |
+| `shortSide` · `longSide` · `diagonal` · `perimeter` · `aspectRatio` | other window measures |
+| `ratio` | `sw / 300`, the ratio `sdp` uses (`base * ratio` is the same as `sdp`) |
+| `phone` `tablet` `desktop` `tv` `watch` `car` `vr` · `landscape` `portrait` `multiWindow` | `Boolean` |
+| `density` · `fontScale` · `device` · `screen` | screen density · user font scale · `DeviceClass` · the whole `ScreenSnapshot` |
+| `pow` `sqrt` `ln` `log10` `exp` `abs` `round` `min` `max` `clamp` `lerp` `smoothstep` | math, no import needed |
+
+Anything else from Kotlin or your own code also works (`coerceIn`, `when`, your helpers). Strategies must be pure: they must not read mutable state, because results are memoized per window.
 
 | Form | You return | Cost per value | JSON |
 |---|---|---|---|
-| `16.cdp("…")` / `scalingFormula("…")` | the final value (`base` = input) | one multiply when shaped `base * (…)`, otherwise cached | yes |
-| `scalingFormula { base, screen -> … }` | the final value | cached per value and window | no |
-| `CustomScaleStrategy { screen -> … }` | the **factor** (any Kotlin: `if`, `when`, helpers, `coerceIn`…) | one multiply (the lambda runs once per window) | no |
+| `CustomScaleStrategy { … }` | the **factor** | one multiply (runs once per window) | no |
+| `scalingFormula { … }` | the final value | cached per value and window | no |
+| `scalingFormula("…")` / `16.cdp("…")` | the final value, as text | one multiply when shaped `base * (…)`, otherwise cached | yes |
 
-In the lambdas, `screen` is a `ScreenSnapshot`: `widthDp`, `heightDp`, `smallestWidthDp`, `minDp`, `maxDp`, `aspectRatio`, `density`, `fontScale`, `isLandscape`, `isMultiWindow`, `device` (`DeviceClass.PHONE`, `TABLET`, `TV`…). Lambdas must be pure (they must not read mutable state), because results are memoized per window.
+### Text formulas (for JSON and remote config)
 
-Views and Java get **px**: `16.cdp(context, "base * pow(sw / 360, 0.8)")` · `DimenCustom.cdp(context, 16f, DimenCustom.formula("…"))`.
+When the formula has to live outside the code, in a JSON file, a remote config or an A/B test, write the same thing as text. It uses the same names (flags are 1/0):
 
-| You write | Means |
-|---|---|
-| `base` | the value you pass (`16` in `16.cdp(…)`) |
-| `sw` · `width` · `height` | smallest width · window width · window height (dp) |
-| `shortSide` · `longSide` · `diagonal` · `aspectRatio` | other window measures |
-| `ratio` | `sw / 300`, the ratio `sdp` uses (so `base * ratio` = `sdp`) |
-| `phone` `tablet` `desktop` `tv` `watch` `car` `vr` · `landscape` `portrait` `multiWindow` | 1 when true, 0 when false |
-| `density` · `fontScale` | screen density · user font scale |
+```kotlin
+val Hud = scalingFormula("base * pow(sw / 360, 0.8)")
+Modifier.padding(16.cdp("base * (tablet ? 0.9 : 1) * clamp(sw / 360, 0.85, 1.6)"))   // inline
+```
 
-You can use `+ - * / ^`, `cond ? a : b`, `min` `max` `clamp` `pow` `sqrt` `log` `round` `lerp` `smoothstep`, and more (see [Free-form formulas](#free-form-formulas-no-limits-from-the-built-in-curves)). Typos fail right away with the position, for example `unknown variable 'sww'`.
+Text is checked when the strategy is created: an unknown name fails right away with its position and the list of valid names (e.g. `unknown variable 'sww' (allowed: aspectRatio, base, …)`). The same text works in the strategies JSON (`{"id": "hud", "formula": "base * pow(sw / 360, 0.8)"}`) and gives the same numbers on every AppDimens platform. Operators and functions are listed in [Free-form formulas](#free-form-formulas-no-limits-from-the-built-in-curves). Views and Java: `16.cdp(context, "…")` · `DimenCustom.formula("…")`.
 
-**Fast path.** When the formula has the shape `base * (…)` and the `(…)` part does not read `base`, it costs one multiply per value: the `(…)` part is computed once per window. Any other shape also works and is cached per value and window. `base * sw / 360` is evaluated as written, `(base * sw) / 360`. Write `base * (sw / 360)` for the fast path.
+**Fast path.** A text formula shaped `base * (…)`, where the `(…)` part does not read `base`, costs one multiply per value, because the `(…)` part is computed once per window. `base * sw / 360` is evaluated as written, `(base * sw) / 360`, so write `base * (sw / 360)` to get the fast path. In code, prefer `CustomScaleStrategy { … }` for the same effect.
 
-The same text works in the strategies JSON (`{"id": "hud", "formula": "base * pow(sw / 360, 0.8)"}`) and gives the same numbers on every AppDimens platform. If you need more structure (rules per device, factor bounds, font-scale policy), use the full configuration below.
+For rules per device, factor bounds or a font-scale policy, use the full configuration below.
 
 ## What it is
 

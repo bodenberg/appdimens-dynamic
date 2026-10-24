@@ -71,19 +71,19 @@ class ScalingFormulaTest {
 
     @Test
     fun codeFormula_hasNoLimits() {
-        val s = scalingFormula { base, screen -> base * (screen.smallestWidthDp / 360f).pow(0.8f) + if (screen.isLandscape) 2f else 0f }
+        val s = scalingFormula { base * pow(sw / 360f, 0.8f) + if (landscape) 2f else 0f }
         assertEquals(16f * (411f / 360f).pow(0.8f), s.scale(16f, phone), 1e-5f)
         assertEquals(16f * (800f / 360f).pow(0.8f) + 2f, s.scale(16f, tablet), 1e-4f)
         assertTrue(s.isValueDependent)
         assertTrue(s.id.startsWith("formula#"))
-        assertTrue(scalingFormula { b, _ -> b }.id != s.id)
-        val named = scalingFormula(id = "hud") { base, _ -> base * 3f }
+        assertTrue(scalingFormula { base }.id != s.id)
+        val named = scalingFormula(id = "hud") { base * 3f }
         assertSame(named, ScalingStrategies["hud"])
     }
 
     @Test
     fun programmableFactor_isScreenOnly_andMultipliesEveryValue() {
-        val product = CustomScaleStrategy { screen -> (screen.widthDp / 360f).coerceIn(0.85f, 1.80f) }
+        val product = CustomScaleStrategy { (width / 360f).coerceIn(0.85f, 1.80f) }
         assertFalse(product.isValueDependent)
         assertEquals(411f / 360f, product.factor(phone), 1e-6f)
         assertEquals(1.8f, product.factor(tablet), 0f)               // 1280 / 360 clamped
@@ -98,6 +98,25 @@ class ScalingFormulaTest {
         } catch (e: IllegalArgumentException) {
             assertTrue(e.message!!, e.message!!.contains("non-finite"))
         }
+    }
+
+    @Test
+    fun codeScope_matchesTheTextLanguage() {
+        // EN Same names, same numbers: the code form and the text form agree.
+        val pairs = listOf(
+            scalingFormula { base * pow(sw / 360f, 0.8f) } to "base * pow(sw / 360, 0.8)",
+            scalingFormula { base * ratio } to "base * ratio",
+            scalingFormula { base * (if (tablet) 0.9f else 1f) * clamp(width / 360f, 0.85f, 1.6f) } to
+                "base * (tablet ? 0.9 : 1) * clamp(width / 360, 0.85, 1.6)",
+            scalingFormula { round(base * lerp(1f, aspectRatio, 0.1f)) } to "round(base * lerp(1, aspectRatio, 0.1))",
+        )
+        for ((code, text) in pairs) for (screen in listOf(phone, tablet)) for (base in listOf(1f, 16f, 48f)) {
+            assertEquals(text, scalingFormula(text).scale(base, screen), code.scale(base, screen), 1e-4f)
+        }
+        val tvScreen = ScreenSnapshot(960f, 540f, 540f, 2f, isLandscape = true, device = DeviceClass.TV)
+        val factor = CustomScaleStrategy { if (tv) height / 540f else ratio }
+        assertEquals(1f, factor.factor(tvScreen), 0f)
+        assertEquals(411f / 300f, factor.factor(phone), 1e-6f)
     }
 
     @Test

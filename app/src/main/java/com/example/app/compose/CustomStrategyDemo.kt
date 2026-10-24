@@ -57,9 +57,10 @@ val DemoFormula: ScalingStrategy = scalingFormula("base * (tablet ? 0.9 : 1) * c
  * EN Programmable factor in plain Kotlin: runs once per window, then one multiply per value.
  * PT Fator programável em Kotlin puro: roda uma vez por janela, depois uma multiplicação por valor.
  */
-val DemoProduct: ScalingStrategy = CustomScaleStrategy { screen ->
-    (screen.widthDp / 360f).coerceIn(0.85f, 1.80f)
-}
+val DemoProduct: ScalingStrategy = CustomScaleStrategy { (width / 360f).coerceIn(0.85f, 1.80f) }
+
+/** EN Code formula: the result is the final value. PT Fórmula em código: o resultado é o valor final. */
+val DemoCode: ScalingStrategy = scalingFormula { if (tablet) base * 1.2f else base * pow(sw / 360f, 0.8f) }
 
 @Composable
 fun CustomStrategyExampleCard() {
@@ -82,6 +83,7 @@ fun CustomStrategyExampleCard() {
                 DemoBox("formula", 48.cdp(DemoFormula))
                 DemoBox("inline", 48.cdp("base * pow(sw / 360, 0.8)"))
                 DemoBox("factor", 48.cdp(DemoProduct))
+                DemoBox("code", 48.cdp(DemoCode))
             }
             // EN Every cdp/csp without an explicit strategy inside the scope uses DemoBrand.
             // PT Todo cdp/csp sem estratégia explícita dentro do escopo usa DemoBrand.
