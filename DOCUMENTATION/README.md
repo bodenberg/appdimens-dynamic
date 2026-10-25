@@ -53,7 +53,7 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 | Density | `appdimens-dynamic-density` | [density.md](density.md) |
 | Resize (constraint-based auto-fit) | `appdimens-dynamic-resize` | [resize.md](resize.md) |
 | Physical units (mm, cm, in) | `appdimens-dynamic-units` | [physical-units.md](physical-units.md) |
-| **Custom (your own strategies: DSL / JSON / presets)** | `appdimens-dynamic-custom` | [custom.md](custom.md) |
+| **Custom (your own strategies: one-line code formulas, text formulas, DSL, JSON, presets)** | `appdimens-dynamic-custom` | [custom.md](custom.md) · [full guide](custom/README.md) |
 
 ### Quick links
 
@@ -77,7 +77,7 @@ For **cache, bypass, and performance**, see also [library/PERFORMANCE.md](../lib
 13. [Density](density.md)  
 14. [Resize](resize.md)  
 15. [Physical units](physical-units.md)  
-16. [Custom strategies](custom.md) — define your own scaling (rules per device / screen, JSON)  
+16. [Custom strategies](custom.md) — define your own scaling (one-line formulas, rules per device / screen, JSON); full guide in [custom/](custom/README.md)  
 17. [Mathematics & calculus](MATHEMATICS-AND-CALCULUS.md)  
 
 ## Suggested decision flow

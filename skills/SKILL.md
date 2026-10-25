@@ -43,7 +43,8 @@ On release bumps, update version URLs in this file, `library-map.md`, and `refer
 - [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) — Compose naming, facilitators, Plain chains, `code` parity
 - [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/resize.md) — `compose.resize` / `code.resize`
 - [GUIDE-FOR-BEGINNERS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/GUIDE-FOR-BEGINNERS.md) — narrative walkthrough
-- [DOCUMENTATION/custom.md](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom.md) — custom strategies (DSL, JSON, rules, presets, caching); unreleased, on `main`
+- [DOCUMENTATION/custom.md](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom.md) and the [custom/](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom/README.md) guides — custom strategies (code and text formulas, DSL, JSON, rules, presets, caching); unreleased, on `main`
+- [skills/custom.md](custom.md) — agent reference for custom strategies: which form to pick, cheat sheet, rules to follow, verification
 - Examples: [Compose](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/app/src/main/java/com/example/app/compose/ExampleActivity.kt) · [Kotlin Views](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/app/src/main/java/com/example/app/kotlin/ExampleActivity.kt) · [Java](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/app/src/main/java/com/example/app/java/ExampleActivity.java)
 
 **Package map and strategy → doc index:** [library-map.md](library-map.md)

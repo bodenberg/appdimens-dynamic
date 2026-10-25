@@ -14,7 +14,7 @@ Paths at Git ref **`3.1.9`**. Full Gradle/Maven matrix: [MODULES.md](https://git
 - **`com.appdimens.dynamic.core`** — `DimenMetrics` (immutable per-window snapshot, eager AR computation), `DimenCache` (snapshot-partitioned; event-driven config watcher; specialized kernels: `resolveSdpPx`/`resolveSdpaPx`/`resolveHdpPx`/`resolveWdpPx` + DP variants; `fastMetricsForCode` for non-Compose fast lane; no persistence since 3.1.8), `StrategyFactorRegistry` / `SharedScreenMetrics` (compat only), `MissingModule`, `DimenCalculationPlumbing`, `DesignScaleConstants`, `AspectRatioLookup` (exact `ln`), `PercentSpaceMath` / `ResizeMath` / `ResizeBound`, Compose (`AppDimensProvider`, `LocalDimenMetrics`, stamps, `rememberDimen*`).
 - **`com.appdimens.dynamic.compose.<strategy>`** / **`code.<strategy>`** — sources under `library/` (scaled + plain) or `library-<strategy>/`.
 - **`compose.resize` / `code.resize`** — constraint resize (not `calculateRawScaling`).
-- **`custom` / `compose.custom` / `code.custom`** — user-defined strategies (`:library-custom`, unreleased): `scalingStrategy { }`, JSON, presets, `cdp` / `csp`.
+- **`custom` / `compose.custom` / `code.custom`** — user-defined strategies (`:library-custom`, unreleased): `CustomScaleStrategy { }` / `scalingFormula { }` (typed one-liners), text formulas, `scalingStrategy { }`, JSON, presets, `cdp` / `csp`. Agent notes: [custom.md](custom.md).
 
 Build hint for missing satellites: `gradle/appdimens-missing-module-check.gradle.kts` + `MissingModule`.
 
@@ -36,7 +36,7 @@ Build hint for missing satellites: `gradle/appdimens-missing-module-check.gradle
 | density | [DOCUMENTATION/density.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/density.md) |
 | resize | [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/resize.md) |
 | units (physical) | [DOCUMENTATION/physical-units.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/physical-units.md) |
-| custom (user-defined) | [DOCUMENTATION/custom.md](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom.md) (unreleased, `main`) |
+| custom (user-defined) | [DOCUMENTATION/custom.md](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom.md) + [custom/](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom/README.md) (unreleased, `main`) |
 
 **Product / formal math (English):** [PRD.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/PRD.md) · [PDR.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/PDR.md) · [MATHEMATICS-AND-CALCULUS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md)
 

@@ -32,7 +32,7 @@ Android Gradle `namespace` values are unique per module (`com.appdimens.dynamic`
 |----------|----------|
 | `appdimens-dynamic` | `common`, `core`, **scaled**, **plain** |
 | `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` |
-| `appdimens-dynamic-custom` | `custom` (DSL, JSON, presets, engine) + `code.custom` + `compose.custom` — see [custom.md](custom.md) |
+| `appdimens-dynamic-custom` | `custom` (code and text formulas, DSL, JSON, presets, engine) + `code.custom` + `compose.custom` — see [custom.md](custom.md) and [custom/](custom/README.md) |
 | `appdimens-dynamic-bom` | Version constraints for the set above (`java-platform`) |
 
 All published coordinates share `appdimens.version` in `gradle.properties` (**3.2.0**). Kotlin packages are unchanged since 3.1.6.
