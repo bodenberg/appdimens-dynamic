@@ -18,7 +18,8 @@ app (demo)
  ├── library-perimeter            → …:appdimens-dynamic-perimeter
  ├── library-power                → …:appdimens-dynamic-power
  ├── library-resize               → …:appdimens-dynamic-resize
- └── library-units                → …:appdimens-dynamic-units
+ ├── library-units                → …:appdimens-dynamic-units
+ └── library-custom               → …:appdimens-dynamic-custom   (user-defined strategies)
 ```
 
 Satellites depend only on `:library` (`api(project(":library"))`).
@@ -31,6 +32,7 @@ Android Gradle `namespace` values are unique per module (`com.appdimens.dynamic`
 |----------|----------|
 | `appdimens-dynamic` | `common`, `core`, **scaled**, **plain** |
 | `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` |
+| `appdimens-dynamic-custom` | `custom` (code and text formulas, DSL, JSON, presets, engine) + `code.custom` + `compose.custom` — see [custom.md](custom.md) and [custom/](custom/README.md) |
 | `appdimens-dynamic-bom` | Version constraints for the set above (`java-platform`) |
 
 All published coordinates share `appdimens.version` in `gradle.properties` (**3.2.0**). Kotlin packages are unchanged since 3.1.6.
@@ -55,7 +57,7 @@ Without the BOM, pin the same version on each coordinate. See [README — Instal
 - **`fastMetricsForCode`**: Non-Compose fast-lane resolution — skips the ThreadLocal probe entirely.
 - **DimenMetrics eager AR**: `normalizedAspectRatio` and `logNormalizedAspectRatio` changed from `lazy` to plain `val` — removes the hidden `synchronized` probe from the SDPA fast lane.
 - Strategy-specific scales (`diagonal`, `power`, `logarithmic`, `interpolated`, `perimeter`) are derived lazily from `DimenCache.currentMetrics` at resolution time — no process-global pre-computation. `StrategyFactorRegistry` remains as a source-compatibility hook.
-- `CalcType` ordinals live in core so cache keys stay stable across modules.
+- `CalcType` ordinals live in core so cache keys stay stable across modules. `CalcType.CUSTOM` (ordinal 15) fills the last slot of the 4-bit key field. `DimenCache.buildCustomKey` stores the custom strategy id in the 16 sensitivity bits, and bit 2 selects bypass (factor-only strategies) or a stored value (value-dependent strategies).
 
 ## Migration from 3.1.5 (modularization baseline)
 

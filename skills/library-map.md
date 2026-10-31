@@ -26,6 +26,7 @@ Read this file when you need package locations, Compose↔`code` symmetry, or co
 | power | `:library-power` | `appdimens-dynamic-power` | `library-power/.../power` |
 | resize | `:library-resize` | `appdimens-dynamic-resize` | `library-resize/.../resize` |
 | units | `:library-units` | `appdimens-dynamic-units` | `library-units/.../units` |
+| custom *(unreleased)* | `:library-custom` | `appdimens-dynamic-custom` | `library-custom/src/main/.../{custom,code/custom,compose/custom}` |
 
 Full graph: [DOCUMENTATION/MODULES.md](../DOCUMENTATION/MODULES.md). Satellites depend only on `:library`. `:library-bom` publishes version constraints.
 
@@ -37,6 +38,7 @@ Paths are in the upstream repo at `3.2.0`. The consumer app does not contain thi
 - **`com.appdimens.dynamic.core`** — cross-cutting engine: `DimenMetrics` (immutable per-window snapshot: size, density, font scale, orientation, ui mode, multi-window; eager AR computation), `DimenCache` (snapshot-partitioned cache, event-driven config watcher via `ensureConfigWatcher`, specialized kernels: `resolveSdpPx`/`resolveSdpaPx`/`resolveHdpPx`/`resolveWdpPx` + DP variants, `fastMetricsForCode` for non-Compose fast lane; init; explicit invalidation not required for correctness since 3.1.8 — `invalidateOnConfigChange` is a compat hook; no disk persistence; stable `CalcType` ordinals), `StrategyFactorRegistry` / `SharedScreenMetrics` (source-compatibility hook — satellite scales now derive from `DimenCache.currentMetrics`), `MissingModule` (Maven hint map), `DimenCalculationPlumbing` (qualifier resolution, screen dp reads, aspect-ratio multiplier, internal flags not surfaced to users), `DesignScaleConstants`, `AspectRatioLookup` (exact `ln` since 3.1.8), percent/resize math (`PercentSpaceMath`, `ResizeMath`, `ResizeBound`, `AutoResizePercentBasis`), Compose integration (`CompositionLocals` / `AppDimensProvider`, `LocalUiModeType`, `LocalDimenMetrics`, `ComposeRememberStamps`, `ComposeDimenRemember`).
 - **`com.appdimens.dynamic.compose.<strategy>`** — one folder per scaling strategy for Compose UI (e.g. `compose/scaled/DimenSdp.kt`, `DimenSdpExtensions.kt`, `DimenScaled.kt`, Sp mirrors).
 - **`com.appdimens.dynamic.code.<strategy>`** — mirror for Views / Kotlin / Java: `DimenSdp`, `DimenSsp`, `*DpExtensions`, `*SpExtensions`, `DimenScaled`, `Dimen*PlainPx.kt`, `code/plain/DimenPlainBranch.kt`.
+- **`com.appdimens.dynamic.custom`** — user-defined strategies (`:library-custom`): model (`ScalingConfig`, `ScalingAxis`, `ScalingCurve`, `ScreenCondition`, `ScalingRule`, `FontScalePolicy`, `ScreenSnapshot`, `DeviceClass`), one-liners `CustomScaleStrategy { }` / `scalingFormula { }` / `scalingFormula("…")` with typed scopes `ScreenScope` / `FormulaScope` (`ScalingFormula.kt`), `ScalingStrategy` (memoized per snapshot, `explain`, `extend`, `withAxis`, `toJson`), `ScalingStrategies` (registry + `default` + `loadJson`), DSL `scalingStrategy { }`, `ScalingStrategyJson`, `ScalingExpression` / `FormulaTransform` (free-form text formulas), `BuiltInStrategies`, `CustomPresets`, and the Android bridge `DimenMetrics.toScreenSnapshot()` / `cacheKey`. Compose: `compose.custom` (`cdp`, `csp`, `cdpPx`, `cspPx`, `LocalScalingStrategy`, `ProvideScalingStrategy`, `explainCurrent`). Views: `code.custom` (`cdp` px, `cdpDp`, `csp`, `cspUnits`, `DimenCustom`, `loadAsset`).
 - **`com.appdimens.dynamic.compose.resize`** / **`com.appdimens.dynamic.code.resize`** — constraint-based resize (binary search over discrete px steps, "fits" predicate); distinct from `calculateRawScaling` curves.
 
 ---
@@ -58,6 +60,7 @@ Paths are in the upstream repo at `3.2.0`. The consumer app does not contain thi
 | perimeter | [DOCUMENTATION/perimeter.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/perimeter.md) |
 | density | [DOCUMENTATION/density.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/density.md) |
 | resize | [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/resize.md) |
+| custom | [DOCUMENTATION/custom.md](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom.md) + [custom/](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom/README.md) guides (unreleased, `main`); agent notes: [custom.md](custom.md) |
 | units (physical) | [DOCUMENTATION/physical-units.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/physical-units.md) |
 
 **Formal docs:** [PRD.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/PRD.md) · [PDR.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/PDR.md) · [MATHEMATICS-AND-CALCULUS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/MATHEMATICS-AND-CALCULUS.md)  
@@ -78,7 +81,7 @@ Upstream sample only — not in the Maven artifact. Use for pattern reference.
 
 ## Internal `DimenCache.CalcType`
 
-Debug/cache tagging only — end users think in strategy names. Values: AUTO, DIAGONAL, FILL, FIT, FLUID, INTERPOLATED, LOGARITHMIC, PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO, DENSITY.  
+Debug/cache tagging only — end users think in strategy names. Values: AUTO, DIAGONAL, FILL, FIT, FLUID, INTERPOLATED, LOGARITHMIC, PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO, DENSITY, CUSTOM (ordinal 15, user-defined strategies; `buildCustomKey` packs the strategy id).  
 Source: [DimenCache.kt](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/library/src/main/java/com/appdimens/dynamic/core/DimenCache.kt)
 
 ---

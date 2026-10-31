@@ -111,11 +111,15 @@ object DimenCache {
 
     /**
      * EN Calculation types based on the library's package structure.
+     * [CUSTOM] (ordinal 15) is the last value the 4-bit key field can hold: custom keys
+     * carry the strategy id in the sensitivity bits instead (see [buildCustomKey]).
      * PT Tipos de cálculo baseados na estrutura de pacotes da biblioteca.
+     * [CUSTOM] (ordinal 15) ocupa o último valor do campo de 4 bits: chaves custom
+     * levam o id da estratégia nos bits de sensibilidade (ver [buildCustomKey]).
      */
     enum class CalcType {
         AUTO, DIAGONAL, FILL, FIT, FLUID, INTERPOLATED, LOGARITHMIC,
-        PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO, DENSITY
+        PERCENT, PERIMETER, POWER, RESIZE, SCALED, UNITIES, ASPECT_RATIO, DENSITY, CUSTOM
     }
 
     @JvmField val CT_PERCENT       = CalcType.PERCENT.ordinal
@@ -127,6 +131,13 @@ object DimenCache {
     @JvmField val CT_PERIMETER     = CalcType.PERIMETER.ordinal
     @JvmField val CT_POWER         = CalcType.POWER.ordinal
     @JvmField val CT_LOGARITHMIC   = CalcType.LOGARITHMIC.ordinal
+    @JvmField val CT_CUSTOM        = CalcType.CUSTOM.ordinal
+
+    /**
+     * EN Largest strategy id that fits the 16-bit field of [buildCustomKey].
+     * PT Maior id de estratégia que cabe no campo de 16 bits de [buildCustomKey].
+     */
+    const val MAX_CUSTOM_STRATEGY_KEY = 0xFFFF
 
     // ─────────────────────────────────────────────────────────────────────────
     // DIAGNOSTICS COUNTERS — guarded by [diagnosticsEnabled] to avoid overhead
@@ -853,6 +864,49 @@ object DimenCache {
                imw
     }
 
+    /**
+     * EN Packs a key for a user-defined scaling strategy ([CalcType.CUSTOM]).
+     *
+     * Same bit layout as [buildKey], except bits `[23-8]` hold [strategyKey] (the id the
+     * custom module assigns to each registered strategy) instead of the sensitivity
+     * fingerprint: a custom strategy keeps its own `k` inside its configuration, so two
+     * strategies never alias each other. Qualifier/inverter bits are zero (the axis is part
+     * of the strategy), except bit `[2]`, which carries [cacheable]: factor-only strategies
+     * (`value × factor`) pass `false` and [getOrPut] resolves them with one multiply, like
+     * the other cheap strategies; value-dependent strategies (value clamps, per-value
+     * lambdas) pass `true` and are stored in the snapshot partition.
+     * [strategyKey] must be in `0..MAX_CUSTOM_STRATEGY_KEY`.
+     *
+     * PT Empacota a chave de uma estratégia de escala definida pelo usuário
+     * ([CalcType.CUSTOM]). Mesmo layout de [buildKey], mas os bits `[23-8]` guardam
+     * [strategyKey] (id atribuído pelo módulo custom a cada estratégia registrada) em vez
+     * do fingerprint de sensibilidade — o `k` faz parte da configuração da estratégia,
+     * então duas estratégias nunca colidem. O bit `[2]` leva [cacheable]: estratégias só de
+     * fator passam `false` (uma multiplicação, sem lookup); as que dependem do valor
+     * passam `true` e são gravadas na partição do snapshot. [strategyKey] deve estar em
+     * `0..MAX_CUSTOM_STRATEGY_KEY`.
+     */
+    @JvmStatic
+    fun buildCustomKey(
+        baseValue: Float,
+        strategyKey: Int,
+        isLandscape: Boolean,
+        ignoreMultiWindows: Boolean,
+        valueType: ValueType,
+        cacheable: Boolean = true,
+    ): Long {
+        require(baseValue.isFinite()) { "baseValue must be finite" }
+        require(strategyKey in 0..MAX_CUSTOM_STRATEGY_KEY) { "strategyKey out of range: $strategyKey" }
+        val bv  = baseValue.toRawBits().toLong() and 0xFFFFFFFFL
+        val ct  = CalcType.CUSTOM.ordinal.toLong() and 0xFL
+        val vt  = valueType.ordinal.toLong() and 0x7L
+        val id  = strategyKey.toLong() and 0xFFFFL
+        val land = if (isLandscape) 1L else 0L
+        val imw  = if (ignoreMultiWindows) 1L else 0L
+        val cache = if (cacheable) 1L else 0L
+        return (bv shl 31) or (ct shl 27) or (vt shl 24) or (id shl 8) or (cache shl 2) or (land shl 1) or imw
+    }
+
     // Overload accepting Int baseValue (kept for call-site convenience)
     @JvmStatic
     fun buildKey(
@@ -940,7 +994,8 @@ object DimenCache {
      */
 @PublishedApi
     internal fun hasCustomSensitivityKey(key: Long): Boolean =
-        (key ushr 8 and 0xFFFFL).toInt() != 0xFFFF
+        (key ushr 27 and 0xFL).toInt() != CT_CUSTOM &&
+            (key ushr 8 and 0xFFFFL).toInt() != 0xFFFF
 
     /**
      * EN Returns `true` when [getOrPut] should skip the snapshot cache and call `compute()`
@@ -957,6 +1012,8 @@ object DimenCache {
     @PublishedApi
     internal fun shouldBypassCache(key: Long): Boolean {
         val ct = (key ushr 27 and 0xFL).toInt()
+        // Custom strategies declare cacheability in bit 2 (see [buildCustomKey]).
+        if (ct == CT_CUSTOM) return (key and 0x4L) == 0L
         val hasAr = (key ushr 63) != 0L
         val hasCustomK = hasCustomSensitivityKey(key)
 

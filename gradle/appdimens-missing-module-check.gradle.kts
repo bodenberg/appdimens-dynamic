@@ -30,6 +30,7 @@ val strategyArtifacts = mapOf(
     "power" to "appdimens-dynamic-power",
     "resize" to "appdimens-dynamic-resize",
     "units" to "appdimens-dynamic-units",
+    "custom" to "appdimens-dynamic-custom",
 )
 
 val principalSegments = setOf("scaled", "plain", "common", "core")
