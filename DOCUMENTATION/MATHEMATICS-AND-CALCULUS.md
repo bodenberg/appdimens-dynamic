@@ -107,6 +107,37 @@ Function path: `DimenCache.calculateRawScaling(baseValue, applyAspectRatio)`
 | **Diagonal** | $$Output = b \cdot \left(\frac{\sqrt{s_{min}^2 + s_{max}^2}}{611.63}\right)$$ | Mapping visual boundaries accurately to hypotenuse scale. |
 | **Fill & Fit** | $$Fill = b \cdot \max(r_w, r_h)$$ <br> $$Fit = b \cdot \min(r_w, r_h)$$ | Max bounds enforcement referencing explicit screen fractions to image frames. |
 
+### 4.3 Custom Strategies (`appdimens-dynamic-custom`)
+
+A user-defined strategy evaluates, **once per window snapshot**:
+
+$$r = \frac{A(\text{window})}{A(\text{reference})}, \qquad A \in \{sw,\ w,\ h,\ \min,\ \max,\ \sqrt{w^2+h^2},\ w+h\}$$
+
+$$F = \operatorname{clamp}\Big(c(r)\cdot m \cdot \big(1 + k\,\ln(\tfrac{AR}{1.78})\big)^{[ar]},\ F_{min},\ F_{max}\Big)$$
+
+$$Output = T\Big(\operatorname{clamp}_{|\cdot|}\big(b \cdot F,\ V_{min},\ V_{max}\big)\Big)$$
+
+| Curve $c(r)$ | Formula | Built-in equivalent (reference 300×533, axis `sw`) |
+|:---|:---|:---|
+| linear | $r$ | Scaled (`sdp`) |
+| power(e) | $r^{e}$ | Power with $e = 0.75$ |
+| logarithmic(k) | $1 + k\ln r$ | Logarithmic with $k = 0.4$ (both branches of the built-in reduce to this) |
+| interpolated(t) | $1 + (r-1)\,t$ | Interpolated with $t = 0.5$ |
+| constant(f) | $f$ | plain dp when $f = 1$ |
+| breakpoints | piecewise-linear over the absolute axis value $A(\text{window})$ | Fluid-like bands |
+| expression | $E(r, \text{window})$ — any user formula written as text | Free-form; evaluated once per window |
+
+A per-value **formula** $F(b, s, f, \text{window})$ (where $s$ is the clamped $b \cdot f$) may replace the final step: $\text{dp} = F(b, \text{clampValue}(b \cdot f), f, \text{window})$. Expressions are evaluated in 64-bit floating point and rounded to `Float` at the end.
+
+The rest of the formula works as follows:
+- **Rules.** Matching rules apply in declaration order before evaluation. Ranges are $[min, max)$.
+- **Crossed bounds.** If combined rules cross the factor bounds, $F_{max}$ wins.
+- **Value bounds.** $V_{min}/V_{max}$ apply to the magnitude, so negative offsets mirror positive ones, and $0$ stays $0$.
+- **Hook.** $T$ is the optional pure per-value hook.
+- **Text.** $sp_{dp} = Output \cdot \phi(fontScale)$, with $\phi \in \{\text{follow}: s,\ \text{ignore}: 1,\ \text{clamp}(M): \min(s, M)\}$.
+
+Parity with the built-in modules is asserted by `CustomParityWithCoreTest` against `DimenMetrics` (tolerance $10^{-5}$–$10^{-6}$). Cross-platform parity uses `custom-strategy-fixture.json` (relative tolerance $10^{-4}$).
+
 ---
 
 ## 5. Constraint Injection Geometry (Resize Subsystem)
@@ -125,4 +156,4 @@ The resize model calculates optimal dimension capacity isolated inherently from 
 
 AppDimens is designed entirely on **IEEE 754 32-bit floats (`Float`)**, acknowledging minuscule mathematical deviations natively in standard testing. Validation of curves explicitly applies acceptable `< 0.05` deltas ensuring visual integrity without overtaxing memory buses with `Double` precision arrays.
 
-Explicit module verification operates via `./gradlew :library:testDebugUnitTest` plus per-satellite formula tests (`:library-percent:testDebugUnitTest`, `:library-auto:testDebugUnitTest`, `:library-diagonal:testDebugUnitTest`, …) executing deterministic parameter inputs into each module’s `*FormulasTest`.
+Explicit module verification operates via `./gradlew :library:testDebugUnitTest` plus per-satellite formula tests (`:library-percent:testDebugUnitTest`, `:library-auto:testDebugUnitTest`, `:library-diagonal:testDebugUnitTest`, `:library-custom:testDebugUnitTest`, …) executing deterministic parameter inputs into each module’s `*FormulasTest`.

@@ -72,6 +72,8 @@ Strategy-specific scales (diagonal/power/log/interpolated/perimeter) are derived
 
 `CalcType` ordinals remain fixed in core for cache-key stability even when a satellite is not on the classpath.
 
+**Custom strategies (`:library-custom`).** The module adds a platform-free engine (`ScalingConfig` → `ScalingEngine.resolve(ScreenSnapshot)`), a DSL, a JSON codec and presets. The Android bridge maps `DimenMetrics` to `ScreenSnapshot` and memoizes the resolution per snapshot on each `ScalingStrategy`. In the cache, `CalcType.CUSTOM` occupies the last ordinal (15) of the 4-bit field. `buildCustomKey` reuses bits `[23-8]` (normally the sensitivity fingerprint) for the strategy id, and bit 2 (normally the inverter field) for cacheability. Factor-only strategies are bypassed, and value-dependent ones are stored. Adding another built-in `CalcType` will require widening the key layout.
+
 ### 2.2 Cache Anatomy & Thread Engineering
 
 **The `DimenCache` Subsystem** calculates, stores, and evaluates layout keys natively using bitwise parameters on primitive vectors to minimize Garbage Collection penalties.

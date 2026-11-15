@@ -1,6 +1,6 @@
 ---
 name: appdimens-library-workflow
-description: Use this skill for any Android responsive layout or scaling question — including making apps look right on tablets, foldables, or different screen sizes — and whenever the user mentions appdimens-dynamic, sdp, hdp, wdp, ssp, DimenCache, autoResize, responsive dp/sp, or scaling strategies. Also trigger when the user wants to add the AppDimens Dynamic dependency, choose between Compose vs Views scaling, implement constraint-based resize, or convert plain dp/sp values to scaled equivalents. When in doubt, use this skill — it covers the full lifecycle: install, strategy selection, Compose/Kotlin/Java implementation, and resize.
+description: Use this skill for any Android responsive layout or scaling question — including making apps look right on tablets, foldables, or different screen sizes — and whenever the user mentions appdimens-dynamic, sdp, hdp, wdp, ssp, DimenCache, autoResize, responsive dp/sp, or scaling strategies. Also trigger when the user wants to add the AppDimens Dynamic dependency, choose between Compose vs Views scaling, implement constraint-based resize, or convert plain dp/sp values to scaled equivalents. Also trigger for custom scaling: the user wants their own scaling strategy/config, per-device-type scaling rules (tablet, TV, watch, car), cdp/csp, scalingStrategy { }, ScalingStrategies, CustomPresets, or a scaling JSON shared across platforms. When in doubt, use this skill — it covers the full lifecycle: install, strategy selection, Compose/Kotlin/Java implementation, and resize.
 ---
 
 # AppDimens Dynamic — project workflow
@@ -10,6 +10,14 @@ description: Use this skill for any Android responsive layout or scaling questio
 **Install:** `platform("…:appdimens-dynamic-bom:3.2.0")` then the modules you need. Kotlin imports unchanged.
 
 On release bumps, update version URLs in this file, `library-map.md`, and `reference.md` together.
+
+**Unreleased — custom strategies (`appdimens-dynamic-custom`, on `main`):**
+- `scalingStrategy("brand") { reference(…); curve = power(0.8f); clamp(…); on(DeviceClass.TABLET) { … } }` registers a user-defined strategy. JSON (`ScalingStrategies.loadJson` / `loadAsset`) uses the cross-platform `custom-strategy.schema.json` format.
+- Compose: `16.cdp(Brand)`, `14.csp(Brand)`, `cdpPx` / `cspPx`, the no-arg `16.cdp` (scope via `ProvideScalingStrategy`, else `ScalingStrategies.default`), `Brand.dp(16)`, `Brand.explainCurrent()`. Views: `16.cdp(context, Brand)` returns **px**; also `cdpDp`, `csp`, `cspUnits`, and the Java facade `DimenCustom`.
+- Simplest form, for when the user just wants to write the math: one line of typed Kotlin, autocompleted, with the same names as the text language: `CustomScaleStrategy { (width / 360f).coerceIn(0.85f, 1.8f) }` (factor, runs once per window, one multiply per value) or `scalingFormula { base * pow(sw / 360f, 0.8f) }` (final value; `base` = the value passed). Scope names: `base sw width height shortSide longSide diagonal perimeter aspectRatio ratio density fontScale`, Booleans `phone tablet desktop tv watch car vr landscape portrait multiWindow`, math `pow sqrt ln log10 exp abs round min max clamp lerp smoothstep`. Use text (`scalingFormula("base * pow(sw / 360, 0.8)")`, `16.cdp("…")`) only when the formula must live in JSON or remote config; text shaped `base * (…)` stays on the one-multiply fast path.
+- Free-form formulas: `curve = expression("pow(ratio, 0.8) * (tablet ? 0.9 : 1)")` (factor) and `formula("base * pow(sw / 360, 0.7) + 2")` (per value) — text that also works in JSON (`"type": "expression"`, `"formula"`) and gives identical results on every platform. Variables: `sw width height shortSide longSide diagonal perimeter aspectRatio density fontScale`, flags `landscape portrait multiWindow phone tablet desktop tv watch car vr`, curve context `ratio axis ref refWidth refHeight`, value context `base scaled factor`.
+- Presets `CustomPresets.{TABLET_FRIENDLY, COMPACT_FIRST, TV_SAFE, WEARABLE, GAME_HUD, READABLE_TEXT}`. Built-ins as parents: `BuiltInStrategies.{SCALED, POWER, LOGARITHMIC, INTERPOLATED, DIAGONAL, PERIMETER, FIXED}.extend(id) { … }`.
+- Core: `CalcType.CUSTOM` + `DimenCache.buildCustomKey` (the strategy id lives in the key, so strategies never alias). Factor-only strategies cost one multiply.
 
 **What's New in 3.2.0:**
 - Compose-BOM independence: Jetpack Compose is declared as `compileOnly` (runtime, ui, foundation, material3, material-core, activity-compose). The library compiles against the BOM's Compose but **never ships or pins a version** — the published AAR/POM carries no Compose constraint at all. The consumer's Compose (any version) is the single runtime, so there is no version skew and no "class/function not found" regardless of the Compose version the dev chooses.
@@ -35,6 +43,8 @@ On release bumps, update version URLs in this file, `library-map.md`, and `refer
 - [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) — Compose naming, facilitators, Plain chains, `code` parity
 - [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/resize.md) — `compose.resize` / `code.resize`
 - [GUIDE-FOR-BEGINNERS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/GUIDE-FOR-BEGINNERS.md) — narrative walkthrough
+- [DOCUMENTATION/custom.md](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom.md) and the [custom/](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom/README.md) guides — custom strategies (code and text formulas, DSL, JSON, rules, presets, caching); unreleased, on `main`
+- [skills/custom.md](custom.md) — agent reference for custom strategies: which form to pick, cheat sheet, rules to follow, verification
 - Examples: [Compose](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/app/src/main/java/com/example/app/compose/ExampleActivity.kt) · [Kotlin Views](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/app/src/main/java/com/example/app/kotlin/ExampleActivity.kt) · [Java](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/app/src/main/java/com/example/app/java/ExampleActivity.java)
 
 **Package map and strategy → doc index:** [library-map.md](library-map.md)
@@ -159,6 +169,18 @@ Use only when requirements or QA justify leaving scaled. **Before recommending a
 | **Density** | Classic density-style scaling | Matching legacy dp-to-physical expectations | Want screen-shape-aware curves |
 | **Physical units** | mm / cm / in helpers | Real-world sizing (rulers, print-like UI) | Most Material layout — use scaled instead |
 | **Resize** | *(not a global curve)* Largest discrete step in [min,max] fitting constraints | Auto-fit text or boxes inside known max | Whole-screen proportional layout |
+| **Custom** (`appdimens-dynamic-custom`) | Your own factor: reference frame, axis, curve, bounds, font-scale policy, rules per device class / screen range | No built-in fits after QA; one growth law shared by several apps/platforms; TV / watch / car-specific behavior; remote-config experiments | A built-in already passes QA — prefer it (less to maintain) |
+
+### Custom strategy workflow
+
+Use when the user asks for their own scaling or none of the rows above satisfies the acceptance criteria. Read [custom.md](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom.md) first.
+
+1. **Start from the closest built-in or preset** (`BuiltInStrategies.POWER.extend("x") { … }`, `CustomPresets.TABLET_FRIENDLY`, JSON `"extends"`). Change only what the acceptance criteria need.
+2. **Keep a single source.** Define strategies in one place (`object AppStrategies` or an `assets/appdimens-strategies.json`). If the project has an `appdimens.config.json` listing `customStrategies`, reuse those ids and never invent new ones silently.
+3. **Rules over forks.** Express device or screen differences as `on(DeviceClass.X) { … }` / `onScreen(minSmallestWidth = …) { … }` inside **one** strategy, not as separate strategies chosen with `if` at call sites.
+4. **Use `cdp` / `csp`** at call sites. Put `ProvideScalingStrategy` at the screen root or set `ScalingStrategies.default` once when a whole area uses it. Views APIs return px.
+5. **Value bounds only when required** (`clampValue`, e.g. minimum tap targets): they move the strategy to the cached lane. `custom { }` / `transform { }` lambdas must be pure. When the growth law does not fit any curve, write it as an `expression("…")` / `formula("…")` instead of a lambda when it must live in JSON or be shared with other platforms.
+6. **Verify** with `Brand.explainCurrent()` (Compose) or `Brand.explain(context)` on a phone, a tablet and the smallest supported device. Cite the factor in your answer.
 
 ---
 
@@ -195,6 +217,7 @@ Reference: [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dyna
 - [ ] Agent Preflight completed for touched symbols.
 - [ ] Phase 0 answered: stack, `DpQualifier` baseline, task type (strategy / resize / both), scope, acceptance criteria.
 - [ ] Scaled presented as default; other strategies have matching `DOCUMENTATION/*.md` opened and trade-offs cited.
+- [ ] Custom strategies: started from a built-in/preset, defined in one place, rules instead of call-site `if`s, factor verified with `explain`.
 - [ ] `ignoreMultiWindows` / `*i` / `*ia` not surfaced to user.
 - [ ] Docs or KDoc read for anything beyond trivial one-liners.
 - [ ] Diffs are small and reviewable; aligned with upstream example patterns.

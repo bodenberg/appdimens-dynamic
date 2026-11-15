@@ -108,6 +108,15 @@ Replace the **bold** stem to get the same API shape in another package:
 | **logarithmic** | `compose.logarithmic` | `logsdp` / `loghdp` / `logwdp` | `logssp` / `loghsp` / `logwsp` | `logsem` / `loghem` / `logwem` |
 | **perimeter** | `compose.perimeter` | `prsdp` / `prhdp` / `prwdp` | `prssp` / `prhsp` / `prwsp` | `prsem` / `prhem` / `prwem` |
 | **density** | `compose.density` | `dsdp` / `dhdp` / `dwdp` | `dssp` / `dhsp` / `dwsp` | `dsem` / `dhem` / `dwem` |
+| **custom** ¹ | `compose.custom` | `cdp` (axis set by the strategy) | `csp` | `csp` with `ignoreFontScale()` in the strategy |
+
+¹ **Custom strategies do not follow the prefix × suffix grid.** Each strategy carries its own axis, aspect-ratio, multi-window and font-scale settings, so there are no `a` / `i` / `Ph` variants. The API is:
+- `16.cdp(Brand)`, `16.cdpPx(Brand)`, `14.csp(Brand)`, `14.cspPx(Brand)`.
+- The same without an argument (`16.cdp`), which uses `ProvideScalingStrategy` / `ScalingStrategies.default`.
+- Strategy-first forms `Brand.dp(16)`, `Brand.sp(14)`, `Brand.px(16)`.
+- `Brand.withAxis(ScalingAxis.HEIGHT)` for another axis.
+
+In `code.custom`, `16.cdp(context, Brand)` / `14.csp(context, Brand)` return **px**, and `cdpDp` / `cspUnits` return dp / sp units. The Java facade is `DimenCustom`. See [custom.md](custom.md).
 
 **Recommendation:** learn **scaled** first; for other strategies, keep the **same suffix pattern** (`a`, `i`, `ia`, `Px`, `Ph`, …) and only change the prefix column.
 

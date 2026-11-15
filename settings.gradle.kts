@@ -32,6 +32,7 @@ include(":library-perimeter")
 include(":library-power")
 include(":library-resize")
 include(":library-units")
+include(":library-custom")
 include(":parity")
 
 // EN Benchmark module (3.2.0 vs Concorrente 1 vs Concorrente 2).

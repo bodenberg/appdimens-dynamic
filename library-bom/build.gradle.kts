@@ -31,6 +31,7 @@ dependencies {
         api("io.github.bodenberg:appdimens-dynamic-power:$libraryVersion")
         api("io.github.bodenberg:appdimens-dynamic-resize:$libraryVersion")
         api("io.github.bodenberg:appdimens-dynamic-units:$libraryVersion")
+        api("io.github.bodenberg:appdimens-dynamic-custom:$libraryVersion")
     }
 }
 

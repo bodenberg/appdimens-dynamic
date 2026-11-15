@@ -67,6 +67,15 @@ mindmap
 | **Fluid** | Breakpoint-based linear interpolation \([320..768]\). | Responsive Web-like UI adjustments. |
 | **Percent / Space** | Absolute device fractional limits (\( % \times sw \)). | Fixed grid splits, Nav bars. |
 | **Interpolated** | Blend between base and linear scale (50%). | Softer growth than pure linear. |
+| **Custom** (`appdimens-dynamic-custom`) | User-defined factor: axis / reference / curve / bounds / aspect ratio / font-scale policy, with rules per device class and screen range; JSON shared across platforms. | Design systems shared by many apps, TV / watch / car specific UIs, remote-config experiments. |
+
+### FR-1.1: Custom Scaling Configurations
+- **FR-1.1.1 (Definition):** Developers define named strategies with a DSL (`scalingStrategy(id) { … }`) or JSON (`custom-strategy.schema.json`, format version 1). Every platform reads the same JSON.
+- **FR-1.1.2 (Targeting):** Rules match device class (phone, tablet, desktop, TV, watch, car, VR), smallest width / width / height / aspect-ratio ranges (`min <= v < max`), orientation and multi-window. Matching rules apply in declaration order.
+- **FR-1.1.3 (Composition):** Strategies extend built-ins, presets or other strategies (`extend` / `"extends"`). Parent rules come first.
+- **FR-1.1.4 (Ergonomics):** Short extensions `cdp` / `csp` (+ `Px`), strategy-first forms (`Brand.dp(16)`), a scoped default (`ProvideScalingStrategy`) and a global default (`ScalingStrategies.default`). Views get px helpers and Java gets a facade.
+- **FR-1.1.5 (Diagnostics):** `explain()` reports the axis, ratio, curve, multipliers, bounds and applied rules.
+- **FR-1.1.6 (Performance):** The factor is computed once per window snapshot and strategy. Factor-only strategies cost one multiply. Value-dependent strategies are cached under `CalcType.CUSTOM`, with the strategy id in the key, so strategies never alias.
 
 ### FR-2: Engine & Subsystem Resize Algorithms
 - **FR-2.1 (Memory Integrity):** Generates constraint step buffers via static pre-allocated `FloatArray`. **No auto-boxing allowed.**
