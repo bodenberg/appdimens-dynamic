@@ -23,7 +23,7 @@
   <img src="https://img.shields.io/badge/min%20SDK-24-2E7D32.svg" alt="Min SDK 24">
   &nbsp;
   <a href="./DOCUMENTATION/README.md" title="Scaling strategies and modules">
-    <img src="https://img.shields.io/badge/scaling%20modes-14-orange.svg" alt="14 scaling modes">
+    <img src="https://img.shields.io/badge/scaling%20modes-14%20%2B%20custom-orange.svg" alt="14 scaling modes + custom">
   </a>
 </p>
 
@@ -96,6 +96,7 @@ dependencies {
     implementation("io.github.bodenberg:appdimens-dynamic-perimeter")
     implementation("io.github.bodenberg:appdimens-dynamic-resize")
     implementation("io.github.bodenberg:appdimens-dynamic-units")
+    implementation("io.github.bodenberg:appdimens-dynamic-custom")   // your own strategies (unreleased — see below)
 }
 ```
 
@@ -131,6 +132,7 @@ dependencies {
 |----------------|----------|
 | `appdimens-dynamic` | `common`, `core`, `code.plain`, `code` / `compose` **scaled** |
 | `appdimens-dynamic-<strategy>` | `code.<strategy>` + `compose.<strategy>` |
+| `appdimens-dynamic-custom` | `custom` (DSL, JSON, presets) + `code.custom` + `compose.custom` |
 | `appdimens-dynamic-bom` | Version constraints (`java-platform`) |
 
 Module graph: [DOCUMENTATION/MODULES.md](DOCUMENTATION/MODULES.md).
@@ -333,6 +335,44 @@ Approximate **real-world** size on screen (density-based). Compose: use helpers 
 
 ---
 
+## Custom strategies (your own scaling)
+
+When none of the built-in curves fits, or one growth law must be shared by several apps and platforms, define your own strategy with `appdimens-dynamic-custom`.
+
+The simplest way is to write the math as ordinary Kotlin on one line. The IDE autocompletes `base`, `sw`, `width`, `tablet`, `pow`, `clamp`…, and typos fail at compile time:
+
+```kotlin
+import com.appdimens.dynamic.custom.*
+import com.appdimens.dynamic.compose.custom.*
+
+val Product = CustomScaleStrategy { (width / 360f).coerceIn(0.85f, 1.80f) }   // factor × every value
+val Hud = scalingFormula { base * pow(sw / 360f, 0.8f) }                      // final value (base = 16 in 16.cdp)
+Modifier.padding(16.cdp(Product))
+Text("Score", fontSize = 18.csp(Hud))
+val Remote = scalingFormula("base * pow(sw / 360, 0.8)")                       // same thing as text, for JSON / remote config
+```
+
+For rules per device, factor bounds or a font-scale policy, use the full configuration:
+
+```kotlin
+
+val Brand = scalingStrategy("brand") {
+    reference(width = 360, height = 640)          // your design frame
+    curve = power(0.8f)                             // linear / power / logarithmic / interpolated / breakpoints / expression("…") / custom { }
+    clamp(min = 0.85f, max = 1.6f)
+    on(DeviceClass.TABLET, DeviceClass.DESKTOP) { curve = logarithmic(0.4f) }
+    on(DeviceClass.WATCH) { axis = ScalingAxis.MIN; reference(192, 192) }
+}
+
+Modifier.padding(16.cdp(Brand))
+Text("Hi", fontSize = 14.csp(Brand))
+ProvideScalingStrategy(Brand) { Text("Scoped", fontSize = 14.csp) }   // or ScalingStrategies.default = Brand
+```
+
+The same configuration loads from JSON on every AppDimens platform (`ScalingStrategies.loadAsset(context, "appdimens-strategies.json")`). Ready-made presets include `CustomPresets.TABLET_FRIENDLY`, `TV_SAFE`, `WEARABLE` and `GAME_HUD`. Built-ins can be extended (`BuiltInStrategies.POWER.extend("soft") { … }`). Views get **px** with `16.cdp(context, Brand)`. Full guide: [DOCUMENTATION/custom.md](DOCUMENTATION/custom.md).
+
+---
+
 <p align="center">
   <img src="IMAGES/screenshot.jpg" alt="Layout example" width="200"/>
   &nbsp;
@@ -355,7 +395,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 | [DOCUMENTATION/index.md](DOCUMENTATION/index.md) | Markdown API index (KDoc export) |
 | [appdimens3.web.app](https://appdimens3.web.app/) | Searchable KDoc |
 
-**Example app:** `app/.../compose/ExampleActivity.kt` (includes auto-resize demos).
+**Example app:** `app/.../compose/ExampleActivity.kt` (includes auto-resize demos) · `app/.../compose/CustomStrategyDemo.kt` (custom strategies).
 
 ---
 
@@ -384,6 +424,14 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 - Code-only scaling (no XML dimen grids) · **SDP / HDP / WDP** + **14** scaling modes  
 - **Aspect ratio** & **multi-window** flags · **Inverters** & **facilitators** · **Foldable** awareness via WindowManager  
 - **Physical units** · **Resize** helpers · **DimenScaled** chains  
+
+### Unreleased — Custom scaling strategies
+
+| Change | Description |
+|--------|-------------|
+| **New module `appdimens-dynamic-custom`** | Lets you define your own scaling strategies. The simplest form is one line of typed Kotlin with autocomplete: a factor (`CustomScaleStrategy { (width / 360f).coerceIn(0.85f, 1.8f) }`) or a final-value formula (`scalingFormula { base * pow(sw / 360f, 0.8f) }`), or the same formula as text for JSON (`scalingFormula("base * pow(sw / 360, 0.8)")`, `16.cdp("…")`). There is also a DSL (`scalingStrategy("brand") { … }`) or JSON (one format shared with every AppDimens platform). Curves: linear, power, logarithmic, interpolated, constant, breakpoints, a free-form text `expression("…")` (JSON-serializable, same result on every platform), or a pure `custom { }` lambda; plus a per-value `formula("…")`. Strategies support axes, reference frame, factor/value bounds, aspect ratio, font-scale policy, and rules per device class / screen range / orientation / multi-window. They can extend built-ins or presets. |
+| **APIs** | Compose: `16.cdp(Brand)` · `14.csp(Brand)` · `cdpPx` / `cspPx` · `ProvideScalingStrategy` · `Brand.dp(16)` · `explainCurrent()`. Views: `16.cdp(context, Brand)` (px) · `cdpDp` · `csp` · `cspUnits` · Java `DimenCustom`. |
+| **Core: `CalcType.CUSTOM`** | `DimenCache.buildCustomKey` puts the strategy id in the 16 sensitivity bits, so strategies never alias. Factor-only strategies take the one-multiply bypass lane; value-dependent ones are cached per window snapshot. |
 
 ### What's New in 3.2.0
 

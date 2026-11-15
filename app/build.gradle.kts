@@ -105,6 +105,7 @@ dependencies {
     api(project(":library-power"))
     api(project(":library-resize"))
     api(project(":library-units"))
+    api(project(":library-custom"))
 
     // Maven Central (release consumers) — preferred with BOM:
     // implementation(platform("io.github.bodenberg:appdimens-dynamic-bom:3.2.0"))

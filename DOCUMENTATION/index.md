@@ -14,6 +14,8 @@ Generated **KDoc package index** below. For product scope, architecture, and for
 
 Narrative strategy guides and the full doc hub: [README.md](README.md).
 
+**Custom strategies (`:library-custom`, unreleased):** the packages `com.appdimens.dynamic.custom`, `com.appdimens.dynamic.compose.custom` and `com.appdimens.dynamic.code.custom` are not in the KDoc snapshot below yet. The API is documented in [custom.md](custom.md) and the [custom/](custom/README.md) guides ([API reference](custom/api-reference.md)), and the KDoc (EN/PT) lives in the sources under `library-custom/`.
+
 ## Packages
 
 | Name |
