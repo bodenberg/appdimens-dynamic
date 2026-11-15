@@ -50,3 +50,4 @@ DOCUMENTATION2/
 # Local benchmark artifacts (never commit machine-specific blobs)
 rollout-*.jsonl
 bench-results-*.json
+tools/parity/build/

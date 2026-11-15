@@ -1,0 +1,37 @@
+name: Cross-platform parity
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21" }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: "8.14.3" }
+      - name: Regenerate vectors from the verbatim kernels
+        run: |
+          cp tools/parity/parity-vectors.json /tmp/committed.json
+          python3 tools/parity/generate.py
+      - name: Compare with the committed reference (ports test against it)
+        run: |
+          python3 - <<'PY'
+          import json
+          a = json.load(open('/tmp/committed.json')); b = json.load(open('tools/parity/parity-vectors.json'))
+          worst = 0.0
+          for ca, cb in zip(a['cases'], b['cases']):
+              for s in b['strategies']:
+                  for x, y in zip(ca['factors'][s], cb['factors'][s]):
+                      worst = max(worst, abs(x - y) / max(1.0, abs(y)))
+          print('worst relative drift', worst)
+          if worst > 1e-6:
+              raise SystemExit('kernel math changed: regenerate tools/parity/parity-vectors.json and update every port')
+          PY
