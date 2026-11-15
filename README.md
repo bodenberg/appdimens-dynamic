@@ -71,6 +71,14 @@ Write values like `16.sdp` and the library scales them from the current screen *
 
 ---
 
+
+## 🌍 AppDimens on other platforms
+
+This library is the **reference implementation** of the AppDimens math. The same tokens and results are available on
+Kotlin Multiplatform, iOS, Flutter, React Native, Web, .NET, **Qt**, **GTK**, **LVGL**, **Python/Blender** and **Games**
+(Unity, Unreal Engine 5, Godot 4, C/C++, Android) — see the [AppDimens hub](https://github.com/bodenberg/appdimens).
+Ports are verified against vectors generated from this repository's own kernels: [`tools/parity`](tools/parity/README.md).
+
 ## Installation (v3.2.0)
 
 **3.2.0** keeps the modular packaging introduced in **3.1.6**: the library ships as a **principal** artifact (`common` + `core` + **scaled** + `plain`) plus optional strategy modules. Kotlin packages and imports are unchanged.
