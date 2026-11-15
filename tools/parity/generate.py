@@ -75,7 +75,9 @@ def main():
     names = ["scaled"] + list(CAP)
     klist = ", ".join('"%s" to ::calculate%sDpCompose' % (n, "Scaled" if n == "scaled" else CAP[n]) for n in names)
     open(os.path.join(SRC, "harness", "Main.kt"), "w").write(MAIN % (cases, variants, klist))
-    open(os.path.join(BUILD, "settings.gradle.kts"), "w").write('rootProject.name = "appdimens-parity"\n')
+    open(os.path.join(BUILD, "settings.gradle.kts"), "w").write(
+        'pluginManagement { repositories { gradlePluginPortal(); mavenCentral() } }\n'
+        'rootProject.name = "appdimens-parity"\n')
     open(os.path.join(BUILD, "build.gradle.kts"), "w").write(
         'plugins { kotlin("jvm") version "2.0.21"; application }\nrepositories { mavenCentral() }\n'
         'application { mainClass.set("com.appdimens.dynamic.harness.MainKt") }\n')
