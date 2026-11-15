@@ -11,7 +11,7 @@ description: Use this skill for any Android responsive layout or scaling questio
 
 On release bumps, update version URLs in this file, `library-map.md`, and `reference.md` together.
 
-**Unreleased — custom strategies (`appdimens-dynamic-custom`, on `main`):**
+**Custom strategies (`appdimens-dynamic-custom`):**
 - `scalingStrategy("brand") { reference(…); curve = power(0.8f); clamp(…); on(DeviceClass.TABLET) { … } }` registers a user-defined strategy. JSON (`ScalingStrategies.loadJson` / `loadAsset`) uses the cross-platform `custom-strategy.schema.json` format.
 - Compose: `16.cdp(Brand)`, `14.csp(Brand)`, `cdpPx` / `cspPx`, the no-arg `16.cdp` (scope via `ProvideScalingStrategy`, else `ScalingStrategies.default`), `Brand.dp(16)`, `Brand.explainCurrent()`. Views: `16.cdp(context, Brand)` returns **px**; also `cdpDp`, `csp`, `cspUnits`, and the Java facade `DimenCustom`.
 - Simplest form, for when the user just wants to write the math: one line of typed Kotlin, autocompleted, with the same names as the text language: `CustomScaleStrategy { (width / 360f).coerceIn(0.85f, 1.8f) }` (factor, runs once per window, one multiply per value) or `scalingFormula { base * pow(sw / 360f, 0.8f) }` (final value; `base` = the value passed). Scope names: `base sw width height shortSide longSide diagonal perimeter aspectRatio ratio density fontScale`, Booleans `phone tablet desktop tv watch car vr landscape portrait multiWindow`, math `pow sqrt ln log10 exp abs round min max clamp lerp smoothstep`. Use text (`scalingFormula("base * pow(sw / 360, 0.8)")`, `16.cdp("…")`) only when the formula must live in JSON or remote config; text shaped `base * (…)` stays on the one-multiply fast path.
@@ -43,7 +43,7 @@ On release bumps, update version URLs in this file, `library-map.md`, and `refer
 - [DOCUMENTATION/COMPOSE-API-CONVENTIONS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/COMPOSE-API-CONVENTIONS.md) — Compose naming, facilitators, Plain chains, `code` parity
 - [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/DOCUMENTATION/resize.md) — `compose.resize` / `code.resize`
 - [GUIDE-FOR-BEGINNERS.md](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/GUIDE-FOR-BEGINNERS.md) — narrative walkthrough
-- [DOCUMENTATION/custom.md](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom.md) and the [custom/](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom/README.md) guides — custom strategies (code and text formulas, DSL, JSON, rules, presets, caching); unreleased, on `main`
+- [DOCUMENTATION/custom.md](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom.md) and the [custom/](https://github.com/bodenberg/appdimens-dynamic/blob/main/DOCUMENTATION/custom/README.md) guides — custom strategies (code and text formulas, DSL, JSON, rules, presets, caching)
 - [skills/custom.md](custom.md) — agent reference for custom strategies: which form to pick, cheat sheet, rules to follow, verification
 - Examples: [Compose](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/app/src/main/java/com/example/app/compose/ExampleActivity.kt) · [Kotlin Views](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/app/src/main/java/com/example/app/kotlin/ExampleActivity.kt) · [Java](https://github.com/bodenberg/appdimens-dynamic/blob/3.2.0/app/src/main/java/com/example/app/java/ExampleActivity.java)
 
@@ -228,3 +228,12 @@ Reference: [DOCUMENTATION/resize.md](https://github.com/bodenberg/appdimens-dyna
 ## Output Style
 
 For every decision state: chosen strategy, package family (`compose.*` or `code.*`), axis (`sdp` vs `hdp` vs `wdp`), whether resize vs global scaling, and which acceptance criterion it satisfies. Prefer small, reviewable diffs aligned with existing project patterns.
+
+<!-- appdimens-family:begin -->
+## Other AppDimens platforms
+
+The same token names and math exist on Android (Compose, Views, XML), Kotlin Multiplatform, iOS/macOS, Flutter, React
+Native, Web, .NET, Qt, GTK, LVGL, Roku, Python/Blender and games (Unity, Unreal, Godot, C/C++). For code on another
+platform, use that library's skill — every skill, plus the layout-intent decision table, installs with
+`npx appdimens-skills` (https://github.com/bodenberg/appdimens-skills). Hub: https://github.com/bodenberg/appdimens.
+<!-- appdimens-family:end -->
