@@ -96,7 +96,7 @@ Same token names and the same math on every platform — [hub](https://github.co
 | Qt 5/6 — QML, Widgets | [appdimens-qt](https://github.com/bodenberg/appdimens-qt) | `AppDimens.sdp(16)` · `16_sdp` |
 | GTK 3/4 and portable C99 | [appdimens-gtk](https://github.com/bodenberg/appdimens-gtk) | `16sdp` (CSS) · `ad_sdp(&m, 16)` |
 | LVGL 8/9 — MCUs, embedded Linux | [appdimens-lvgl](https://github.com/bodenberg/appdimens-lvgl) | `lv_ad_sdp(16)` |
-| Roku — BrightScript / SceneGraph | [appdimens-roku](https://github.com/bodenberg/appdimens-roku) | `ad.sdp(16)` |
+| Roku — BrightScript / SceneGraph | [appdimens-roku](https://github.com/bodenberg/appdimens-roku) | `sdp(16)` · `ad.sdp(16)` |
 | Python — Tkinter, Qt, Kivy, pygame, Blender | [appdimens-py](https://github.com/bodenberg/appdimens-py) | `ad.sdp(16)` |
 | Games — Unity, Unreal, Godot, C/C++, .NET, Android | [appdimens-games](https://github.com/bodenberg/appdimens-games) | `64f.ASdp()` · `AppDimens.asdp(64)` · `appdimens::asdp(64)` |
 
@@ -127,7 +127,7 @@ dependencies {
     implementation("io.github.bodenberg:appdimens-dynamic-perimeter")
     implementation("io.github.bodenberg:appdimens-dynamic-resize")
     implementation("io.github.bodenberg:appdimens-dynamic-units")
-    implementation("io.github.bodenberg:appdimens-dynamic-custom")   // your own strategies (unreleased — see below)
+    implementation("io.github.bodenberg:appdimens-dynamic-custom")   // your own strategies (see below)
 }
 ```
 
@@ -456,7 +456,7 @@ Other strategies (**percent**, **power**, **fluid**, **auto**, **diagonal**, **f
 - **Aspect ratio** & **multi-window** flags · **Inverters** & **facilitators** · **Foldable** awareness via WindowManager  
 - **Physical units** · **Resize** helpers · **DimenScaled** chains  
 
-### Unreleased — Custom scaling strategies
+### Custom scaling strategies
 
 | Change | Description |
 |--------|-------------|
